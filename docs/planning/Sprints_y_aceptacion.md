@@ -7,7 +7,7 @@ se conservan intactos. S2.1 reemplaza las instrucciones operativas de ese alcanc
 |---|---|---|
 | S2.1 | Implementado; resultados en Estado_Sprint_2_1.md | Windows/PowerShell con Docker, respaldo restaurado, nuevo entorno vacío, bootstrap explícito, contrato 0.2.0, bloqueo institucional y regresión |
 | S2.2 | Comprobado; Estado_Sprint_2_2.md y Matriz_verificacion_S2_2.md | Cuatro cuentas locales explícitas con credenciales privadas Windows; revisión de 14 rutas y UI por rol/tamaño; persistencia con usuarios y regresión aislada; sin registros escolares ni habilitación institucional |
-| S3 | Pendiente | S2.1; pipeline e inferencia trazables. Entrenamiento/evaluación requiere datos autorizados, etiquetas verificables y protocolo |
+| S3 | Infraestructura implementada; Estado_Sprint_3.md | S2.2 preservado; núcleo ML y persistencia comprobados aisladamente. Entrenamiento/evaluación/activación institucional pendientes de datos, etiquetas, protocolo y migración |
 | S4 | Pendiente | S2.1/S3 para flujos iniciales; S5 para integración completa. Pantallas reales, estados útiles, teclado y tres tamaños |
 | S5 | Pendiente | Predicción válida, sesiones, matrículas y protocolo; alertas únicas, seguimiento versionado, auditoría y exportaciones autorizadas |
 | S6 | Pendiente | S3–S5 integrados; recorrido completo, persistencia, restauración, documentación y evidencias verificables |
@@ -32,6 +32,26 @@ se conservan intactos. S2.1 reemplaza las instrucciones operativas de ese alcanc
     fallos y omisiones explícitos. S3–S6 no implementados.
 
 ## Reglas siguientes
+
+### Aceptación técnica S3
+
+1. ADR previa; cuatro cuentas, auditoría, locks previos y migraciones conservados.
+2. Dataset/etiquetas/manifiesto versionados; variables permitidas y escalas explícitas;
+   validación temporal/revisiones y rechazo de configuración incompleta.
+3. Pipeline por entrenamiento/fold, SVM escalado, Dummy/RF/SVM/XGBoost CPU; particiones
+   comunes sin solapamiento por estudiante, soporte suficiente y folds efectivos.
+4. Matriz LOW/MEDIUM/HIGH, soporte y métricas por clase/macro; null no estimable;
+   sin calibración, probabilidades públicas null, sin ganador automático ni tesis evaluada.
+5. Artefactos privados de procedencia interna, firmas/hashes/esquemas/versiones antes
+   de deserializar, rechazo de rutas/symlinks/corrupción, round-trip de cuatro algoritmos.
+6. Selección por matrícula/as_of, abstención, revisiones pendientes, unicidad snapshot/model,
+   concurrencia/rollback/auditoría con riesgo_app y modelos de fixture inactivos.
+7. Cuatro rutas reales, permisos/CSRF y errores contractuales; entrenamiento CLI y ejecución
+   institucional bloqueados, ninguna activación ni procesamiento activo.
+8. PostgreSQL aislado, contrato/tipos, pip check, build, navegador S2.2 y persistencia;
+   comandos y resultados en cierre S3; sin datos escolares/modelos activos ni avance S4–S6.
+
+### Dependencias institucionales
 
 No reutilizar una escuela ficticia ni planificar un generador de 60 alumnos.
 S3 conserva baseline, Random Forest, SVM y XGBoost según el plan académico, Pipeline,

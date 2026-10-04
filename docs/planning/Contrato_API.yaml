@@ -1,9 +1,9 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.2.0
-  description: 'S2.1: Windows con Docker. Sin datos precargados. Contexto institucional legible; importacion
-    bloqueada hasta implementar el protocolo autorizado. Solo rutas implementadas S1/S2.'
+  version: 0.3.0
+  description: 'S3: infraestructura predictiva comprobable aisladamente. Importación, entrenamiento, inferencia
+    institucional y activación bloqueados. Solo operaciones implementadas.'
 servers:
 - url: /api/v1
   description: Preferir proxy de mismo origen para cookies y CSRF
@@ -15,6 +15,7 @@ tags:
 - name: catalogs
 - name: students
 - name: imports
+- name: ml
 paths:
   /health/live:
     get:
@@ -64,8 +65,8 @@ paths:
       - auth
       x-stage: S2.1
       x-roles: []
-      description: Comprobar Origin, limitar intentos y validar credenciales. Usar cookie de sesión; sin
-        registro público.
+      description: Comprobar Origin, limitar intentos y validar credenciales. Usar cookie de sesión; sin registro
+        público.
       responses:
         '200':
           description: Operación completada
@@ -106,8 +107,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
-            503.
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
           content:
             application/json:
               schema:
@@ -184,8 +184,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
-            503.
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
           content:
             application/json:
               schema:
@@ -249,8 +248,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
-            503.
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
           content:
             application/json:
               schema:
@@ -310,8 +308,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
-            503.
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
           content:
             application/json:
               schema:
@@ -383,8 +380,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
-            503.
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
           content:
             application/json:
               schema:
@@ -446,8 +442,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
-            503.
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
           content:
             application/json:
               schema:
@@ -515,8 +510,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
-            503.
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
           content:
             application/json:
               schema:
@@ -559,7 +553,7 @@ paths:
       - name: risk_level
         in: query
         required: false
-        schema: &id010
+        schema: &id018
           type: string
           enum:
           - LOW
@@ -623,8 +617,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
-            503.
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
           content:
             application/json:
               schema:
@@ -690,8 +683,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
-            503.
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
           content:
             application/json:
               schema:
@@ -719,10 +711,10 @@ paths:
       x-stage: S2.1
       x-roles:
       - ADMIN
-      description: 'Bloqueado con 422 INSTITUTIONAL_PROCESSING_NOT_READY hasta implementar procedencia
-        autorizada, escala, periodo, ventanas, fechas y calidad. Exige sesion ADMIN y CSRF. No persiste
-        archivos ni registros escolares. Motor preservado: UTF-8, 5 MiB, 10000 filas, transaccion, idempotencia,
-        revision inmutable y expected_preview_version.'
+      description: 'Bloqueado con 422 INSTITUTIONAL_PROCESSING_NOT_READY hasta implementar procedencia autorizada,
+        escala, periodo, ventanas, fechas y calidad. Exige sesion ADMIN y CSRF. No persiste archivos ni registros
+        escolares. Motor preservado: UTF-8, 5 MiB, 10000 filas, transaccion, idempotencia, revision inmutable
+        y expected_preview_version.'
       responses:
         '201': &id006
           description: Operación completada
@@ -764,8 +756,7 @@ paths:
         '200': *id006
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
-            503.
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
           content:
             application/json:
               schema:
@@ -848,8 +839,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
-            503.
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
           content:
             application/json:
               schema:
@@ -874,10 +864,10 @@ paths:
       x-stage: S2.1
       x-roles:
       - ADMIN
-      description: 'Bloqueado con 422 INSTITUTIONAL_PROCESSING_NOT_READY hasta implementar procedencia
-        autorizada, escala, periodo, ventanas, fechas y calidad. Exige sesion ADMIN y CSRF. No persiste
-        archivos ni registros escolares. Motor preservado: UTF-8, 5 MiB, 10000 filas, transaccion, idempotencia,
-        revision inmutable y expected_preview_version.'
+      description: 'Bloqueado con 422 INSTITUTIONAL_PROCESSING_NOT_READY hasta implementar procedencia autorizada,
+        escala, periodo, ventanas, fechas y calidad. Exige sesion ADMIN y CSRF. No persiste archivos ni registros
+        escolares. Motor preservado: UTF-8, 5 MiB, 10000 filas, transaccion, idempotencia, revision inmutable
+        y expected_preview_version.'
       responses:
         '200':
           description: Operación completada
@@ -918,8 +908,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
-            503.
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
           content:
             application/json:
               schema:
@@ -954,6 +943,183 @@ paths:
               required:
               - expected_preview_version
               additionalProperties: false
+  /models:
+    get:
+      operationId: listModels
+      summary: listModels
+      tags:
+      - ml
+      x-stage: S3
+      x-roles:
+      - ADMIN
+      description: Modelos paginados; orden created_at descendente e id ascendente. Lista vacía en activo.
+        Sin hashes, rutas, particiones ni métricas privadas.
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 10000
+          default: 1
+      - name: page_size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+      responses:
+        '200':
+          description: Resultado de la operación implementada; ejecución institucional bloqueada en S3.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelPage'
+        '401': &id007
+          description: 'SESSION_INVALID: sesión requerida o revocada.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403': &id008
+          description: FORBIDDEN o CSRF_INVALID; permisos comprobados en servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404': &id009
+          description: Recurso inexistente o no accesible en la sección; no revela casos ajenos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409': &id010
+          description: PERIOD_LOCKED, MODEL_NOT_AVAILABLE, MODEL_INCOMPATIBLE, PREDICTION_CONFLICT o INTEGRITY_CONFLICT.
+            Reutilización snapshot/model devuelve resultado existente, no error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422': &id011
+          description: Validación, NOT_ELIGIBLE o INSTITUTIONAL_PROCESSING_NOT_READY; sin escrituras académicas.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503': &id012
+          description: 'Base no disponible: Error sanitizado, sin consultas, parámetros ni secretos; nunca
+            para integridad.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500': &id013
+          description: Error interno inesperado sanitizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /models/{id}:
+    get:
+      operationId: modelDetail
+      summary: modelDetail
+      tags:
+      - ml
+      x-stage: S3
+      x-roles:
+      - ADMIN
+      description: Metadatos públicos sanitizados. No activa ni descarga modelos.
+      parameters:
+      - &id014
+        name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Resultado de la operación implementada; ejecución institucional bloqueada en S3.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+        '401': *id007
+        '403': *id008
+        '404': *id009
+        '409': *id010
+        '422': *id011
+        '503': *id012
+        '500': *id013
+  /predictions/{id}:
+    get:
+      operationId: predictionDetail
+      summary: predictionDetail
+      tags:
+      - ml
+      x-stage: S3
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      description: TUTOR solo su sección. Inexistente o ajena devuelve 404. No sustituye riesgo faltante por
+        LOW.
+      parameters:
+      - *id014
+      responses:
+        '200':
+          description: Resultado de la operación implementada; ejecución institucional bloqueada en S3.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prediction'
+        '401': *id007
+        '403': *id008
+        '404': *id009
+        '409': *id010
+        '422': *id011
+        '503': *id012
+        '500': *id013
+  /predictions/run:
+    post:
+      operationId: runPredictions
+      summary: runPredictions
+      tags:
+      - ml
+      x-stage: S3
+      x-roles:
+      - ADMIN
+      description: 'Orden: sesión, rol, CSRF, protocolo, cuerpo, periodo/modelo. En S3 devuelve bloqueo 422
+        incluso con cuerpo inválido después de CSRF; nunca procesa información institucional. Núcleo aislado:
+        última revisión incorporada/disponible hasta as_of, abstención sin fila, reutilización snapshot/model
+        y auditoría atómica. Modelo no disponible: 409 posterior al protocolo. Sin entrenamiento HTTP ni alertas.'
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Resultado de la operación implementada; ejecución institucional bloqueada en S3.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionRunResult'
+        '401': *id007
+        '403': *id008
+        '404': *id009
+        '409': *id010
+        '422': *id011
+        '503': *id012
+        '500': *id013
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PredictionRunInput'
 components:
   securitySchemes:
     sessionCookie:
@@ -1043,7 +1209,7 @@ components:
           $ref: '#/components/schemas/User'
         csrf_token:
           type: string
-        expires_at: &id009
+        expires_at: &id017
           type: string
           format: date-time
           description: RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
@@ -1070,11 +1236,11 @@ components:
           type: integer
           minimum: 2000
           maximum: 2100
-        start_date: &id007
+        start_date: &id015
           type: string
           format: date
-        end_date: *id007
-        data_origin: &id008
+        end_date: *id015
+        data_origin: &id016
           type: string
           enum:
           - REAL
@@ -1121,11 +1287,11 @@ components:
         id: *id003
         enrollment_id: *id003
         period_id: *id003
-        data_origin: *id008
-        window_start: *id007
-        cutoff_at: *id009
-        available_at: *id009
-        target_date: *id007
+        data_origin: *id016
+        window_start: *id015
+        cutoff_at: *id017
+        available_at: *id017
+        target_date: *id015
         revision:
           type: integer
           minimum: 1
@@ -1200,11 +1366,11 @@ components:
         enrollment_id: *id003
         snapshot_id: *id003
         model_id: *id003
-        data_origin: *id008
-        risk_level: *id010
-        cutoff_at: *id009
-        target_date: *id007
-        predicted_at: *id009
+        data_origin: *id016
+        risk_level: *id018
+        cutoff_at: *id017
+        target_date: *id015
+        predicted_at: *id017
         probability_low:
           type:
           - number
@@ -1240,8 +1406,8 @@ components:
       - probability_medium
       - probability_high
       additionalProperties: false
-      description: Probabilidades todas null o todas presentes; suma 1 con tolerancia 0.00001. Validar
-        suma en servidor. calibrated true exige valores presentes.
+      description: Probabilidades todas null o todas presentes; suma 1 con tolerancia 0.00001. Validar suma
+        en servidor. calibrated true exige valores presentes.
       allOf:
       - oneOf:
         - properties:
@@ -1283,7 +1449,7 @@ components:
           type: integer
           minimum: 1
           maximum: 5
-        data_origin: *id008
+        data_origin: *id016
         average_grade:
           type:
           - number
@@ -1376,7 +1542,7 @@ components:
           - PREDICTION
           - ALERT
           - INTERVENTION
-        occurred_at: *id009
+        occurred_at: *id017
         summary:
           type: string
         entity_id: *id003
@@ -1410,7 +1576,7 @@ components:
       properties:
         id: *id003
         period_id: *id003
-        data_origin: *id008
+        data_origin: *id016
         file_name:
           type: string
         file_sha256:
@@ -1456,7 +1622,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ImportError'
-        created_at: *id009
+        created_at: *id017
         committed_at:
           type:
           - string
@@ -1509,7 +1675,7 @@ components:
         anon_code:
           type: string
         prediction_id: *id003
-        data_origin: *id008
+        data_origin: *id016
         severity:
           type: string
           enum:
@@ -1532,8 +1698,8 @@ components:
           - string
           - 'null'
           maxLength: 1000
-        opened_at: *id009
-        updated_at: *id009
+        opened_at: *id017
+        updated_at: *id017
         closed_at:
           type:
           - string
@@ -1568,7 +1734,7 @@ components:
           - string
           - 'null'
           format: uuid
-        data_origin: *id008
+        data_origin: *id016
         kind:
           type: string
           enum:
@@ -1586,7 +1752,7 @@ components:
           - PLANNED
           - DONE
           - CANCELLED
-        scheduled_at: *id009
+        scheduled_at: *id017
         performed_at:
           type:
           - string
@@ -1600,8 +1766,8 @@ components:
         version:
           type: integer
           minimum: 1
-        created_at: *id009
-        updated_at: *id009
+        created_at: *id017
+        updated_at: *id017
       required:
       - id
       - enrollment_id
@@ -1663,4 +1829,166 @@ components:
       - page
       - page_size
       additionalProperties: false
+    Model:
+      additionalProperties: false
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        version:
+          title: Version
+          type: string
+        algorithm:
+          enum:
+          - DUMMY
+          - RANDOM_FOREST
+          - SVM
+          - XGBOOST
+          title: Algorithm
+          type: string
+        data_origin:
+          const: REAL
+          title: Data Origin
+          type: string
+        feature_schema_version:
+          title: Feature Schema Version
+          type: string
+        reference_criterion_version:
+          title: Reference Criterion Version
+          type: string
+        status:
+          enum:
+          - DRAFT
+          - EVALUATED
+          - APPROVED
+          - RETIRED
+          title: Status
+          type: string
+        is_active:
+          title: Is Active
+          type: boolean
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+      required:
+      - id
+      - name
+      - version
+      - algorithm
+      - data_origin
+      - feature_schema_version
+      - reference_criterion_version
+      - status
+      - is_active
+      - created_at
+      title: Model
+      type: object
+    ModelPage:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/Model'
+          title: Items
+          type: array
+        total:
+          title: Total
+          type: integer
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: ModelPage
+      type: object
+    PredictionRunInput:
+      additionalProperties: false
+      properties:
+        period_id:
+          format: uuid
+          title: Period Id
+          type: string
+        as_of:
+          format: date-time
+          title: As Of
+          type: string
+      required:
+      - period_id
+      - as_of
+      title: PredictionRunInput
+      type: object
+    Abstention:
+      additionalProperties: false
+      properties:
+        snapshot_id:
+          format: uuid
+          title: Snapshot Id
+          type: string
+        status:
+          enum:
+          - MODEL_NOT_AVAILABLE
+          - INSUFFICIENT_DATA
+          - INELIGIBLE
+          - INCOMPATIBLE
+          title: Status
+          type: string
+        reason:
+          title: Reason
+          type: string
+      required:
+      - snapshot_id
+      - status
+      - reason
+      title: Abstention
+      type: object
+    PredictionRunResult:
+      additionalProperties: false
+      properties:
+        period_id:
+          format: uuid
+          title: Period Id
+          type: string
+        as_of:
+          format: date-time
+          title: As Of
+          type: string
+        model_id:
+          format: uuid
+          title: Model Id
+          type: string
+        selected:
+          title: Selected
+          type: integer
+        created:
+          title: Created
+          type: integer
+        reused:
+          title: Reused
+          type: integer
+        abstentions:
+          items:
+            $ref: '#/components/schemas/Abstention'
+          title: Abstentions
+          type: array
+      required:
+      - period_id
+      - as_of
+      - model_id
+      - selected
+      - created
+      - reused
+      - abstentions
+      title: PredictionRunResult
+      type: object
 x-current-sprint: S2.1

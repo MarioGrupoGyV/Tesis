@@ -31,9 +31,9 @@ del protocolo. Este desarrollo no modifica la metodología ni evalúa la hipóte
 La guía académica exige coherencia de objetivos, variables, indicadores, unidad de
 análisis, instrumentos, análisis y ética; los sprints son organización del software.
 
-## S3: módulo predictivo del proyecto — pendiente
+## S3: infraestructura predictiva implementada; habilitación institucional pendiente
 
-Implementar infraestructura de pipeline, trazabilidad e inferencia, con pruebas
+Infraestructura de pipeline, trazabilidad e inferencia implementada, con pruebas
 unitarias/integración aisladas. Sin generador de una escuela ficticia ni entrenamiento
 operativo con alumnos inventados. Entrenamiento y evaluación institucional requieren
 dataset autorizado, etiquetas verificables y protocolo.
@@ -55,13 +55,22 @@ informar Modelo no disponible o Datos insuficientes. No fabricar riesgos ni mét
 S4 completará las pantallas con estados de carga/vacío/error/éxito y accesibilidad.
 S5 implementará seguimiento versionado, alertas únicas y exportaciones autorizadas.
 S6 integrará el recorrido y evidencias, sin atribuir validación académica a pruebas
-de software. No se implementan en S2.1.
+de software. No se implementan en S3.
 
 Persisten UTC/America-Lima, revisiones inmutables, auditoría transaccional, permisos
 por sección, CSRF, límites de CSV y paginación, idempotencia y bloqueo de periodos.
 No añadir pagos, chats, portales familiares, mensajería automática ni matrícula
 administrativa completa. Las decisiones pedagógicas son humanas.
 
-Contrato público: Contrato_API.yaml 0.2.0, solo operaciones implementadas.
+Contrato público: Contrato_API.yaml 0.3.0, solo operaciones implementadas.
 Esquema.sql es referencia; migraciones históricas no se reescriben. Las tablas y
 endpoints de investigación que falten requieren otra iteración, nunca se simulan.
+
+S3 mantiene todas las cuentas S2.2 y el entorno sin registros escolares. Añade cuatro
+rutas de modelos/predicciones, con ejecución institucional bloqueada. Dataset y
+manifiesto internos versionados; escalas/criterio/horizonte explícitos, particiones
+comunes por estudiante y métricas no estimables null. Sin tuning, calibración,
+selección automática ni evaluación prospectiva. Edad/grado solo con justificación.
+Artefactos privados internos firmados, hashes y versiones verificados antes de carga;
+XGBoost CPU conserva formato nativo. Las pruebas positivas usan fixtures temporales
+y modelos de base inactivos. ADR 005 y Estado_Sprint_3.md delimitan comprobación y pendientes.

@@ -1,5 +1,6 @@
 """Recreación explícita sin borrar volúmenes; conserva la protección de check_runtime."""
 import json
+import os
 import subprocess
 from runtime_snapshot import ROOT, snapshot, school_unchanged, SCHOOL
 from review_accounts import credentials
@@ -32,7 +33,11 @@ def main():
               'school_counts_after_access': {t: after['counts'][t] for t in SCHOOL},
               'school_and_files_unchanged': True, 'login_logout_revocation_roles': verified,
               'users': after['users']}
-    (ROOT / 'tests/evidence/s2-2-persistence.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
+    prefix=os.environ.get('PERSISTENCE_REPORT_PREFIX','s2-2')
+    if not prefix.replace('-','').isalnum():
+        raise ValueError('Prefijo inválido')
+    report['ml_files_unchanged']=before.get('ml_files',[])==after.get('ml_files',[])
+    (ROOT / f'tests/evidence/{prefix}-persistence.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     print('COMPROBADO: 13 tablas y archivos conservados; acceso y revocación de los cuatro roles.')
 
 

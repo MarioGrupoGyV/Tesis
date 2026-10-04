@@ -1,0 +1,9 @@
+{
+  "status": "COMPROBADO",
+  "python": "3.12.12",
+  "platform": "Linux",
+  "postgresql": "17.6 (Debian 17.6-2.pgdg12+1)",
+  "database": "riesgo_escolar_test_ba162fb7b96c",
+  "exit_code": 0,
+  "isolated_compose": "riesgo-escolar-tests"
+}

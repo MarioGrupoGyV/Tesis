@@ -24,3 +24,11 @@ check_review.py contrasta rutas/respuestas activas, archivos protegidos y respal
 history/archive_s2.py documenta el respaldo previo y se niega a ejecutarse sobre el
 Compose actual. No forma parte del arranque. Respaldos/secrets previos privados
 conservados; las evidencias históricas son inmutables.
+
+S3 añade ml_data en /var/lib/riesgo/ml, privado, persistente y vacío en activo.
+ml.py consulta readiness/configuration/compatibility y rechaza train institucional.
+review_s3.py revisa las cuatro rutas nuevas usando las credenciales Windows existentes.
+PERSISTENCE_REPORT_PREFIX=s3 y BROWSER_REPORT_PREFIX=s3 conservan evidencia S2.2;
+REVIEW_REPORT_PREFIX=s3-active hace lo mismo para navegador activo.
+check_s3.py contrasta estado previo privado, contrato, rutas, locks y bloqueo CLI.
+La única distribución añadida es xgboost-cpu 3.4.1, instalada con hashes; no GPU.

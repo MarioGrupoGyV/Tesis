@@ -1,8 +1,9 @@
 # Seguimiento Escolar
 
-**S2.2: acceso local revisado en Windows con PowerShell y Docker Desktop.** Cuatro cuentas creadas explícitamente por encargo; sin registros escolares ni semillas al arrancar.
-La importación institucional permanece bloqueada. No es una habilitación de producción
-ni una evaluación de la tesis. S3–S6 no están implementados.
+**S3: infraestructura predictiva con pruebas aisladas en Windows y Docker.** Se conservan
+las cuatro cuentas de S2.2; sin registros escolares ni semillas al arrancar.
+Importación, entrenamiento, inferencia y activación institucional siguen bloqueados.
+No existe un modelo operativo ni evaluación de la tesis. S4–S6 siguen pendientes.
 
 ## Preparación y operación
 
@@ -25,7 +26,7 @@ un contenedor temporal y arranca web/api/db. La API utiliza exclusivamente riesg
 
 Abrir http://localhost:15173. Puertos 15173/18000/55432 ligados a 127.0.0.1.
 El proyecto es `riesgo-escolar`; base `riesgo_escolar`; volúmenes
-`riesgo-escolar_db_data` y `riesgo-escolar_import_data`. CSV privado en
+`riesgo-escolar_db_data`, `riesgo-escolar_import_data` y `riesgo-escolar_ml_data`. CSV privado en
 `/var/lib/riesgo/imports`, fuera del checkout y sin URL pública.
 
 ## Primer administrador
@@ -90,16 +91,17 @@ py -3.12 infra/manage.py down
 py -3.12 infra/manage.py up
 ```
 
-`down` conserva ambos volúmenes. Conservar también los secretos. No usar `down -v`.
+`down` conserva los tres volúmenes. Conservar también los secretos. No usar `down -v`.
 No hay semillas en el arranque o reinicio. Los scripts internos de PostgreSQL y las
 rutas Linux pertenecen a Docker, no son instrucciones para la consola del usuario.
 
 ## Comprobaciones desde PowerShell
 
 ```powershell
-$env:TEST_REPORT_NAME = 's2-2-backend'
+$env:TEST_REPORT_NAME = 's3-backend'
 docker compose -f infra/compose.test.yaml build tester
 docker compose -f infra/compose.test.yaml run --rm tester
+$env:BROWSER_REPORT_PREFIX = 's3'
 py -3.12 infra/test_browser.py
 py -3.12 -m venv .venv-s0
 .\.venv-s0\Scripts\python.exe -m pip install --require-hashes -r infra/requirements-s0.txt
@@ -134,7 +136,7 @@ es 10 intentos por IP cada 300 segundos y también cuenta accesos correctos.
 
 ## Contrato, conservación y límites
 
-Contrato vigente [OpenAPI 0.2.0](docs/planning/Contrato_API.yaml), con solo rutas
+Contrato vigente [OpenAPI 0.3.0](docs/planning/Contrato_API.yaml), con solo rutas
 implementadas. [Esquema](docs/planning/Esquema.sql) es referencia; aplicar Alembic,
 nunca ejecutar manualmente ese SQL. La migración 0001 y su snapshot permanecen intactos;
 0002 añade restricciones institucionales sin transformar registros anteriores.
@@ -153,3 +155,36 @@ Véanse [ADR de transición](docs/adr/004-transicion-windows.md),
 [criterios](docs/planning/Sprints_y_aceptacion.md) y [plan](docs/planning/Plan_tesis_riesgo_escolar.md).
 No se realizaron push ni despliegues externos. HTTPS, protocolo de datos y validación
 institucional permanecen pendientes; la demo anterior se retiró del producto.
+
+## Infraestructura predictiva S3
+
+Núcleo con dataset/manifiesto versionados, validación temporal, Pipeline y particiones
+por estudiante para Dummy, Random Forest, SVM y XGBoost CPU 3.4.1. Edad/grado requieren
+justificación; escalas, criterio y política de faltantes son explícitos. No se activa
+un ganador ni se presentan probabilidades sin calibración. Los artefactos internos
+van a `/var/lib/riesgo/ml`, privado y fuera del checkout; en activo permanece vacío.
+
+Rutas nuevas: `GET /api/v1/models`, `GET /api/v1/models/{id}` (ADMIN),
+`POST /api/v1/predictions/run` (ADMIN/CSRF, bloqueado por protocolo) y
+`GET /api/v1/predictions/{id}` (ADMIN/TUTOR/DIRECTOR, alcance por sección).
+Sin entrenamiento HTTP, activación ni nuevas pantallas.
+
+```powershell
+py -3.12 infra/ml.py readiness
+py -3.12 infra/ml.py configuration
+py -3.12 infra/ml.py compatibility
+py -3.12 infra/ml.py train  # Rechazo esperado, código de salida 2
+py -3.12 infra/review_s3.py
+$env:REVIEW_REPORT_PREFIX = 's3-active'
+py -3.12 infra/review_browser.py
+$env:PERSISTENCE_REPORT_PREFIX = 's3'
+py -3.12 infra/check_access_persistence.py
+.\.venv-s0\Scripts\python.exe infra/check_s3.py
+```
+
+`check_s3.py` es el cierre de esta revisión y necesita su captura privada previa
+`.local/s3-before.json` y evidencias generadas. No crea cuentas. Los reportes antiguos
+S2.2 permanecen intactos; utiliza prefijos nuevos para revisiones posteriores.
+Detalle de esquema, límites, confianza de artefactos y comandos en el
+[manual ML](docs/manuals/ML_S3.md), [ADR 005](docs/adr/005-infraestructura-ml-s3.md)
+y [Estado S3](docs/planning/Estado_Sprint_3.md).

@@ -284,6 +284,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * listModels
+         * @description Modelos paginados; orden created_at descendente e id ascendente. Lista vacía en activo. Sin hashes, rutas, particiones ni métricas privadas.
+         */
+        get: operations["listModels"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/models/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * modelDetail
+         * @description Metadatos públicos sanitizados. No activa ni descarga modelos.
+         */
+        get: operations["modelDetail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/predictions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * predictionDetail
+         * @description TUTOR solo su sección. Inexistente o ajena devuelve 404. No sustituye riesgo faltante por LOW.
+         */
+        get: operations["predictionDetail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/predictions/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * runPredictions
+         * @description Orden: sesión, rol, CSRF, protocolo, cuerpo, periodo/modelo. En S3 devuelve bloqueo 422 incluso con cuerpo inválido después de CSRF; nunca procesa información institucional. Núcleo aislado: última revisión incorporada/disponible hasta as_of, abstención sin fila, reutilización snapshot/model y auditoría atómica. Modelo no disponible: 409 posterior al protocolo. Sin entrenamiento HTTP ni alertas.
+         */
+        post: operations["runPredictions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -591,6 +671,109 @@ export interface components {
             total: number;
             page: number;
             page_size: number;
+        };
+        /** Model */
+        Model: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Version */
+            version: string;
+            /**
+             * Algorithm
+             * @enum {string}
+             */
+            algorithm: "DUMMY" | "RANDOM_FOREST" | "SVM" | "XGBOOST";
+            /**
+             * Data Origin
+             * @constant
+             */
+            data_origin: "REAL";
+            /** Feature Schema Version */
+            feature_schema_version: string;
+            /** Reference Criterion Version */
+            reference_criterion_version: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "DRAFT" | "EVALUATED" | "APPROVED" | "RETIRED";
+            /** Is Active */
+            is_active: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** ModelPage */
+        ModelPage: {
+            /** Items */
+            items: components["schemas"]["Model"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** PredictionRunInput */
+        PredictionRunInput: {
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+        };
+        /** Abstention */
+        Abstention: {
+            /**
+             * Snapshot Id
+             * Format: uuid
+             */
+            snapshot_id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "MODEL_NOT_AVAILABLE" | "INSUFFICIENT_DATA" | "INELIGIBLE" | "INCOMPATIBLE";
+            /** Reason */
+            reason: string;
+        };
+        /** PredictionRunResult */
+        PredictionRunResult: {
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /**
+             * Model Id
+             * Format: uuid
+             */
+            model_id: string;
+            /** Selected */
+            selected: number;
+            /** Created */
+            created: number;
+            /** Reused */
+            reused: number;
+            /** Abstentions */
+            abstentions: components["schemas"]["Abstention"][];
         };
     };
     responses: never;
@@ -1697,6 +1880,351 @@ export interface operations {
                 };
             };
             /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listModels: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resultado de la operación implementada; ejecución institucional bloqueada en S3. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelPage"];
+                };
+            };
+            /** @description SESSION_INVALID: sesión requerida o revocada. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID; permisos comprobados en servidor. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso inexistente o no accesible en la sección; no revela casos ajenos. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description PERIOD_LOCKED, MODEL_NOT_AVAILABLE, MODEL_INCOMPATIBLE, PREDICTION_CONFLICT o INTEGRITY_CONFLICT. Reutilización snapshot/model devuelve resultado existente, no error. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Validación, NOT_ELIGIBLE o INSTITUTIONAL_PROCESSING_NOT_READY; sin escrituras académicas. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Base no disponible: Error sanitizado, sin consultas, parámetros ni secretos; nunca para integridad. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    modelDetail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resultado de la operación implementada; ejecución institucional bloqueada en S3. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Model"];
+                };
+            };
+            /** @description SESSION_INVALID: sesión requerida o revocada. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID; permisos comprobados en servidor. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso inexistente o no accesible en la sección; no revela casos ajenos. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description PERIOD_LOCKED, MODEL_NOT_AVAILABLE, MODEL_INCOMPATIBLE, PREDICTION_CONFLICT o INTEGRITY_CONFLICT. Reutilización snapshot/model devuelve resultado existente, no error. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Validación, NOT_ELIGIBLE o INSTITUTIONAL_PROCESSING_NOT_READY; sin escrituras académicas. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Base no disponible: Error sanitizado, sin consultas, parámetros ni secretos; nunca para integridad. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    predictionDetail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resultado de la operación implementada; ejecución institucional bloqueada en S3. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Prediction"];
+                };
+            };
+            /** @description SESSION_INVALID: sesión requerida o revocada. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID; permisos comprobados en servidor. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso inexistente o no accesible en la sección; no revela casos ajenos. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description PERIOD_LOCKED, MODEL_NOT_AVAILABLE, MODEL_INCOMPATIBLE, PREDICTION_CONFLICT o INTEGRITY_CONFLICT. Reutilización snapshot/model devuelve resultado existente, no error. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Validación, NOT_ELIGIBLE o INSTITUTIONAL_PROCESSING_NOT_READY; sin escrituras académicas. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Base no disponible: Error sanitizado, sin consultas, parámetros ni secretos; nunca para integridad. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    runPredictions: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PredictionRunInput"];
+            };
+        };
+        responses: {
+            /** @description Resultado de la operación implementada; ejecución institucional bloqueada en S3. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PredictionRunResult"];
+                };
+            };
+            /** @description SESSION_INVALID: sesión requerida o revocada. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID; permisos comprobados en servidor. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso inexistente o no accesible en la sección; no revela casos ajenos. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description PERIOD_LOCKED, MODEL_NOT_AVAILABLE, MODEL_INCOMPATIBLE, PREDICTION_CONFLICT o INTEGRITY_CONFLICT. Reutilización snapshot/model devuelve resultado existente, no error. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Validación, NOT_ELIGIBLE o INSTITUTIONAL_PROCESSING_NOT_READY; sin escrituras académicas. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Base no disponible: Error sanitizado, sin consultas, parámetros ni secretos; nunca para integridad. */
             503: {
                 headers: {
                     [name: string]: unknown;

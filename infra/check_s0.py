@@ -50,7 +50,7 @@ def run():
     contract_path = ROOT / "docs/planning/Contrato_API.yaml"
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     validate(contract)
-    check(contract["info"]["version"] == "0.2.0", "OpenAPI 3.1 válido, versión 0.2.0")
+    check(contract["info"]["version"] == "0.3.0", "OpenAPI 3.1 válido, versión 0.3.0")
     for path, methods in contract["paths"].items():
         for method, operation in methods.items():
             if method not in ("get", "post", "patch", "put", "delete") or path == "/health/live":
@@ -136,7 +136,7 @@ def run():
         # Las muestras utilizadas solo contienen esquemas locales sin referencias externas.
         validator = Draft202012Validator(public[name], format_checker=FormatChecker())
         check(validator.is_valid(instance) == expected, f"Muestra contractual {name}: esperado {expected}")
-    response_samples = ROOT / "tests/evidence/s2-2-response-samples.json"
+    response_samples = ROOT / "tests/evidence/s3-response-samples.json"
     if response_samples.exists():
         for sample in json.loads(response_samples.read_text(encoding="utf-8")):
             schema = {"$ref": f"#/components/schemas/{sample['schema']}", "components": contract["components"]}
@@ -165,7 +165,7 @@ def run():
     sprint = compose["x-sprint"]["current"]
     if sprint == "S0":
         check(compose["services"] == {} and not compose["x-sprint"]["runtime-implemented"], "Compose S0 sin servicios implementados")
-    elif sprint in ("S1", "S2", "S2.1"):
+    elif sprint in ("S1", "S2", "S2.1", "S3"):
         services = compose["services"]
         check(set(services) == {"web", "api", "db"} and compose["x-sprint"]["runtime-implemented"],
               "Compose S1 web/api/db implementados")
@@ -184,11 +184,17 @@ def run():
               "Python conserva tag S0")
         check("node:24.14.1-bookworm-slim" in (ROOT / "infra/docker/web.Dockerfile").read_text(),
               "Node conserva tag S0")
-        if sprint in ("S2", "S2.1"):
+        if sprint in ("S2", "S2.1", "S3"):
             check("import_data" in compose["volumes"] and
                   "import_data:/var/lib/riesgo/imports" in services["api"]["volumes"], "CSV privado persistente fuera del checkout")
             check(services['api']['environment']['IMPORT_STORAGE_DIR'] == '/var/lib/riesgo/imports',
                   "Ruta de importación interna, no derivada del nombre del cliente")
+        if sprint == 'S3':
+            check('ml_data:/var/lib/riesgo/ml' in services['api']['volumes'] and
+                  services['api']['environment']['ML_STORAGE_DIR'] == '/var/lib/riesgo/ml',
+                  'Almacenamiento ML privado persistente')
+            check('/models/{id}/activate' not in contract['paths'] and '/models/train' not in contract['paths'],
+                  'Sin activación ni entrenamiento HTTP')
     else:
         raise ValueError(f"Estado Compose no reconocido: {sprint}")
     result = {
@@ -201,7 +207,7 @@ def run():
         "limitations": ["No ejecuta DDL/PLpgSQL", "No prueba permisos en servidor",
                         "No build, migración, ML, UI ni persistencia"],
     }
-    evidence_name = "s0-checks.json" if sprint == "S0" else "s2-2-contracts.json"
+    evidence_name = "s0-checks.json" if sprint == "S0" else "s3-contracts.json"
     (ROOT / "tests/evidence" / evidence_name).write_text(
         json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )

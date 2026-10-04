@@ -1026,3 +1026,8 @@ uvicorn==0.54.0 \
     --hash=sha256:505bdb0f318731d45f1f712071fc781a8981f6847a31c902c9f5e652d4f67faf \
     --hash=sha256:a2e33cbfaa0306f8e6b0c13e0cb89d7d7a2da3e62b90c66e18c33d9807b28620
     # via -r backend/requirements.in
+
+xgboost-cpu==3.4.1 \
+    --hash=sha256:1f16331f5c6beb2b40fbd4bf2834333062d93c9eb38b76186a5c206841dc1809 \
+    --hash=sha256:ceb0f7c786511e1876df6ca83a6f837a3187159bde51d8dcc5cdf5e2de76e366
+    # S3: official Linux x86_64 / Windows amd64 CPU wheels; existing numpy/scipy pins unchanged.

@@ -1,0 +1,319 @@
+{
+  "status": "COMPROBADO",
+  "initial_sha": "0c6063f65cfe84dd5d122439cc8ee899527da617",
+  "final_sha": "0c6063f65cfe84dd5d122439cc8ee899527da617",
+  "registered_routes": [
+    [
+      "GET",
+      "/api/v1/auth/csrf"
+    ],
+    [
+      "GET",
+      "/api/v1/auth/me"
+    ],
+    [
+      "GET",
+      "/api/v1/health/live"
+    ],
+    [
+      "GET",
+      "/api/v1/health/ready"
+    ],
+    [
+      "GET",
+      "/api/v1/imports/{id}"
+    ],
+    [
+      "GET",
+      "/api/v1/models"
+    ],
+    [
+      "GET",
+      "/api/v1/models/{id}"
+    ],
+    [
+      "GET",
+      "/api/v1/periods"
+    ],
+    [
+      "GET",
+      "/api/v1/predictions/{id}"
+    ],
+    [
+      "GET",
+      "/api/v1/sections"
+    ],
+    [
+      "GET",
+      "/api/v1/students"
+    ],
+    [
+      "GET",
+      "/api/v1/students/{id}"
+    ],
+    [
+      "GET",
+      "/api/v1/students/{id}/timeline"
+    ],
+    [
+      "POST",
+      "/api/v1/auth/login"
+    ],
+    [
+      "POST",
+      "/api/v1/auth/logout"
+    ],
+    [
+      "POST",
+      "/api/v1/imports/preview"
+    ],
+    [
+      "POST",
+      "/api/v1/imports/{id}/commit"
+    ],
+    [
+      "POST",
+      "/api/v1/predictions/run"
+    ]
+  ],
+  "active_responses_validated": 40,
+  "positive_samples_validated": 5,
+  "preserved_files": [
+    "package.json",
+    "package-lock.json",
+    "frontend/package.json",
+    "infra/check_runtime.py",
+    "infra/requirements-s0.in",
+    "infra/requirements-s0.txt",
+    "backend/migrations/versions/0001_demo_schema.py",
+    "backend/migrations/versions/0001_demo_schema.sql",
+    "backend/migrations/versions/0002_institutional_boundary.py",
+    "frontend/src/app/App.tsx",
+    "tests/e2e/access.spec.ts",
+    "infra/windows_credentials.py"
+  ],
+  "only_new_distribution": "xgboost-cpu==3.4.1",
+  "school_counts": {
+    "academic_periods": 0,
+    "grade_sections": 0,
+    "students": 0,
+    "enrollments": 0,
+    "academic_snapshots": 0,
+    "import_batches": 0,
+    "model_versions": 0,
+    "predictions": 0,
+    "alerts": 0,
+    "interventions": 0
+  },
+  "users_unchanged": true,
+  "private_imports_and_ml_unchanged": true,
+  "historical_environment_stopped": true,
+  "backup_hashes_match": true,
+  "api_image": "sha256:18a9c1e99ddb2dcf1b7ab859709dd0ec8f3173ed4440f02e196d32f12552438c",
+  "pip_check": "No broken requirements found.",
+  "cli": {
+    "readiness": {
+      "exit_code": 0,
+      "response": {
+        "ready": false,
+        "code": "INSTITUTIONAL_PROCESSING_NOT_READY",
+        "missing": [
+          "procedencia autorizada",
+          "escalas y criterio de referencia",
+          "etiquetas futuras verificables",
+          "calendario y protocolo",
+          "política de elegibilidad y faltantes",
+          "migración de activación"
+        ],
+        "institutional_training": false,
+        "activation": false,
+        "institutional_inference": false
+      }
+    },
+    "configuration": {
+      "exit_code": 0,
+      "response": {
+        "institutional_configuration": null,
+        "required_schema": {
+          "$defs": {
+            "Scale": {
+              "additionalProperties": false,
+              "properties": {
+                "minimum": {
+                  "title": "Minimum",
+                  "type": "number"
+                },
+                "maximum": {
+                  "title": "Maximum",
+                  "type": "number"
+                },
+                "decimals": {
+                  "maximum": 6,
+                  "minimum": 0,
+                  "title": "Decimals",
+                  "type": "integer"
+                },
+                "unit": {
+                  "minLength": 1,
+                  "title": "Unit",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "minimum",
+                "maximum",
+                "decimals",
+                "unit"
+              ],
+              "title": "Scale",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "ml-features-v1",
+              "default": "ml-features-v1",
+              "title": "Schema Version",
+              "type": "string"
+            },
+            "snapshot_schema_version": {
+              "const": "academic-v1",
+              "default": "academic-v1",
+              "title": "Snapshot Schema Version",
+              "type": "string"
+            },
+            "criterion_version": {
+              "minLength": 1,
+              "title": "Criterion Version",
+              "type": "string"
+            },
+            "criterion_definition": {
+              "minLength": 1,
+              "title": "Criterion Definition",
+              "type": "string"
+            },
+            "horizon_days": {
+              "maximum": 366,
+              "minimum": 1,
+              "title": "Horizon Days",
+              "type": "integer"
+            },
+            "scales": {
+              "additionalProperties": {
+                "$ref": "#/$defs/Scale"
+              },
+              "title": "Scales",
+              "type": "object"
+            },
+            "participation_values": {
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 2,
+              "title": "Participation Values",
+              "type": "array"
+            },
+            "extra_features": {
+              "items": {
+                "enum": [
+                  "age_years",
+                  "grade"
+                ],
+                "type": "string"
+              },
+              "title": "Extra Features",
+              "type": "array"
+            },
+            "extra_justification": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Extra Justification"
+            },
+            "inference_max_missing_fraction": {
+              "exclusiveMaximum": 1,
+              "minimum": 0,
+              "title": "Inference Max Missing Fraction",
+              "type": "number"
+            },
+            "required_features": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Required Features",
+              "type": "array"
+            }
+          },
+          "required": [
+            "criterion_version",
+            "criterion_definition",
+            "horizon_days",
+            "scales",
+            "participation_values",
+            "inference_max_missing_fraction",
+            "required_features"
+          ],
+          "title": "FeatureConfig",
+          "type": "object"
+        }
+      }
+    },
+    "compatibility": {
+      "exit_code": 0,
+      "response": {
+        "versions": {
+          "python": "3.12.12",
+          "scikit-learn": "1.9.1",
+          "numpy": "2.5.3",
+          "scipy": "1.18.1",
+          "pandas": "3.0.6",
+          "joblib": "1.6.0",
+          "xgboost-cpu": "3.4.1"
+        },
+        "algorithms": [
+          "DUMMY",
+          "RANDOM_FOREST",
+          "SVM",
+          "XGBOOST"
+        ],
+        "device": "cpu",
+        "threads": 1,
+        "probabilities_calibrated": false,
+        "institutional_ready": false
+      }
+    },
+    "train": {
+      "exit_code": 2,
+      "response": {
+        "code": "INSTITUTIONAL_PROCESSING_NOT_READY",
+        "message": "Entrenamiento e inferencia institucional pendientes de protocolo, datos autorizados y activación. No se procesaron registros.",
+        "readiness": {
+          "ready": false,
+          "code": "INSTITUTIONAL_PROCESSING_NOT_READY",
+          "missing": [
+            "procedencia autorizada",
+            "escalas y criterio de referencia",
+            "etiquetas futuras verificables",
+            "calendario y protocolo",
+            "política de elegibilidad y faltantes",
+            "migración de activación"
+          ],
+          "institutional_training": false,
+          "activation": false,
+          "institutional_inference": false
+        }
+      }
+    }
+  },
+  "lock_sha256": {
+    "backend/requirements.txt": "a6ac22ca17fa0a53034a844066fdf37e28f1e334b10a35e1325cd990aaf113a3",
+    "backend/requirements-dev.txt": "1c70f637ef20d0e5049f297b9bf55d87e67c578bd66e632569f3b240d7e81899"
+  }
+}

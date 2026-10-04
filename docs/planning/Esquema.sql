@@ -171,7 +171,9 @@ CREATE TABLE model_versions (
   UNIQUE (id, data_origin),
   CHECK (NOT is_active OR status = 'APPROVED'),
   -- Guard de esta fase. Retirar solo en una migración que habilite el protocolo REAL.
-  CONSTRAINT model_activation_pending CHECK (NOT is_active)
+  CONSTRAINT model_activation_pending CHECK (NOT is_active),
+  -- Restricción histórica 0001 también permanece vigente; no habilita DEMO.
+  CONSTRAINT demo_only_active_model CHECK (NOT is_active OR data_origin = 'DEMO')
 );
 CREATE UNIQUE INDEX ux_active_model_origin ON model_versions(data_origin) WHERE is_active;
 

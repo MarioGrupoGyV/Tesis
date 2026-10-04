@@ -1,0 +1,853 @@
+{
+  "status": "COMPROBADO",
+  "contract_version": "0.3.0",
+  "environment": "active_local",
+  "school_and_artifacts_unchanged": true,
+  "accounts_and_password_hashes_unchanged": true,
+  "school_counts": {
+    "academic_periods": 0,
+    "grade_sections": 0,
+    "students": 0,
+    "enrollments": 0,
+    "academic_snapshots": 0,
+    "import_batches": 0,
+    "model_versions": 0,
+    "predictions": 0,
+    "alerts": 0,
+    "interventions": 0
+  },
+  "cases": [
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "case": "Sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "8fc5ef01-5621-4c61-9dfc-dd4107799345"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/models/00000000-0000-4000-8000-000000000222",
+      "case": "Sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "206184f9-2bdc-4cbb-ac17-1f5947e47b47"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/predictions/00000000-0000-4000-8000-000000000222",
+      "case": "Sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "3b539c90-3bea-40ec-b8c6-a0308b2e69d4"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "Sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "f9e769fc-a4e6-47f2-befe-cf8639fd1414"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Acceso existente",
+      "request": {
+        "body": {
+          "email": "revision.local.admin@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://localhost:15173"
+        }
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "user": {
+          "id": "7a4ee76f-aee1-4712-a35b-88cc3d78ea2c",
+          "display_name": "Revisión local · ADMIN",
+          "role": "ADMIN"
+        },
+        "csrf_token": "[REDACTED]",
+        "expires_at": "2026-10-04T13:28:36.640893Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "case": "Permiso y recurso inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "items": [],
+        "total": 0,
+        "page": 1,
+        "page_size": 25
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/models/00000000-0000-4000-8000-000000000222",
+      "case": "Permiso y recurso inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "MODEL_NOT_FOUND",
+        "message": "El modelo no está disponible.",
+        "details": [],
+        "request_id": "b2e4e3ee-ae17-4671-baed-209d8343f5f5"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/predictions/00000000-0000-4000-8000-000000000222",
+      "case": "Permiso y recurso inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "PREDICTION_NOT_FOUND",
+        "message": "La predicción no está disponible.",
+        "details": [],
+        "request_id": "d9370e87-2138-4a41-b853-35aa8134fd9e"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "CSRF ausente/incorrecto o rol",
+      "request": {
+        "body": {
+          "period_id": "00000000-0000-4000-8000-000000000222",
+          "as_of": "2026-10-04T05:00:00Z"
+        },
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "2ca88a31-e909-41b3-b53a-323928acc28c"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "CSRF ausente/incorrecto o rol",
+      "request": {
+        "body": {
+          "period_id": "00000000-0000-4000-8000-000000000222",
+          "as_of": "2026-10-04T05:00:00Z"
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "83c5e28f-ba53-4dd8-b11f-fd77233fe0d7"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "Bloqueo institucional antes de consultar periodo",
+      "request": {
+        "body": {
+          "period_id": "00000000-0000-4000-8000-000000000222",
+          "as_of": "2026-10-04T05:00:00Z"
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 422,
+      "status": 422,
+      "response": {
+        "code": "INSTITUTIONAL_PROCESSING_NOT_READY",
+        "message": "Entrenamiento e inferencia institucional pendientes de protocolo, datos autorizados y activación. No se procesaron registros.",
+        "details": [],
+        "request_id": "bc53db53-7270-4175-92ca-0e87af04f723"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Revocación",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 204,
+      "status": 204,
+      "response": null,
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "case": "Sesión revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "424541f1-2248-450e-ba26-50a3d9713a49"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Acceso existente",
+      "request": {
+        "body": {
+          "email": "revision.local.tutor@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://localhost:15173"
+        }
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "user": {
+          "id": "df354a4d-d596-45ec-b9c7-55ba58608085",
+          "display_name": "Revisión local · TUTOR",
+          "role": "TUTOR"
+        },
+        "csrf_token": "[REDACTED]",
+        "expires_at": "2026-10-04T13:28:55.758181Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "case": "Permiso y recurso inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "dd12f077-4c13-4443-91e4-de0f03a43a31"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/models/00000000-0000-4000-8000-000000000222",
+      "case": "Permiso y recurso inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "7ca686c9-faa6-4abd-9b0b-60fc1d65f9d5"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/predictions/00000000-0000-4000-8000-000000000222",
+      "case": "Permiso y recurso inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "PREDICTION_NOT_FOUND",
+        "message": "La predicción no está disponible.",
+        "details": [],
+        "request_id": "dd5199a4-a2fa-46c2-b05a-ab6db7fc5b09"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "CSRF ausente/incorrecto o rol",
+      "request": {
+        "body": {
+          "period_id": "00000000-0000-4000-8000-000000000222",
+          "as_of": "2026-10-04T05:00:00Z"
+        },
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "ea2fc313-6f12-4c4c-91fa-41de3840d708"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "CSRF ausente/incorrecto o rol",
+      "request": {
+        "body": {
+          "period_id": "00000000-0000-4000-8000-000000000222",
+          "as_of": "2026-10-04T05:00:00Z"
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "bc8e1b12-68ab-4206-a1f8-4ffe17f5881d"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "Bloqueo institucional antes de consultar periodo",
+      "request": {
+        "body": {
+          "period_id": "00000000-0000-4000-8000-000000000222",
+          "as_of": "2026-10-04T05:00:00Z"
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "1a7134ec-dab1-412e-a8fc-938a35e2ad10"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Revocación",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 204,
+      "status": 204,
+      "response": null,
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "case": "Sesión revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "5dc22548-a372-475a-ba7c-c82a5570656e"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Acceso existente",
+      "request": {
+        "body": {
+          "email": "revision.local.director@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://localhost:15173"
+        }
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "user": {
+          "id": "254a5ba3-f174-48bc-9bab-7b6f8284fd38",
+          "display_name": "Revisión local · DIRECTOR",
+          "role": "DIRECTOR"
+        },
+        "csrf_token": "[REDACTED]",
+        "expires_at": "2026-10-04T13:29:14.356919Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "case": "Permiso y recurso inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "a6d6d831-938e-48cb-b22d-18dc9e311ff4"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/models/00000000-0000-4000-8000-000000000222",
+      "case": "Permiso y recurso inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "e283bf99-28ba-41b0-85ca-847ba7392f21"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/predictions/00000000-0000-4000-8000-000000000222",
+      "case": "Permiso y recurso inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "PREDICTION_NOT_FOUND",
+        "message": "La predicción no está disponible.",
+        "details": [],
+        "request_id": "90924e34-a6da-4cea-9046-81605463a3b4"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "CSRF ausente/incorrecto o rol",
+      "request": {
+        "body": {
+          "period_id": "00000000-0000-4000-8000-000000000222",
+          "as_of": "2026-10-04T05:00:00Z"
+        },
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "42b4b752-1d2d-4a21-93d5-9867352f86d2"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "CSRF ausente/incorrecto o rol",
+      "request": {
+        "body": {
+          "period_id": "00000000-0000-4000-8000-000000000222",
+          "as_of": "2026-10-04T05:00:00Z"
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "b5bea17d-feef-4f25-a99b-512d0de0a382"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "Bloqueo institucional antes de consultar periodo",
+      "request": {
+        "body": {
+          "period_id": "00000000-0000-4000-8000-000000000222",
+          "as_of": "2026-10-04T05:00:00Z"
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "d441b9d4-55e4-413a-a8ce-5e217ac270fc"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Revocación",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 204,
+      "status": 204,
+      "response": null,
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "case": "Sesión revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "b3f4ba85-ba45-4403-83e7-c1bc0cbdf29f"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Acceso existente",
+      "request": {
+        "body": {
+          "email": "revision.local.researcher@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://localhost:15173"
+        }
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "user": {
+          "id": "e4a4633c-eb68-4188-ad0d-f0972c141af7",
+          "display_name": "Revisión local · RESEARCHER",
+          "role": "RESEARCHER"
+        },
+        "csrf_token": "[REDACTED]",
+        "expires_at": "2026-10-04T13:29:33.101039Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "case": "Permiso y recurso inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "02668254-f399-49a3-820a-115989572e6d"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/models/00000000-0000-4000-8000-000000000222",
+      "case": "Permiso y recurso inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "3df14df8-c1b3-49b6-afe7-63dd2796da7d"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/predictions/00000000-0000-4000-8000-000000000222",
+      "case": "Permiso y recurso inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "No tienes acceso a predicciones.",
+        "details": [],
+        "request_id": "2811da2f-a599-4e4b-8fed-3f9e01725c39"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "CSRF ausente/incorrecto o rol",
+      "request": {
+        "body": {
+          "period_id": "00000000-0000-4000-8000-000000000222",
+          "as_of": "2026-10-04T05:00:00Z"
+        },
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "bc7a559c-4c90-421f-a887-bac5375bce86"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "CSRF ausente/incorrecto o rol",
+      "request": {
+        "body": {
+          "period_id": "00000000-0000-4000-8000-000000000222",
+          "as_of": "2026-10-04T05:00:00Z"
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "557e5489-2637-4cb3-b3c4-ebc417ef2f4b"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "case": "Bloqueo institucional antes de consultar periodo",
+      "request": {
+        "body": {
+          "period_id": "00000000-0000-4000-8000-000000000222",
+          "as_of": "2026-10-04T05:00:00Z"
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "c1ecbc45-81cc-49c1-8118-041ffd5be61e"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Revocación",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 204,
+      "status": 204,
+      "response": null,
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "case": "Sesión revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "ad5afa47-bacb-44f1-a28e-d6fdb6b51762"
+      },
+      "result": "COMPROBADO"
+    }
+  ]
+}

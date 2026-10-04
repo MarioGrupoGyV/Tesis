@@ -1,0 +1,36 @@
+{
+  "status": "passed",
+  "scope": "isolated",
+  "cases": [
+    {
+      "title": "ADMIN: acceso, contexto, teclado, permisos y revocación",
+      "status": "passed",
+      "duration_ms": 10006,
+      "failure": null
+    },
+    {
+      "title": "TUTOR: acceso, contexto, teclado, permisos y revocación",
+      "status": "passed",
+      "duration_ms": 8150,
+      "failure": null
+    },
+    {
+      "title": "DIRECTOR: acceso, contexto, teclado, permisos y revocación",
+      "status": "passed",
+      "duration_ms": 5678,
+      "failure": null
+    },
+    {
+      "title": "RESEARCHER: acceso, contexto, teclado, permisos y revocación",
+      "status": "passed",
+      "duration_ms": 10825,
+      "failure": null
+    },
+    {
+      "title": "Error de credenciales no autoriza contexto",
+      "status": "passed",
+      "duration_ms": 3354,
+      "failure": null
+    }
+  ]
+}

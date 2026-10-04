@@ -35,9 +35,11 @@ services:
       TZ: UTC
       DISPLAY_TIMEZONE: America/Lima
       IMPORT_STORAGE_DIR: /var/lib/riesgo/imports
+      ML_STORAGE_DIR: /var/lib/riesgo/ml
     secrets: [app_database_url, csrf_secret]
     volumes:
       - import_data:/var/lib/riesgo/imports
+      - ml_data:/var/lib/riesgo/ml
     depends_on:
       db:
         condition: service_healthy
@@ -69,6 +71,7 @@ services:
 volumes:
   db_data:
   import_data:
+  ml_data:
 secrets:
   owner_password:
     file: "${APP_SECRETS_DIR:-./.local/runtime-secrets}/owner-password"
@@ -79,9 +82,9 @@ secrets:
   csrf_secret:
     file: "${APP_SECRETS_DIR:-./.local/runtime-secrets}/csrf-secret"
 x-sprint:
-  current: S2.1
+  current: S3
   runtime-implemented: true
-  implemented-scope: [health, auth, periods, sections, imports, students]
+  implemented-scope: [health, auth, periods, sections, imports, students, models, predictions]
   planned-services: [web, api, db]
   planned-images:
     node: node:24.14.1-bookworm-slim

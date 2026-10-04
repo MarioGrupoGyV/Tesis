@@ -1,0 +1,83 @@
+[
+  {
+    "schema": "PredictionRunResult",
+    "body": {
+      "period_id": "e89c5024-d0a9-418f-bb68-5230cc8ae7f2",
+      "as_of": "2026-10-04T05:52:37.472593Z",
+      "model_id": "927be729-241f-4a83-8887-409871fd938a",
+      "selected": 1,
+      "created": 1,
+      "reused": 0,
+      "abstentions": []
+    }
+  },
+  {
+    "schema": "Prediction",
+    "body": {
+      "id": "535263b0-e8ca-40a8-826a-f7ee4d4b10a6",
+      "enrollment_id": "814fa896-d208-44f5-8b59-d618bb0a78c9",
+      "snapshot_id": "bd9ba0f5-3ed3-4067-b4cc-ed332a86e5c6",
+      "model_id": "8a09aaa7-d409-410a-b173-ac27cb4578a2",
+      "data_origin": "REAL",
+      "risk_level": "HIGH",
+      "cutoff_at": "2026-05-02T04:30:00Z",
+      "target_date": "2026-05-02",
+      "predicted_at": "2026-10-04T05:52:38.145581Z",
+      "probability_low": null,
+      "probability_medium": null,
+      "probability_high": null,
+      "probabilities_calibrated": false
+    }
+  },
+  {
+    "schema": "Prediction",
+    "body": {
+      "id": "535263b0-e8ca-40a8-826a-f7ee4d4b10a6",
+      "enrollment_id": "814fa896-d208-44f5-8b59-d618bb0a78c9",
+      "snapshot_id": "bd9ba0f5-3ed3-4067-b4cc-ed332a86e5c6",
+      "model_id": "8a09aaa7-d409-410a-b173-ac27cb4578a2",
+      "data_origin": "REAL",
+      "risk_level": "HIGH",
+      "cutoff_at": "2026-05-02T04:30:00Z",
+      "target_date": "2026-05-02",
+      "predicted_at": "2026-10-04T05:52:38.145581Z",
+      "probability_low": null,
+      "probability_medium": null,
+      "probability_high": null,
+      "probabilities_calibrated": false
+    }
+  },
+  {
+    "schema": "Prediction",
+    "body": {
+      "id": "535263b0-e8ca-40a8-826a-f7ee4d4b10a6",
+      "enrollment_id": "814fa896-d208-44f5-8b59-d618bb0a78c9",
+      "snapshot_id": "bd9ba0f5-3ed3-4067-b4cc-ed332a86e5c6",
+      "model_id": "8a09aaa7-d409-410a-b173-ac27cb4578a2",
+      "data_origin": "REAL",
+      "risk_level": "HIGH",
+      "cutoff_at": "2026-05-02T04:30:00Z",
+      "target_date": "2026-05-02",
+      "predicted_at": "2026-10-04T05:52:38.145581Z",
+      "probability_low": null,
+      "probability_medium": null,
+      "probability_high": null,
+      "probabilities_calibrated": false
+    }
+  },
+  {
+    "schema": "Model",
+    "body": {
+      "id": "8a09aaa7-d409-410a-b173-ac27cb4578a2",
+      "name": "S2-a76d4589b316",
+      "version": "fixture",
+      "algorithm": "DUMMY",
+      "data_origin": "REAL",
+      "feature_schema_version": "ml-features-v1",
+      "reference_criterion_version": "test-outcome-v1",
+      "status": "EVALUATED",
+      "is_active": false,
+      "created_at": "2026-10-04T05:52:38.130622Z"
+    }
+  }
+]

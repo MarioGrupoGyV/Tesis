@@ -21,7 +21,8 @@ with db.engine.connect() as c:
  fingerprints={t:c.scalar(text("SELECT md5(coalesce(string_agg(row_to_json(x)::text,'' ORDER BY id),'')) FROM risk_school."+t+" x")) for t in tables}
  users=[dict(r) for r in c.execute(text('SELECT id::text,email,display_name,role,is_active FROM risk_school.app_users ORDER BY id')).mappings()]
 files=sorted((str(p.relative_to('/var/lib/riesgo/imports')),hashlib.sha256(p.read_bytes()).hexdigest()) for p in Path('/var/lib/riesgo/imports').rglob('*') if p.is_file())
-print(json.dumps({'counts':counts,'fingerprints':fingerprints,'users':users,'files':files}))
+ml_files=sorted((str(p.relative_to('/var/lib/riesgo/ml')),hashlib.sha256(p.read_bytes()).hexdigest()) for p in Path('/var/lib/riesgo/ml').rglob('*') if p.is_file())
+print(json.dumps({'counts':counts,'fingerprints':fingerprints,'users':users,'files':files,'ml_files':ml_files}))
 '''
 
 def snapshot():
@@ -29,4 +30,4 @@ def snapshot():
     return json.loads(output)
 
 def school_unchanged(before, after):
-    return all(before['fingerprints'][t]==after['fingerprints'][t] for t in SCHOOL) and before['files']==after['files']
+    return all(before['fingerprints'][t]==after['fingerprints'][t] for t in SCHOOL) and before['files']==after['files'] and before.get('ml_files',[])==after.get('ml_files',[])

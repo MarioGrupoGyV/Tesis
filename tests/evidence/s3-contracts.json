@@ -1,0 +1,20 @@
+{
+  "status": "COMPROBADO",
+  "scope": "Contratos documentales e infraestructura S3; sin pruebas funcionales",
+  "checks": 197,
+  "sql_statements": 35,
+  "tables": 13,
+  "mapped_field_types": 94,
+  "api_paths": 18,
+  "contract_samples": 3,
+  "hashes": {
+    "docs\\planning\\Contrato_API.yaml": "cbea6c255204811688452a7959e107b8ceb7e57d97635847fd86ad9bafbf20b3",
+    "docs\\planning\\Esquema.sql": "b603d42d49df76f42d76a250a2ba0d7ea15c67e76a10b612cd0a6ff53ce9b0f2",
+    "package-lock.json": "9b0880027ad75b06c5d8a56fa77cf1d23bf0196bb5cb6012a1d4a33e20990bb7"
+  },
+  "limitations": [
+    "No ejecuta DDL/PLpgSQL",
+    "No prueba permisos en servidor",
+    "No build, migración, ML, UI ni persistencia"
+  ]
+}
