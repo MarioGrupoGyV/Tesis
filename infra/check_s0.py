@@ -1,4 +1,4 @@
-"""Validación documental de S0; no conecta a DB ni ejecuta módulos de negocio."""
+"""Validación documental vigente S5; conserva el nombre histórico, sin conectar a DB."""
 from pathlib import Path
 import hashlib
 import json
@@ -50,7 +50,9 @@ def run():
     contract_path = ROOT / "docs/planning/Contrato_API.yaml"
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     validate(contract)
-    check(contract["info"]["version"] == "0.4.0", "OpenAPI 3.1 válido, versión 0.4.0")
+    check(contract["info"]["version"] == "0.5.0", "OpenAPI 3.1 válido, versión 0.5.0")
+    operation_count = sum(method in ('get','post','patch','put','delete') for methods in contract['paths'].values() for method in methods)
+    check(operation_count == 27, '27 operaciones implementadas S1–S5')
     for path, methods in contract["paths"].items():
         for method, operation in methods.items():
             if method not in ("get", "post", "patch", "put", "delete") or path == "/health/live":
@@ -66,9 +68,9 @@ def run():
     expected_tables = {
         "app_users", "user_sessions", "academic_periods", "grade_sections", "students",
         "enrollments", "import_batches", "academic_snapshots", "model_versions",
-        "predictions", "alerts", "interventions", "audit_events", "synthetic_studies",
+        "predictions", "alerts", "interventions", "audit_events", "synthetic_studies", "followup_decisions",
     }
-    check(set(tables) == expected_tables, "Sintaxis SQL analizada y 14 tablas de diseño")
+    check(set(tables) == expected_tables, "Sintaxis SQL analizada y 15 tablas de diseño")
     columns = {name: {c.colname: c for c in table.tableElts if isinstance(c, ast.ColumnDef)}
                for name, table in tables.items()}
     public = contract["components"]["schemas"]
@@ -83,6 +85,7 @@ def run():
         "Snapshot": "academic_snapshots", "Prediction": "predictions",
         "ImportBatch": "import_batches", "Alert": "alerts", "Intervention": "interventions",
         "Model": "model_versions", "AuditEvent": "audit_events",
+        "AlertCase": "alerts", "InterventionView": "interventions",
     }
     matched = 0
     for schema_name, table_name in direct.items():
@@ -136,12 +139,14 @@ def run():
         # Las muestras utilizadas solo contienen esquemas locales sin referencias externas.
         validator = Draft202012Validator(public[name], format_checker=FormatChecker())
         check(validator.is_valid(instance) == expected, f"Muestra contractual {name}: esperado {expected}")
-    response_samples = ROOT / "tests/evidence/s3-1-response-samples.json"
+    response_samples = ROOT / "tests/evidence/s5-response-samples.json"
+    real_response_count = 0
     if response_samples.exists():
         for sample in json.loads(response_samples.read_text(encoding="utf-8")):
             schema = {"$ref": f"#/components/schemas/{sample['schema']}", "components": contract["components"]}
             validator = Draft202012Validator(schema, format_checker=FormatChecker())
             validator.validate(sample['body'])
+            real_response_count += 1
             check(True, f"Respuesta real contra contrato: {sample['schema']}")
     lock = load_json("package-lock.json")["packages"]
     for file, entry in (("package.json", ""), ("frontend/package.json", "frontend")):
@@ -165,7 +170,7 @@ def run():
     sprint = compose["x-sprint"]["current"]
     if sprint == "S0":
         check(compose["services"] == {} and not compose["x-sprint"]["runtime-implemented"], "Compose S0 sin servicios implementados")
-    elif sprint in ("S1", "S2", "S2.1", "S3", "S3.1", "S4"):
+    elif sprint in ("S1", "S2", "S2.1", "S3", "S3.1", "S4", "S5"):
         services = compose["services"]
         check(set(services) == {"web", "api", "db"} and compose["x-sprint"]["runtime-implemented"],
               "Compose S1 web/api/db implementados")
@@ -184,12 +189,12 @@ def run():
               "Python conserva tag S0")
         check("node:24.14.1-bookworm-slim" in (ROOT / "infra/docker/web.Dockerfile").read_text(),
               "Node conserva tag S0")
-        if sprint in ("S2", "S2.1", "S3", "S3.1", "S4"):
+        if sprint in ("S2", "S2.1", "S3", "S3.1", "S4", "S5"):
             check("import_data" in compose["volumes"] and
                   "import_data:/var/lib/riesgo/imports" in services["api"]["volumes"], "CSV privado persistente fuera del checkout")
             check(services['api']['environment']['IMPORT_STORAGE_DIR'] == '/var/lib/riesgo/imports',
                   "Ruta de importación interna, no derivada del nombre del cliente")
-        if sprint in ('S3','S3.1','S4'):
+        if sprint in ('S3','S3.1','S4','S5'):
             check('ml_data:/var/lib/riesgo/ml' in services['api']['volumes'] and
                   services['api']['environment']['ML_STORAGE_DIR'] == '/var/lib/riesgo/ml',
                   'Almacenamiento ML privado persistente')
@@ -200,14 +205,15 @@ def run():
     result = {
         "status": "COMPROBADO", "scope": f"Contratos documentales e infraestructura {sprint}; sin pruebas funcionales",
         "checks": len(checks), "sql_statements": len(statements), "tables": len(tables),
-        "mapped_field_types": matched, "api_paths": len(contract["paths"]),
+        "mapped_field_types": matched, "api_paths": len(contract["paths"]), "api_operations": operation_count,
         "contract_samples": len(samples),
+        "real_contract_responses": real_response_count,
         "hashes": {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
                    for path in (contract_path, sql_path, ROOT / "package-lock.json")},
         "limitations": ["No ejecuta DDL/PLpgSQL", "No prueba permisos en servidor",
                         "No build, migración, ML, UI ni persistencia"],
     }
-    evidence_name = "s0-checks.json" if sprint == "S0" else "s4-contracts.json" if sprint == "S4" else "s3-1-contracts.json"
+    evidence_name = "s5-contracts.json" if sprint == "S5" else "s0-checks.json" if sprint == "S0" else "s4-contracts.json" if sprint == "S4" else "s3-1-contracts.json"
     (ROOT / "tests/evidence" / evidence_name).write_text(
         json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )

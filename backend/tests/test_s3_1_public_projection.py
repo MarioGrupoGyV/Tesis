@@ -96,7 +96,9 @@ def test_processing_status_requires_session_and_researcher_receives_general_stat
     assert status['notice'] == 'Estudio con datos sintéticos. No corresponde a estudiantes reales.'
     assert isinstance(status['synthetic_ready'], bool)
     assert set(status['operations']) == {'import', 'compare', 'register', 'activate',
-                                        'predict', 'read_students', 'read_models'}
+                                        'predict', 'read_students', 'read_models',
+                                        'read_alerts', 'write_followup', 'sync_alerts',
+                                        'read_reports', 'export_reports'}
     for operation in status['operations'].values():
         assert set(operation) == {'available', 'reason'}
         assert operation['available'] is False

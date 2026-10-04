@@ -3,6 +3,7 @@ from typing import Literal
 from uuid import UUID
 from pydantic import AwareDatetime, Field
 from app.schemas.s1 import ContractModel
+from app.schemas.s5 import FollowupResult
 
 
 class Model(ContractModel):
@@ -44,3 +45,4 @@ class PredictionRunResult(ContractModel):
     created: int
     reused: int
     abstentions: list[Abstention]
+    followup: FollowupResult

@@ -1,0 +1,9 @@
+{
+  "status": "COMPROBADO",
+  "git_diff_check": true,
+  "python_ast": true,
+  "markdown_local_links": true,
+  "final_head": "e9349f26b3f0b301cd4d5f50bbec0a7532110e85",
+  "line_ending_conversion_warnings_only": true,
+  "no_commit_push_external_deployment": true
+}

@@ -69,6 +69,8 @@ def processing_status(db,user,settings):
     from app.repositories.s1 import sections_for_period
     readable = prepared and (user.role in ('ADMIN','DIRECTOR') or
         user.role=='TUTOR' and any(sections_for_period(db,db.get(AcademicPeriod,s.period_id),user.id) for s in valid))
+    writable_readable = bool(writable) and (user.role=='ADMIN' or
+        user.role=='TUTOR' and any(sections_for_period(db,db.get(AcademicPeriod,s.period_id),user.id) for s in writable))
     def op(role_ok,ready,reason):
         return {'available':bool(role_ok and ready),'reason':None if role_ok and ready else 'ROLE_RESTRICTED' if not role_ok else reason}
     return ProcessingStatus.model_validate({'scope':'SYNTHETIC_STUDY',
@@ -80,4 +82,9 @@ def processing_status(db,user,settings):
           'activate':op(admin,bool(compatible),'SYNTHETIC_REGISTERED_MODEL_REQUIRED'),
           'predict':op(admin,active,'MODEL_NOT_AVAILABLE'),
           'read_students':op(user.role in ('ADMIN','TUTOR','DIRECTOR'),readable,'SYNTHETIC_CONTEXT_NOT_ACCESSIBLE'),
-          'read_models':op(admin,True,None)}})
+          'read_models':op(admin,True,None),
+          'read_alerts':op(user.role in ('ADMIN','TUTOR','DIRECTOR'),readable,'SYNTHETIC_CONTEXT_NOT_ACCESSIBLE'),
+          'write_followup':op(user.role in ('ADMIN','TUTOR'),writable_readable,'SYNTHETIC_CONTEXT_NOT_ACCESSIBLE_OR_LOCKED'),
+          'sync_alerts':op(admin,active,'MODEL_NOT_AVAILABLE'),
+          'read_reports':op(user.role in ('ADMIN','TUTOR','DIRECTOR'),readable,'SYNTHETIC_CONTEXT_NOT_ACCESSIBLE'),
+          'export_reports':op(user.role in ('ADMIN','TUTOR','DIRECTOR'),readable,'SYNTHETIC_CONTEXT_NOT_ACCESSIBLE')}})

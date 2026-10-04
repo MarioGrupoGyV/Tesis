@@ -1,0 +1,991 @@
+[
+  {
+    "schema": "FollowupResult",
+    "body": {
+      "policy_version": "followup-policy-v1",
+      "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "created": 0,
+      "updated": 0,
+      "retained_low": 0,
+      "no_alert": 0,
+      "reused": 55,
+      "ignored_stale": 0,
+      "skipped_missing": 5
+    }
+  },
+  {
+    "schema": "FollowupResult",
+    "body": {
+      "policy_version": "followup-policy-v1",
+      "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "created": 0,
+      "updated": 0,
+      "retained_low": 0,
+      "no_alert": 0,
+      "reused": 55,
+      "ignored_stale": 0,
+      "skipped_missing": 5
+    }
+  },
+  {
+    "schema": "PredictionRunResult",
+    "body": {
+      "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "as_of": "2026-10-04T18:15:49.111000Z",
+      "model_id": "5ebc8cbd-a022-4db3-933f-6d1078ce510f",
+      "selected": 60,
+      "created": 0,
+      "reused": 55,
+      "abstentions": [
+        {
+          "snapshot_id": "56d612d2-68ae-49bc-b37b-b1ed4c49f4f2",
+          "status": "INSUFFICIENT_DATA",
+          "reason": "Datos insuficientes"
+        },
+        {
+          "snapshot_id": "0b568058-291c-4836-9296-ef8af84b70a3",
+          "status": "INSUFFICIENT_DATA",
+          "reason": "Datos insuficientes"
+        },
+        {
+          "snapshot_id": "9b2fee25-afc8-4e9b-8862-309f49400274",
+          "status": "INSUFFICIENT_DATA",
+          "reason": "Datos insuficientes"
+        },
+        {
+          "snapshot_id": "1d18564b-397a-4da1-a676-9dd7b2abf96b",
+          "status": "INSUFFICIENT_DATA",
+          "reason": "Datos insuficientes"
+        },
+        {
+          "snapshot_id": "150add8a-935d-4335-8140-d5741909642f",
+          "status": "INSUFFICIENT_DATA",
+          "reason": "Datos insuficientes"
+        }
+      ],
+      "followup": {
+        "policy_version": "followup-policy-v1",
+        "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+        "created": 0,
+        "updated": 0,
+        "retained_low": 0,
+        "no_alert": 0,
+        "reused": 55,
+        "ignored_stale": 0,
+        "skipped_missing": 5
+      }
+    }
+  },
+  {
+    "schema": "ReportSummary",
+    "body": {
+      "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "period_code": "SYN-e3a2d28b2f23",
+      "section_id": null,
+      "authorized_section_ids": [
+        "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+        "3af48c81-a111-50ca-b93e-9bab40902c7c"
+      ],
+      "scope": "SYNTHETIC_STUDY",
+      "data_origin": "SYNTHETIC",
+      "notice": "Estado operativo de un estudio con datos sintéticos. No mide eficacia escolar ni resultados de la tesis.",
+      "generated_at": "2026-10-04T18:15:57.985927Z",
+      "cutoff_min": "2025-09-30T22:00:00Z",
+      "cutoff_max": "2025-09-30T22:00:00Z",
+      "total": 60,
+      "evaluations": {
+        "evaluated": 55,
+        "not_evaluated": 0,
+        "insufficient_data": 5
+      },
+      "risks": {
+        "low": {
+          "count": 4,
+          "denominator": 55,
+          "percentage": 7.2727272727272725,
+          "reason": null
+        },
+        "medium": {
+          "count": 22,
+          "denominator": 55,
+          "percentage": 40,
+          "reason": null
+        },
+        "high": {
+          "count": 29,
+          "denominator": 55,
+          "percentage": 52.72727272727273,
+          "reason": null
+        }
+      },
+      "cases": {
+        "open": 51,
+        "in_review": 0,
+        "resolved": 0,
+        "dismissed": 0,
+        "active_enrollments": 51
+      },
+      "interventions": {
+        "planned": 0,
+        "done": 0,
+        "cancelled": 0
+      },
+      "items": [
+        {
+          "student_id": "97c84b79-1be9-43fb-969a-dbaf29c35bed",
+          "enrollment_id": "6781ffb5-1d89-4161-9d3a-036b265a781e",
+          "anon_code": "SYN-e3a2d28b-0001",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "1e40514d-e7af-4d2a-b9a2-3f1436a7eebb",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "c60d24e8-159c-4bcf-82c7-13c76e21aa4e",
+          "enrollment_id": "34a5e7d5-cabf-4356-b07b-464c646e213c",
+          "anon_code": "SYN-e3a2d28b-0002",
+          "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+          "section_code": "SYN-e3a2d28b-B",
+          "grade": 2,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "d039d8a4-2df0-4193-bf39-da4f9b405aa7",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "a3c7f783-aedb-4d7d-a3fb-c8f9f7efb357",
+          "enrollment_id": "774ca8ed-dabb-4e14-bc84-a51c2c10082c",
+          "anon_code": "SYN-e3a2d28b-0003",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "b3959026-d0fb-4b9d-b669-ada6be41a6ce",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "0dccfe66-8560-421d-8af3-36906af9dcf9",
+          "enrollment_id": "c5542890-a546-4630-86bf-77650fb60e08",
+          "anon_code": "SYN-e3a2d28b-0004",
+          "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+          "section_code": "SYN-e3a2d28b-B",
+          "grade": 2,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "c9f46195-f7d1-4232-bdff-1e43b54c3990",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "56fe326c-f197-4824-8b64-cf918e4d17c1",
+          "enrollment_id": "94c717c3-4fe3-4d70-81d4-3534235933db",
+          "anon_code": "SYN-e3a2d28b-0005",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "fc764b42-9c6d-46ab-a17e-f4f6ac08ac51",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        }
+      ],
+      "page": 1,
+      "page_size": 5
+    }
+  },
+  {
+    "schema": "InterventionCreateResult",
+    "body": {
+      "intervention": {
+        "id": "978eab86-de64-4c94-a22d-85bf842f8920",
+        "enrollment_id": "a14c06a2-6ca7-4298-a22c-8921a00cea32",
+        "alert_id": "019fee8b-aebd-499e-8a79-31a72062b67c",
+        "data_origin": "SYNTHETIC",
+        "kind": "TUTORING",
+        "objective": "S5 interfaz: actividad exclusivamente simulada realizada",
+        "status": "PLANNED",
+        "scheduled_at": "2027-01-05T19:00:00Z",
+        "performed_at": null,
+        "notes": "Actividad de simulación; no se contactó a personas.",
+        "version": 1,
+        "created_at": "2026-10-04T18:16:19.396111Z",
+        "updated_at": "2026-10-04T18:16:19.396111Z",
+        "can_edit": true,
+        "edit_block_reason": null
+      },
+      "reused_result": false
+    }
+  },
+  {
+    "schema": "InterventionView",
+    "body": {
+      "id": "978eab86-de64-4c94-a22d-85bf842f8920",
+      "enrollment_id": "a14c06a2-6ca7-4298-a22c-8921a00cea32",
+      "alert_id": "019fee8b-aebd-499e-8a79-31a72062b67c",
+      "data_origin": "SYNTHETIC",
+      "kind": "TUTORING",
+      "objective": "S5 interfaz: actividad exclusivamente simulada realizada",
+      "status": "DONE",
+      "scheduled_at": "2027-01-05T19:00:00Z",
+      "performed_at": "2026-10-04T18:15:00Z",
+      "notes": "Realización exclusivamente simulada y verificable en esta prueba.",
+      "version": 2,
+      "created_at": "2026-10-04T18:16:19.396111Z",
+      "updated_at": "2026-10-04T18:16:21.435296Z",
+      "can_edit": false,
+      "edit_block_reason": "INTERVENTION_TERMINAL"
+    }
+  },
+  {
+    "schema": "InterventionCreateResult",
+    "body": {
+      "intervention": {
+        "id": "61c1da61-f4bf-4eb2-92b0-c7fa562a28dc",
+        "enrollment_id": "a14c06a2-6ca7-4298-a22c-8921a00cea32",
+        "alert_id": "019fee8b-aebd-499e-8a79-31a72062b67c",
+        "data_origin": "SYNTHETIC",
+        "kind": "TUTORING",
+        "objective": "S5 interfaz: actividad exclusivamente simulada cancelada",
+        "status": "PLANNED",
+        "scheduled_at": "2027-01-05T19:00:00Z",
+        "performed_at": null,
+        "notes": "Actividad de simulación; no se contactó a personas.",
+        "version": 1,
+        "created_at": "2026-10-04T18:16:22.952974Z",
+        "updated_at": "2026-10-04T18:16:22.952974Z",
+        "can_edit": true,
+        "edit_block_reason": null
+      },
+      "reused_result": false
+    }
+  },
+  {
+    "schema": "InterventionView",
+    "body": {
+      "id": "61c1da61-f4bf-4eb2-92b0-c7fa562a28dc",
+      "enrollment_id": "a14c06a2-6ca7-4298-a22c-8921a00cea32",
+      "alert_id": "019fee8b-aebd-499e-8a79-31a72062b67c",
+      "data_origin": "SYNTHETIC",
+      "kind": "TUTORING",
+      "objective": "S5 interfaz: actividad exclusivamente simulada cancelada",
+      "status": "CANCELLED",
+      "scheduled_at": "2027-01-05T19:00:00Z",
+      "performed_at": null,
+      "notes": "Actividad de simulación; no se contactó a personas.",
+      "version": 2,
+      "created_at": "2026-10-04T18:16:22.952974Z",
+      "updated_at": "2026-10-04T18:16:23.936349Z",
+      "can_edit": false,
+      "edit_block_reason": "INTERVENTION_TERMINAL"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "VERSION_CONFLICT",
+      "message": "El recurso cambió. Revisa su versión actual antes de reenviar tu borrador.",
+      "details": [],
+      "request_id": "951de2da-a2f4-4740-bb4a-29ab47c03d4e"
+    }
+  },
+  {
+    "schema": "AlertDetail",
+    "body": {
+      "alert": {
+        "id": "019fee8b-aebd-499e-8a79-31a72062b67c",
+        "enrollment_id": "a14c06a2-6ca7-4298-a22c-8921a00cea32",
+        "student_id": "faa199b4-3919-4e6e-b33f-3c3fe7553a07",
+        "anon_code": "SYN-e3a2d28b-0013",
+        "prediction_id": "9b0c8da4-a446-471e-a8c4-920b8a14cabd",
+        "data_origin": "SYNTHETIC",
+        "severity": "MEDIUM",
+        "status": "RESOLVED",
+        "assigned_to": "2f5eb231-3760-4c81-8c8a-9f39ab7eac96",
+        "resolution_reason": "Seguimiento concluido exclusivamente en simulación S5; no implica mejoría académica.",
+        "opened_at": "2026-10-04T18:15:22.234950Z",
+        "updated_at": "2026-10-04T18:16:26.964539Z",
+        "closed_at": "2026-10-04T18:16:26.964539Z",
+        "version": 3,
+        "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+        "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+        "section_code": "SYN-e3a2d28b-A",
+        "grade": 1,
+        "assigned_display_name": "Acceso aislado TUTOR",
+        "current_risk_level": "MEDIUM",
+        "current_evaluation_status": "EVALUATED",
+        "latest_cutoff_at": "2025-09-30T22:00:00Z",
+        "capabilities": {
+          "can_edit": false,
+          "can_plan": false,
+          "reason": "ALERT_CLOSED"
+        }
+      },
+      "source_prediction": {
+        "id": "9b0c8da4-a446-471e-a8c4-920b8a14cabd",
+        "enrollment_id": "a14c06a2-6ca7-4298-a22c-8921a00cea32",
+        "snapshot_id": "cc83aa37-e586-4493-b6cc-3e4eb5b99872",
+        "model_id": "5ebc8cbd-a022-4db3-933f-6d1078ce510f",
+        "data_origin": "SYNTHETIC",
+        "risk_level": "MEDIUM",
+        "cutoff_at": "2025-09-30T22:00:00Z",
+        "target_date": "2025-10-14",
+        "predicted_at": "2026-10-04T18:15:22.234950Z",
+        "probability_low": null,
+        "probability_medium": null,
+        "probability_high": null,
+        "probabilities_calibrated": false
+      },
+      "latest_snapshot": {
+        "id": "cc83aa37-e586-4493-b6cc-3e4eb5b99872",
+        "enrollment_id": "a14c06a2-6ca7-4298-a22c-8921a00cea32",
+        "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+        "data_origin": "SYNTHETIC",
+        "window_start": "2025-08-31",
+        "cutoff_at": "2025-09-30T22:00:00Z",
+        "available_at": "2025-09-30T21:00:00Z",
+        "target_date": "2025-10-14",
+        "revision": 1,
+        "supersedes_id": null,
+        "average_grade": 16.69,
+        "attendance_pct": 76.68,
+        "activities_pct": 74.19,
+        "participation_level": 2,
+        "behavior_incidents": 5,
+        "age_years": 13,
+        "missing_fraction": 0
+      },
+      "latest_prediction": {
+        "id": "9b0c8da4-a446-471e-a8c4-920b8a14cabd",
+        "enrollment_id": "a14c06a2-6ca7-4298-a22c-8921a00cea32",
+        "snapshot_id": "cc83aa37-e586-4493-b6cc-3e4eb5b99872",
+        "model_id": "5ebc8cbd-a022-4db3-933f-6d1078ce510f",
+        "data_origin": "SYNTHETIC",
+        "risk_level": "MEDIUM",
+        "cutoff_at": "2025-09-30T22:00:00Z",
+        "target_date": "2025-10-14",
+        "predicted_at": "2026-10-04T18:15:22.234950Z",
+        "probability_low": null,
+        "probability_medium": null,
+        "probability_high": null,
+        "probabilities_calibrated": false
+      },
+      "interventions": [
+        {
+          "id": "978eab86-de64-4c94-a22d-85bf842f8920",
+          "enrollment_id": "a14c06a2-6ca7-4298-a22c-8921a00cea32",
+          "alert_id": "019fee8b-aebd-499e-8a79-31a72062b67c",
+          "data_origin": "SYNTHETIC",
+          "kind": "TUTORING",
+          "objective": "S5 interfaz: actividad exclusivamente simulada realizada",
+          "status": "DONE",
+          "scheduled_at": "2027-01-05T19:00:00Z",
+          "performed_at": "2026-10-04T18:15:00Z",
+          "notes": "Realización exclusivamente simulada y verificable en esta prueba.",
+          "version": 2,
+          "created_at": "2026-10-04T18:16:19.396111Z",
+          "updated_at": "2026-10-04T18:16:21.435296Z",
+          "can_edit": false,
+          "edit_block_reason": "INTERVENTION_TERMINAL"
+        },
+        {
+          "id": "61c1da61-f4bf-4eb2-92b0-c7fa562a28dc",
+          "enrollment_id": "a14c06a2-6ca7-4298-a22c-8921a00cea32",
+          "alert_id": "019fee8b-aebd-499e-8a79-31a72062b67c",
+          "data_origin": "SYNTHETIC",
+          "kind": "TUTORING",
+          "objective": "S5 interfaz: actividad exclusivamente simulada cancelada",
+          "status": "CANCELLED",
+          "scheduled_at": "2027-01-05T19:00:00Z",
+          "performed_at": null,
+          "notes": "Actividad de simulación; no se contactó a personas.",
+          "version": 2,
+          "created_at": "2026-10-04T18:16:22.952974Z",
+          "updated_at": "2026-10-04T18:16:23.936349Z",
+          "can_edit": false,
+          "edit_block_reason": "INTERVENTION_TERMINAL"
+        }
+      ],
+      "history": [
+        {
+          "id": "c5d86cc6-032c-4277-9de8-fe473ffdfcaa",
+          "event_type": "ALERT",
+          "occurred_at": "2026-10-04T18:16:26.964562Z",
+          "summary": "Seguimiento concluido en simulación",
+          "entity_id": "019fee8b-aebd-499e-8a79-31a72062b67c"
+        },
+        {
+          "id": "c07f0b71-61e2-41c2-b80e-85f483d8f8f8",
+          "event_type": "ALERT",
+          "occurred_at": "2026-10-04T18:16:25.005749Z",
+          "summary": "Alerta en revisión",
+          "entity_id": "019fee8b-aebd-499e-8a79-31a72062b67c"
+        },
+        {
+          "id": "6d7b1e18-abbd-41c7-b9d2-8e637cb02116",
+          "event_type": "INTERVENTION",
+          "occurred_at": "2026-10-04T18:16:23.936382Z",
+          "summary": "Actividad simulada cancelada",
+          "entity_id": "61c1da61-f4bf-4eb2-92b0-c7fa562a28dc"
+        },
+        {
+          "id": "9c1eb175-2f9d-4a2f-8369-e55f50ccb79c",
+          "event_type": "INTERVENTION",
+          "occurred_at": "2026-10-04T18:16:23.053657Z",
+          "summary": "Actividad simulada planificada",
+          "entity_id": "61c1da61-f4bf-4eb2-92b0-c7fa562a28dc"
+        },
+        {
+          "id": "5ed63eb8-cf7a-4963-85e5-b47c73530a2c",
+          "event_type": "INTERVENTION",
+          "occurred_at": "2026-10-04T18:16:21.435367Z",
+          "summary": "Actividad simulada realizada",
+          "entity_id": "978eab86-de64-4c94-a22d-85bf842f8920"
+        },
+        {
+          "id": "20bf5815-da75-493e-81df-1cbe67a47883",
+          "event_type": "INTERVENTION",
+          "occurred_at": "2026-10-04T18:16:19.506052Z",
+          "summary": "Actividad simulada planificada",
+          "entity_id": "978eab86-de64-4c94-a22d-85bf842f8920"
+        },
+        {
+          "id": "e4391421-8148-40cd-99f4-89efb0d9593b",
+          "event_type": "ALERT",
+          "occurred_at": "2026-10-04T18:15:25.642462Z",
+          "summary": "Apertura de alerta",
+          "entity_id": "019fee8b-aebd-499e-8a79-31a72062b67c"
+        }
+      ],
+      "history_truncated": false
+    }
+  },
+  {
+    "schema": "TimelineEventPage",
+    "body": {
+      "items": [
+        {
+          "id": "c5d86cc6-032c-4277-9de8-fe473ffdfcaa",
+          "event_type": "ALERT",
+          "occurred_at": "2026-10-04T18:16:26.964562Z",
+          "summary": "Seguimiento concluido en simulación",
+          "entity_id": "019fee8b-aebd-499e-8a79-31a72062b67c"
+        },
+        {
+          "id": "c07f0b71-61e2-41c2-b80e-85f483d8f8f8",
+          "event_type": "ALERT",
+          "occurred_at": "2026-10-04T18:16:25.005749Z",
+          "summary": "Alerta en revisión",
+          "entity_id": "019fee8b-aebd-499e-8a79-31a72062b67c"
+        },
+        {
+          "id": "6d7b1e18-abbd-41c7-b9d2-8e637cb02116",
+          "event_type": "INTERVENTION",
+          "occurred_at": "2026-10-04T18:16:23.936382Z",
+          "summary": "Actividad simulada cancelada",
+          "entity_id": "61c1da61-f4bf-4eb2-92b0-c7fa562a28dc"
+        },
+        {
+          "id": "9c1eb175-2f9d-4a2f-8369-e55f50ccb79c",
+          "event_type": "INTERVENTION",
+          "occurred_at": "2026-10-04T18:16:23.053657Z",
+          "summary": "Actividad simulada planificada",
+          "entity_id": "61c1da61-f4bf-4eb2-92b0-c7fa562a28dc"
+        },
+        {
+          "id": "5ed63eb8-cf7a-4963-85e5-b47c73530a2c",
+          "event_type": "INTERVENTION",
+          "occurred_at": "2026-10-04T18:16:21.435367Z",
+          "summary": "Actividad simulada realizada",
+          "entity_id": "978eab86-de64-4c94-a22d-85bf842f8920"
+        },
+        {
+          "id": "20bf5815-da75-493e-81df-1cbe67a47883",
+          "event_type": "INTERVENTION",
+          "occurred_at": "2026-10-04T18:16:19.506052Z",
+          "summary": "Actividad simulada planificada",
+          "entity_id": "978eab86-de64-4c94-a22d-85bf842f8920"
+        },
+        {
+          "id": "e4391421-8148-40cd-99f4-89efb0d9593b",
+          "event_type": "ALERT",
+          "occurred_at": "2026-10-04T18:15:25.642462Z",
+          "summary": "Apertura de alerta",
+          "entity_id": "019fee8b-aebd-499e-8a79-31a72062b67c"
+        },
+        {
+          "id": "9b0c8da4-a446-471e-a8c4-920b8a14cabd",
+          "event_type": "PREDICTION",
+          "occurred_at": "2026-10-04T18:15:22.234950Z",
+          "summary": "Evaluación registrada",
+          "entity_id": "9b0c8da4-a446-471e-a8c4-920b8a14cabd"
+        },
+        {
+          "id": "f529cc35-eefb-4448-aad4-8e7a216fb3ee",
+          "event_type": "SNAPSHOT",
+          "occurred_at": "2026-10-04T18:14:43.810806Z",
+          "summary": "Corte académico · revisión 1",
+          "entity_id": "f529cc35-eefb-4448-aad4-8e7a216fb3ee"
+        },
+        {
+          "id": "cc83aa37-e586-4493-b6cc-3e4eb5b99872",
+          "event_type": "SNAPSHOT",
+          "occurred_at": "2026-10-04T18:14:43.810806Z",
+          "summary": "Corte académico · revisión 1",
+          "entity_id": "cc83aa37-e586-4493-b6cc-3e4eb5b99872"
+        },
+        {
+          "id": "a35dd31b-e8db-4d62-b75c-73e5f5cb8ada",
+          "event_type": "SNAPSHOT",
+          "occurred_at": "2026-10-04T18:14:43.810806Z",
+          "summary": "Corte académico · revisión 1",
+          "entity_id": "a35dd31b-e8db-4d62-b75c-73e5f5cb8ada"
+        },
+        {
+          "id": "8589ed50-e886-40e3-803d-dbf38fd0a592",
+          "event_type": "SNAPSHOT",
+          "occurred_at": "2026-10-04T18:14:43.810806Z",
+          "summary": "Corte académico · revisión 1",
+          "entity_id": "8589ed50-e886-40e3-803d-dbf38fd0a592"
+        },
+        {
+          "id": "5b9e9d53-994c-4081-b5ba-899eb62c5715",
+          "event_type": "SNAPSHOT",
+          "occurred_at": "2026-10-04T18:14:43.810806Z",
+          "summary": "Corte académico · revisión 1",
+          "entity_id": "5b9e9d53-994c-4081-b5ba-899eb62c5715"
+        },
+        {
+          "id": "3b4d6bb0-84dd-4778-99f7-53c0db4d46d1",
+          "event_type": "SNAPSHOT",
+          "occurred_at": "2026-10-04T18:14:43.810806Z",
+          "summary": "Corte académico · revisión 1",
+          "entity_id": "3b4d6bb0-84dd-4778-99f7-53c0db4d46d1"
+        }
+      ],
+      "total": 14,
+      "page": 1,
+      "page_size": 100
+    }
+  },
+  {
+    "schema": "ReportSummary",
+    "body": {
+      "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "period_code": "SYN-e3a2d28b2f23",
+      "section_id": null,
+      "authorized_section_ids": [
+        "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6"
+      ],
+      "scope": "SYNTHETIC_STUDY",
+      "data_origin": "SYNTHETIC",
+      "notice": "Estado operativo de un estudio con datos sintéticos. No mide eficacia escolar ni resultados de la tesis.",
+      "generated_at": "2026-10-04T18:16:31.444691Z",
+      "cutoff_min": "2025-09-30T22:00:00Z",
+      "cutoff_max": "2025-09-30T22:00:00Z",
+      "total": 30,
+      "evaluations": {
+        "evaluated": 28,
+        "not_evaluated": 0,
+        "insufficient_data": 2
+      },
+      "risks": {
+        "low": {
+          "count": 2,
+          "denominator": 28,
+          "percentage": 7.142857142857143,
+          "reason": null
+        },
+        "medium": {
+          "count": 13,
+          "denominator": 28,
+          "percentage": 46.42857142857143,
+          "reason": null
+        },
+        "high": {
+          "count": 13,
+          "denominator": 28,
+          "percentage": 46.42857142857143,
+          "reason": null
+        }
+      },
+      "cases": {
+        "open": 25,
+        "in_review": 0,
+        "resolved": 1,
+        "dismissed": 0,
+        "active_enrollments": 25
+      },
+      "interventions": {
+        "planned": 0,
+        "done": 1,
+        "cancelled": 1
+      },
+      "items": [
+        {
+          "student_id": "97c84b79-1be9-43fb-969a-dbaf29c35bed",
+          "enrollment_id": "6781ffb5-1d89-4161-9d3a-036b265a781e",
+          "anon_code": "SYN-e3a2d28b-0001",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "1e40514d-e7af-4d2a-b9a2-3f1436a7eebb",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "a3c7f783-aedb-4d7d-a3fb-c8f9f7efb357",
+          "enrollment_id": "774ca8ed-dabb-4e14-bc84-a51c2c10082c",
+          "anon_code": "SYN-e3a2d28b-0003",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "b3959026-d0fb-4b9d-b669-ada6be41a6ce",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "56fe326c-f197-4824-8b64-cf918e4d17c1",
+          "enrollment_id": "94c717c3-4fe3-4d70-81d4-3534235933db",
+          "anon_code": "SYN-e3a2d28b-0005",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "fc764b42-9c6d-46ab-a17e-f4f6ac08ac51",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "b4be8d10-6a19-4a1d-9a0f-c12fb9add34f",
+          "enrollment_id": "5d0c843c-c714-47e7-b9af-9eec97594f8f",
+          "anon_code": "SYN-e3a2d28b-0007",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "MEDIUM",
+          "active_alert_id": "e44cbb3d-aaf0-46e4-aa6d-47a68579e403",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "3e1828da-40d2-49fc-a1f9-957186c5753b",
+          "enrollment_id": "8a5f30b2-d72b-4134-8a97-e3579d7c6df1",
+          "anon_code": "SYN-e3a2d28b-0009",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "MEDIUM",
+          "active_alert_id": "3d340f98-07ec-472b-b224-c0774a9a3482",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        }
+      ],
+      "page": 1,
+      "page_size": 5
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no permite modificar seguimiento.",
+      "details": [],
+      "request_id": "646fd049-1386-4114-ab9b-f8e6b0b00ec8"
+    }
+  },
+  {
+    "schema": "ReportSummary",
+    "body": {
+      "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "period_code": "SYN-e3a2d28b2f23",
+      "section_id": null,
+      "authorized_section_ids": [
+        "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+        "3af48c81-a111-50ca-b93e-9bab40902c7c"
+      ],
+      "scope": "SYNTHETIC_STUDY",
+      "data_origin": "SYNTHETIC",
+      "notice": "Estado operativo de un estudio con datos sintéticos. No mide eficacia escolar ni resultados de la tesis.",
+      "generated_at": "2026-10-04T18:16:44.393187Z",
+      "cutoff_min": "2025-09-30T22:00:00Z",
+      "cutoff_max": "2025-09-30T22:00:00Z",
+      "total": 60,
+      "evaluations": {
+        "evaluated": 55,
+        "not_evaluated": 0,
+        "insufficient_data": 5
+      },
+      "risks": {
+        "low": {
+          "count": 4,
+          "denominator": 55,
+          "percentage": 7.2727272727272725,
+          "reason": null
+        },
+        "medium": {
+          "count": 22,
+          "denominator": 55,
+          "percentage": 40,
+          "reason": null
+        },
+        "high": {
+          "count": 29,
+          "denominator": 55,
+          "percentage": 52.72727272727273,
+          "reason": null
+        }
+      },
+      "cases": {
+        "open": 50,
+        "in_review": 0,
+        "resolved": 1,
+        "dismissed": 0,
+        "active_enrollments": 50
+      },
+      "interventions": {
+        "planned": 0,
+        "done": 1,
+        "cancelled": 1
+      },
+      "items": [
+        {
+          "student_id": "97c84b79-1be9-43fb-969a-dbaf29c35bed",
+          "enrollment_id": "6781ffb5-1d89-4161-9d3a-036b265a781e",
+          "anon_code": "SYN-e3a2d28b-0001",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "1e40514d-e7af-4d2a-b9a2-3f1436a7eebb",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "c60d24e8-159c-4bcf-82c7-13c76e21aa4e",
+          "enrollment_id": "34a5e7d5-cabf-4356-b07b-464c646e213c",
+          "anon_code": "SYN-e3a2d28b-0002",
+          "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+          "section_code": "SYN-e3a2d28b-B",
+          "grade": 2,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "d039d8a4-2df0-4193-bf39-da4f9b405aa7",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "a3c7f783-aedb-4d7d-a3fb-c8f9f7efb357",
+          "enrollment_id": "774ca8ed-dabb-4e14-bc84-a51c2c10082c",
+          "anon_code": "SYN-e3a2d28b-0003",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "b3959026-d0fb-4b9d-b669-ada6be41a6ce",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "0dccfe66-8560-421d-8af3-36906af9dcf9",
+          "enrollment_id": "c5542890-a546-4630-86bf-77650fb60e08",
+          "anon_code": "SYN-e3a2d28b-0004",
+          "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+          "section_code": "SYN-e3a2d28b-B",
+          "grade": 2,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "c9f46195-f7d1-4232-bdff-1e43b54c3990",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "56fe326c-f197-4824-8b64-cf918e4d17c1",
+          "enrollment_id": "94c717c3-4fe3-4d70-81d4-3534235933db",
+          "anon_code": "SYN-e3a2d28b-0005",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "fc764b42-9c6d-46ab-a17e-f4f6ac08ac51",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        }
+      ],
+      "page": 1,
+      "page_size": 5
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso al seguimiento.",
+      "details": [],
+      "request_id": "94dae887-2193-48ad-88bd-ff07cd7d11d9"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso al seguimiento.",
+      "details": [],
+      "request_id": "1d48be2a-53a5-4d10-9e92-8524954dec73"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso al seguimiento.",
+      "details": [],
+      "request_id": "a55bf62f-7f77-40ea-bdac-936cf24680fb"
+    }
+  },
+  {
+    "schema": "InterventionCreateResult",
+    "body": {
+      "intervention": {
+        "id": "51c301ab-7c03-40ed-9031-7834d91718eb",
+        "enrollment_id": "9b804c81-9c54-482c-a862-c7839c2e419f",
+        "alert_id": "029f2331-af4c-4d96-953e-b8f7bb572a3c",
+        "data_origin": "SYNTHETIC",
+        "kind": "TUTORING",
+        "objective": "S5 aislado: planificación con respuesta incierta",
+        "status": "PLANNED",
+        "scheduled_at": "2027-01-06T17:00:00Z",
+        "performed_at": null,
+        "notes": null,
+        "version": 1,
+        "created_at": "2026-10-04T18:16:59.968177Z",
+        "updated_at": "2026-10-04T18:16:59.968177Z",
+        "can_edit": true,
+        "edit_block_reason": null
+      },
+      "reused_result": true
+    }
+  }
+]

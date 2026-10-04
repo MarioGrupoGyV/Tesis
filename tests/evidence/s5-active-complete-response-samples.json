@@ -1,0 +1,29 @@
+[
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso al seguimiento.",
+      "details": [],
+      "request_id": "6c3a3aa8-1a7a-49da-a599-198574696a24"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso al seguimiento.",
+      "details": [],
+      "request_id": "ec4274d1-bbd4-452e-9e22-df4f72f29167"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso al seguimiento.",
+      "details": [],
+      "request_id": "10e608f5-81d0-4dcd-bdb4-c1858fa3846d"
+    }
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "status": "COMPROBADO",
+  "role": "TUTOR",
+  "rows": 30,
+  "headers": [
+    "origen",
+    "alcance",
+    "periodo",
+    "generado_en_utc",
+    "codigo_sintetico",
+    "grado",
+    "seccion",
+    "ultimo_corte_utc",
+    "estado_evaluacion",
+    "riesgo_actual",
+    "caso_activo",
+    "estado_caso_activo",
+    "casos_abiertos",
+    "casos_en_revision",
+    "casos_concluidos",
+    "casos_descartados",
+    "actividades_planificadas",
+    "actividades_realizadas",
+    "actividades_canceladas"
+  ],
+  "sha256": "8af793fe8a2a41c0ff7784ec66f7fd39dafa6e34dcd7c26be4deb28a143566c2",
+  "utf8_bom": true,
+  "complete_filtered_scope": true,
+  "no_free_notes": true,
+  "actual_browser_download_response": true
+}

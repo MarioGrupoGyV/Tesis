@@ -14,6 +14,20 @@ export type Prediction = components['schemas']['Prediction'];
 export type PredictionRunResult = components['schemas']['PredictionRunResult'];
 export type ImportBatch = components['schemas']['ImportBatch'];
 export type ImportCommit = components['schemas']['ImportCommit'];
+export type Alert = components['schemas']['Alert'];
+export type Intervention = components['schemas']['Intervention'];
+export type AlertCase = components['schemas']['AlertCase'];
+export type AlertPage = components['schemas']['AlertPage'];
+export type AlertDetail = components['schemas']['AlertDetail'];
+export type AlertPatch = components['schemas']['AlertPatch'];
+export type InterventionView = components['schemas']['InterventionView'];
+export type InterventionCreate = components['schemas']['InterventionCreate'];
+export type InterventionPatch = components['schemas']['InterventionPatch'];
+export type InterventionCreateResult = components['schemas']['InterventionCreateResult'];
+export type FollowupResult = components['schemas']['FollowupResult'];
+export type ReportSummary = components['schemas']['ReportSummary'];
+export type AlertFilters = operations['listAlerts']['parameters']['query'];
+export type ReportFilters = operations['reportSummary']['parameters']['query'];
 export type StudentFilters = operations['students']['parameters']['query'];
 type ErrorBody = components['schemas']['Error'];
 let csrfToken: string | null = null;
@@ -69,9 +83,37 @@ async function csrf(signal?: AbortSignal): Promise<string> {
   if (!csrfToken) csrfToken = (await request<components['schemas']['Csrf']>('/auth/csrf', { signal })).csrf_token;
   return csrfToken;
 }
-async function write<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
+async function write<T>(path: string, body: unknown, signal?: AbortSignal, method: 'POST' | 'PATCH' = 'POST'): Promise<T> {
   const token = await csrf(signal);
-  return request<T>(path, { method: 'POST', signal, headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token }, body: JSON.stringify(body) });
+  return request<T>(path, { method, signal, headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token }, body: JSON.stringify(body) });
+}
+async function requestCsv(path: string, signal?: AbortSignal): Promise<Blob> {
+  const epoch = sessionEpoch;
+  let response: Response;
+  try { response = await fetch(`/api/v1${path}`, { signal, credentials: 'include', cache: 'no-store', headers: { Accept: 'text/csv, application/json' } }); }
+  catch (error) {
+    if (signal?.aborted || error instanceof DOMException && error.name === 'AbortError') throw error;
+    throw new ApiError(0, 'NETWORK_ERROR', 'No pudimos conectar para obtener el reporte.');
+  }
+  if (epoch !== sessionEpoch || signal?.aborted) throw new DOMException('Sesión cambiada', 'AbortError');
+  const serverDate = Date.parse(response.headers.get('Date') ?? '');
+  if (Number.isFinite(serverDate)) serverClock = { instant: serverDate, receivedAt: performance.now() };
+  const contentType = response.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase();
+  if (!response.ok || contentType === 'application/json') {
+    const body = await response.json().catch(() => null) as ErrorBody | null;
+    if (epoch !== sessionEpoch || signal?.aborted) throw new DOMException('Sesión cambiada', 'AbortError');
+    if (response.status === 401) { clearSessionMemory(); window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT)); }
+    throw new ApiError(response.status, body?.code ?? 'REQUEST_FAILED', body?.message ?? 'No pudimos obtener el reporte CSV.', body?.details ?? [], body?.request_id);
+  }
+  if (contentType !== 'text/csv') throw new ApiError(0, 'INVALID_CSV_RESPONSE', 'El sistema no devolvió un CSV válido. No se inició una descarga.');
+  let blob: Blob;
+  try { blob = await response.blob(); }
+  catch (error) {
+    if (epoch !== sessionEpoch || signal?.aborted || error instanceof DOMException && error.name === 'AbortError') throw new DOMException('Solicitud cancelada', 'AbortError');
+    throw new ApiError(0, 'NETWORK_ERROR', 'La respuesta CSV quedó incompleta. No se inició una descarga.');
+  }
+  if (epoch !== sessionEpoch || signal?.aborted) throw new DOMException('Sesión cambiada', 'AbortError');
+  return blob;
 }
 export const api = {
   async restoreSession(signal?: AbortSignal): Promise<User> {
@@ -101,6 +143,14 @@ export const api = {
   },
   importDetail: (id: string, signal?: AbortSignal) => request<ImportBatch>(`/imports/${encodeURIComponent(id)}`, { signal }),
   commitImport: (id: string, version: number, signal?: AbortSignal) => write<ImportCommit>(`/imports/${encodeURIComponent(id)}/commit`, { expected_preview_version: version }, signal),
+  syncAlerts: (periodId: string, signal?: AbortSignal) => write<FollowupResult>('/alerts/sync', { period_id: periodId }, signal),
+  alerts: (filters: AlertFilters, signal?: AbortSignal) => request<AlertPage>(`/alerts?${query(filters)}`, { signal }),
+  alert: (id: string, signal?: AbortSignal) => request<AlertDetail>(`/alerts/${encodeURIComponent(id)}`, { signal }),
+  updateAlert: (id: string, input: AlertPatch, signal?: AbortSignal) => write<AlertDetail>(`/alerts/${encodeURIComponent(id)}`, input, signal, 'PATCH'),
+  createIntervention: (input: InterventionCreate, signal?: AbortSignal) => write<InterventionCreateResult>('/interventions', input, signal),
+  updateIntervention: (id: string, input: InterventionPatch, signal?: AbortSignal) => write<InterventionView>(`/interventions/${encodeURIComponent(id)}`, input, signal, 'PATCH'),
+  reportSummary: (filters: ReportFilters, signal?: AbortSignal) => request<ReportSummary>(`/reports/summary?${query(filters)}`, { signal }),
+  exportReportCsv: (filters: Omit<ReportFilters, 'page' | 'page_size'>, signal?: AbortSignal) => requestCsv(`/reports/export.csv?${query(filters)}`, signal),
 };
 export function errorMessage(error: unknown): string {
   if (error instanceof ApiError) {

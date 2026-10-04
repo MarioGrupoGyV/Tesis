@@ -1,6 +1,6 @@
 # Plan vigente del sistema de riesgo escolar
 
-Revisión S4 por instrucción expresa del usuario; ADR 006 autoriza un estudio nuevo SYNTHETIC. La planificación anterior se
+Revisión S5 por instrucción expresa del usuario; ADR 006 autoriza un estudio nuevo SYNTHETIC. La planificación anterior se
 conserva en history/Plan_tesis_riesgo_escolar_S2.md y no ordena el trabajo actual.
 
 ## Producto y entorno
@@ -52,19 +52,19 @@ clases, soporte, particiones y métricas. Las probabilidades exigen calibración
 importancia global no explica causalmente un caso individual. Sin dataset/modelo válido,
 informar Modelo no disponible o Datos insuficientes. No fabricar riesgos ni métricas.
 
-## S4 — interfaz conectada; S5/S6 pendientes
+## S4 preservado y S5 — seguimiento y reportes; S6 pendiente
 
 S4 conecta acceso, Inicio, Estudiantes/lista/detalle/historial, Datos/importación y consulta ADMIN de Modelos/evaluación sintética. Estados de carga/vacío/error/bloqueo/éxito, teclado, tres tamaños y rutas estables. ADR 007 y manual de uso delimitan el trabajo.
-S5 implementará seguimiento versionado, alertas únicas y exportaciones autorizadas.
+S5 implementa seguimiento versionado, alertas únicas y exportaciones autorizadas del estudio existente. ADR 008 define followup-policy-v1, decisión inmutable por predicción y digest original de creación de actividad. REAL continúa bloqueado; no se reentrena ni regenera el estudio.
 S6 integrará el recorrido y evidencias, sin atribuir validación académica a pruebas
-de software. S4 no implementa seguimiento, exportaciones de Reportes ni métricas de tablero S5/S6.
+de software. Los cierres S4 se conservan como historia; S5 conecta tabla/caso/intervenciones, resumen compacto y CSV actual, sin indicadores de eficacia.
 
 Persisten UTC/America-Lima, revisiones inmutables, auditoría transaccional, permisos
 por sección, CSRF, límites de CSV y paginación, idempotencia y bloqueo de periodos.
 No añadir pagos, chats, portales familiares, mensajería automática ni matrícula
 administrativa completa. Las decisiones pedagógicas son humanas.
 
-Contrato público: Contrato_API.yaml 0.4.0, solo operaciones implementadas.
+Contrato público: Contrato_API.yaml 0.5.0, 27 operaciones implementadas y 15 tablas. Migración 0004 posterior a 0003; no reescribir las anteriores.
 Esquema.sql es referencia; migraciones históricas no se reescriben. Las tablas y
 endpoints de investigación que falten requieren otra iteración, nunca se simulan.
 

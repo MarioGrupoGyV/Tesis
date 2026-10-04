@@ -1,0 +1,18 @@
+{
+  "status": "COMPROBADO",
+  "scope": "active_synthetic_simulation_only",
+  "statuses": {
+    "alerts": {
+      "OPEN": 50,
+      "RESOLVED": 1
+    },
+    "interventions": {
+      "DONE": 1,
+      "CANCELLED": 1
+    },
+    "followup_decisions": {
+      "NO_ALERT": 4,
+      "CREATED": 51
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "scope": "Inspección visual de capturas reales del entorno aislado S5; no ejecución de runners ni mutaciones por este agente.",
+  "tool": "view_image",
+  "image_detail": "original",
+  "inspected_files": [
+    "s5-first-admin-alerts-1440x900.png",
+    "s5-first-admin-alerts-768x1024.png",
+    "s5-first-admin-alerts-390x844.png",
+    "s5-first-admin-reports-1440x900.png",
+    "s5-first-admin-reports-768x1024.png",
+    "s5-first-admin-reports-390x844.png",
+    "s5-first-tutor-plan-form-1440x900.png",
+    "s5-first-tutor-plan-form-768x1024.png",
+    "s5-first-tutor-plan-form-390x844.png",
+    "s5-first-tutor-done-form-1440x900.png",
+    "s5-first-tutor-done-form-768x1024.png",
+    "s5-first-tutor-done-form-390x844.png",
+    "s5-first-tutor-real-version-conflict-1440x900.png",
+    "s5-first-tutor-real-version-conflict-768x1024.png",
+    "s5-first-tutor-real-version-conflict-390x844.png",
+    "s5-first-tutor-case-completed-1440x900.png",
+    "s5-first-tutor-case-completed-768x1024.png",
+    "s5-first-tutor-case-completed-390x844.png",
+    "s5-first-director-case-1440x900.png",
+    "s5-first-director-case-768x1024.png",
+    "s5-first-director-case-390x844.png",
+    "s5-first-researcher-restricted-1440x900.png",
+    "s5-first-researcher-restricted-768x1024.png",
+    "s5-first-researcher-restricted-390x844.png",
+    "s5-first-tutor-reports-1440x900.png",
+    "s5-first-tutor-reports-768x1024.png",
+    "s5-first-tutor-reports-390x844.png",
+    "s5-first-tutor-student-followup-1440x900.png",
+    "s5-first-tutor-student-followup-768x1024.png",
+    "s5-first-tutor-student-followup-390x844.png"
+  ],
+  "inspected_file_count": 30,
+  "viewport_sizes": [
+    "1440x900",
+    "768x1024",
+    "390x844"
+  ],
+  "findings": [
+    "Formularios de planificación, realización y conflicto 409 legibles en los tres tamaños; las capturas muestran campos con etiquetas, fechas en Lima y motivo del conflicto.",
+    "El borrador y la revisión humana del conflicto 409 permanecen visibles; no se infiere accesibilidad completa de una captura.",
+    "Vista DIRECTOR de solo lectura y vista RESEARCHER restringida conservan motivos visibles.",
+    "Estudiante, seguimiento registrado e historial muestran texto, estados y vínculos legibles sin solapamientos globales observados.",
+    "En Reportes de 768 y 390, reglas globales de tabla reducían la anchura mínima y fragmentaban los códigos/insignias; en 390 el resumen dejaba los conteos fuera del primer tramo visible y no mostraba ayuda de desplazamiento."
+  ],
+  "approved_visual_correction": {
+    "files": [
+      "frontend/src/features/alerts/AlertsPage.tsx",
+      "frontend/src/features/alerts/features.css",
+      "frontend/src/features/reports/ReportsPage.tsx",
+      "frontend/src/features/reports/ReportSummaryView.tsx",
+      "frontend/src/features/reports/features.css"
+    ],
+    "changes": "Selectores específicos para anchuras mínimas, orden Estado/Cantidad/Unidad/Denominador y ayuda visible de desplazamiento de tablas.",
+    "typecheck": "npm run typecheck --workspace frontend: PASS",
+    "verification_of_final_captures": "Pendiente de nuevas capturas tras rebuild integrado; s5-first corresponde al estado anterior de las tablas."
+  },
+  "retained_limits": [
+    "La pantalla móvil de caso concluido es larga: conserva formularios bloqueados con motivo visible y evidencia de actividades; no se modificó el comportamiento durante el freeze final.",
+    "Las capturas usan emulación de tamaños en el entorno de prueba. No acreditan dispositivos táctiles físicos, todos los navegadores, lectores de pantalla ni una auditoría WCAG.",
+    "Las pruebas funcionales integradas pertenecen a QA/coordinación; esta evidencia registra únicamente archivos realmente inspeccionados."
+  ]
+}

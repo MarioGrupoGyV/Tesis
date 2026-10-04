@@ -1,0 +1,37 @@
+{
+  "status": "COMPROBADO",
+  "scope": "isolated_test_only",
+  "database": "riesgo_escolar_test_browser_f1042afbf1b0",
+  "database_role": "riesgo_app",
+  "roles": [
+    "ADMIN",
+    "TUTOR",
+    "DIRECTOR",
+    "RESEARCHER"
+  ],
+  "active_environment_untouched": true,
+  "csv_removed_after_review": true,
+  "initial_inference": {
+    "selected": 60,
+    "created": 55,
+    "reused": 0,
+    "followup": {
+      "policy_version": "followup-policy-v1",
+      "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "created": 51,
+      "updated": 0,
+      "retained_low": 0,
+      "no_alert": 4,
+      "reused": 0,
+      "ignored_stale": 0,
+      "skipped_missing": 5
+    },
+    "abstentions": 5
+  },
+  "selected_algorithm": "SVM",
+  "first_import_via_real_browser_api": true,
+  "complete_followup_via_real_browser_api": true,
+  "first_inference_via_real_browser_api": true,
+  "csv_export_verified": true,
+  "training_scope": "only_isolated_fixture"
+}

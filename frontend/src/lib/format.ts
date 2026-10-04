@@ -26,6 +26,13 @@ export function reasonLabel(code: string | null | undefined): string {
     REQUIRED_FEATURE_MISSING: 'Falta una variable requerida para la estimación.',
     MISSING_FRACTION_EXCEEDED: 'Hay demasiadas variables sin datos para estimar el riesgo.',
     NOT_ELIGIBLE: 'El corte no cumple las condiciones de evaluación del estudio sintético.',
+    ALERT_TERMINAL: 'El caso ya está cerrado. Conserva su evidencia y no admite nuevas actividades.',
+    CASE_CLOSED: 'El caso ya está cerrado. Conserva su evidencia y no admite nuevas actividades.',
+    ALERT_CLOSED: 'El caso ya está cerrado. Conserva su evidencia y no admite nuevas actividades.',
+    ROLE_RESTRICTED: 'Tu rol permite consultar este seguimiento, sin modificarlo.',
+    INTERVENTION_TERMINAL: 'La actividad ya está realizada o cancelada y no admite nuevas ediciones.',
+    ALERT_VERSION_CONFLICT: 'El caso cambió. Revisa su información actualizada antes de enviar el borrador.',
+    INTERVENTION_VERSION_CONFLICT: 'La actividad cambió. Revisa la información actualizada antes de enviar el borrador.',
   };
   return code ? labels[code] ?? 'La acción está bloqueada por una condición del servidor. Consulta al administrador.' : 'La acción no está disponible en este momento.';
 }

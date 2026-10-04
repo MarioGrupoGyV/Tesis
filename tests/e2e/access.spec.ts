@@ -14,8 +14,9 @@ const scope=process.env.E2E_SCOPE;
 const phase=process.env.E2E_PHASE;
 const prefix=process.env.E2E_EVIDENCE_PREFIX??'s4-isolated';
 const base=process.env.E2E_BASE_URL;
-if(!prefix.startsWith('s4')||!roles.every(role=>accounts[role]?.email&&accounts[role]?.password)||
-  !study.period_id||!study.csv_file||!((scope==='isolated'&&base==='http://localhost:15174')||
+const s5Runner=prefix.startsWith('s5')&&['import','followup'].includes(phase??'');
+if(!(prefix.startsWith('s4')||s5Runner)||!roles.every(role=>accounts[role]?.email&&accounts[role]?.password)||
+  !study.period_id||(!study.csv_file&&phase!=='followup')||!((scope==='isolated'&&base==='http://localhost:15174')||
   (scope==='active'&&base==='http://localhost:15173'))) throw new Error('Usa el runner S4 explícito con su contexto privado.');
 const sizes=[[1440,900],[768,1024],[390,844]];
 const notice='Estudio con datos sintéticos. No corresponde a estudiantes reales.';

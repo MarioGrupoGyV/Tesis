@@ -3,6 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError, currentEvaluationInstant, type Period, type ProcessingStatus, type User } from '../../lib/api';
 import { numberLabel, reasonLabel, timestampLabel } from '../../lib/format';
 import { ErrorState } from '../../components/ui';
+import { FollowupCounts } from '../alerts/FollowupCounts';
+import '../alerts/features.css';
 
 type Props = { user: User; period: Period | null; processing: ProcessingStatus | null; onNavigate: (path: string) => void };
 
@@ -68,6 +70,7 @@ function PeriodEvaluation({ user, period, processing, onNavigate }: Props) {
     {mutation.isError && <div ref={responseSummary} tabIndex={-1}><ErrorState error={mutation.error} />{mutation.error instanceof ApiError && (mutation.error.code === 'NETWORK_ERROR' || mutation.error.status === 503) && <p className="muted">No recibimos la confirmación del servidor. Consulta los registros antes de repetir; una evaluación ya registrada se reutiliza.</p>}</div>}
     {mutation.isSuccess && <div ref={responseSummary} tabIndex={-1} className="model-evaluation-result" role="status"><h3>Evaluación completada</h3><p className="muted">Instante solicitado: {timestampLabel(mutation.data.as_of)}</p><dl className="model-result-values"><div><dt>Cortes seleccionados</dt><dd>{numberLabel(mutation.data.selected)}</dd></div><div><dt>Evaluaciones nuevas</dt><dd>{numberLabel(mutation.data.created)}</dd></div><div><dt>Evaluaciones reutilizadas</dt><dd>{numberLabel(mutation.data.reused)}</dd></div><div><dt>Abstenciones</dt><dd>{numberLabel(mutation.data.abstentions.length)}</dd></div></dl>
       <p className="muted">Las abstenciones conservan el registro sin estimación; no se convierten en riesgo bajo. Reutilizar una evaluación conserva la evidencia existente.</p>
+      <FollowupCounts result={mutation.data.followup} />
       {mutation.data.abstentions.length > 0 && <details className="model-abstentions"><summary>Consultar motivos de abstención</summary><ul>{mutation.data.abstentions.map((item, index) => <li key={item.snapshot_id}><strong>Corte {index + 1}</strong> · {reasonLabel(item.reason)}<span className="model-reason-code">Motivo registrado: {item.reason}</span></li>)}</ul></details>}
       <button className="button secondary" type="button" onClick={() => onNavigate(`/estudiantes?period_id=${encodeURIComponent(mutation.data.period_id)}`)}>Consultar estudiantes</button>
     </div>}

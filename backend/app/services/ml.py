@@ -8,6 +8,7 @@ from app.models.s2 import SnapshotRecord, StudentRecord, EnrollmentRecord
 from app.repositories import ml as repository
 from app.repositories.students import selected_prediction
 from app.schemas import ml as schemas
+from app.schemas.s5 import FollowupResult
 from app.schemas.s2 import Prediction
 from app.services.processing_policy import require_ml_protocol
 from app.services.students import projection
@@ -53,7 +54,8 @@ def persist_evaluated(db, *, snapshot_id, model_id, result, actor_id, request_id
     model = db.get(ModelVersion,model_id)
     if snapshot is None or model is None:
         raise AppError(404,'PREDICTION_RESOURCE_NOT_FOUND','No están disponibles el corte y modelo.')
-    period = db.scalar(select(AcademicPeriod).where(AcademicPeriod.id==snapshot.period_id).with_for_update(read=True))
+    period = db.scalar(select(AcademicPeriod).where(AcademicPeriod.id==snapshot.period_id).with_for_update(read=True)
+                       .execution_options(populate_existing=True))
     if period.is_locked:
         raise AppError(409,'PERIOD_LOCKED','El periodo está bloqueado.')
     enrollment = db.get(EnrollmentRecord,snapshot.enrollment_id)
@@ -111,14 +113,16 @@ def infer_selected(db, user, period, as_of, model, bundle, request_id):
         created += is_new
         reused += not is_new
     return schemas.PredictionRunResult(period_id=period.id,as_of=as_of,model_id=model.id,
-        selected=len(selected),created=created,reused=reused,abstentions=abstentions)
+        selected=len(selected),created=created,reused=reused,abstentions=abstentions,
+        followup=FollowupResult(period_id=period.id))
 
 
 def run_period(db,user,payload,settings,request_id):
     require_admin(user)
     from app.services.synthetic_study import validate_registered
     from app.models.synthetic import SyntheticStudyRecord
-    period = db.scalar(select(AcademicPeriod).where(AcademicPeriod.id==payload.period_id).with_for_update(read=True))
+    period = db.scalar(select(AcademicPeriod).where(AcademicPeriod.id==payload.period_id).with_for_update(read=True)
+                       .execution_options(populate_existing=True))
     if period is None:
         raise AppError(404,'PERIOD_NOT_FOUND','El periodo no está disponible.')
     if period.data_origin!='SYNTHETIC':
@@ -133,7 +137,8 @@ def run_period(db,user,payload,settings,request_id):
     validate_registered(db,settings,study)
     model = db.scalar(select(ModelVersion).where(ModelVersion.is_active.is_(True),ModelVersion.status=='APPROVED',
                         ModelVersion.data_origin==period.data_origin,ModelVersion.study_id==study.id,
-                        ModelVersion.created_at<=payload.as_of))
+                        ModelVersion.created_at<=payload.as_of).with_for_update(read=True)
+                        .execution_options(populate_existing=True))
     if model is None or settings.ml_storage_dir is None:
         raise AppError(409,'MODEL_NOT_AVAILABLE','Modelo no disponible.')
     from app.ml.artifacts import ArtifactStore
@@ -151,7 +156,22 @@ def run_period(db,user,payload,settings,request_id):
     except MLDiagnostic:
         raise AppError(409,'MODEL_NOT_AVAILABLE','Modelo no disponible o incompatible.') from None
     try:
+        # Orden común S5: periodo compartido → modelo compartido → matrículas UUID.
+        # Importación toma las mismas matrículas antes de insertar otra revisión.
+        # Seleccionar después de los locks evita evaluar una revisión ya reemplazada.
+        db.scalars(select(EnrollmentRecord).where(EnrollmentRecord.period_id==period.id)
+            .order_by(EnrollmentRecord.id).with_for_update()
+            .execution_options(populate_existing=True)).all()
         result = infer_selected(db,user,period,payload.as_of,model,bundle,request_id)
+        from app.services.followup import sync_current
+        # Solo predicciones elegidas por as_of; sync descarta aquellas que ya no
+        # coinciden con la revisión/modelo actuales. Sin commit intermedio.
+        chosen = repository.select_snapshots(db,period.id,payload.as_of)
+        prediction_ids = db.scalars(select(PredictionRecord.id).where(
+            PredictionRecord.model_id==model.id,
+            PredictionRecord.snapshot_id.in_([row['id'] for row in chosen]))).all()
+        result.followup = sync_current(db,user,period.id,settings,request_id,
+                                     prediction_ids=prediction_ids)
         db.commit()
         return result
     except Exception:

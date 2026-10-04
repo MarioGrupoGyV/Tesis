@@ -4,6 +4,8 @@ import { api, ApiError, type Period, type Prediction, type StudentDetail, type U
 import { dateLabel, numberLabel, timestampLabel } from '../../lib/format';
 import { EmptyState, ErrorState, EvaluationBadge, LoadingState, PageHeader, Pagination, RiskBadge } from '../../components/ui';
 import './features.css';
+import { AlertStatusBadge, InterventionStatusBadge, interventionKindLabels } from '../alerts/labels';
+import '../alerts/features.css';
 
 type Props = { user: User; period: Period | null; studentId: string; onNavigate: (path: string) => void };
 const eventNames = { SNAPSHOT: 'Datos incorporados', PREDICTION: 'Evaluación registrada', ALERT: 'Alerta registrada', INTERVENTION: 'Intervención registrada' };
@@ -41,8 +43,8 @@ function StudentRecord({ user, period, studentId, onNavigate }: Props & { period
       <h3>Ventana de observación</h3><dl className="student-data"><div><dt>Inicio de ventana</dt><dd>{dateLabel(snapshot.window_start)}</dd></div><div><dt>Fecha de corte</dt><dd>{timestampLabel(snapshot.cutoff_at)}</dd></div><div><dt>Datos disponibles desde</dt><dd>{timestampLabel(snapshot.available_at)}</dd></div><div><dt>Fecha objetivo</dt><dd>{dateLabel(snapshot.target_date)}</dd></div><div><dt>Revisión</dt><dd>{snapshot.revision}</dd></div><div><dt>Variables sin dato</dt><dd>{numberLabel(snapshot.missing_fraction * 100, ' %')}</dd></div></dl>
       <p className="muted student-list-note">“Sin dato” indica que el valor no fue informado. Las horas se muestran en America/Lima; las fechas de ventana y objetivo conservan su día.</p>
     </> : <EmptyState title="Sin datos observados"><p>No hay un corte disponible para este registro en el periodo seleccionado.</p></EmptyState>}</section>
-    <StudentHistory user={user} period={period} studentId={studentId} />
-    <RelatedRecords detail={detail.data} />
+    <RelatedRecords detail={detail.data} period={period} user={user} onNavigate={onNavigate} />
+    <StudentHistory user={user} period={period} studentId={studentId} onNavigate={onNavigate} />
   </div>;
 }
 
@@ -53,7 +55,7 @@ function PredictionFields({ prediction }: { prediction: Prediction }) {
   </>;
 }
 
-function StudentHistory({ user, period, studentId }: { user: User; period: Period; studentId: string }) {
+function StudentHistory({ user, period, studentId, onNavigate }: { user: User; period: Period; studentId: string; onNavigate: (path: string) => void }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [predictionId, setPredictionId] = useState<string | null>(null);
@@ -64,23 +66,21 @@ function StudentHistory({ user, period, studentId }: { user: User; period: Perio
     queryFn: ({ signal }) => api.timeline(studentId, { period_id: period.id, page, page_size: pageSize }, signal), retry: false });
   const historical = useQuery({ queryKey: [user.id, user.role, 'prediction', period.id, predictionId],
     queryFn: ({ signal }) => api.prediction(predictionId!, signal), enabled: predictionId !== null, retry: false });
-  return <section className="panel student-detail-panel" aria-labelledby="student-history-title"><h2 id="student-history-title">Historial</h2><p className="muted">Cortes y evaluaciones registrados, con sus fechas de incorporación. Una nueva revisión conserva la evidencia anterior.</p>
+  return <section className="panel student-detail-panel" aria-labelledby="student-history-title"><h2 id="student-history-title">Historial</h2><p className="muted">Cortes, evaluaciones y cambios efectivos de seguimiento, con sus fechas de registro. Una nueva revisión conserva la evidencia anterior.</p>
     <div className="student-history-page-size"><label htmlFor="student-history-page-size">Eventos por página</label><select id="student-history-page-size" value={pageSize} onChange={event => { setPageSize(Number(event.target.value)); setPage(1); setPredictionId(null); }}>{[5, 10, 20].map(value => <option key={value} value={value}>{value}</option>)}</select></div>
     {predictionId && <section className="student-historical-prediction" aria-label="Detalle de la evaluación del historial"><header><h3 ref={detailHeading} tabIndex={-1}>Evaluación del historial</h3><button className="button secondary" type="button" onClick={() => { setPredictionId(null); detailTrigger.current?.focus(); }}>Cerrar detalle</button></header>{historical.isPending ? <LoadingState label="Consultando evaluación…" /> : historical.isError ? historical.error instanceof ApiError && [403, 404].includes(historical.error.status) ? <p className="muted">Esta evaluación no está disponible para tu cuenta.</p> : <ErrorState error={historical.error} onRetry={() => void historical.refetch()} /> : <><RiskBadge risk={historical.data.risk_level} /><div className="student-prediction-fields"><PredictionFields prediction={historical.data} /></div><p className="muted student-list-note">Este resultado corresponde al corte indicado. No sustituye la evaluación de una revisión posterior.</p></>}</section>}
     {timeline.isPending ? <LoadingState label="Consultando historial…" /> : timeline.isError ? <ErrorState error={timeline.error} onRetry={() => void timeline.refetch()} /> : timeline.data.items.length === 0 ? <EmptyState title="El historial todavía está vacío"><p>Los eventos aparecerán cuando se registren datos o evaluaciones.</p></EmptyState> : <>
-      <ol className="student-history-list">{timeline.data.items.map(event => <li key={event.id}><span className="student-history-icon" aria-hidden="true">{eventIcons[event.event_type]}</span><div className="student-history-body"><strong>{eventNames[event.event_type]}</strong><time dateTime={event.occurred_at}>{timestampLabel(event.occurred_at)}</time><p>{event.summary}</p>{event.event_type === 'PREDICTION' && <button className="button secondary" type="button" onClick={click => { detailTrigger.current = click.currentTarget; setPredictionId(event.entity_id); }} aria-expanded={predictionId === event.entity_id}>Consultar evaluación</button>}</div></li>)}</ol>
+      <ol className="student-history-list">{timeline.data.items.map(event => <li key={event.id}><span className="student-history-icon" aria-hidden="true">{eventIcons[event.event_type]}</span><div className="student-history-body"><strong>{eventNames[event.event_type]}</strong><time dateTime={event.occurred_at}>{timestampLabel(event.occurred_at)}</time><p>{event.summary}</p>{event.event_type === 'PREDICTION' && <button className="button secondary" type="button" onClick={click => { detailTrigger.current = click.currentTarget; setPredictionId(event.entity_id); }} aria-expanded={predictionId === event.entity_id}>Consultar evaluación</button>}{event.event_type === 'ALERT' && <button className="button secondary" type="button" onClick={() => onNavigate(`/alertas/${encodeURIComponent(event.entity_id)}?period_id=${encodeURIComponent(period.id)}`)}>Consultar caso</button>}</div></li>)}</ol>
       <Pagination page={timeline.data.page} pageSize={timeline.data.page_size} total={timeline.data.total} onPageChange={value => { setPage(value); setPredictionId(null); }} />
     </>}
   </section>;
 }
 
-function RelatedRecords({ detail }: { detail: StudentDetail }) {
-  if (!detail.alerts.length && !detail.interventions.length) return <p className="muted">La gestión de alertas e intervenciones se incorporará en una etapa posterior.</p>;
-  const alertStatuses = { OPEN: 'Abierta', IN_REVIEW: 'En revisión', RESOLVED: 'Resuelta', DISMISSED: 'Descartada' };
-  const interventionStatuses = { PLANNED: 'Planificada', DONE: 'Realizada', CANCELLED: 'Cancelada' };
-  const kinds = { TUTORING: 'Tutoría', REINFORCEMENT: 'Refuerzo', FAMILY_MEETING: 'Reunión con familia', OTHER: 'Otra intervención' };
-  return <section className="panel student-detail-panel"><h2>Seguimiento registrado</h2><p className="muted">Consulta de la evidencia existente. La edición de seguimiento se incorporará en una etapa posterior.</p>
-    {detail.alerts.length > 0 && <><h3>Alertas</h3><ul className="student-related-list">{detail.alerts.map(alert => <li key={alert.id}><strong>{alertStatuses[alert.status]} · Riesgo {alert.severity === 'HIGH' ? 'alto' : 'medio'}</strong><p>Registrada: {timestampLabel(alert.opened_at)}</p>{alert.resolution_reason && <p>{alert.resolution_reason}</p>}</li>)}</ul></>}
-    {detail.interventions.length > 0 && <><h3>Intervenciones</h3><ul className="student-related-list">{detail.interventions.map(intervention => <li key={intervention.id}><strong>{kinds[intervention.kind]} · {interventionStatuses[intervention.status]}</strong><p>{intervention.objective}</p><p>Programada: {timestampLabel(intervention.scheduled_at)}</p>{intervention.performed_at && <p>Realizada: {timestampLabel(intervention.performed_at)}</p>}{intervention.notes && <p>{intervention.notes}</p>}</li>)}</ul></>}
+function RelatedRecords({ detail, period, user, onNavigate }: { detail: StudentDetail; period: Period; user: User; onNavigate: (path: string) => void }) {
+  function open(event: MouseEvent<HTMLAnchorElement>, path: string) { if (event.button === 0 && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) { event.preventDefault(); onNavigate(path); } }
+  return <section className="panel student-detail-panel"><h2>Seguimiento registrado</h2><p className="muted">{user.role === 'DIRECTOR' ? 'Consulta los casos y actividades de simulación. Tu rol mantiene acceso de lectura.' : 'Abre el caso para planificar y registrar actividades autorizadas. Cada actividad mantiene su propio estado.'}</p>
+    {!detail.alerts.length && !detail.interventions.length && <EmptyState title="Sin seguimiento registrado"><p>No hay casos ni actividades para esta matrícula. Una evaluación pendiente o insuficiente no se reemplaza por riesgo bajo.</p></EmptyState>}
+    {detail.alerts.length > 0 && <><h3>Casos</h3><ul className="student-related-list">{detail.alerts.map(alert => { const path = `/alertas/${alert.id}?period_id=${encodeURIComponent(period.id)}`; return <li key={alert.id}><AlertStatusBadge status={alert.status} /><RiskBadge risk={alert.severity} /><p>Apertura: {timestampLabel(alert.opened_at)}</p>{alert.resolution_reason && <p>{alert.resolution_reason}</p>}<a className="followup-link" href={path} onClick={event => open(event, path)}>Consultar caso{user.role !== 'DIRECTOR' && (alert.status === 'OPEN' || alert.status === 'IN_REVIEW') ? ' y gestionar actividades' : ''} →</a></li>; })}</ul></>}
+    {detail.interventions.length > 0 && <><h3>Actividades</h3><ul className="student-related-list">{detail.interventions.map(intervention => { const path = intervention.alert_id ? `/alertas/${intervention.alert_id}?period_id=${encodeURIComponent(period.id)}` : null; return <li key={intervention.id}><strong>{interventionKindLabels[intervention.kind]}</strong> <InterventionStatusBadge status={intervention.status} /><p>{intervention.objective}</p><p>Programada: {timestampLabel(intervention.scheduled_at)}</p><p>Fecha efectiva: {intervention.performed_at ? timestampLabel(intervention.performed_at) : 'No realizada'}</p>{path && <a className="followup-link" href={path} onClick={event => open(event, path)}>Consultar actividad en su caso →</a>}</li>; })}</ul></>}
   </section>;
 }

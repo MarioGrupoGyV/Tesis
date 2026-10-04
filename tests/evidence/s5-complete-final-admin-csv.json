@@ -1,0 +1,31 @@
+{
+  "status": "COMPROBADO",
+  "role": "ADMIN",
+  "rows": 60,
+  "headers": [
+    "origen",
+    "alcance",
+    "periodo",
+    "generado_en_utc",
+    "codigo_sintetico",
+    "grado",
+    "seccion",
+    "ultimo_corte_utc",
+    "estado_evaluacion",
+    "riesgo_actual",
+    "caso_activo",
+    "estado_caso_activo",
+    "casos_abiertos",
+    "casos_en_revision",
+    "casos_concluidos",
+    "casos_descartados",
+    "actividades_planificadas",
+    "actividades_realizadas",
+    "actividades_canceladas"
+  ],
+  "sha256": "827c68a1ebe5f6060f1b75e3605577508294bbc855c830317300c619bc4e0d2f",
+  "utf8_bom": true,
+  "complete_filtered_scope": true,
+  "no_free_notes": true,
+  "actual_browser_download_response": true
+}

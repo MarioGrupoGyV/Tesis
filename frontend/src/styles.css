@@ -5,10 +5,10 @@
 :root { font-family: Inter, "Segoe UI", Arial, sans-serif; color: #233932; background: #f5f7f3; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; }
-button, input, select { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: wait; opacity: .65; }
-button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: 3px solid #a68a37; outline-offset: 4px; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid #a68a37; outline-offset: 4px; }
 h1, h2, p { margin: 0; }
 h1 { font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 650; letter-spacing: -.055em; line-height: 1.18; }
 h2 { font-size: 1.4rem; font-weight: 650; letter-spacing: -.03em; }
@@ -40,7 +40,7 @@ h2 { font-size: 1.4rem; font-weight: 650; letter-spacing: -.03em; }
 .muted { font-size: 14px; line-height: 1.65; color: #728075; }
 .login-card form { margin-top: 29px; }
 label { display: block; color: #465e4d; font-size: 13px; font-weight: 650; margin-bottom: 8px; }
-input, select { display: block; width: 100%; border: 1px solid #d8e0d3; background: #fcfdfb; color: #263c2e; padding: 12px 13px; border-radius: 7px; font-size: 14px; min-height: 44px; }
+input, select, textarea { display: block; width: 100%; border: 1px solid #d8e0d3; background: #fcfdfb; color: #263c2e; padding: 12px 13px; border-radius: 7px; font-size: 14px; min-height: 44px; }
 input::placeholder { color: #8a968a; }
 .login-card input { margin-bottom: 21px; }
 .login-submit { margin-top: 8px; width: 100%; justify-content: space-between; padding: 13px 17px; }

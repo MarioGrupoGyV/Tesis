@@ -1,0 +1,14 @@
+{
+  "status": "FALLIDO",
+  "scope": "isolated_test_only",
+  "database": "riesgo_escolar_test_browser_8ef7918c1065",
+  "database_role": "riesgo_app",
+  "roles": [
+    "ADMIN",
+    "TUTOR",
+    "DIRECTOR",
+    "RESEARCHER"
+  ],
+  "active_environment_untouched": true,
+  "csv_removed_after_review": true
+}

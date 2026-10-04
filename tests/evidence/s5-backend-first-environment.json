@@ -1,0 +1,9 @@
+{
+  "status": "FALLIDO",
+  "python": "3.12.12",
+  "platform": "Linux",
+  "postgresql": "17.6 (Debian 17.6-2.pgdg12+1)",
+  "database": "riesgo_escolar_test_7ab7dd84d0de",
+  "exit_code": 1,
+  "isolated_compose": "riesgo-escolar-tests"
+}

@@ -41,7 +41,7 @@ def database_urls():
 def owner_engine(database_urls):
     engine = create_engine(database_urls[1], pool_pre_ping=True, connect_args={"connect_timeout": 5}, hide_parameters=True)
     with engine.connect() as connection:
-        assert connection.execute(text("SELECT count(*) FROM information_schema.tables WHERE table_schema='risk_school' AND table_type='BASE TABLE'")).scalar_one() == 14, "Run Alembic against the clean test database first"
+        assert connection.execute(text("SELECT count(*) FROM information_schema.tables WHERE table_schema='risk_school' AND table_type='BASE TABLE'")).scalar_one() == 15, "Run Alembic against the clean test database first"
     yield engine
     engine.dispose()
 

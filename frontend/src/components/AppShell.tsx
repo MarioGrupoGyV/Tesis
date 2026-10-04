@@ -12,9 +12,9 @@ export function AppShell({ user, pathname, onNavigate, onLogout, context, notice
   const nav = <nav aria-label="Navegación principal"><p className="nav-label">CONSULTA Y SEGUIMIENTO</p>
     {[['/', '⌂', 'Inicio'], ...(user.role !== 'RESEARCHER' ? [['/estudiantes', '▤', 'Estudiantes']] : [])].map(([path, icon, label]) =>
       <a key={path} href={path} aria-current={pathname === path || (path !== '/' && pathname.startsWith(path + '/')) ? 'page' : undefined} onClick={(event) => { event.preventDefault(); go(path); }}><span aria-hidden="true">{icon}</span>{label}<span className="nav-arrow" aria-hidden="true">›</span></a>)}
-    {user.role !== 'RESEARCHER' && <div className="nav-pending"><span aria-hidden="true">♧</span><div>Alertas<small>Pendiente de implementación</small></div></div>}
+    {user.role !== 'RESEARCHER' && <a href="/alertas" aria-current={pathname.startsWith('/alertas') ? 'page' : undefined} onClick={(event) => { event.preventDefault(); go('/alertas'); }}><span aria-hidden="true">♧</span>Alertas<span className="nav-arrow" aria-hidden="true">›</span></a>}
     {user.role === 'ADMIN' && <a href="/datos" aria-current={pathname === '/datos' ? 'page' : undefined} onClick={(event) => { event.preventDefault(); go('/datos'); }}><span aria-hidden="true">⇧</span>Datos<span className="nav-arrow" aria-hidden="true">›</span></a>}
-    {user.role !== 'RESEARCHER' && <div className="nav-pending"><span aria-hidden="true">▥</span><div>Reportes<small>Pendiente de implementación</small></div></div>}
+    {user.role !== 'RESEARCHER' && <a href="/reportes" aria-current={pathname === '/reportes' ? 'page' : undefined} onClick={(event) => { event.preventDefault(); go('/reportes'); }}><span aria-hidden="true">▥</span>Reportes<span className="nav-arrow" aria-hidden="true">›</span></a>}
     {user.role === 'ADMIN' && <><p className="nav-label nav-secondary">ADMINISTRACIÓN</p><a href="/modelos" aria-current={pathname.startsWith('/modelos') ? 'page' : undefined} onClick={(event) => { event.preventDefault(); go('/modelos'); }}><span aria-hidden="true">◇</span>Modelos<span className="nav-arrow" aria-hidden="true">›</span></a></>}
   </nav>;
   return <div className="workspace-layout"><a className="skip-link" href="#main-content">Ir al contenido</a>

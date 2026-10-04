@@ -1,0 +1,28 @@
+{
+  "scope": "Actual sanitized API responses; not generated successes",
+  "sources": [
+    "s5-backend-final-followup-response-samples.json",
+    "s5-backend-final-ml-response-samples.json",
+    "s5-backend-final-response-samples.json",
+    "s5-complete-final-response-samples.json",
+    "s5-active-final-response-samples.json"
+  ],
+  "samples": 66,
+  "schemas": [
+    "AlertDetail",
+    "AlertPage",
+    "Error",
+    "FollowupResult",
+    "ImportBatch",
+    "ImportCommit",
+    "InterventionCreateResult",
+    "InterventionView",
+    "Model",
+    "Prediction",
+    "PredictionRunResult",
+    "ReportSummary",
+    "StudentDetail",
+    "StudentPage",
+    "TimelineEventPage"
+  ]
+}

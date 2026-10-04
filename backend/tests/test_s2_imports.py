@@ -401,7 +401,9 @@ def test_students_list_detail_timeline_permissions_and_pagination(env):
     assert env.client.get(API + '/students', params={'period_id': period}).json()['total'] == 1
     for suffix in ['', '/timeline']:
         assert env.client.get(API + f"/students/{first['id']}" + suffix, params={'period_id': period}).status_code == 200
-        assert env.client.get(API + f"/students/{second['id']}" + suffix, params={'period_id': period}).status_code == 403
+        # S5: UUID ajeno e inexistente comparten 404, sin revelar pertenencia.
+        assert env.client.get(API + f"/students/{second['id']}" + suffix, params={'period_id': period}).status_code == 404
+        assert env.client.get(API + f"/students/{uuid4()}" + suffix, params={'period_id': period}).status_code == 404
     assert env.client.get(API + '/students', params={'period_id': period, 'section_id': second['section_id']}).status_code == 403
     login_as(env, 'DIRECTOR')
     assert env.client.get(API + '/students', params={'period_id': period}).json()['total'] == 2

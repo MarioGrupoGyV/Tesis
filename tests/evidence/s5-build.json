@@ -1,0 +1,23 @@
+{
+  "status": "COMPROBADO",
+  "frontend_host_typecheck": "passed",
+  "frontend_host_build": "passed",
+  "frontend_modules": 87,
+  "frontend_docker_build": "passed",
+  "generated_types": "OpenAPI0.5.0",
+  "contract_generator_repeat_same_hash": true,
+  "api_tester_docker_build": "passed",
+  "pip_check": "No broken requirements found.",
+  "backend_python": "3.12.12",
+  "backend_platform": "Linux",
+  "images": {
+    "riesgo-escolar-api:latest": "sha256:a0a9d26b7f04b5a31a19296e6def49682425fc83d471bc569d5b17285bf1b81e",
+    "riesgo-escolar-web:latest": "sha256:35463787dd1b50baeb60c86e2397fa08886394b6c13c0cb8153e482d0c3c0e7c",
+    "riesgo-escolar-tests-tester:latest": "sha256:428fdf3ffdbb66aaca41ad06249e8e71aa394931180004da420a2eeb0b9ff0dd"
+  },
+  "dependency_or_lock_changes": false,
+  "limits": [
+    "Windows sandbox build initially failed EPERM; same locked dependencies passed authorized execution",
+    "Build does not prove browser or backend acceptance; see separate reports"
+  ]
+}

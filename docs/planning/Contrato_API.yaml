@@ -1,9 +1,9 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.4.0
-  description: 'S3.1: Estudio con datos sintéticos explícitos. REAL bloqueado; sin entrenamiento/activación
-    HTTP ni pantallas S4–S6. Cambio incompatible de origen público REAL/SYNTHETIC.'
+  version: 0.5.0
+  description: 'S5: seguimiento y reportes operativos del estudio SYNTHETIC registrado. REAL bloqueado. Sin
+    eficacia escolar, S6 ni entrenamiento/activación HTTP.'
 servers:
 - url: /api/v1
   description: Preferir proxy de mismo origen para cookies y CSRF
@@ -17,6 +17,8 @@ tags:
 - name: imports
 - name: ml
 - name: processing
+- name: followup
+- name: reports
 paths:
   /health/live:
     get:
@@ -554,7 +556,7 @@ paths:
       - name: risk_level
         in: query
         required: false
-        schema: &id018
+        schema: &id030
           type: string
           enum:
           - LOW
@@ -1091,15 +1093,18 @@ paths:
       summary: runPredictions
       tags:
       - ml
-      x-stage: S3.1
+      x-stage: S5
       x-roles:
       - ADMIN
-      description: Sesión → ADMIN → CSRF → preparación del servidor → cuerpo → contexto/origen → modelo. REAL
+      description: 'Sesión → ADMIN → CSRF → preparación del servidor → cuerpo → contexto/origen → modelo. REAL
         bloqueado con INSTITUTIONAL_PROCESSING_NOT_READY 422. Solo estudio SYNTHETIC registrado, modelo de
         simulación aprobado técnicamente y activo por CLI explícita. as_of no futuro; última revisión incorporada/disponible
         <= as_of. 409 MODEL_NOT_AVAILABLE/MODEL_INCOMPATIBLE/PERIOD_LOCKED. Abstenciones no insertan riesgo;
         probabilidades null/no calibradas. INSERT único snapshot/model y auditoría atómica; repetición/concurrencia
-        reutiliza resultado. No usa etiquetas de reserva ni crea alertas.
+        reutiliza resultado. No usa etiquetas de reserva ni crea alertas. S5: predicciones, followup-policy-v1
+        y auditoría se confirman juntos. followup refleja solo predicciones seleccionadas que siguen actuales;
+        las históricas se cuentan ignored_stale. Reutilizar predicciones puede crear seguimiento inicial. No
+        commit previo a la sincronización.'
       parameters:
       - name: X-CSRF-Token
         in: header
@@ -1156,6 +1161,694 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: SERVICE_UNAVAILABLE sanitizado; sin consultas/secretos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /alerts/sync:
+    post:
+      operationId: syncAlerts
+      summary: Sincronizar seguimiento actual con followup-policy-v1
+      tags:
+      - followup
+      x-stage: S5
+      x-roles:
+      - ADMIN
+      description: Sincronizar seguimiento actual con followup-policy-v1. No reentrena ni reconstruye pasado.
+        Solo último corte/revisión disponible y modelo activo compatible registrado. created casos nuevos;
+        updated fuente; retained_low señal LOW conservada; no_alert LOW sin caso; reused decisiones persistentes;
+        ignored_stale predicciones históricas omitidas; skipped_missing matrícula sin evaluación actual. Transacción
+        única y lock por matrícula; predicción repetida no duplica evidencia.
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 32
+      responses:
+        '200':
+          description: Resultado público actual del estudio sintético
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FollowupResult'
+        '401':
+          description: SESSION_INVALID; sin sesión válida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no disponible; ajeno e inexistente indistinguibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE;
+            sin escrituras parciales
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncInput'
+  /alerts:
+    get:
+      operationId: listAlerts
+      summary: Consultar casos autorizados del periodo
+      tags:
+      - followup
+      x-stage: S5
+      x-roles: &id016
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      description: Consultar casos autorizados del periodo. Alcance servidor; periodos bloqueados admiten lectura.
+        Orden estable con UUID desempate. Estado/severidad pertenecen al caso; riesgo actual puede ser null
+        o LOW y nunca cierra el caso automáticamente.
+      parameters:
+      - &id019
+        name: period_id
+        in: query
+        required: true
+        schema: &id015
+          type: string
+          format: uuid
+      - &id020
+        name: section_id
+        in: query
+        required: false
+        schema: *id015
+      - &id021
+        name: search
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 40
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - OPEN
+          - IN_REVIEW
+          - RESOLVED
+          - DISMISSED
+      - name: severity
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - MEDIUM
+          - HIGH
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - anon_code
+          - severity_desc
+          - updated_desc
+          default: updated_desc
+      - &id022
+        name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 10000
+          default: 1
+      - &id023
+        name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Resultado público actual del estudio sintético
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertPage'
+        '401':
+          description: SESSION_INVALID; sin sesión válida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no disponible; ajeno e inexistente indistinguibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE;
+            sin escrituras parciales
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /alerts/{id}:
+    get:
+      operationId: alertDetail
+      summary: Consultar caso con fuente, evaluación actual, actividades, capacidades y últimos 100 eventos
+        auditados
+      tags:
+      - followup
+      x-stage: S5
+      x-roles: *id016
+      description: 'Consultar caso con fuente, evaluación actual, actividades, capacidades y últimos 100 eventos
+        auditados. Fuente antigua no se atribuye al último corte. Tutor público por nombre o null. Ajeno/inexistente:
+        mismo404.'
+      parameters:
+      - &id017
+        name: id
+        in: path
+        required: true
+        schema: *id015
+      responses:
+        '200':
+          description: Resultado público actual del estudio sintético
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertDetail'
+        '401':
+          description: SESSION_INVALID; sin sesión válida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no disponible; ajeno e inexistente indistinguibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE;
+            sin escrituras parciales
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      operationId: updateAlert
+      summary: Cambiar estado de caso con expected_version entero estricto
+      tags:
+      - followup
+      x-stage: S5
+      x-roles: &id018
+      - ADMIN
+      - TUTOR
+      description: Cambiar estado de caso con expected_version entero estricto. OPEN permite IN_REVIEW/RESOLVED/DISMISSED;
+        IN_REVIEW permite cierre; cerrado terminal. Cierre exige motivo no vacío, closed_at servidor. No completa/cancela
+        actividades. Cambio efectivo y auditoría atómicos, una versión; no-op no incrementa.
+      parameters:
+      - *id017
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 32
+      responses:
+        '200':
+          description: Resultado público actual del estudio sintético
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertDetail'
+        '401':
+          description: SESSION_INVALID; sin sesión válida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no disponible; ajeno e inexistente indistinguibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE;
+            sin escrituras parciales
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertPatch'
+  /interventions:
+    post:
+      operationId: createIntervention
+      summary: Planificar actividad de simulación en caso activo autorizado
+      tags:
+      - followup
+      x-stage: S5
+      x-roles: *id018
+      description: Planificar actividad de simulación en caso activo autorizado. expected_alert_version estricto,
+        creation_key UUID y payload original canonicalizado incluyendo versión. Mismo actor/clave/payload reutiliza
+        aun si la actividad luego cambió; otra carga409. Deriva matrícula/origen/actor; PLANNED y performed_at
+        null. Periodo bloqueado rechaza toda escritura.
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 32
+      responses:
+        '200':
+          description: Resultado ya existente, reused_result=true; sin nueva actividad/auditoría
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterventionCreateResult'
+        '401':
+          description: SESSION_INVALID; sin sesión válida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no disponible; ajeno e inexistente indistinguibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE;
+            sin escrituras parciales
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '201':
+          description: Actividad PLANNED creada, reused_result=false
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterventionCreateResult'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterventionCreate'
+  /interventions/{id}:
+    patch:
+      operationId: updateIntervention
+      summary: Editar actividad PLANNED con expected_version estricto
+      tags:
+      - followup
+      x-stage: S5
+      x-roles: *id018
+      description: Editar actividad PLANNED con expected_version estricto. DONE exige performed_at con zona
+        no futuro del servidor; CANCELLED conserva null. DONE/CANCELLED terminales. Puede completar/cancelar
+        una actividad previamente planificada después del cierre del caso; no permite nuevas allí. Digest original
+        no cambia. Cambio/auditoría atómicos.
+      parameters:
+      - *id017
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 32
+      responses:
+        '200':
+          description: Resultado público actual del estudio sintético
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterventionView'
+        '401':
+          description: SESSION_INVALID; sin sesión válida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no disponible; ajeno e inexistente indistinguibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE;
+            sin escrituras parciales
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterventionPatch'
+  /reports/summary:
+    get:
+      operationId: reportSummary
+      summary: Resumen ACTUAL del conjunto filtrado autorizado, unidad matrícula
+      tags:
+      - reports
+      x-stage: S5
+      x-roles: *id016
+      description: Resumen ACTUAL del conjunto filtrado autorizado, unidad matrícula. Total=evaluated+not_evaluated+insufficient_data;
+        evaluated=LOW+MEDIUM+HIGH. Porcentajes de riesgo sobre evaluados con denominador y null si cero. Casos/actividades
+        agregados antes de unir; DONE única actividad realizada. generated_at servidor y rango de últimos cortes.
+        items paginados; agregados cubren conjunto completo. Lectura consistente, sin eficacia ni métricas
+        ML.
+      parameters:
+      - *id019
+      - *id020
+      - *id021
+      - &id024
+        name: risk_level
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+      - &id025
+        name: evaluation_status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - EVALUATED
+          - NOT_EVALUATED
+          - INSUFFICIENT_DATA
+      - &id026
+        name: alert_status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - OPEN
+          - IN_REVIEW
+          - RESOLVED
+          - DISMISSED
+      - *id022
+      - *id023
+      responses:
+        '200':
+          description: Resultado público actual del estudio sintético
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportSummary'
+        '401':
+          description: SESSION_INVALID; sin sesión válida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no disponible; ajeno e inexistente indistinguibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE;
+            sin escrituras parciales
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /reports/export.csv:
+    get:
+      operationId: exportReportCsv
+      summary: Solicitar CSV completo del mismo conjunto actual y filtros de resumen
+      tags:
+      - reports
+      x-stage: S5
+      x-roles: *id016
+      description: Solicitar CSV completo del mismo conjunto actual y filtros de resumen. Orden código/UUID,
+        una matrícula por fila. Alcance/origen/periodo/generated_at públicos; no notas, narraciones, etiquetas,
+        métricas privadas. Attachment/no-store; errores JSON Error. Audita solicitud/actor/filtros/alcance/instante/conteo,
+        no apertura/guardado del archivo.
+      parameters:
+      - *id019
+      - *id020
+      - *id021
+      - *id024
+      - *id025
+      - *id026
+      responses:
+        '200':
+          description: UTF-8 con BOM; una fila por matrícula del conjunto filtrado completo, null celda vacía.
+            Textos con prefijos de fórmula se neutralizan con apóstrofo y controles eliminados en proyección.
+            No notas/etiquetas/ML privado.
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: attachment; filename="seguimiento-escolar-reporte.csv"
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            text/csv:
+              schema:
+                type: string
+        '401':
+          description: SESSION_INVALID; sin sesión válida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no disponible; ajeno e inexistente indistinguibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE;
+            sin escrituras parciales
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409
           content:
             application/json:
               schema:
@@ -1255,7 +1948,7 @@ components:
           $ref: '#/components/schemas/User'
         csrf_token:
           type: string
-        expires_at: &id017
+        expires_at: &id029
           type: string
           format: date-time
           description: RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
@@ -1282,11 +1975,11 @@ components:
           type: integer
           minimum: 2000
           maximum: 2100
-        start_date: &id015
+        start_date: &id027
           type: string
           format: date
-        end_date: *id015
-        data_origin: &id016
+        end_date: *id027
+        data_origin: &id028
           type: string
           enum:
           - REAL
@@ -1334,11 +2027,11 @@ components:
         id: *id003
         enrollment_id: *id003
         period_id: *id003
-        data_origin: *id016
-        window_start: *id015
-        cutoff_at: *id017
-        available_at: *id017
-        target_date: *id015
+        data_origin: *id028
+        window_start: *id027
+        cutoff_at: *id029
+        available_at: *id029
+        target_date: *id027
         revision:
           type: integer
           minimum: 1
@@ -1413,11 +2106,11 @@ components:
         enrollment_id: *id003
         snapshot_id: *id003
         model_id: *id003
-        data_origin: *id016
-        risk_level: *id018
-        cutoff_at: *id017
-        target_date: *id015
-        predicted_at: *id017
+        data_origin: *id028
+        risk_level: *id030
+        cutoff_at: *id029
+        target_date: *id027
+        predicted_at: *id029
         probability_low:
           type:
           - number
@@ -1496,7 +2189,7 @@ components:
           type: integer
           minimum: 1
           maximum: 5
-        data_origin: *id016
+        data_origin: *id028
         average_grade:
           type:
           - number
@@ -1589,7 +2282,7 @@ components:
           - PREDICTION
           - ALERT
           - INTERVENTION
-        occurred_at: *id017
+        occurred_at: *id029
         summary:
           type: string
         entity_id: *id003
@@ -1623,7 +2316,7 @@ components:
       properties:
         id: *id003
         period_id: *id003
-        data_origin: *id016
+        data_origin: *id028
         file_name:
           type: string
         file_sha256:
@@ -1669,7 +2362,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ImportError'
-        created_at: *id017
+        created_at: *id029
         committed_at:
           type:
           - string
@@ -1722,7 +2415,7 @@ components:
         anon_code:
           type: string
         prediction_id: *id003
-        data_origin: *id016
+        data_origin: *id028
         severity:
           type: string
           enum:
@@ -1745,8 +2438,8 @@ components:
           - string
           - 'null'
           maxLength: 1000
-        opened_at: *id017
-        updated_at: *id017
+        opened_at: *id029
+        updated_at: *id029
         closed_at:
           type:
           - string
@@ -1781,7 +2474,7 @@ components:
           - string
           - 'null'
           format: uuid
-        data_origin: *id016
+        data_origin: *id028
         kind:
           type: string
           enum:
@@ -1799,7 +2492,7 @@ components:
           - PLANNED
           - DONE
           - CANCELLED
-        scheduled_at: *id017
+        scheduled_at: *id029
         performed_at:
           type:
           - string
@@ -1813,8 +2506,8 @@ components:
         version:
           type: integer
           minimum: 1
-        created_at: *id017
-        updated_at: *id017
+        created_at: *id029
+        updated_at: *id029
       required:
       - id
       - enrollment_id
@@ -2030,6 +2723,8 @@ components:
             $ref: '#/components/schemas/Abstention'
           title: Abstentions
           type: array
+        followup:
+          $ref: '#/components/schemas/FollowupResult'
       required:
       - period_id
       - as_of
@@ -2038,6 +2733,7 @@ components:
       - created
       - reused
       - abstentions
+      - followup
       title: PredictionRunResult
       type: object
     ProcessingOperation:
@@ -2071,6 +2767,16 @@ components:
           $ref: '#/components/schemas/ProcessingOperation'
         read_models:
           $ref: '#/components/schemas/ProcessingOperation'
+        read_alerts:
+          $ref: '#/components/schemas/ProcessingOperation'
+        write_followup:
+          $ref: '#/components/schemas/ProcessingOperation'
+        sync_alerts:
+          $ref: '#/components/schemas/ProcessingOperation'
+        read_reports:
+          $ref: '#/components/schemas/ProcessingOperation'
+        export_reports:
+          $ref: '#/components/schemas/ProcessingOperation'
         import:
           $ref: '#/components/schemas/ProcessingOperation'
       required:
@@ -2080,6 +2786,11 @@ components:
       - predict
       - read_students
       - read_models
+      - read_alerts
+      - write_followup
+      - sync_alerts
+      - read_reports
+      - export_reports
       - import
       title: ProcessingOperations
       type: object
@@ -2109,5 +2820,817 @@ components:
       - synthetic_ready
       - operations
       title: ProcessingStatus
+      type: object
+    CaseCapabilities:
+      additionalProperties: false
+      properties:
+        can_edit:
+          title: Can Edit
+          type: boolean
+        can_plan:
+          title: Can Plan
+          type: boolean
+        reason:
+          type:
+          - string
+          - 'null'
+          title: Reason
+      required:
+      - can_edit
+      - can_plan
+      - reason
+      title: CaseCapabilities
+      type: object
+    AlertCase:
+      additionalProperties: false
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        enrollment_id:
+          format: uuid
+          title: Enrollment Id
+          type: string
+        student_id:
+          format: uuid
+          title: Student Id
+          type: string
+        anon_code:
+          title: Anon Code
+          type: string
+        prediction_id:
+          format: uuid
+          title: Prediction Id
+          type: string
+        data_origin:
+          enum:
+          - REAL
+          - SYNTHETIC
+          title: Data Origin
+          type: string
+        severity:
+          enum:
+          - MEDIUM
+          - HIGH
+          title: Severity
+          type: string
+        status:
+          enum:
+          - OPEN
+          - IN_REVIEW
+          - RESOLVED
+          - DISMISSED
+          title: Status
+          type: string
+        assigned_to:
+          format: uuid
+          type:
+          - string
+          - 'null'
+          title: Assigned To
+        resolution_reason:
+          type:
+          - string
+          - 'null'
+          title: Resolution Reason
+        opened_at:
+          format: date-time
+          title: Opened At
+          type: string
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+        closed_at:
+          format: date-time
+          type:
+          - string
+          - 'null'
+          title: Closed At
+        version:
+          title: Version
+          type: integer
+        period_id:
+          format: uuid
+          title: Period Id
+          type: string
+        section_id:
+          format: uuid
+          title: Section Id
+          type: string
+        section_code:
+          title: Section Code
+          type: string
+        grade:
+          title: Grade
+          type: integer
+        assigned_display_name:
+          type:
+          - string
+          - 'null'
+          title: Assigned Display Name
+        current_risk_level:
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+          - null
+          type:
+          - string
+          - 'null'
+          title: Current Risk Level
+        current_evaluation_status:
+          enum:
+          - EVALUATED
+          - NOT_EVALUATED
+          - INSUFFICIENT_DATA
+          title: Current Evaluation Status
+          type: string
+        latest_cutoff_at:
+          format: date-time
+          type:
+          - string
+          - 'null'
+          title: Latest Cutoff At
+        capabilities:
+          $ref: '#/components/schemas/CaseCapabilities'
+      required:
+      - id
+      - enrollment_id
+      - student_id
+      - anon_code
+      - prediction_id
+      - data_origin
+      - severity
+      - status
+      - assigned_to
+      - resolution_reason
+      - opened_at
+      - updated_at
+      - closed_at
+      - version
+      - period_id
+      - section_id
+      - section_code
+      - grade
+      - assigned_display_name
+      - current_risk_level
+      - current_evaluation_status
+      - latest_cutoff_at
+      - capabilities
+      title: AlertCase
+      type: object
+    InterventionView:
+      additionalProperties: false
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        enrollment_id:
+          format: uuid
+          title: Enrollment Id
+          type: string
+        alert_id:
+          format: uuid
+          type:
+          - string
+          - 'null'
+          title: Alert Id
+        data_origin:
+          enum:
+          - REAL
+          - SYNTHETIC
+          title: Data Origin
+          type: string
+        kind:
+          enum:
+          - TUTORING
+          - REINFORCEMENT
+          - FAMILY_MEETING
+          - OTHER
+          title: Kind
+          type: string
+        objective:
+          title: Objective
+          type: string
+        status:
+          enum:
+          - PLANNED
+          - DONE
+          - CANCELLED
+          title: Status
+          type: string
+        scheduled_at:
+          format: date-time
+          title: Scheduled At
+          type: string
+        performed_at:
+          format: date-time
+          type:
+          - string
+          - 'null'
+          title: Performed At
+        notes:
+          type:
+          - string
+          - 'null'
+          title: Notes
+        version:
+          title: Version
+          type: integer
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+        can_edit:
+          title: Can Edit
+          type: boolean
+        edit_block_reason:
+          type:
+          - string
+          - 'null'
+          title: Edit Block Reason
+      required:
+      - id
+      - enrollment_id
+      - alert_id
+      - data_origin
+      - kind
+      - objective
+      - status
+      - scheduled_at
+      - performed_at
+      - notes
+      - version
+      - created_at
+      - updated_at
+      - can_edit
+      - edit_block_reason
+      title: InterventionView
+      type: object
+    AlertDetail:
+      additionalProperties: false
+      properties:
+        alert:
+          $ref: '#/components/schemas/AlertCase'
+        source_prediction:
+          $ref: '#/components/schemas/Prediction'
+        latest_snapshot:
+          anyOf:
+          - $ref: '#/components/schemas/Snapshot'
+          - type: 'null'
+        latest_prediction:
+          anyOf:
+          - $ref: '#/components/schemas/Prediction'
+          - type: 'null'
+        interventions:
+          items:
+            $ref: '#/components/schemas/InterventionView'
+          title: Interventions
+          type: array
+        history:
+          items:
+            $ref: '#/components/schemas/TimelineEvent'
+          title: History
+          type: array
+        history_truncated:
+          title: History Truncated
+          type: boolean
+      required:
+      - alert
+      - source_prediction
+      - latest_snapshot
+      - latest_prediction
+      - interventions
+      - history
+      - history_truncated
+      title: AlertDetail
+      type: object
+    AlertPage:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/AlertCase'
+          title: Items
+          type: array
+        total:
+          title: Total
+          type: integer
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: AlertPage
+      type: object
+    AlertPatch:
+      additionalProperties: false
+      properties:
+        expected_version:
+          minimum: 1
+          title: Expected Version
+          type: integer
+        status:
+          enum:
+          - OPEN
+          - IN_REVIEW
+          - RESOLVED
+          - DISMISSED
+          title: Status
+          type: string
+        resolution_reason:
+          maxLength: 1000
+          type:
+          - string
+          - 'null'
+          title: Resolution Reason
+      required:
+      - expected_version
+      - status
+      title: AlertPatch
+      type: object
+    CaseCounts:
+      additionalProperties: false
+      properties:
+        open:
+          title: Open
+          type: integer
+        in_review:
+          title: In Review
+          type: integer
+        resolved:
+          title: Resolved
+          type: integer
+        dismissed:
+          title: Dismissed
+          type: integer
+        active_enrollments:
+          title: Active Enrollments
+          type: integer
+      required:
+      - open
+      - in_review
+      - resolved
+      - dismissed
+      - active_enrollments
+      title: CaseCounts
+      type: object
+    EvaluationCounts:
+      additionalProperties: false
+      properties:
+        evaluated:
+          title: Evaluated
+          type: integer
+        not_evaluated:
+          title: Not Evaluated
+          type: integer
+        insufficient_data:
+          title: Insufficient Data
+          type: integer
+      required:
+      - evaluated
+      - not_evaluated
+      - insufficient_data
+      title: EvaluationCounts
+      type: object
+    FollowupResult:
+      additionalProperties: false
+      properties:
+        policy_version:
+          const: followup-policy-v1
+          default: followup-policy-v1
+          title: Policy Version
+          type: string
+        period_id:
+          format: uuid
+          title: Period Id
+          type: string
+        created:
+          default: 0
+          title: Created
+          type: integer
+        updated:
+          default: 0
+          title: Updated
+          type: integer
+        retained_low:
+          default: 0
+          title: Retained Low
+          type: integer
+        no_alert:
+          default: 0
+          title: No Alert
+          type: integer
+        reused:
+          default: 0
+          title: Reused
+          type: integer
+        ignored_stale:
+          default: 0
+          title: Ignored Stale
+          type: integer
+        skipped_missing:
+          default: 0
+          title: Skipped Missing
+          type: integer
+      required:
+      - period_id
+      title: FollowupResult
+      type: object
+    InterventionCounts:
+      additionalProperties: false
+      properties:
+        planned:
+          title: Planned
+          type: integer
+        done:
+          title: Done
+          type: integer
+        cancelled:
+          title: Cancelled
+          type: integer
+      required:
+      - planned
+      - done
+      - cancelled
+      title: InterventionCounts
+      type: object
+    InterventionCreate:
+      additionalProperties: false
+      properties:
+        alert_id:
+          format: uuid
+          title: Alert Id
+          type: string
+        expected_alert_version:
+          minimum: 1
+          title: Expected Alert Version
+          type: integer
+        creation_key:
+          format: uuid
+          title: Creation Key
+          type: string
+        kind:
+          enum:
+          - TUTORING
+          - REINFORCEMENT
+          - FAMILY_MEETING
+          - OTHER
+          title: Kind
+          type: string
+        objective:
+          maxLength: 1000
+          minLength: 1
+          title: Objective
+          type: string
+        scheduled_at:
+          format: date-time
+          title: Scheduled At
+          type: string
+        notes:
+          maxLength: 2000
+          type:
+          - string
+          - 'null'
+          title: Notes
+      required:
+      - alert_id
+      - expected_alert_version
+      - creation_key
+      - kind
+      - objective
+      - scheduled_at
+      title: InterventionCreate
+      type: object
+    InterventionCreateResult:
+      additionalProperties: false
+      properties:
+        intervention:
+          $ref: '#/components/schemas/InterventionView'
+        reused_result:
+          title: Reused Result
+          type: boolean
+      required:
+      - intervention
+      - reused_result
+      title: InterventionCreateResult
+      type: object
+    InterventionPatch:
+      additionalProperties: false
+      properties:
+        expected_version:
+          minimum: 1
+          title: Expected Version
+          type: integer
+        kind:
+          enum:
+          - TUTORING
+          - REINFORCEMENT
+          - FAMILY_MEETING
+          - OTHER
+          - null
+          type:
+          - string
+          - 'null'
+          title: Kind
+        objective:
+          maxLength: 1000
+          minLength: 1
+          type:
+          - string
+          - 'null'
+          title: Objective
+        scheduled_at:
+          format: date-time
+          type:
+          - string
+          - 'null'
+          title: Scheduled At
+        notes:
+          maxLength: 2000
+          type:
+          - string
+          - 'null'
+          title: Notes
+        status:
+          enum:
+          - PLANNED
+          - DONE
+          - CANCELLED
+          - null
+          type:
+          - string
+          - 'null'
+          title: Status
+        performed_at:
+          format: date-time
+          type:
+          - string
+          - 'null'
+          title: Performed At
+      required:
+      - expected_version
+      title: InterventionPatch
+      type: object
+    Percentage:
+      additionalProperties: false
+      properties:
+        count:
+          title: Count
+          type: integer
+        denominator:
+          title: Denominator
+          type: integer
+        percentage:
+          type:
+          - number
+          - 'null'
+          title: Percentage
+        reason:
+          type:
+          - string
+          - 'null'
+          title: Reason
+      required:
+      - count
+      - denominator
+      - percentage
+      - reason
+      title: Percentage
+      type: object
+    ReportRow:
+      additionalProperties: false
+      properties:
+        student_id:
+          format: uuid
+          title: Student Id
+          type: string
+        enrollment_id:
+          format: uuid
+          title: Enrollment Id
+          type: string
+        anon_code:
+          title: Anon Code
+          type: string
+        section_id:
+          format: uuid
+          title: Section Id
+          type: string
+        section_code:
+          title: Section Code
+          type: string
+        grade:
+          title: Grade
+          type: integer
+        latest_cutoff_at:
+          format: date-time
+          type:
+          - string
+          - 'null'
+          title: Latest Cutoff At
+        evaluation_status:
+          enum:
+          - EVALUATED
+          - NOT_EVALUATED
+          - INSUFFICIENT_DATA
+          title: Evaluation Status
+          type: string
+        risk_level:
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+          - null
+          type:
+          - string
+          - 'null'
+          title: Risk Level
+        active_alert_id:
+          format: uuid
+          type:
+          - string
+          - 'null'
+          title: Active Alert Id
+        active_alert_status:
+          enum:
+          - OPEN
+          - IN_REVIEW
+          - null
+          type:
+          - string
+          - 'null'
+          title: Active Alert Status
+        cases_open:
+          title: Cases Open
+          type: integer
+        cases_in_review:
+          title: Cases In Review
+          type: integer
+        cases_resolved:
+          title: Cases Resolved
+          type: integer
+        cases_dismissed:
+          title: Cases Dismissed
+          type: integer
+        interventions_planned:
+          title: Interventions Planned
+          type: integer
+        interventions_done:
+          title: Interventions Done
+          type: integer
+        interventions_cancelled:
+          title: Interventions Cancelled
+          type: integer
+      required:
+      - student_id
+      - enrollment_id
+      - anon_code
+      - section_id
+      - section_code
+      - grade
+      - latest_cutoff_at
+      - evaluation_status
+      - risk_level
+      - active_alert_id
+      - active_alert_status
+      - cases_open
+      - cases_in_review
+      - cases_resolved
+      - cases_dismissed
+      - interventions_planned
+      - interventions_done
+      - interventions_cancelled
+      title: ReportRow
+      type: object
+    RiskCounts:
+      additionalProperties: false
+      properties:
+        low:
+          $ref: '#/components/schemas/Percentage'
+        medium:
+          $ref: '#/components/schemas/Percentage'
+        high:
+          $ref: '#/components/schemas/Percentage'
+      required:
+      - low
+      - medium
+      - high
+      title: RiskCounts
+      type: object
+    ReportSummary:
+      additionalProperties: false
+      properties:
+        period_id:
+          format: uuid
+          title: Period Id
+          type: string
+        period_code:
+          title: Period Code
+          type: string
+        section_id:
+          format: uuid
+          type:
+          - string
+          - 'null'
+          title: Section Id
+        authorized_section_ids:
+          items:
+            format: uuid
+            type: string
+          title: Authorized Section Ids
+          type: array
+        scope:
+          const: SYNTHETIC_STUDY
+          default: SYNTHETIC_STUDY
+          title: Scope
+          type: string
+        data_origin:
+          const: SYNTHETIC
+          default: SYNTHETIC
+          title: Data Origin
+          type: string
+        notice:
+          title: Notice
+          type: string
+        generated_at:
+          format: date-time
+          title: Generated At
+          type: string
+        cutoff_min:
+          format: date-time
+          type:
+          - string
+          - 'null'
+          title: Cutoff Min
+        cutoff_max:
+          format: date-time
+          type:
+          - string
+          - 'null'
+          title: Cutoff Max
+        total:
+          title: Total
+          type: integer
+        evaluations:
+          $ref: '#/components/schemas/EvaluationCounts'
+        risks:
+          $ref: '#/components/schemas/RiskCounts'
+        cases:
+          $ref: '#/components/schemas/CaseCounts'
+        interventions:
+          $ref: '#/components/schemas/InterventionCounts'
+        items:
+          items:
+            $ref: '#/components/schemas/ReportRow'
+          title: Items
+          type: array
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+      required:
+      - period_id
+      - period_code
+      - section_id
+      - authorized_section_ids
+      - notice
+      - generated_at
+      - cutoff_min
+      - cutoff_max
+      - total
+      - evaluations
+      - risks
+      - cases
+      - interventions
+      - items
+      - page
+      - page_size
+      title: ReportSummary
+      type: object
+    SyncInput:
+      additionalProperties: false
+      properties:
+        period_id:
+          format: uuid
+          title: Period Id
+          type: string
+      required:
+      - period_id
+      title: SyncInput
       type: object
 x-current-sprint: S2.1

@@ -1,0 +1,27 @@
+{
+  "status": "COMPROBADO",
+  "initial_sha": "e9349f26b3f0b301cd4d5f50bbec0a7532110e85",
+  "initial_checkout_clean": true,
+  "s4_closure_status": "COMPROBADO",
+  "s4_backend_tests": 233,
+  "counts_before": {
+    "academic_periods": 1,
+    "academic_snapshots": 360,
+    "alerts": 0,
+    "app_users": 4,
+    "audit_events": 169,
+    "enrollments": 60,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 0,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 53
+  },
+  "ml_private_files_count": 15,
+  "regenerated_or_retrained": false,
+  "baseline_private": true,
+  "real_processing_blocked": true
+}

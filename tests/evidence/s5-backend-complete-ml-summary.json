@@ -1,0 +1,25 @@
+{
+  "status": "COMPROBADO",
+  "scope": "ISOLATED_SOFTWARE_TEST_ONLY",
+  "algorithms": [
+    "DUMMY",
+    "RANDOM_FOREST",
+    "SVM",
+    "XGBOOST"
+  ],
+  "students": 9,
+  "observations": 18,
+  "folds_effective": 3,
+  "seed": 1729,
+  "versions": {
+    "python": "3.12.12",
+    "scikit-learn": "1.9.1",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "pandas": "3.0.6",
+    "joblib": "1.6.0",
+    "xgboost-cpu": "3.4.1"
+  },
+  "round_trip_all_algorithms": true,
+  "metrics_are_not_school_or_thesis_results": true
+}

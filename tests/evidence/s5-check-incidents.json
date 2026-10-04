@@ -1,0 +1,54 @@
+{
+  "scope": "S5 intermediate failures preserved, not final acceptance",
+  "incidents": [
+    {
+      "check": "Docker initial baseline read",
+      "result": "permission denied to dockerDesktopLinuxEngine in sandbox; authorized retry passed; no active changes"
+    },
+    {
+      "check": "OpenAPI initial generator/check",
+      "result": "nullable enum default null rejected by enum missing null; fixed normalization and optionalinput defaults; contract226checks passed"
+    },
+    {
+      "check": "Windows frontend sandbox build",
+      "result": "Vite spawn EPERM/native oxide resolution error; same locked dependencies authorized npm build passed87modules"
+    },
+    {
+      "check": "s5-backend-first",
+      "result": "253 passed,12 failed,0skipped of265;224warnings;717.54seconds; isolateddatabase riesgo_escolar_test_7ab7dd84d0de",
+      "failures": [
+        "oldS2foreign404 expected403 (new safe404 requirement)",
+        "incompatible source returnedP0002 instead23514; nonSTRICT lookup fixed",
+        "6 CSVfixtures changed registeredsection.code; fixture moved to untrustedstudentcode",
+        "4 periodclosure observationtests cachedpg_stat_activity and ThreadPool waitedwithlockerheld; pg_stat_clear_snapshot + finallyrelease beforepoolexit fixed"
+      ],
+      "recovery": "Four exact idle testperiodlock transactions terminated to finish old execution and preserveJUnit; no activeDB or accounts touched"
+    },
+    {
+      "check": "s5-backend",
+      "result": "268passed0failed0skipped242warnings410.89seconds; prior to section-context regression test"
+    },
+    {
+      "check": "s5-backend-complete",
+      "result": "269passed0failed0skipped248warnings481.21seconds; final implementation; additional historical_as_of assertion added later to an existing test"
+    },
+    {
+      "check": "s5-first isolated browser",
+      "result": "first import1passed + S5fivecasespassed; first inference executed by API runner before UI, preserved as initial evidence"
+    },
+    {
+      "check": "s5-complete isolated browser",
+      "result": "first import1passed, S5fourpassed/onefailed: foreign directURL message asserted while actual GET stillpending at5seconds. RealAPIforeign404parity passed. Fixed test to await actual browserGET404 before message; no simulated response.",
+      "image_note": "web build had not completed before launch; previous imagefc7821 loaded. Final fresh s5-complete-final uses35463787 verified with dockerinspect."
+    },
+    {
+      "check": "Contract regeneration",
+      "result": "description append accumulated on repeat; generator now removes prior S5 clause before adding, repeated generation produces sameSHA256."
+    },
+    {
+      "check": "s5-active-complete",
+      "result": "ADMIN timeout waiting for sync response; TUTOR/DIRECTOR no cases because no synchronization; RESEARCHERpassed; faultcase intentionallyskipped. Preserved60students360snapshots55predictions and0cases/activities. Added4login sessions and5auth audit events only. Readonlyrisk_app diagnosis confirmed ADMINoperationsavailable and activeSVMcompatible. Test now awaits syncButton enabled before keyboardaction; s5-active-final repeats without altering backend availability or fabricating success."
+    }
+  ],
+  "no_dependency_updates": true
+}

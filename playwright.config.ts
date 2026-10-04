@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/e2e',
-  testMatch: 'access.spec.ts',
+  testMatch: ['access.spec.ts', 's5.spec.ts'],
   workers: 1,
   outputDir: '.local/playwright-results',
   reporter: './tests/e2e/review-reporter.ts',

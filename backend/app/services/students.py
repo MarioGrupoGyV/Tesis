@@ -40,7 +40,7 @@ def authorize_student(db, user, student_id, period_id):
         raise AppError(404, "STUDENT_NOT_FOUND", "El estudiante no está disponible en este periodo.")
     student, enrollment, section, period = found
     if user.role == "TUTOR" and section.tutor_id != user.id:
-        raise AppError(403, "FORBIDDEN", "No tienes acceso a este estudiante.")
+        raise AppError(404, "STUDENT_NOT_FOUND", "El estudiante no está disponible en este periodo.")
     institutional_period(period)
     if student.data_origin != period.data_origin or enrollment.data_origin != period.data_origin:
         raise AppError(422, "ORIGIN_NOT_SUPPORTED", "Origen no admitido en este entorno.")

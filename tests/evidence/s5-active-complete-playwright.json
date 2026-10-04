@@ -1,0 +1,66 @@
+{
+  "status": "failed",
+  "scope": "active",
+  "cases": [
+    {
+      "title": "S5 ADMIN: seguimiento, alcance y reportes reales",
+      "status": "timedOut",
+      "duration_ms": 180583,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": "Comprobar criterio y captura de esta prueba"
+    },
+    {
+      "title": "S5 TUTOR: seguimiento, alcance y reportes reales",
+      "status": "failed",
+      "duration_ms": 3316,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": "Comprobar criterio y captura de esta prueba"
+    },
+    {
+      "title": "S5 DIRECTOR: seguimiento, alcance y reportes reales",
+      "status": "failed",
+      "duration_ms": 1990,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": "Comprobar criterio y captura de esta prueba"
+    },
+    {
+      "title": "S5 RESEARCHER: seguimiento, alcance y reportes reales",
+      "status": "passed",
+      "duration_ms": 2815,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    },
+    {
+      "title": "S5 aislado: fallos HTTP identificados y descarte tardío entre sesiones",
+      "status": "skipped",
+      "duration_ms": 229,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": "Comprobar criterio y captura de esta prueba"
+    }
+  ]
+}

@@ -355,7 +355,7 @@ export interface paths {
         put?: never;
         /**
          * runPredictions
-         * @description Sesión → ADMIN → CSRF → preparación del servidor → cuerpo → contexto/origen → modelo. REAL bloqueado con INSTITUTIONAL_PROCESSING_NOT_READY 422. Solo estudio SYNTHETIC registrado, modelo de simulación aprobado técnicamente y activo por CLI explícita. as_of no futuro; última revisión incorporada/disponible <= as_of. 409 MODEL_NOT_AVAILABLE/MODEL_INCOMPATIBLE/PERIOD_LOCKED. Abstenciones no insertan riesgo; probabilidades null/no calibradas. INSERT único snapshot/model y auditoría atómica; repetición/concurrencia reutiliza resultado. No usa etiquetas de reserva ni crea alertas.
+         * @description Sesión → ADMIN → CSRF → preparación del servidor → cuerpo → contexto/origen → modelo. REAL bloqueado con INSTITUTIONAL_PROCESSING_NOT_READY 422. Solo estudio SYNTHETIC registrado, modelo de simulación aprobado técnicamente y activo por CLI explícita. as_of no futuro; última revisión incorporada/disponible <= as_of. 409 MODEL_NOT_AVAILABLE/MODEL_INCOMPATIBLE/PERIOD_LOCKED. Abstenciones no insertan riesgo; probabilidades null/no calibradas. INSERT único snapshot/model y auditoría atómica; repetición/concurrencia reutiliza resultado. No usa etiquetas de reserva ni crea alertas. S5: predicciones, followup-policy-v1 y auditoría se confirman juntos. followup refleja solo predicciones seleccionadas que siguen actuales; las históricas se cuentan ignored_stale. Reutilizar predicciones puede crear seguimiento inicial. No commit previo a la sincronización.
          */
         post: operations["runPredictions"];
         delete?: never;
@@ -376,6 +376,150 @@ export interface paths {
          * @description Autenticado. Estado general derivado de registro/configuración/archivos privados y política de escritura; no revela estudiantes, etiquetas, modelos ni rutas. REAL siempre false; health no habilita procesamiento.
          */
         get: operations["processingStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alerts/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sincronizar seguimiento actual con followup-policy-v1
+         * @description Sincronizar seguimiento actual con followup-policy-v1. No reentrena ni reconstruye pasado. Solo último corte/revisión disponible y modelo activo compatible registrado. created casos nuevos; updated fuente; retained_low señal LOW conservada; no_alert LOW sin caso; reused decisiones persistentes; ignored_stale predicciones históricas omitidas; skipped_missing matrícula sin evaluación actual. Transacción única y lock por matrícula; predicción repetida no duplica evidencia.
+         */
+        post: operations["syncAlerts"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consultar casos autorizados del periodo
+         * @description Consultar casos autorizados del periodo. Alcance servidor; periodos bloqueados admiten lectura. Orden estable con UUID desempate. Estado/severidad pertenecen al caso; riesgo actual puede ser null o LOW y nunca cierra el caso automáticamente.
+         */
+        get: operations["listAlerts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alerts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consultar caso con fuente, evaluación actual, actividades, capacidades y últimos 100 eventos auditados
+         * @description Consultar caso con fuente, evaluación actual, actividades, capacidades y últimos 100 eventos auditados. Fuente antigua no se atribuye al último corte. Tutor público por nombre o null. Ajeno/inexistente: mismo404.
+         */
+        get: operations["alertDetail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Cambiar estado de caso con expected_version entero estricto
+         * @description Cambiar estado de caso con expected_version entero estricto. OPEN permite IN_REVIEW/RESOLVED/DISMISSED; IN_REVIEW permite cierre; cerrado terminal. Cierre exige motivo no vacío, closed_at servidor. No completa/cancela actividades. Cambio efectivo y auditoría atómicos, una versión; no-op no incrementa.
+         */
+        patch: operations["updateAlert"];
+        trace?: never;
+    };
+    "/interventions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Planificar actividad de simulación en caso activo autorizado
+         * @description Planificar actividad de simulación en caso activo autorizado. expected_alert_version estricto, creation_key UUID y payload original canonicalizado incluyendo versión. Mismo actor/clave/payload reutiliza aun si la actividad luego cambió; otra carga409. Deriva matrícula/origen/actor; PLANNED y performed_at null. Periodo bloqueado rechaza toda escritura.
+         */
+        post: operations["createIntervention"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/interventions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Editar actividad PLANNED con expected_version estricto
+         * @description Editar actividad PLANNED con expected_version estricto. DONE exige performed_at con zona no futuro del servidor; CANCELLED conserva null. DONE/CANCELLED terminales. Puede completar/cancelar una actividad previamente planificada después del cierre del caso; no permite nuevas allí. Digest original no cambia. Cambio/auditoría atómicos.
+         */
+        patch: operations["updateIntervention"];
+        trace?: never;
+    };
+    "/reports/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Resumen ACTUAL del conjunto filtrado autorizado, unidad matrícula
+         * @description Resumen ACTUAL del conjunto filtrado autorizado, unidad matrícula. Total=evaluated+not_evaluated+insufficient_data; evaluated=LOW+MEDIUM+HIGH. Porcentajes de riesgo sobre evaluados con denominador y null si cero. Casos/actividades agregados antes de unir; DONE única actividad realizada. generated_at servidor y rango de últimos cortes. items paginados; agregados cubren conjunto completo. Lectura consistente, sin eficacia ni métricas ML.
+         */
+        get: operations["reportSummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reports/export.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Solicitar CSV completo del mismo conjunto actual y filtros de resumen
+         * @description Solicitar CSV completo del mismo conjunto actual y filtros de resumen. Orden código/UUID, una matrícula por fila. Alcance/origen/periodo/generated_at públicos; no notas, narraciones, etiquetas, métricas privadas. Attachment/no-store; errores JSON Error. Audita solicitud/actor/filtros/alcance/instante/conteo, no apertura/guardado del archivo.
+         */
+        get: operations["exportReportCsv"];
         put?: never;
         post?: never;
         delete?: never;
@@ -794,6 +938,7 @@ export interface components {
             reused: number;
             /** Abstentions */
             abstentions: components["schemas"]["Abstention"][];
+            followup: components["schemas"]["FollowupResult"];
         };
         /** ProcessingOperation */
         ProcessingOperation: {
@@ -810,6 +955,11 @@ export interface components {
             predict: components["schemas"]["ProcessingOperation"];
             read_students: components["schemas"]["ProcessingOperation"];
             read_models: components["schemas"]["ProcessingOperation"];
+            read_alerts: components["schemas"]["ProcessingOperation"];
+            write_followup: components["schemas"]["ProcessingOperation"];
+            sync_alerts: components["schemas"]["ProcessingOperation"];
+            read_reports: components["schemas"]["ProcessingOperation"];
+            export_reports: components["schemas"]["ProcessingOperation"];
             import: components["schemas"]["ProcessingOperation"];
         };
         /** ProcessingStatus */
@@ -829,6 +979,500 @@ export interface components {
             /** Synthetic Ready */
             synthetic_ready: boolean;
             operations: components["schemas"]["ProcessingOperations"];
+        };
+        /** CaseCapabilities */
+        CaseCapabilities: {
+            /** Can Edit */
+            can_edit: boolean;
+            /** Can Plan */
+            can_plan: boolean;
+            /** Reason */
+            reason: string | null;
+        };
+        /** AlertCase */
+        AlertCase: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Enrollment Id
+             * Format: uuid
+             */
+            enrollment_id: string;
+            /**
+             * Student Id
+             * Format: uuid
+             */
+            student_id: string;
+            /** Anon Code */
+            anon_code: string;
+            /**
+             * Prediction Id
+             * Format: uuid
+             */
+            prediction_id: string;
+            /**
+             * Data Origin
+             * @enum {string}
+             */
+            data_origin: "REAL" | "SYNTHETIC";
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "MEDIUM" | "HIGH";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "OPEN" | "IN_REVIEW" | "RESOLVED" | "DISMISSED";
+            /**
+             * Assigned To
+             * Format: uuid
+             */
+            assigned_to: string | null;
+            /** Resolution Reason */
+            resolution_reason: string | null;
+            /**
+             * Opened At
+             * Format: date-time
+             */
+            opened_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Closed At
+             * Format: date-time
+             */
+            closed_at: string | null;
+            /** Version */
+            version: number;
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /**
+             * Section Id
+             * Format: uuid
+             */
+            section_id: string;
+            /** Section Code */
+            section_code: string;
+            /** Grade */
+            grade: number;
+            /** Assigned Display Name */
+            assigned_display_name: string | null;
+            /**
+             * Current Risk Level
+             * @enum {string|null}
+             */
+            current_risk_level: "LOW" | "MEDIUM" | "HIGH" | null;
+            /**
+             * Current Evaluation Status
+             * @enum {string}
+             */
+            current_evaluation_status: "EVALUATED" | "NOT_EVALUATED" | "INSUFFICIENT_DATA";
+            /**
+             * Latest Cutoff At
+             * Format: date-time
+             */
+            latest_cutoff_at: string | null;
+            capabilities: components["schemas"]["CaseCapabilities"];
+        };
+        /** InterventionView */
+        InterventionView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Enrollment Id
+             * Format: uuid
+             */
+            enrollment_id: string;
+            /**
+             * Alert Id
+             * Format: uuid
+             */
+            alert_id: string | null;
+            /**
+             * Data Origin
+             * @enum {string}
+             */
+            data_origin: "REAL" | "SYNTHETIC";
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "TUTORING" | "REINFORCEMENT" | "FAMILY_MEETING" | "OTHER";
+            /** Objective */
+            objective: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "PLANNED" | "DONE" | "CANCELLED";
+            /**
+             * Scheduled At
+             * Format: date-time
+             */
+            scheduled_at: string;
+            /**
+             * Performed At
+             * Format: date-time
+             */
+            performed_at: string | null;
+            /** Notes */
+            notes: string | null;
+            /** Version */
+            version: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Can Edit */
+            can_edit: boolean;
+            /** Edit Block Reason */
+            edit_block_reason: string | null;
+        };
+        /** AlertDetail */
+        AlertDetail: {
+            alert: components["schemas"]["AlertCase"];
+            source_prediction: components["schemas"]["Prediction"];
+            latest_snapshot: components["schemas"]["Snapshot"] | null;
+            latest_prediction: components["schemas"]["Prediction"] | null;
+            /** Interventions */
+            interventions: components["schemas"]["InterventionView"][];
+            /** History */
+            history: components["schemas"]["TimelineEvent"][];
+            /** History Truncated */
+            history_truncated: boolean;
+        };
+        /** AlertPage */
+        AlertPage: {
+            /** Items */
+            items: components["schemas"]["AlertCase"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** AlertPatch */
+        AlertPatch: {
+            /** Expected Version */
+            expected_version: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "OPEN" | "IN_REVIEW" | "RESOLVED" | "DISMISSED";
+            /** Resolution Reason */
+            resolution_reason?: string | null;
+        };
+        /** CaseCounts */
+        CaseCounts: {
+            /** Open */
+            open: number;
+            /** In Review */
+            in_review: number;
+            /** Resolved */
+            resolved: number;
+            /** Dismissed */
+            dismissed: number;
+            /** Active Enrollments */
+            active_enrollments: number;
+        };
+        /** EvaluationCounts */
+        EvaluationCounts: {
+            /** Evaluated */
+            evaluated: number;
+            /** Not Evaluated */
+            not_evaluated: number;
+            /** Insufficient Data */
+            insufficient_data: number;
+        };
+        /** FollowupResult */
+        FollowupResult: {
+            /**
+             * Policy Version
+             * @default followup-policy-v1
+             * @constant
+             */
+            policy_version: "followup-policy-v1";
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /**
+             * Created
+             * @default 0
+             */
+            created: number;
+            /**
+             * Updated
+             * @default 0
+             */
+            updated: number;
+            /**
+             * Retained Low
+             * @default 0
+             */
+            retained_low: number;
+            /**
+             * No Alert
+             * @default 0
+             */
+            no_alert: number;
+            /**
+             * Reused
+             * @default 0
+             */
+            reused: number;
+            /**
+             * Ignored Stale
+             * @default 0
+             */
+            ignored_stale: number;
+            /**
+             * Skipped Missing
+             * @default 0
+             */
+            skipped_missing: number;
+        };
+        /** InterventionCounts */
+        InterventionCounts: {
+            /** Planned */
+            planned: number;
+            /** Done */
+            done: number;
+            /** Cancelled */
+            cancelled: number;
+        };
+        /** InterventionCreate */
+        InterventionCreate: {
+            /**
+             * Alert Id
+             * Format: uuid
+             */
+            alert_id: string;
+            /** Expected Alert Version */
+            expected_alert_version: number;
+            /**
+             * Creation Key
+             * Format: uuid
+             */
+            creation_key: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "TUTORING" | "REINFORCEMENT" | "FAMILY_MEETING" | "OTHER";
+            /** Objective */
+            objective: string;
+            /**
+             * Scheduled At
+             * Format: date-time
+             */
+            scheduled_at: string;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** InterventionCreateResult */
+        InterventionCreateResult: {
+            intervention: components["schemas"]["InterventionView"];
+            /** Reused Result */
+            reused_result: boolean;
+        };
+        /** InterventionPatch */
+        InterventionPatch: {
+            /** Expected Version */
+            expected_version: number;
+            /**
+             * Kind
+             * @enum {string|null}
+             */
+            kind?: "TUTORING" | "REINFORCEMENT" | "FAMILY_MEETING" | "OTHER" | null;
+            /** Objective */
+            objective?: string | null;
+            /**
+             * Scheduled At
+             * Format: date-time
+             */
+            scheduled_at?: string | null;
+            /** Notes */
+            notes?: string | null;
+            /**
+             * Status
+             * @enum {string|null}
+             */
+            status?: "PLANNED" | "DONE" | "CANCELLED" | null;
+            /**
+             * Performed At
+             * Format: date-time
+             */
+            performed_at?: string | null;
+        };
+        /** Percentage */
+        Percentage: {
+            /** Count */
+            count: number;
+            /** Denominator */
+            denominator: number;
+            /** Percentage */
+            percentage: number | null;
+            /** Reason */
+            reason: string | null;
+        };
+        /** ReportRow */
+        ReportRow: {
+            /**
+             * Student Id
+             * Format: uuid
+             */
+            student_id: string;
+            /**
+             * Enrollment Id
+             * Format: uuid
+             */
+            enrollment_id: string;
+            /** Anon Code */
+            anon_code: string;
+            /**
+             * Section Id
+             * Format: uuid
+             */
+            section_id: string;
+            /** Section Code */
+            section_code: string;
+            /** Grade */
+            grade: number;
+            /**
+             * Latest Cutoff At
+             * Format: date-time
+             */
+            latest_cutoff_at: string | null;
+            /**
+             * Evaluation Status
+             * @enum {string}
+             */
+            evaluation_status: "EVALUATED" | "NOT_EVALUATED" | "INSUFFICIENT_DATA";
+            /**
+             * Risk Level
+             * @enum {string|null}
+             */
+            risk_level: "LOW" | "MEDIUM" | "HIGH" | null;
+            /**
+             * Active Alert Id
+             * Format: uuid
+             */
+            active_alert_id: string | null;
+            /**
+             * Active Alert Status
+             * @enum {string|null}
+             */
+            active_alert_status: "OPEN" | "IN_REVIEW" | null;
+            /** Cases Open */
+            cases_open: number;
+            /** Cases In Review */
+            cases_in_review: number;
+            /** Cases Resolved */
+            cases_resolved: number;
+            /** Cases Dismissed */
+            cases_dismissed: number;
+            /** Interventions Planned */
+            interventions_planned: number;
+            /** Interventions Done */
+            interventions_done: number;
+            /** Interventions Cancelled */
+            interventions_cancelled: number;
+        };
+        /** RiskCounts */
+        RiskCounts: {
+            low: components["schemas"]["Percentage"];
+            medium: components["schemas"]["Percentage"];
+            high: components["schemas"]["Percentage"];
+        };
+        /** ReportSummary */
+        ReportSummary: {
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /** Period Code */
+            period_code: string;
+            /**
+             * Section Id
+             * Format: uuid
+             */
+            section_id: string | null;
+            /** Authorized Section Ids */
+            authorized_section_ids: string[];
+            /**
+             * Scope
+             * @default SYNTHETIC_STUDY
+             * @constant
+             */
+            scope: "SYNTHETIC_STUDY";
+            /**
+             * Data Origin
+             * @default SYNTHETIC
+             * @constant
+             */
+            data_origin: "SYNTHETIC";
+            /** Notice */
+            notice: string;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /**
+             * Cutoff Min
+             * Format: date-time
+             */
+            cutoff_min: string | null;
+            /**
+             * Cutoff Max
+             * Format: date-time
+             */
+            cutoff_max: string | null;
+            /** Total */
+            total: number;
+            evaluations: components["schemas"]["EvaluationCounts"];
+            risks: components["schemas"]["RiskCounts"];
+            cases: components["schemas"]["CaseCounts"];
+            interventions: components["schemas"]["InterventionCounts"];
+            /** Items */
+            items: components["schemas"]["ReportRow"][];
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** SyncInput */
+        SyncInput: {
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
         };
     };
     responses: never;
@@ -2327,6 +2971,737 @@ export interface operations {
                 };
             };
             /** @description SERVICE_UNAVAILABLE sanitizado; sin consultas/secretos */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    syncAlerts: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SyncInput"];
+            };
+        };
+        responses: {
+            /** @description Resultado público actual del estudio sintético */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FollowupResult"];
+                };
+            };
+            /** @description SESSION_INVALID; sin sesión válida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso no disponible; ajeno e inexistente indistinguibles */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE; sin escrituras parciales */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listAlerts: {
+        parameters: {
+            query: {
+                period_id: string;
+                section_id?: string;
+                search?: string;
+                status?: "OPEN" | "IN_REVIEW" | "RESOLVED" | "DISMISSED";
+                severity?: "MEDIUM" | "HIGH";
+                sort?: "anon_code" | "severity_desc" | "updated_desc";
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resultado público actual del estudio sintético */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertPage"];
+                };
+            };
+            /** @description SESSION_INVALID; sin sesión válida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso no disponible; ajeno e inexistente indistinguibles */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE; sin escrituras parciales */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    alertDetail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resultado público actual del estudio sintético */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertDetail"];
+                };
+            };
+            /** @description SESSION_INVALID; sin sesión válida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso no disponible; ajeno e inexistente indistinguibles */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE; sin escrituras parciales */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    updateAlert: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertPatch"];
+            };
+        };
+        responses: {
+            /** @description Resultado público actual del estudio sintético */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertDetail"];
+                };
+            };
+            /** @description SESSION_INVALID; sin sesión válida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso no disponible; ajeno e inexistente indistinguibles */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE; sin escrituras parciales */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    createIntervention: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InterventionCreate"];
+            };
+        };
+        responses: {
+            /** @description Resultado ya existente, reused_result=true; sin nueva actividad/auditoría */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterventionCreateResult"];
+                };
+            };
+            /** @description Actividad PLANNED creada, reused_result=false */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterventionCreateResult"];
+                };
+            };
+            /** @description SESSION_INVALID; sin sesión válida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso no disponible; ajeno e inexistente indistinguibles */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE; sin escrituras parciales */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    updateIntervention: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InterventionPatch"];
+            };
+        };
+        responses: {
+            /** @description Resultado público actual del estudio sintético */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterventionView"];
+                };
+            };
+            /** @description SESSION_INVALID; sin sesión válida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso no disponible; ajeno e inexistente indistinguibles */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE; sin escrituras parciales */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    reportSummary: {
+        parameters: {
+            query: {
+                period_id: string;
+                section_id?: string;
+                search?: string;
+                risk_level?: "LOW" | "MEDIUM" | "HIGH";
+                evaluation_status?: "EVALUATED" | "NOT_EVALUATED" | "INSUFFICIENT_DATA";
+                alert_status?: "OPEN" | "IN_REVIEW" | "RESOLVED" | "DISMISSED";
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resultado público actual del estudio sintético */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportSummary"];
+                };
+            };
+            /** @description SESSION_INVALID; sin sesión válida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso no disponible; ajeno e inexistente indistinguibles */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE; sin escrituras parciales */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    exportReportCsv: {
+        parameters: {
+            query: {
+                period_id: string;
+                section_id?: string;
+                search?: string;
+                risk_level?: "LOW" | "MEDIUM" | "HIGH";
+                evaluation_status?: "EVALUATED" | "NOT_EVALUATED" | "INSUFFICIENT_DATA";
+                alert_status?: "OPEN" | "IN_REVIEW" | "RESOLVED" | "DISMISSED";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description UTF-8 con BOM; una fila por matrícula del conjunto filtrado completo, null celda vacía. Textos con prefijos de fórmula se neutralizan con apóstrofo y controles eliminados en proyección. No notas/etiquetas/ML privado. */
+            200: {
+                headers: {
+                    /** @description attachment; filename="seguimiento-escolar-reporte.csv" */
+                    "Content-Disposition"?: string;
+                    "Cache-Control"?: "no-store";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+            /** @description SESSION_INVALID; sin sesión válida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID; rol/CSRF antes del cuerpo */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso no disponible; ajeno e inexistente indistinguibles */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VERSION_CONFLICT, CREATION_KEY_CONFLICT, PERIOD_LOCKED, INVALID_TRANSITION o MODEL_NOT_AVAILABLE; sin escrituras parciales */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description VALIDATION_ERROR, INSTITUTIONAL_PROCESSING_NOT_READY o procedencia/fechas no admitidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409 */
             503: {
                 headers: {
                     [name: string]: unknown;

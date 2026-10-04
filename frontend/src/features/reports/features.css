@@ -1,0 +1,29 @@
+.reports-feature { display: grid; gap: 24px; min-width: 0; }
+.reports-feature > .panel + .panel { margin-top: 0; }
+.report-filters { display: grid; grid-template-columns: minmax(150px, 1.3fr) repeat(3, minmax(140px, 1fr)); gap: 16px; }
+.report-filter-actions { display: flex; align-items: end; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.report-filter-actions > div { max-width: 180px; margin-left: auto; }
+.report-summary-heading { display: flex; align-items: start; justify-content: space-between; gap: 20px; margin-bottom: 14px; flex-wrap: wrap; }
+.report-summary-heading h2 { font-size: 19px; }
+.report-summary-heading .eyebrow { margin-bottom: 7px; }
+.report-summary-table { margin-top: 22px; }
+.table-container.report-summary-table table { min-width: 650px; table-layout: fixed; }
+.report-state-column { width: 165px; }
+.report-count-column { width: 65px; }
+.report-unit-column { width: 155px; }
+.report-summary-table tbody th { background: transparent; color: #4d6550; font-size: 12px; font-weight: 500; border-bottom: 1px solid #edf1e9; }
+.report-summary-table td:last-child { font-size: 11px; line-height: 1.6; max-width: 300px; }
+.report-note { margin-top: 18px; padding-top: 16px; border-top: 1px solid #e3ebe0; font-size: 12px; }
+.table-container.report-rows-table table { min-width: 1060px; }
+.report-rows-table th { max-width: 160px; }
+.report-rows-table td { max-width: 170px; overflow-wrap: anywhere; }
+.report-risk { margin-top: 8px; }
+.report-scroll-help { display: none; font-size: 12px; margin-top: 18px; }
+.report-compact-counts { margin: 20px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 24px; }
+.report-compact-counts dt { font-size: 12px; color: #5c715f; margin-bottom: 6px; }
+.report-compact-counts dd { margin: 0; color: #284f35; font-size: 25px; font-weight: 650; }
+.report-compact-counts small { font-size: 12px; font-weight: 400; }
+@media (max-width: 1150px) { .report-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1100px) { .report-scroll-help { display: block; } }
+@media (max-width: 760px) { .report-compact-counts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 460px) { .report-filters, .report-compact-counts { grid-template-columns: minmax(0, 1fr); } .report-filter-actions .button { flex: 1; } .report-filter-actions > div { max-width: none; width: 100%; margin-left: 0; } }

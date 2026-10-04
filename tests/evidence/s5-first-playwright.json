@@ -1,0 +1,66 @@
+{
+  "status": "passed",
+  "scope": "isolated",
+  "cases": [
+    {
+      "title": "S5 ADMIN: seguimiento, alcance y reportes reales",
+      "status": "passed",
+      "duration_ms": 27781,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    },
+    {
+      "title": "S5 TUTOR: seguimiento, alcance y reportes reales",
+      "status": "passed",
+      "duration_ms": 31837,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    },
+    {
+      "title": "S5 DIRECTOR: seguimiento, alcance y reportes reales",
+      "status": "passed",
+      "duration_ms": 8835,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    },
+    {
+      "title": "S5 RESEARCHER: seguimiento, alcance y reportes reales",
+      "status": "passed",
+      "duration_ms": 6226,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    },
+    {
+      "title": "S5 aislado: fallos HTTP identificados y descarte tardío entre sesiones",
+      "status": "passed",
+      "duration_ms": 12610,
+      "has_simulated_http_503": true,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": true,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "scope": "Inspección visual de PNG finales del entorno PostgreSQL/API/navegador aislado S5; este agente no inició runners, solicitudes ni mutaciones.",
+  "prefix": "s5-complete-final",
+  "tool": "view_image",
+  "image_detail": "original",
+  "inspected_files": [
+    "s5-complete-final-admin-alerts-1440x900.png",
+    "s5-complete-final-admin-alerts-768x1024.png",
+    "s5-complete-final-admin-alerts-390x844.png",
+    "s5-complete-final-admin-reports-1440x900.png",
+    "s5-complete-final-admin-reports-768x1024.png",
+    "s5-complete-final-admin-reports-390x844.png",
+    "s5-complete-final-admin-home-followup-1440x900.png",
+    "s5-complete-final-admin-home-followup-768x1024.png",
+    "s5-complete-final-admin-home-followup-390x844.png",
+    "s5-complete-final-tutor-home-followup-1440x900.png",
+    "s5-complete-final-tutor-home-followup-768x1024.png",
+    "s5-complete-final-tutor-home-followup-390x844.png",
+    "s5-complete-final-director-home-followup-1440x900.png",
+    "s5-complete-final-director-home-followup-768x1024.png",
+    "s5-complete-final-director-home-followup-390x844.png",
+    "s5-complete-final-tutor-foreign-safe404-1440x900.png",
+    "s5-complete-final-tutor-foreign-safe404-768x1024.png",
+    "s5-complete-final-tutor-foreign-safe404-390x844.png",
+    "s5-complete-final-tutor-real-version-conflict-1440x900.png",
+    "s5-complete-final-tutor-real-version-conflict-768x1024.png",
+    "s5-complete-final-tutor-real-version-conflict-390x844.png",
+    "s5-complete-final-tutor-reports-1440x900.png",
+    "s5-complete-final-tutor-reports-768x1024.png",
+    "s5-complete-final-tutor-reports-390x844.png",
+    "s5-complete-final-director-reports-1440x900.png",
+    "s5-complete-final-director-reports-768x1024.png",
+    "s5-complete-final-director-reports-390x844.png"
+  ],
+  "inspected_file_count": 27,
+  "viewport_sizes": [
+    "1440x900",
+    "768x1024",
+    "390x844"
+  ],
+  "inspected_states": [
+    "Alertas ADMIN",
+    "Reportes ADMIN",
+    "Reportes TUTOR",
+    "Reportes DIRECTOR",
+    "Inicio ADMIN con seguimiento",
+    "Inicio TUTOR con seguimiento",
+    "Inicio DIRECTOR con seguimiento",
+    "Recurso de otra sección no disponible para TUTOR",
+    "Formulario TUTOR con conflicto real de versión 409"
+  ],
+  "findings": [
+    {
+      "status": "COMPROBADO_EN_CAPTURAS",
+      "finding": "La corrección de anchuras mantiene los códigos completos y evita la fragmentación anterior de las filas en Alertas y Reportes a 768 y 390. La tabla conserva desplazamiento interno; las columnas restantes quedan fuera del primer tramo.",
+      "files": [
+        "s5-complete-final-admin-alerts-768x1024.png",
+        "s5-complete-final-admin-alerts-390x844.png",
+        "s5-complete-final-admin-reports-768x1024.png",
+        "s5-complete-final-admin-reports-390x844.png"
+      ]
+    },
+    {
+      "status": "COMPROBADO_EN_CAPTURAS",
+      "finding": "Estado y Cantidad aparecen juntos en el primer tramo del resumen a 390, con conteos legibles. La ayuda de desplazamiento explica dónde consultar unidades, denominadores, evaluación y seguimiento; también está visible a 768.",
+      "roles": [
+        "ADMIN",
+        "TUTOR",
+        "DIRECTOR"
+      ]
+    },
+    {
+      "status": "COMPROBADO_EN_CAPTURAS",
+      "finding": "Inicio presenta resumen compacto con periodo, cantidad de matrículas, alcance autorizado y actualización. Los conteos y las acciones se leen en los tres tamaños; TUTOR conserva su sección y DIRECTOR muestra consulta sin modificar."
+    },
+    {
+      "status": "COMPROBADO_EN_CAPTURAS",
+      "finding": "Las tres capturas de recurso ajeno muestran únicamente 'Este caso no está disponible', texto genérico y retorno al listado; no muestran código, motivos, responsable ni actividades del recurso ajeno. La comprobación HTTP404 pertenece a la prueba QA, no se deduce únicamente del PNG."
+    },
+    {
+      "status": "COMPROBADO_EN_CAPTURAS",
+      "finding": "El formulario de conflicto conserva el motivo de cierre del borrador, muestra la condición y el paso de revisión; checkbox y guardado aparecen deshabilitados hasta consultar la versión actual. Texto, referencia de soporte y controles se distribuyen sin solapamientos observados."
+    }
+  ],
+  "product_code_changes_during_final_review": [],
+  "screenshots_modified": false,
+  "remaining_limits": [
+    "Las tablas comparativas requieren desplazamiento horizontal interno en tamaños pequeños; la captura inicial de la tabla no muestra todas sus columnas.",
+    "El detalle de caso y sus formularios, actividades e historial generan una página larga en móvil. La interfaz conserva borradores y motivos de bloqueo; no se cambió durante el freeze.",
+    "La captura de recurso ajeno todavía muestra en paralelo la consulta del alcance global; el recurso ya aparece como no disponible sin datos ajenos.",
+    "Inspección de capturas con tamaños emulados: no acredita dispositivos táctiles físicos, todos los navegadores, lectores de pantalla, navegación completa con teclado ni una auditoría WCAG.",
+    "Los conteos ilustran datos del entorno sintético aislado y distintos momentos del recorrido; no son resultados escolares ni métricas de eficacia.",
+    "La ejecución funcional, respuestas HTTP y permisos del recorrido corresponden a las evidencias QA y backend. Este archivo solo enumera PNG realmente vistos."
+  ],
+  "disposition": "Sin nuevo fallo funcional o visual que requiera editar código. Corrección visual previa confirmada; se conserva el freeze."
+}

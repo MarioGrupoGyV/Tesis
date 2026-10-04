@@ -1,14 +1,17 @@
 # Seguimiento Escolar
 
-**S4: interfaz conectada al Estudio con datos sintéticos en Windows y Docker.** Registros nuevos de
-origen SYNTHETIC ingresan únicamente por el importador verificado y comandos ADMIN
-explícitos. Comparación de cuatro algoritmos e inferencia local de simulación.
-REAL sigue bloqueado; no hay resultados escolares ni hipótesis validada. Las cuatro
-cuentas S2.2 y el histórico se conservan. S5/S6 pendientes.
+**S5: Alertas, intervenciones y Reportes conectados a API/PostgreSQL.**
+El seguimiento pertenece al Estudio con datos sintéticos registrado. Conserva las
+cuatro cuentas S2.2, sus credenciales privadas, el modelo y las predicciones previas.
+No regenera ni reentrena el estudio activo. REAL sigue bloqueado; no hay resultados
+escolares ni hipótesis validada. S6 y la revisión académica quedan pendientes.
 
-Consultar [manual del estudio](docs/manuals/Manual_Estudio_Sintetico.md),
-[ADR 006](docs/adr/006-estudio-sintetico-s3-1.md) y
-[cierre S3.1](docs/planning/Estado_Sprint_3_1.md).
+Consultar [manual de seguimiento y reportes](docs/manuals/Manual_Seguimiento_Reportes_S5.md),
+[ADR 008](docs/adr/008-seguimiento-reportes-s5.md),
+[cierre S5](docs/planning/Estado_Sprint_5.md) y
+[matriz S5](docs/planning/Matriz_verificacion_S5.md).
+La preparación y simulación previa se documentan en el
+[manual del estudio](docs/manuals/Manual_Estudio_Sintetico.md).
 
 ## Preparación y operación
 
@@ -103,57 +106,79 @@ rutas Linux pertenecen a Docker, no son instrucciones para la consola del usuari
 
 ## Comprobaciones desde PowerShell
 
+Estos comandos utilizan prefijos nuevos. Sustituye `s5-nueva` por un sello distinto
+para cada ejecución, conserva los reportes existentes y ejecuta desde la raíz:
+
 ```powershell
-$env:TEST_REPORT_NAME = 's4-backend'
+$env:TEST_REPORT_NAME = 's5-nueva-backend'
 docker compose -f infra/compose.test.yaml build tester
 docker compose -f infra/compose.test.yaml run --rm tester
-$env:BROWSER_REPORT_PREFIX = 's4-complete'
-py -3.12 infra/test_browser.py
-py -3.12 -m venv .venv-s0
-.\.venv-s0\Scripts\python.exe -m pip install --require-hashes -r infra/requirements-s0.txt
-.\.venv-s0\Scripts\python.exe infra/check_s0.py
-npm ci --ignore-scripts --no-audit --no-fund
+$env:BROWSER_REPORT_PREFIX = 's5-nueva-aislado'
+py -3.12 infra/test_s5_browser.py
 npm run generate:api --workspace frontend
+npm run typecheck --workspace frontend
 npm run build --workspace frontend
+.\.venv-s0\Scripts\python.exe infra/check_s0.py
+docker compose exec -T api python -m pip check
 git diff --check
 ```
 
-Las pruebas backend usan una base nueva `riesgo_escolar_test_<id>` en otro proyecto
-Compose sin puerto de base publicado. Conservan sesiones, atomicidad, concurrencia,
-revisiones, fechas, permisos e idempotencia. Las pruebas históricas del motor REAL
-sustituyen el bloqueo **solo mediante monkeypatch de pytest**; no existe interruptor
-operativo institucional. Las pruebas S3.1 usan el registro sintético y la política
-efectiva sin ese reemplazo. Todos sus registros y artefactos son fixtures aislados.
+Si faltan las herramientas documentales:
 
-El runner de navegador necesita Chromium de Playwright instalado (`npx playwright
-install chromium` si falta), usa puerto 15174 y otra base nueva. No guarda la contraseña
-de prueba en archivos y no toca la aplicación activa. Comprueba primera importación real de CSV registrado, filtros/lista/detalle/historial,
-modelos/inferencia, permisos, teclado y revocación en escritorio, tablet y móvil.
-Las ramas HTTP simuladas se identifican aparte. La revisión crea exclusivamente
-fixtures en la base de prueba; conserva el estudio activo.
+```powershell
+py -3.12 -m venv .venv-s0
+.\.venv-s0\Scripts\python.exe -m pip install --require-hashes -r infra/requirements-s0.txt
+```
 
-`py -3.12 infra/check_runtime.py` comprueba únicamente una aplicación todavía vacía,
-recrea contenedores y conserva un marcador de infraestructura en el volumen. Rechaza
-ejecutarse si ya hay registros; no borra ni inventa datos para que pase.
+Las pruebas backend usan Linux/Python 3.12.12 dentro de Docker y una base nueva
+`riesgo_escolar_test_<id>` de PostgreSQL aislado, sin puerto publicado. El propietario
+aplica migraciones y `riesgo_app` ejecuta la aplicación. Se comprueban regresión,
+integridad, versiones, rollback y concurrencia mediante locks observados en DB.
+Los fixtures y artefactos de prueba no son datos ni resultados institucionales.
+Las pruebas históricas del motor REAL sustituyen el bloqueo solo mediante monkeypatch
+de pytest; no existe interruptor institucional operativo.
 
-Con las cuentas actuales usa `py -3.12 infra/check_access_persistence.py`, con
-`$env:PERSISTENCE_REPORT_PREFIX = 's4'`: captura el estado, recrea sin eliminar
-volúmenes y verifica cuentas, roles, auditoría, estudio y archivos. La revisión
-S3.1 de las 19 operaciones usa `infra/review_study.py`, según el manual del estudio;
-los revisores históricos `review_endpoints.py` y `review_s3.py` esperan bloqueo
-total y no se ejecutan sobre el estudio poblado. `infra/review_browser.py` revisa
-los cuatro roles en localhost usando el almacén privado, con
-`$env:REVIEW_REPORT_PREFIX = 's4-active-complete'`. No ejecutar revisiones de login repetidamente: el límite vigente
-es 10 intentos por IP cada 300 segundos y también cuenta accesos correctos.
+El runner de navegador necesita Chromium (`npx playwright install chromium` si falta),
+puerto 15174 y otra base nueva. Comprueba CSV registrado → importar → evaluar desde
+la interfaz → alertas → actividades → cerrar → resumen → CSV. Compara cuatro roles,
+sección propia/ajena, 409 efectivo, teclado y tres tamaños. Las simulaciones HTTP de
+fallos de UI se identifican aparte y solo se ejecutan en ese entorno aislado.
+
+Para aplicar la versión sin recrear cuentas ni volúmenes:
+
+```powershell
+docker compose build api web
+py -3.12 infra/manage.py migrate
+docker compose up -d --wait api web
+```
+
+La revisión activa registra un mínimo de seguimiento **simulado** y conserva sus
+acciones. No repetirla como si fuera una preparación sin efectos:
+
+```powershell
+$env:REVIEW_REPORT_PREFIX = 's5-nueva-activo'
+py -3.12 infra/review_s5.py --study-id e3a2d28b-2f23-56ae-878c-1a8f4a257e7e --period-id c036cbcb-87db-5ed0-bcfa-bbd644928ccb
+```
+
+El cierre coordinado S5 usa `infra/check_s5.py` sobre la base poblada y evidencias
+nuevas; su invocación exacta está en [Estado S5](docs/planning/Estado_Sprint_5.md).
+`infra/check_runtime.py` es exclusivo de una aplicación vacía. Los checkers/revisores
+S0–S4 conservan expectativas históricas y no se ejecutan sobre el seguimiento nuevo.
+`infra/check_access_persistence.py` recrea sin borrar volúmenes y verifica las cuatro
+cuentas, revocación y todas las tablas/archivos; el cierre S5 usa prefijo `s5`.
+No ejecutar revisiones de login repetidamente: el límite es 10 intentos por IP cada
+300 segundos, incluidos accesos correctos. Nunca usar `down -v`.
 
 ## Contrato, conservación y límites
 
-Contrato vigente [OpenAPI 0.4.0](docs/planning/Contrato_API.yaml), con solo rutas
-implementadas. [Esquema](docs/planning/Esquema.sql) es referencia; aplicar Alembic,
+Contrato vigente [OpenAPI 0.5.0](docs/planning/Contrato_API.yaml), con solo rutas
+implementadas: 27 operaciones y 26 paths. [Esquema](docs/planning/Esquema.sql) es referencia; aplicar Alembic,
 nunca ejecutar manualmente ese SQL. La migración 0001 y su snapshot permanecen intactos;
 0002 añadió restricciones institucionales sin transformar registros anteriores.
 0003 permite SYNTHETIC y activación técnica de simulación en un contexto separado,
 conservando datos anteriores y la prohibición de activar REAL.
+0004 añade decisiones inmutables de seguimiento y clave/digest original de intervención;
+son 15 tablas de aplicación. 0001–0003 permanecen intactas.
 
 POST de importación exige ADMIN/CSRF. REAL devuelve 422
 `INSTITUTIONAL_PROCESSING_NOT_READY`; SYNTHETIC exige CSV exacto registrado por el
@@ -193,11 +218,6 @@ py -3.12 infra/ml.py configuration
 py -3.12 infra/ml.py compatibility
 py -3.12 infra/ml.py train  # Rechazo esperado, código de salida 2
 py -3.12 infra/study.py status --admin-credential ADMIN
-$env:REVIEW_REPORT_PREFIX = 's4-active-complete'
-py -3.12 infra/review_browser.py --study-id e3a2d28b-2f23-56ae-878c-1a8f4a257e7e --period-id c036cbcb-87db-5ed0-bcfa-bbd644928ccb
-$env:PERSISTENCE_REPORT_PREFIX = 's4'
-py -3.12 infra/check_access_persistence.py
-.\.venv-s0\Scripts\python.exe infra/check_s4.py
 ```
 
 `check_study.py` contrasta la evidencia S3.1. `check_s3.py` y `.local/s3-before.json`
@@ -208,13 +228,15 @@ importación, comparación, registro y activación explícitos. El [manual ML](d
 [ADR 005](docs/adr/005-infraestructura-ml-s3.md) y [Estado S3](docs/planning/Estado_Sprint_3.md)
 conservan la infraestructura y evidencia de aquella iteración.
 
-## Interfaz S4
+## Interfaz vigente
 
 Acceso, Inicio, Estudiantes/lista/detalle/historial, Datos/importación y Modelos
-se conectan al contrato 0.4.0. Usa periodo/sección autorizados, filtros y paginación
+se conectan al contrato 0.5.0. Usa periodo/sección autorizados, filtros y paginación
 en servidor. ADMIN importa el CSV registrado y evalúa el periodo sintético; TUTOR
 consulta únicamente su sección; DIRECTOR consulta su alcance; RESEARCHER conserva
-inicio limitado y sesión. Alertas y Reportes están pendientes de S5.
+inicio limitado y sesión. Alertas y Reportes están conectados: TUTOR gestiona solo
+sus secciones, DIRECTOR consulta sin mutaciones y ADMIN sincroniza predicciones
+existentes. La inferencia incorpora seguimiento en la misma transacción.
 
 No regenerar ni reentrenar el estudio existente para usar la interfaz. Para obtener
 su CSV de entrada y seleccionarlo en Windows, consulta el comando export-csv del
@@ -228,3 +250,23 @@ el instante solicitado en Lima y el servidor valida que no esté en el futuro.
 [ADR 007](docs/adr/007-interfaz-s4.md), [matriz S4](docs/planning/Matriz_verificacion_S4.md)
 y [Estado S4](docs/planning/Estado_Sprint_4.md) registran alcance y comprobaciones.
 Solo infraestructura/simulación comprobadas; no tratamiento REAL ni tesis validada.
+
+## Seguimiento y reportes S5
+
+`followup-policy-v1` crea o actualiza un único caso activo ante MEDIUM/HIGH. LOW
+conserva el caso previo para revisión humana; sin caso registra que no requiere
+alerta. Sin evaluación actual muestra información pendiente. Repetir la predicción
+reutiliza su decisión, incluso después de cerrar el caso; nunca reabre automáticamente.
+
+Las ediciones exigen versión. Ante 409 se conserva el borrador y es obligatorio revisar
+el recurso actualizado. Las actividades comienzan planificadas; realizarlas requiere
+fecha efectiva explícita. Concluir un caso no completa actividades ni demuestra
+mejoría académica. Toda acción descrita aquí es simulación interna, sin comunicaciones.
+
+Reportes cuenta una matrícula por estado actual, sobre todo el alcance autorizado.
+El riesgo solo incluye evaluados; los porcentajes muestran denominador y son null
+cuando es cero. El CSV descarga el conjunto filtrado completo, UTF-8 con BOM, sin
+notas libres o etiquetas privadas. Normaliza controles y prefijos de fórmula para
+Windows sin modificar la DB. El historial conserva auditoría, contexto y fechas Lima.
+El [manual S5](docs/manuals/Manual_Seguimiento_Reportes_S5.md) explica permisos,
+transiciones, columnas CSV y límites. No incorpora reportes históricos ni eficacia.

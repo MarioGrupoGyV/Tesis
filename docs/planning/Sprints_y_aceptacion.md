@@ -10,7 +10,7 @@ se conservan intactos. S2.1 reemplaza las instrucciones operativas de ese alcanc
 | S3 | Infraestructura implementada; Estado_Sprint_3.md | S2.2 preservado; núcleo ML y persistencia comprobados aisladamente. Entrenamiento/evaluación/activación institucional pendientes de datos, etiquetas, protocolo y migración |
 | S3.1 | Comprobado; Estado_Sprint_3_1.md y Matriz_verificacion_S3_1.md | Estudio SYNTHETIC nuevo verificado, comparación con reserva temporal, activación explícita técnica y recorrido API/DB; REAL bloqueado |
 | S4 | Implementado y comprobado; Estado_Sprint_4.md y Matriz_verificacion_S4.md | S3.1 comprobado. Acceso/Inicio/Estudiantes/Datos/Modelos con API real, rutas/roles/contexto, flujo importación/evaluación sintética y tres tamaños. Alertas/Reportes pendientes S5 |
-| S5 | Pendiente | Predicción válida, sesiones, matrículas y protocolo; alertas únicas, seguimiento versionado, auditoría y exportaciones autorizadas |
+| S5 | Implementado; cierre y resultados en Estado_Sprint_5.md y Matriz_verificacion_S5.md | S4 conservado; seguimiento SYNTHETIC único/versionado, inferencia atómica, resumen y CSV con permisos servidor. REAL bloqueado |
 | S6 | Pendiente | S3–S5 integrados; recorrido completo, persistencia, restauración, documentación y evidencias verificables |
 
 ## Aceptación S2.1
@@ -88,3 +88,35 @@ como historia; las obligaciones de crear/entrenar/mostrar una demo quedan sustit
 8. Modelos públicos/evaluación sintética ADMIN: as_of actual o Lima explícito, created/reused/abstenciones; sin botones de entrenamiento/activación, métricas inventadas o probabilidades no calibradas.
 9. Cancelación y limpieza por sesión/contexto, errores sanitizados y accesibilidad; navegador activo/aislado con API/PostgreSQL reales, primera importación aislada y repetición activa sin duplicados.
 10. Typecheck/build, contrato/tipos, regresión backend, persistencia e inspección de capturas 1440×900, 768×1024 y 390×844; evidencias s4, fallos/omisiones explícitos. S5/S6 y validación institucional fuera de alcance.
+
+### Aceptación S5
+
+1. ADR previa, SHA inicial y conservación de cuentas/credenciales, sesiones/auditoría
+   anteriores, locks, artefactos, modelo, predicciones y migraciones 0001–0003.
+2. Migración 0004 limpia y desde S4; 15 tablas, evidencia única/inmutable por predicción,
+   idempotencia original por actor/clave y guards de matrícula/origen/lote/modelo/estudio.
+3. Política MEDIUM/HIGH/LOW vigente; última revisión/modelo compatibles, sin riesgo
+   inventado, sin reapertura automática ni retroceso histórico de fuente.
+4. Inferencia, seguimiento y auditoría en una transacción; locks DB comunes y unicidad;
+   simultaneidad comprobada mediante coordinación/observación sin sleeps arbitrarios.
+5. Permisos ADMIN/TUTOR/DIRECTOR/RESEARCHER efectivos; 404 propios/ajenos indistinguibles,
+   CSRF, bloqueo de todas las escrituras de periodo y lectura autorizada preservada.
+6. Alertas/intervenciones con versiones estrictas, transiciones terminales y razones;
+   fecha efectiva explícita no futura, creación idempotente con digest original,
+   actividades pendientes editables tras cierre y ausencia de cambios parciales.
+7. Ocho operaciones nuevas reales: contrato 0.5.0, 27 operaciones/26 paths, tipos
+   generados, ProcessingStatus por rol, errores JSON sanitizados y resultado de seguimiento.
+8. Resumen sobre una matrícula actual por unidad; total=evaluados+pendientes+insuficientes,
+   evaluados=LOW+MEDIUM+HIGH, conteos no multiplicados y porcentajes null sin denominador.
+9. CSV completo filtrado/servidor, UTF-8 BOM, quoting/Unicode/control/fórmulas comprobados,
+   sin narrativas/privados, nombre fijo/no-store y auditoría de solicitud sin filas.
+10. UI Alertas/Reportes/Inicio/estudiante conectada; 409 conserva borrador y revisión,
+    intento incierto conserva clave/payload, caché/cancelación por sesión y reloj API.
+11. Recorrido aislado CSV→importación→evaluación UI→caso→actividades→cierre→resumen→CSV;
+    cuatro roles, sección ajena/CSRF/409/teclado e inspección real de tres tamaños.
+    Fallos HTTP simulados separados de respuestas positivas API/PostgreSQL.
+12. Activo incorpora las 55 predicciones existentes por sincronización ADMIN explícita,
+    verifica repetición/inferencia y mínimo seguimiento simulado conservado. Regresión,
+    contrato/tipos/build/pip check, upgrade/persistencia y checker S5 con evidencia nueva.
+    Resultados/fallos/omisiones registrados. S6, restauración final integrada y revisión
+    académica pendientes; sin REAL, eficacia escolar, commit, push o despliegue externo.

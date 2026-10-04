@@ -1,0 +1,221 @@
+[
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no permite modificar seguimiento.",
+      "details": [],
+      "request_id": "998500b3-c946-4c64-88a3-34f6772ac5b0"
+    }
+  },
+  {
+    "schema": "ReportSummary",
+    "body": {
+      "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "period_code": "SYN-e3a2d28b2f23",
+      "section_id": null,
+      "authorized_section_ids": [
+        "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+        "3af48c81-a111-50ca-b93e-9bab40902c7c"
+      ],
+      "scope": "SYNTHETIC_STUDY",
+      "data_origin": "SYNTHETIC",
+      "notice": "Estado operativo de un estudio con datos sintéticos. No mide eficacia escolar ni resultados de la tesis.",
+      "generated_at": "2026-10-04T18:30:02.787869Z",
+      "cutoff_min": "2025-09-30T22:00:00Z",
+      "cutoff_max": "2025-09-30T22:00:00Z",
+      "total": 60,
+      "evaluations": {
+        "evaluated": 55,
+        "not_evaluated": 0,
+        "insufficient_data": 5
+      },
+      "risks": {
+        "low": {
+          "count": 4,
+          "denominator": 55,
+          "percentage": 7.2727272727272725,
+          "reason": null
+        },
+        "medium": {
+          "count": 22,
+          "denominator": 55,
+          "percentage": 40,
+          "reason": null
+        },
+        "high": {
+          "count": 29,
+          "denominator": 55,
+          "percentage": 52.72727272727273,
+          "reason": null
+        }
+      },
+      "cases": {
+        "open": 50,
+        "in_review": 0,
+        "resolved": 1,
+        "dismissed": 0,
+        "active_enrollments": 50
+      },
+      "interventions": {
+        "planned": 0,
+        "done": 1,
+        "cancelled": 1
+      },
+      "items": [
+        {
+          "student_id": "df4bd8f9-1574-4389-a52f-d0c9ca9bad38",
+          "enrollment_id": "4ae51e10-da6f-4391-9868-c5e705bd7475",
+          "anon_code": "SYN-e3a2d28b-0001",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "4a84f63f-b338-4328-ba62-8af54b13a0d2",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "c51254a8-be54-47dc-94fa-7631a3a4c7a6",
+          "enrollment_id": "096dfaf0-d6e2-4519-b247-54ba9687becd",
+          "anon_code": "SYN-e3a2d28b-0002",
+          "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+          "section_code": "SYN-e3a2d28b-B",
+          "grade": 2,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "fc8db69c-cb70-44ca-9b06-9f81e863feff",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "8b78f287-4910-4951-b28c-c9c4fdfa21c1",
+          "enrollment_id": "f6728931-7c35-459e-bf06-af3169febf16",
+          "anon_code": "SYN-e3a2d28b-0003",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "79799076-d630-4527-9059-ff5bb5bacccc",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "b6c1f405-d380-4dc9-a9fc-468b6b1f6037",
+          "enrollment_id": "3c5dc11a-6988-42c4-bb13-b42ca9123206",
+          "anon_code": "SYN-e3a2d28b-0004",
+          "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+          "section_code": "SYN-e3a2d28b-B",
+          "grade": 2,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "977308bd-6b86-4255-9afa-492a48317842",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        },
+        {
+          "student_id": "30d86c50-f6f8-4006-9dcd-7b4f2e98ea94",
+          "enrollment_id": "3ef573c1-2307-422d-900e-69428cac6755",
+          "anon_code": "SYN-e3a2d28b-0005",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "evaluation_status": "EVALUATED",
+          "risk_level": "HIGH",
+          "active_alert_id": "5d5fe278-c574-4d21-adb0-11a30255db9e",
+          "active_alert_status": "OPEN",
+          "cases_open": 1,
+          "cases_in_review": 0,
+          "cases_resolved": 0,
+          "cases_dismissed": 0,
+          "interventions_planned": 0,
+          "interventions_done": 0,
+          "interventions_cancelled": 0
+        }
+      ],
+      "page": 1,
+      "page_size": 5
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso al seguimiento.",
+      "details": [],
+      "request_id": "f8f2db06-0497-4b37-bf35-52bc960d1a1d"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso al seguimiento.",
+      "details": [],
+      "request_id": "bd29c184-203b-4c25-bb69-03747a6534a6"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso al seguimiento.",
+      "details": [],
+      "request_id": "7fe098ba-432a-40db-8bb5-1a22dabbb053"
+    }
+  },
+  {
+    "schema": "InterventionCreateResult",
+    "body": {
+      "intervention": {
+        "id": "d45c1abe-0aeb-473e-8a7c-19c3717a5c8a",
+        "enrollment_id": "ad5f05ff-9678-4318-8e33-892dba55ab53",
+        "alert_id": "0bf9032c-980e-4da1-9732-816804c80450",
+        "data_origin": "SYNTHETIC",
+        "kind": "TUTORING",
+        "objective": "S5 aislado: planificación con respuesta incierta",
+        "status": "PLANNED",
+        "scheduled_at": "2027-01-06T17:00:00Z",
+        "performed_at": null,
+        "notes": null,
+        "version": 1,
+        "created_at": "2026-10-04T18:30:17.048632Z",
+        "updated_at": "2026-10-04T18:30:17.048632Z",
+        "can_edit": true,
+        "edit_block_reason": null
+      },
+      "reused_result": true
+    }
+  }
+]

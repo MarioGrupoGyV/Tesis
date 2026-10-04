@@ -15,6 +15,11 @@ class ProcessingOperations(ContractModel):
     predict: ProcessingOperation
     read_students: ProcessingOperation
     read_models: ProcessingOperation
+    read_alerts: ProcessingOperation
+    write_followup: ProcessingOperation
+    sync_alerts: ProcessingOperation
+    read_reports: ProcessingOperation
+    export_reports: ProcessingOperation
 
     # Alias contractual; no palabra reservada en Python.
     import_: ProcessingOperation = Field(alias='import')

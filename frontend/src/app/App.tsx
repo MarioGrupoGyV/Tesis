@@ -7,6 +7,9 @@ import { StudentDetailPage } from '../features/students/StudentDetailPage';
 import { ImportsPage } from '../features/imports/ImportsPage';
 import { ModelsPage } from '../features/models/ModelsPage';
 import { ModelDetailPage } from '../features/models/ModelDetailPage';
+import { AlertsPage } from '../features/alerts/AlertsPage';
+import { AlertDetailPage } from '../features/alerts/AlertDetailPage';
+import { ReportsPage } from '../features/reports/ReportsPage';
 import { AppShell } from '../components/AppShell';
 import { EmptyState, ErrorState, LoadingState, PageHeader } from '../components/ui';
 import { api, ApiError, clearSessionMemory, errorMessage, SESSION_EXPIRED_EVENT, type User } from '../lib/api';
@@ -80,13 +83,14 @@ function AuthenticatedApp({ user, onLogout, onExpired, sessionError }: { user: U
     navigate(next.pathname + next.search);
   }
   function changePeriod(id: string) {
-    const path = location.pathname.startsWith('/estudiantes/') ? '/estudiantes' : location.pathname;
+    const path = location.pathname.startsWith('/estudiantes/') ? '/estudiantes' : location.pathname.startsWith('/alertas/') ? '/alertas' : location.pathname;
     navigate(path + '?' + new URLSearchParams({ period_id: id }).toString());
   }
   function changeSection(id: string) {
     const next = new URLSearchParams(location.search); next.delete('page'); next.delete('search'); next.delete('risk_level');
     if (id) next.set('section_id', id); else next.delete('section_id');
-    navigate(location.pathname + '?' + next.toString());
+    const path = location.pathname.startsWith('/alertas/') ? '/alertas' : location.pathname.startsWith('/estudiantes/') ? '/estudiantes' : location.pathname;
+    navigate(path + '?' + next.toString());
   }
   const context = !schoolContext ? null : <section className="context-bar" aria-label="Contexto de consulta">
     {periods.isPending ? <LoadingState label="Cargando periodos autorizados…" /> : periods.isError ? <ErrorState error={periods.error} onRetry={() => void periods.refetch()} /> : periods.data.length === 0 ? <p className="muted">No hay periodos configurados para tu cuenta.</p> : <><div className="context-field"><label htmlFor="period">Periodo de consulta</label><select id="period" value={periodId} onChange={(event) => changePeriod(event.target.value)}><option value="" disabled>Selecciona un periodo</option>{periods.data.map((item) => <option key={item.id} value={item.id}>{item.code} · {item.school_year}</option>)}</select></div><div className="context-field"><label htmlFor="section">Sección autorizada</label><select id="section" value={validSection} disabled={!period || sections.isPending || sections.isError} onChange={(event) => changeSection(event.target.value)}><option value="">Todas las autorizadas</option>{sections.data?.map((item) => <option key={item.id} value={item.id}>{item.grade}.º · {item.code}</option>)}</select></div><span className={`badge ${period?.is_locked ? 'locked' : ''}`}>{period?.data_origin === 'SYNTHETIC' ? 'Datos sintéticos' : 'Contexto sin procesamiento'}{period?.is_locked && ' · Bloqueado'}</span></>}
@@ -96,12 +100,13 @@ function AuthenticatedApp({ user, onLogout, onExpired, sessionError }: { user: U
   const pathname = location.pathname.replace(/\/$/, '') || '/';
   const studentMatch = pathname.match(/^\/estudiantes\/([^/]+)$/);
   const modelMatch = pathname.match(/^\/modelos\/([^/]+)$/);
+  const alertMatch = pathname.match(/^\/alertas\/([^/]+)$/);
   const forbidden = user.role === 'RESEARCHER' && pathname !== '/' || user.role !== 'ADMIN' && (pathname === '/datos' || pathname.startsWith('/modelos'));
   let page;
   if (forbidden) page = <><PageHeader title="Acceso no disponible" /><EmptyState title="Tu rol no permite abrir esta vista"><p>Vuelve a Inicio para conocer las consultas autorizadas.</p><button className="button secondary" type="button" onClick={() => go('/')}>Volver a Inicio</button></EmptyState></>;
   else if (pathname === '/' && schoolContext && (periods.isPending || period && sections.isPending)) page = <><PageHeader title="Inicio" /><LoadingState label="Cargando contexto autorizado…" /></>;
   else if (pathname === '/' && schoolContext && (periods.isError || sections.isError)) page = <><PageHeader title="Inicio" /><ErrorState error={periods.error ?? sections.error} onRetry={() => { void periods.refetch(); if (period) void sections.refetch(); }} /></>;
-  else if (pathname === '/') page = <HomePage user={user} period={period} sections={sections.data ?? []} processing={processing} onNavigate={go} />;
+  else if (pathname === '/') page = <HomePage key={periodId + validSection} user={user} period={period} sectionId={validSection} sections={sections.data ?? []} processing={processing} onNavigate={go} />;
   else if (pathname === '/estudiantes' && period && sections.isPending) page = <LoadingState label="Cargando secciones autorizadas…" />;
   else if (pathname === '/estudiantes' && period && sections.isError) page = <ErrorState error={sections.error} onRetry={() => void sections.refetch()} />;
   else if (pathname === '/estudiantes') page = <StudentsPage key={periodId + validSection} user={user} period={period} sectionId={validSection} onNavigate={go} />;
@@ -109,6 +114,11 @@ function AuthenticatedApp({ user, onLogout, onExpired, sessionError }: { user: U
   else if (pathname === '/datos') page = <ImportsPage user={user} period={period} status={processing} statusLoading={status.isPending} statusError={status.isError ? errorMessage(status.error) : ''} onRetryStatus={() => void status.refetch()} onUnauthorized={onExpired} onCommitted={(id) => navigate('/estudiantes?' + new URLSearchParams({ period_id: id }))} onViewStudents={(id) => navigate('/estudiantes?' + new URLSearchParams({ period_id: id }))} />;
   else if (pathname === '/modelos') page = <ModelsPage user={user} period={period} processing={processing} onNavigate={go} />;
   else if (modelMatch) page = <ModelDetailPage user={user} period={period} processing={processing} modelId={modelMatch[1]} onNavigate={go} />;
+  else if ((pathname === '/alertas' || pathname === '/reportes') && period && sections.isPending) page = <LoadingState label="Cargando secciones autorizadas…" />;
+  else if ((pathname === '/alertas' || pathname === '/reportes') && period && sections.isError) page = <ErrorState error={sections.error} onRetry={() => void sections.refetch()} />;
+  else if (pathname === '/alertas') page = <AlertsPage key={periodId + validSection} user={user} period={period} sectionId={validSection} processing={processing} onNavigate={go} />;
+  else if (alertMatch) page = <AlertDetailPage key={periodId + alertMatch[1]} user={user} period={period} processing={processing} alertId={alertMatch[1]} onNavigate={go} />;
+  else if (pathname === '/reportes') page = <ReportsPage key={periodId + validSection} user={user} period={period} sectionId={validSection} processing={processing} onNavigate={go} />;
   else page = <><PageHeader title="Página no encontrada" /><EmptyState title="Esta dirección no está disponible"><button className="button secondary" type="button" onClick={() => go('/')}>Volver a Inicio</button></EmptyState></>;
   return <AppShell user={user} pathname={pathname} context={context} notice={notice} onNavigate={go} onLogout={onLogout}>{page}</AppShell>;
 }

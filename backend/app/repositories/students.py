@@ -7,18 +7,22 @@ JOIN risk_school.enrollments e ON e.student_id=s.id
 JOIN risk_school.grade_sections g ON g.id=e.section_id
 LEFT JOIN LATERAL (
  SELECT sn.* FROM risk_school.academic_snapshots sn WHERE sn.enrollment_id=e.id
+ AND sn.data_origin=e.data_origin AND sn.cutoff_at<=statement_timestamp()
+ AND sn.available_at<=statement_timestamp() AND sn.created_at<=statement_timestamp()
  ORDER BY sn.cutoff_at DESC, sn.revision DESC LIMIT 1
 ) sn ON true
 LEFT JOIN risk_school.import_batches ib ON ib.id=sn.import_batch_id
 LEFT JOIN LATERAL (
  SELECT m.* FROM risk_school.model_versions m WHERE m.is_active AND m.status='APPROVED'
  AND m.data_origin=e.data_origin AND (e.data_origin<>'SYNTHETIC' OR m.study_id=ib.study_id)
+ AND m.created_at<=statement_timestamp()
  LIMIT 1
 ) current_model ON true
 LEFT JOIN LATERAL (
  SELECT p.* FROM risk_school.predictions p JOIN risk_school.model_versions m ON m.id=p.model_id
  WHERE p.snapshot_id=sn.id AND p.data_origin=e.data_origin AND m.data_origin=e.data_origin
- AND m.is_active AND m.status='APPROVED'
+ AND m.id=current_model.id AND m.is_active AND m.status='APPROVED'
+ AND p.predicted_at<=statement_timestamp()
  ORDER BY p.predicted_at DESC, p.id LIMIT 1
 ) pred ON true
 LEFT JOIN risk_school.alerts a ON a.enrollment_id=e.id AND a.status IN ('OPEN','IN_REVIEW')
@@ -90,8 +94,33 @@ UNION ALL
 SELECT id,'PREDICTION',predicted_at,'Evaluación registrada',id FROM risk_school.predictions WHERE enrollment_id=:id
 UNION ALL
 SELECT id,'ALERT',opened_at,'Apertura de alerta',id FROM risk_school.alerts WHERE enrollment_id=:id
+ AND NOT EXISTS(SELECT 1 FROM risk_school.audit_events ae WHERE ae.entity_id=alerts.id
+   AND ae.entity_type='ALERT' AND ae.action='ALERT_CREATED')
 UNION ALL
 SELECT id,'INTERVENTION',created_at,'Intervención registrada',id FROM risk_school.interventions WHERE enrollment_id=:id
+ AND NOT EXISTS(SELECT 1 FROM risk_school.audit_events ae WHERE ae.entity_id=interventions.id
+   AND ae.entity_type='INTERVENTION' AND ae.action='INTERVENTION_CREATED')
+UNION ALL
+SELECT ae.id,'ALERT',ae.recorded_at,
+ CASE ae.action WHEN 'ALERT_CREATED' THEN 'Apertura de alerta'
+  WHEN 'ALERT_SOURCE_UPDATED' THEN 'Fuente de alerta actualizada'
+  WHEN 'ALERT_LOW_RETAINED' THEN 'Riesgo actual bajo; seguimiento conservado para revisión humana'
+  WHEN 'ALERT_STATUS_CHANGED' THEN CASE ae.payload->>'status'
+   WHEN 'IN_REVIEW' THEN 'Alerta en revisión' WHEN 'RESOLVED' THEN 'Seguimiento concluido en simulación'
+   WHEN 'DISMISSED' THEN 'Alerta descartada' ELSE 'Estado de alerta actualizado' END
+  ELSE 'Seguimiento registrado' END,ae.entity_id
+ FROM risk_school.audit_events ae JOIN risk_school.alerts a ON a.id=ae.entity_id
+ WHERE a.enrollment_id=:id AND ae.entity_type='ALERT'
+ AND ae.action IN ('ALERT_CREATED','ALERT_SOURCE_UPDATED','ALERT_LOW_RETAINED','ALERT_STATUS_CHANGED')
+UNION ALL
+SELECT ae.id,'INTERVENTION',ae.recorded_at,
+ CASE ae.action WHEN 'INTERVENTION_CREATED' THEN 'Actividad simulada planificada'
+  WHEN 'INTERVENTION_UPDATED' THEN CASE ae.payload->>'status'
+   WHEN 'DONE' THEN 'Actividad simulada realizada' WHEN 'CANCELLED' THEN 'Actividad simulada cancelada'
+   ELSE 'Actividad simulada actualizada' END ELSE 'Actividad registrada' END,ae.entity_id
+ FROM risk_school.audit_events ae JOIN risk_school.interventions i ON i.id=ae.entity_id
+ WHERE i.enrollment_id=:id AND ae.entity_type='INTERVENTION'
+ AND ae.action IN ('INTERVENTION_CREATED','INTERVENTION_UPDATED')
 """
 
 
