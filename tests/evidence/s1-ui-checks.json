@@ -1,0 +1,174 @@
+{
+  "scope": "S1: login and authorized tutor context; synthetic DEMO data",
+  "base_url": "http://localhost:15173",
+  "created_at_utc": "2026-10-04T01:58:04.983Z",
+  "status": "COMPROBADO",
+  "captures": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "login_file": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\s1-ui-login-1440x900.png",
+      "login_layout": {
+        "viewport_width": 1440,
+        "viewport_height": 900,
+        "document_width": 1440,
+        "document_height": 900,
+        "horizontal_overflow": false
+      },
+      "login_keyboard_focus": [
+        {
+          "tag": "A",
+          "id": "",
+          "name": "Seguimiento Escolar, Inicio"
+        },
+        {
+          "tag": "INPUT",
+          "id": "email",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "password",
+          "name": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "name": "Iniciar sesión→"
+        }
+      ],
+      "labels_verified": [
+        "Correo electrónico",
+        "Contraseña",
+        "Selecciona un periodo"
+      ],
+      "tutor_file": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\s1-ui-tutor-1440x900.png",
+      "tutor_layout": {
+        "viewport_width": 1440,
+        "viewport_height": 900,
+        "document_width": 1440,
+        "document_height": 955,
+        "horizontal_overflow": false
+      },
+      "tutor_keyboard": {
+        "period_select_focused": true,
+        "logout_button_focused": true
+      },
+      "authorized_sections": 1,
+      "browser_storage_empty": true
+    },
+    {
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "login_file": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\s1-ui-login-768x1024.png",
+      "login_layout": {
+        "viewport_width": 768,
+        "viewport_height": 1024,
+        "document_width": 768,
+        "document_height": 1024,
+        "horizontal_overflow": false
+      },
+      "login_keyboard_focus": [
+        {
+          "tag": "A",
+          "id": "",
+          "name": "Seguimiento Escolar, Inicio"
+        },
+        {
+          "tag": "INPUT",
+          "id": "email",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "password",
+          "name": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "name": "Iniciar sesión→"
+        }
+      ],
+      "labels_verified": [
+        "Correo electrónico",
+        "Contraseña",
+        "Selecciona un periodo"
+      ],
+      "tutor_file": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\s1-ui-tutor-768x1024.png",
+      "tutor_layout": {
+        "viewport_width": 768,
+        "viewport_height": 1024,
+        "document_width": 768,
+        "document_height": 1286,
+        "horizontal_overflow": false
+      },
+      "tutor_keyboard": {
+        "period_select_focused": true,
+        "logout_button_focused": true
+      },
+      "authorized_sections": 1,
+      "browser_storage_empty": true
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "login_file": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\s1-ui-login-390x844.png",
+      "login_layout": {
+        "viewport_width": 390,
+        "viewport_height": 844,
+        "document_width": 390,
+        "document_height": 1149,
+        "horizontal_overflow": false
+      },
+      "login_keyboard_focus": [
+        {
+          "tag": "A",
+          "id": "",
+          "name": "Seguimiento Escolar, Inicio"
+        },
+        {
+          "tag": "INPUT",
+          "id": "email",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "password",
+          "name": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "name": "Iniciar sesión→"
+        }
+      ],
+      "labels_verified": [
+        "Correo electrónico",
+        "Contraseña",
+        "Selecciona un periodo"
+      ],
+      "tutor_file": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\s1-ui-tutor-390x844.png",
+      "tutor_layout": {
+        "viewport_width": 390,
+        "viewport_height": 844,
+        "document_width": 390,
+        "document_height": 1308,
+        "horizontal_overflow": false
+      },
+      "tutor_keyboard": {
+        "period_select_focused": true,
+        "logout_button_focused": true
+      },
+      "authorized_sections": 1,
+      "browser_storage_empty": true
+    }
+  ],
+  "logout_by_enter_revoked_session": true
+}

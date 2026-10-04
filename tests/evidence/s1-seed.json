@@ -1,0 +1,14 @@
+{
+  "data_origin": "DEMO",
+  "users_created": 0,
+  "periods_created": 0,
+  "sections_created": 0,
+  "status": "COMPROBADO",
+  "repeat_seed_without_duplicates": true,
+  "persisted_context": {
+    "users": 3,
+    "periods": 1,
+    "sections": 2,
+    "students": 0
+  }
+}

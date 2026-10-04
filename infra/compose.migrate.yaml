@@ -1,0 +1,9 @@
+# Solo el contenedor efímero de migración recibe el secreto de propietario.
+services:
+  api:
+    environment:
+      MIGRATION_DATABASE_URL_FILE: /run/secrets/owner_database_url
+    secrets: [owner_database_url]
+secrets:
+  owner_database_url:
+    file: "${S1_SECRETS_DIR:-./.local/secrets}/owner-database-url"

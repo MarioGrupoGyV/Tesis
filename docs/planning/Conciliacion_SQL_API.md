@@ -119,6 +119,15 @@ deliberada. No añadir columnas para estados o agregados derivados.
 
 ## Trabajo que pertenece a S1–S6
 
+Actualización S1: la migración `0001_demo_schema` ya ejecuta las 13 tablas del SQL
+conciliado y concede permisos al rol interno `riesgo_app`; las cinco entidades ORM
+necesarias para S1 conservan los campos públicos acordados. Contrato 0.1.1 y SQL de
+diseño permanecen sin cambios. El mapeo, los permisos y la base limpia se comprobaron
+según `Estado_Sprint_1.md`; las reglas de importación, ML y seguimiento siguen en
+sus sprints. Los errores de DB se sanitizan como 503 Error también en auth/catálogos,
+una respuesta de infraestructura que aún no enumera 0.1.1 fuera de health/ready;
+se registra para una futura revisión, sin modificar el contrato vigente.
+
 Convertir el SQL revisado en Alembic, crear propietario de migraciones y usuario
 de aplicación sin DDL ni DELETE sobre evidencias, e implementar validaciones de
 servicio. Las FK de tutor/assigned_to comprueban existencia, no rol: S1/S5 deben

@@ -2,14 +2,14 @@
 
 Fecha de planificación: 3 de octubre de 2026 (America/Lima).
 
-Este registro desarrolla el orden de `Plan_tesis_riesgo_escolar.md` e `Inicio_Codex_y_skills.md`. La entrega solicitada comprende exclusivamente S0. Los criterios de S1 a S6 describen trabajo futuro y no constituyen evidencia de implementación o pruebas ejecutadas. La coordinación debe contrastar cada criterio con el contrato y la decisión de arquitectura vigentes antes de aceptar un sprint.
+Este registro desarrolla el orden de `Plan_tesis_riesgo_escolar.md` e `Inicio_Codex_y_skills.md`. La entrega inicial comprendió S0; la autorización posterior comprende exclusivamente S1. Su evidencia está en `Estado_Sprint_1.md`. Los criterios de S2 a S6 describen trabajo futuro y no constituyen evidencia de implementación o pruebas ejecutadas. La coordinación contrasta cada criterio con el contrato y las decisiones vigentes antes de aceptar un sprint.
 
 ## Estado y alcance
 
 | Sprint | Estado al redactar | Entrada / dependencia | Salida prevista |
 |---|---|---|---|
 | S0 Contratos y entorno | COMPLETADO: evidencia en Estado_Sprint_0.md y tests/evidence/s0-checks.json | Fuentes de planificación y repositorio inicial | Estructura, entorno diagnosticado, versiones fijadas, SQL/API reconciliados, README y este registro |
-| S1 Base ejecutable | PENDIENTE; no iniciado | S0 documentado y herramientas necesarias disponibles | Compose ejecutable, migración limpia, contexto demo, sesiones y permisos básicos |
+| S1 Base ejecutable | COMPLETADO: evidencia en Estado_Sprint_1.md y tests/evidence/s1-* | S0 documentado y herramientas necesarias disponibles | Compose ejecutable, migración limpia de 13 tablas, contexto demo, sesiones/CSRF, permisos y persistencia comprobados |
 | S2 Importación y estudiantes | PENDIENTE; no iniciado | S1 aceptado y contrato de importación vigente | Vista previa y confirmación atómica, estudiantes e historial con alcance por sección |
 | S3 Modelo y predicción demo | PENDIENTE; no iniciado | S2 aceptado, variables y fechas acordadas; interfaz de inferencia tipada | Generador sintético, baseline, RF, manifiesto e inferencia persistida |
 | S4 Interfaz didáctica | PENDIENTE; no iniciado | Contrato de S0 para diseño; S1 para conexión; S2 y S3 para los flujos iniciales | Pantallas con API real; cierre final después de integrar S5 |
@@ -64,7 +64,7 @@ Criterios de salida:
 6. `periods` y `sections` devuelven el contexto autorizado; el tutor ve únicamente su alcance y el investigador carece de acceso operativo. No se acepta un rol enviado por el navegador como autorización.
 7. Las cuentas y el contexto siguen persistidos después de detener y arrancar los servicios con el volumen conservado.
 
-**Evidencia futura:** `make up`, `make migrate`, `make seed-demo`, peticiones de salud y sesión, pruebas de acceso/revocación y reinicio conservando volumen. Registrar esquema/base destino de migración, salida y prueba de persistencia. Ninguno de estos comandos se declara ejecutado en S0.
+**Evidencia ejecutada de S1:** los equivalentes PowerShell `infra/s1.py up`, `migrate`, `seed-demo`; migración limpia de 13 tablas, 57 pruebas backend, cuatro recorridos Playwright, salud, CSRF, permisos/revocación y comparación de las 13 tablas tras detener/recrear contenedores sin borrar volumen. Resultados, destinos y comandos en `Estado_Sprint_1.md`. Make no está instalado y no se declaró ejecutado. Nada de esto se atribuye a S0.
 
 ## S2 — CSV, estudiantes y cortes
 

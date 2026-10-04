@@ -1,0 +1,11 @@
+{
+  "status": "COMPROBADO",
+  "database": "riesgo_escolar_demo_s1_test",
+  "fresh_created": false,
+  "tables_before": 0,
+  "tables_after": 13,
+  "revision": "0001_demo_schema",
+  "postgresql_version": "17.6 (Debian 17.6-2.pgdg12+1)",
+  "synthetic_only": true,
+  "deleted_data": false
+}

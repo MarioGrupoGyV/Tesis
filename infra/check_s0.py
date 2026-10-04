@@ -153,9 +153,33 @@ def run():
     runtime, dev = pins("backend/requirements.txt"), pins("backend/requirements-dev.txt")
     check(all(dev.get(name) == version for name, version in runtime.items()), "Lock desarrollo coherente con runtime")
     compose = yaml.safe_load((ROOT / "compose.yaml").read_text(encoding="utf-8"))
-    check(compose["services"] == {} and not compose["x-sprint"]["runtime-implemented"], "Compose S0 sin servicios implementados")
+    sprint = compose["x-sprint"]["current"]
+    if sprint == "S0":
+        check(compose["services"] == {} and not compose["x-sprint"]["runtime-implemented"], "Compose S0 sin servicios implementados")
+    elif sprint == "S1":
+        services = compose["services"]
+        check(set(services) == {"web", "api", "db"} and compose["x-sprint"]["runtime-implemented"],
+              "Compose S1 web/api/db implementados")
+        check(services["db"]["image"] == "postgres:17.6-bookworm", "PostgreSQL conserva tag S0")
+        check(any(str(v).startswith("db_data:") for v in services["db"]["volumes"]), "Volumen persistente de PostgreSQL")
+        for name in ("web", "api", "db"):
+            check("healthcheck" in services[name], f"Healthcheck Compose {name}")
+            check(all(str(p).startswith("127.0.0.1:") for p in services[name]["ports"]),
+                  f"Puerto localhost {name}")
+        check(services["api"]["environment"]["DATA_ORIGIN"] == "DEMO" and
+              services["api"]["environment"]["REAL_MODE_ENABLED"] == "false", "Compose solo DEMO")
+        check("owner_database_url" not in services["api"]["secrets"] and
+              "demo_credentials" not in services["api"]["secrets"], "API sin secretos de migración/semilla")
+        check((ROOT / services["api"]["build"]["dockerfile"]).exists() and
+              (ROOT / services["web"]["build"]["dockerfile"]).exists(), "Dockerfiles S1 presentes")
+        check("python:3.12.12-slim-bookworm" in (ROOT / "infra/docker/api.Dockerfile").read_text(),
+              "Python conserva tag S0")
+        check("node:24.14.1-bookworm-slim" in (ROOT / "infra/docker/web.Dockerfile").read_text(),
+              "Node conserva tag S0")
+    else:
+        raise ValueError(f"Estado Compose no reconocido: {sprint}")
     result = {
-        "status": "COMPROBADO", "scope": "S0 documental; sin ejecución de negocio",
+        "status": "COMPROBADO", "scope": f"Contratos documentales e infraestructura {sprint}; sin pruebas funcionales",
         "checks": len(checks), "sql_statements": len(statements), "tables": len(tables),
         "mapped_field_types": matched, "api_paths": len(contract["paths"]),
         "contract_samples": len(samples),
@@ -164,7 +188,8 @@ def run():
         "limitations": ["No ejecuta DDL/PLpgSQL", "No prueba permisos en servidor",
                         "No build, migración, ML, UI ni persistencia"],
     }
-    (ROOT / "tests/evidence/s0-checks.json").write_text(
+    evidence_name = "s0-checks.json" if sprint == "S0" else "s1-contracts.json"
+    (ROOT / "tests/evidence" / evidence_name).write_text(
         json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     print(json.dumps(result, ensure_ascii=True, indent=2))

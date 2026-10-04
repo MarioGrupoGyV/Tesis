@@ -1,5 +1,8 @@
-# Manuales previstos
+# Manuales
 
-La preparación de S0 está en el README raíz. En S6 se escribirán el manual de
-arranque, el recorrido de demo y las instrucciones de respaldo sobre servicios
-efectivamente comprobados. No existe todavía una aplicación que demostrar.
+El README raíz documenta el arranque comprobado de S1, cuentas privadas de
+demostración, pruebas y conservación del volumen. Estado_Sprint_1.md registra
+los resultados y límites del acceso y contexto autorizados.
+
+El manual del recorrido importar/evaluar/atender/exportar y los respaldos se
+elaborarán en S6 sobre funcionalidades verificadas. No están implementados en S1.

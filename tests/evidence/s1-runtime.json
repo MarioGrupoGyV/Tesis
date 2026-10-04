@@ -1,0 +1,153 @@
+{
+  "status": "COMPROBADO",
+  "data_origin": "DEMO",
+  "base_url": "http://127.0.0.1:15173",
+  "scope": "S1: health, sesiones, catalogos y persistencia",
+  "roles": {
+    "ADMIN": {
+      "login": 200,
+      "me": 200,
+      "csrf": 200,
+      "periods": 1,
+      "sections": 2,
+      "logout_without_csrf": 403,
+      "session_after_restart": 200,
+      "logout": 204,
+      "revoked_cookie": 401
+    },
+    "TUTOR": {
+      "login": 200,
+      "me": 200,
+      "csrf": 200,
+      "periods": 1,
+      "sections": 1,
+      "logout_without_csrf": 403,
+      "session_after_restart": 200,
+      "logout": 204,
+      "revoked_cookie": 401
+    },
+    "DIRECTOR": {
+      "login": 200,
+      "me": 200,
+      "csrf": 200,
+      "periods": 1,
+      "sections": 2,
+      "logout_without_csrf": 403,
+      "session_after_restart": 200,
+      "logout": 204,
+      "revoked_cookie": 401
+    }
+  },
+  "restart": {
+    "method": "compose down / up --wait (sin -v ni semilla)",
+    "all_13_tables_identical": true,
+    "before": {
+      "academic_periods": {
+        "rows": 1,
+        "sha256": "f14b0ee278626b341bd36d91fecff31306a69022f7bee2e817b41e2e73233304"
+      },
+      "academic_snapshots": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alerts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "app_users": {
+        "rows": 3,
+        "sha256": "637e5dd7b137fb1ce5c4d7effe1e3777d4ed441162e234d883f6fd10242d5308"
+      },
+      "audit_events": {
+        "rows": 17,
+        "sha256": "ccce59754473876ec8f3b5b9b3269e19dd7e5db96b6e3409a0b7f3ebd8816b18"
+      },
+      "enrollments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "grade_sections": {
+        "rows": 2,
+        "sha256": "64eb8f641dec9ae92beee4aa634fe6f91f40a97e7e4da831129837f45a52d12b"
+      },
+      "import_batches": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "interventions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "model_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "predictions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "students": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "user_sessions": {
+        "rows": 7,
+        "sha256": "86ddd8f49e819dd561c7b0ae8f584fc2eaaefea23e97970d9dd74b7a6329cb5e"
+      }
+    },
+    "after": {
+      "academic_periods": {
+        "rows": 1,
+        "sha256": "f14b0ee278626b341bd36d91fecff31306a69022f7bee2e817b41e2e73233304"
+      },
+      "academic_snapshots": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alerts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "app_users": {
+        "rows": 3,
+        "sha256": "637e5dd7b137fb1ce5c4d7effe1e3777d4ed441162e234d883f6fd10242d5308"
+      },
+      "audit_events": {
+        "rows": 17,
+        "sha256": "ccce59754473876ec8f3b5b9b3269e19dd7e5db96b6e3409a0b7f3ebd8816b18"
+      },
+      "enrollments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "grade_sections": {
+        "rows": 2,
+        "sha256": "64eb8f641dec9ae92beee4aa634fe6f91f40a97e7e4da831129837f45a52d12b"
+      },
+      "import_batches": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "interventions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "model_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "predictions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "students": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "user_sessions": {
+        "rows": 7,
+        "sha256": "86ddd8f49e819dd561c7b0ae8f584fc2eaaefea23e97970d9dd74b7a6329cb5e"
+      }
+    }
+  }
+}

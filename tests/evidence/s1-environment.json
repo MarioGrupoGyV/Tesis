@@ -1,0 +1,38 @@
+{
+  "status": "COMPROBADO",
+  "checked_at_utc": "2026-10-04T02:06:03.763814+00:00",
+  "versions": {
+    "node": "v24.14.1",
+    "npm": "11.20.0",
+    "python_api": "Python 3.12.12",
+    "postgresql": "17.6 (Debian 17.6-2.pgdg12+1)",
+    "python_tests": "3.12.0",
+    "compose": "5.5.1"
+  },
+  "service_health": {
+    "api": "healthy",
+    "db": "healthy",
+    "web": "healthy"
+  },
+  "images": {
+    "postgres:17.6-bookworm": [
+      "postgres@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3"
+    ],
+    "python:3.12.12-slim-bookworm": [
+      "python@sha256:593bd06efe90efa80dc4eee3948be7c0fde4134606dd40d8dd8dbcade98e669c"
+    ],
+    "node:24.14.1-bookworm-slim": [
+      "node@sha256:b506e7321f176aae77317f99d67a24b272c1f09f1d10f1761f2773447d8da26c"
+    ]
+  },
+  "s0_hashes_unchanged": {
+    "package-lock.json": "9b0880027ad75b06c5d8a56fa77cf1d23bf0196bb5cb6012a1d4a33e20990bb7",
+    "backend/requirements.txt": "f73c0470c6afc406f3402d17e5673df6ae8bed71bc4e6ffbc3f31a04aebe35b3",
+    "backend/requirements-dev.txt": "a144682074def4144beb5c77e9245dbd04da1707157e063885916800b5d2f581",
+    "infra/requirements-s0.txt": "aede94faca096063112df0b3e8a15a172ae97a75160c5bc18d76c6ae74b68c00",
+    "docs/planning/Contrato_API_demo.yaml": "5fb028dffb05e277a2bde1fc1bbcf5c4329344a363092acc5641602c83123f1a",
+    "docs/planning/Esquema_demo.sql": "255d59ffde050588b2eed2d42d1b8d723fa4adf8f7649f4ea91764c06c76253d"
+  },
+  "migration_matches_design_without_transaction_wrappers": true,
+  "documented_up_command": "passed"
+}

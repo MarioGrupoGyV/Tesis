@@ -3,6 +3,10 @@
 Fecha: 3 de octubre de 2026 (America/Lima). Estado: **aceptado para S0**.
 Aplicación, migraciones, modelos y recorridos: **pendientes de S1–S6**.
 
+Registro histórico de S0. La autorización posterior de S1 y sus decisiones están
+en [ADR 002](002-base-ejecutable-s1.md) y [Estado S1](../planning/Estado_Sprint_1.md).
+Las versiones y archivos de bloqueo de este ADR se conservan; S2–S6 siguen pendientes.
+
 ## Contexto y decisiones
 
 Seguimiento Escolar empieza desde cero. Esta autorización comprende solo S0:
