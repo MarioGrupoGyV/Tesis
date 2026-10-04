@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { LoginForm } from '../features/auth/LoginForm';
-import { api, ApiError, errorMessage, type Period, type Section, type User } from '../lib/api';
+import { api, ApiError, errorMessage, type Period, type ProcessingStatus, type Section, type User } from '../lib/api';
 
 const roleLabels: Record<User['role'], string> = {
   ADMIN: 'Administrador',
@@ -11,6 +11,12 @@ const roleLabels: Record<User['role'], string> = {
 
 function dateLabel(date: string): string {
   return new Intl.DateTimeFormat('es-PE', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'America/Lima' }).format(new Date(`${date}T12:00:00-05:00`));
+}
+
+function originLabel(origin: string): string {
+  if (origin === 'SYNTHETIC') return 'Datos sintéticos';
+  if (origin === 'DEMO') return 'Datos de demostración histórica';
+  return 'Información institucional';
 }
 
 export function App() {
@@ -65,11 +71,37 @@ export function App() {
       </header>
       {checking ? <main className="status-page"><p className="eyebrow">ACCESO SEGURO</p><h1>Comprobando tu sesión…</h1><p className="muted" role="status">Un momento, estamos conectando con el sistema.</p></main>
         : startupError ? <main className="status-page"><h1>No pudimos comprobar tu sesión</h1><p className="notice error" role="alert">{startupError}</p><button type="button" className="button primary" onClick={() => void restore()}>Volver a intentar</button></main>
-          : user ? <main className="workspace"><div className="page-heading"><p className="eyebrow">INICIO</p><h1>Bienvenido, {user.display_name}</h1><p className="muted">Consulta el contexto autorizado para tu cuenta.</p></div>{sessionError && <p className="notice error" role="alert">{sessionError}</p>}<div className="account-strip"><span className="account-icon" aria-hidden="true">✓</span><div><strong>Sesión activa</strong><p>{roleLabels[user.role]}</p></div></div>{user.role === 'RESEARCHER' ? <section className="panel" aria-labelledby="restricted-title"><h2 id="restricted-title">Acceso de investigador</h2><p className="notice" role="status">Tu rol de investigador no tiene acceso al contexto escolar.</p><p className="muted">Puedes consultar y cerrar tu sesión. No se muestran periodos, secciones ni casos.</p></section> : <Catalogs user={user} onExpired={sessionExpired} />}</main>
+          : user ? <main className="workspace"><div className="page-heading"><p className="eyebrow">INICIO</p><h1>Bienvenido, {user.display_name}</h1><p className="muted">Consulta el contexto autorizado para tu cuenta.</p></div>{sessionError && <p className="notice error" role="alert">{sessionError}</p>}<ProcessingNotice userId={user.id} onExpired={sessionExpired} /><div className="account-strip"><span className="account-icon" aria-hidden="true">✓</span><div><strong>Sesión activa</strong><p>{roleLabels[user.role]}</p></div></div>{user.role === 'RESEARCHER' ? <section className="panel" aria-labelledby="restricted-title"><h2 id="restricted-title">Acceso de investigador</h2><p className="notice" role="status">Tu rol de investigador no tiene acceso al contexto escolar.</p><p className="muted">Puedes consultar y cerrar tu sesión. No se muestran periodos, secciones ni casos.</p></section> : <Catalogs user={user} onExpired={sessionExpired} />}</main>
             : <LoginForm notice={notice} onLogin={(current) => { setUser(current); setNotice(''); }} />}
       <footer className="site-footer"><span>Seguimiento Escolar</span><span>America/Lima</span></footer>
     </div>
   );
+}
+
+function ProcessingNotice({ userId, onExpired }: { userId: User['id']; onExpired: () => void }) {
+  const [status, setStatus] = useState<ProcessingStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [reload, setReload] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    setStatus(null);
+    setLoading(true);
+    setError('');
+    void api.processingStatus().then((result) => {
+      if (active) setStatus(result);
+    }).catch((caught: unknown) => {
+      if (!active) return;
+      if (caught instanceof ApiError && caught.status === 401) onExpired();
+      else setError(errorMessage(caught));
+    }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [userId, reload, onExpired]);
+
+  if (loading) return <p className="loading-copy" role="status">Consultando el alcance del sistema…</p>;
+  if (error) return <div><p className="notice error" role="alert">No pudimos consultar el alcance del sistema. {error}</p><button type="button" className="button secondary" onClick={() => setReload((value) => value + 1)}>Volver a consultar</button></div>;
+  return status ? <p className="notice" role="status">{status.notice}</p> : null;
 }
 
 function Catalogs({ user, onExpired }: { user: User; onExpired: () => void }) {
@@ -122,7 +154,7 @@ function Catalogs({ user, onExpired }: { user: User; onExpired: () => void }) {
         {loadingPeriods ? <p className="loading-copy" role="status">Cargando periodos autorizados…</p>
           : periodError ? <div><p className="notice error" role="alert">{periodError}</p><button type="button" className="button secondary" onClick={() => setPeriodReload((value) => value + 1)}>Volver a intentar</button></div>
             : periods.length === 0 ? <p className="empty-copy" role="status">No hay periodos configurados para tu cuenta.</p>
-              : <><label htmlFor="period">Selecciona un periodo</label><select id="period" value={periodId} onChange={(event) => setPeriodId(event.target.value)}>{periods.map((period) => <option key={period.id} value={period.id}>{period.code} · {period.school_year}</option>)}</select>{selectedPeriod && <dl className="period-details"><div><dt>Año escolar</dt><dd>{selectedPeriod.school_year}</dd></div><div><dt>Fechas</dt><dd>{dateLabel(selectedPeriod.start_date)} — {dateLabel(selectedPeriod.end_date)}</dd></div><div><dt>Estado</dt><dd><span className={`state-badge ${selectedPeriod.is_locked ? 'locked' : 'open'}`}>{selectedPeriod.is_locked ? '🔒 Bloqueado' : '✓ Abierto'}</span></dd></div><div><dt>Origen</dt><dd>Información institucional</dd></div></dl>}</>}
+              : <><label htmlFor="period">Selecciona un periodo</label><select id="period" value={periodId} onChange={(event) => setPeriodId(event.target.value)}>{periods.map((period) => <option key={period.id} value={period.id}>{period.code} · {period.school_year}</option>)}</select>{selectedPeriod && <dl className="period-details"><div><dt>Año escolar</dt><dd>{selectedPeriod.school_year}</dd></div><div><dt>Fechas</dt><dd>{dateLabel(selectedPeriod.start_date)} — {dateLabel(selectedPeriod.end_date)}</dd></div><div><dt>Estado</dt><dd><span className={`state-badge ${selectedPeriod.is_locked ? 'locked' : 'open'}`}>{selectedPeriod.is_locked ? '🔒 Bloqueado' : '✓ Abierto'}</span></dd></div><div><dt>Origen</dt><dd>{originLabel(selectedPeriod.data_origin)}</dd></div></dl>}</>}
       </section>
       <section className="panel sections-card" aria-labelledby="sections-title" aria-busy={loadingSections || loadingPeriods}>
         <div className="section-heading"><div><p className="eyebrow">ALCANCE DE TU CUENTA</p><h2 id="sections-title">Secciones autorizadas</h2></div>{!loadingSections && !loadingPeriods && !sectionError && !periodError && periodId && <span className="count-badge" aria-label={`${sections.length} secciones autorizadas`}>{sections.length}</span>}</div>

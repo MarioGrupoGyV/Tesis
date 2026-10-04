@@ -1,0 +1,88 @@
+{
+  "status": "COMPROBADO",
+  "recreated_without_deleting_volumes": true,
+  "all_tables_users_credentials_audit_files_identical_after_recreation": true,
+  "counts_before": {
+    "academic_periods": 1,
+    "academic_snapshots": 360,
+    "alerts": 0,
+    "app_users": 4,
+    "audit_events": 136,
+    "enrollments": 60,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 0,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 36
+  },
+  "counts_after_recreation": {
+    "academic_periods": 1,
+    "academic_snapshots": 360,
+    "alerts": 0,
+    "app_users": 4,
+    "audit_events": 136,
+    "enrollments": 60,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 0,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 36
+  },
+  "school_counts_after_access": {
+    "academic_periods": 1,
+    "grade_sections": 2,
+    "students": 60,
+    "enrollments": 60,
+    "academic_snapshots": 360,
+    "import_batches": 1,
+    "model_versions": 1,
+    "predictions": 55,
+    "alerts": 0,
+    "interventions": 0,
+    "synthetic_studies": 1
+  },
+  "school_and_files_unchanged": true,
+  "login_logout_revocation_roles": [
+    "ADMIN",
+    "TUTOR",
+    "DIRECTOR",
+    "RESEARCHER"
+  ],
+  "users": [
+    {
+      "id": "254a5ba3-f174-48bc-9bab-7b6f8284fd38",
+      "email": "revision.local.director@example.com",
+      "display_name": "Revisi\u00f3n local \u00b7 DIRECTOR",
+      "role": "DIRECTOR",
+      "is_active": true
+    },
+    {
+      "id": "7a4ee76f-aee1-4712-a35b-88cc3d78ea2c",
+      "email": "revision.local.admin@example.com",
+      "display_name": "Revisi\u00f3n local \u00b7 ADMIN",
+      "role": "ADMIN",
+      "is_active": true
+    },
+    {
+      "id": "df354a4d-d596-45ec-b9c7-55ba58608085",
+      "email": "revision.local.tutor@example.com",
+      "display_name": "Revisi\u00f3n local \u00b7 TUTOR",
+      "role": "TUTOR",
+      "is_active": true
+    },
+    {
+      "id": "e4a4633c-eb68-4188-ad0d-f0972c141af7",
+      "email": "revision.local.researcher@example.com",
+      "display_name": "Revisi\u00f3n local \u00b7 RESEARCHER",
+      "role": "RESEARCHER",
+      "is_active": true
+    }
+  ],
+  "ml_files_unchanged": true
+}

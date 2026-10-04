@@ -11,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[1]
 def main():
     before=snapshot()
     accounts=credentials()
-    prefix=os.environ.get('REVIEW_REPORT_PREFIX','s2-2-active')
+    prefix=os.environ.get('REVIEW_REPORT_PREFIX','s3-1-active')
     if not prefix.replace('-','').isalnum():
         raise SystemExit('Nombre de reporte inválido.')
     environment={**os.environ,'E2E_BASE_URL':'http://localhost:15173','E2E_SCOPE':'active',

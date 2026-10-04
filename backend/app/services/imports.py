@@ -24,7 +24,7 @@ def require_admin(user):
 def institutional_period(period):
     if period is None:
         raise AppError(404, "PERIOD_NOT_FOUND", "El periodo solicitado no existe.")
-    if period.data_origin != "REAL":
+    if period.data_origin not in ("REAL", "SYNTHETIC"):
         raise AppError(422, "ORIGIN_NOT_SUPPORTED", "El origen del recurso no corresponde al entorno institucional.")
 
 
@@ -52,7 +52,7 @@ def observed_plan(db, period, parsed):
         tutor = tutors.get(section.tutor_id) if section else None
         if section and section.tutor_id and (tutor is None or tutor.role != "TUTOR" or not tutor.is_active):
             errors.append(issue(source, "section", "Corrige la asignación: el responsable de sección debe ser un tutor activo.", "INVALID_TUTOR"))
-        if student and student.data_origin != "REAL":
+        if student and student.data_origin != period.data_origin:
             raise AppError(422, "ORIGIN_NOT_SUPPORTED", "El código pertenece a un origen no habilitado. No se transforma el origen de registros existentes.",
                            details=[{"row": source, "field": "student_code", "message": "Conserva la trazabilidad del origen; no reutilices registros históricos."}])
         if student and not student.is_active:
@@ -87,14 +87,29 @@ def observed_plan(db, period, parsed):
 def audit(db, user, batch, request_id, action, **counts):
     db.add(AuditEvent(actor_id=user.id, entity_type="import_batch", entity_id=batch.id,
                       action=action, request_id=request_id,
-                      payload={"data_origin": "REAL", "preview_version": batch.preview_version, **counts}))
+                      payload={"data_origin": batch.data_origin, "preview_version": batch.preview_version, **counts}))
+
+
+def precheck(db):
+    from app.services.processing_policy import synthetic_studies
+    if not synthetic_studies(db):
+        require_processing_protocol()
+
+
+def registered_source(db,settings,period,content):
+    if period.data_origin=='REAL':
+        require_processing_protocol()
+        return None  # Solo pruebas históricas del motor sustituyen esta función bloqueante.
+    from app.services.synthetic_study import verified_csv
+    return verified_csv(db,settings,period,content)
 
 
 def preview(db, user, settings, period_id, content, filename, request_id):
     require_admin(user)
-    require_processing_protocol()
+    precheck(db)
     period = repository.locked_period(db, period_id)
     institutional_period(period)
+    study = registered_source(db,settings,period,content)
     file_hash = hashlib.sha256(content).hexdigest()
     batch = repository.locked_batch(db, period_id, file_hash)
     if batch and batch.status == "COMMITTED":
@@ -109,7 +124,8 @@ def preview(db, user, settings, period_id, content, filename, request_id):
         if created:
             batch_id = uuid4()
             name = re.sub(r"[^A-Za-z0-9_.-]", "_", (filename or "importacion.csv").replace("\\", "/").split("/")[-1])[:120]
-            batch = ImportBatchRecord(id=batch_id, period_id=period.id, data_origin="REAL", created_by=user.id,
+            batch = ImportBatchRecord(id=batch_id, period_id=period.id, data_origin=period.data_origin, created_by=user.id,
+                                      study_id=study.id if study else None,
                                       file_name=name or "importacion.csv", file_sha256=file_hash, storage_key=batch_id.hex + ".csv",
                                       schema_version="academic-v1", preview_version=1)
             storage.write(batch.storage_key, content)
@@ -140,7 +156,7 @@ def get_batch(db, user, batch_id):
     batch = db.get(ImportBatchRecord, batch_id)
     if batch is None:
         raise AppError(404, "IMPORT_NOT_FOUND", "El lote solicitado no existe.")
-    if batch.data_origin != "REAL":
+    if batch.data_origin not in ("REAL", "SYNTHETIC"):
         raise AppError(422, "ORIGIN_NOT_SUPPORTED", "El origen del recurso no corresponde al entorno institucional.")
     return batch
 
@@ -153,14 +169,15 @@ def committed_result(db, batch, reused):
 def insert_snapshots(db, batch, rows, observed):
     from uuid import UUID
     by_code = {state['student_code']: state for state in observed}
-    students = {code: StudentRecord(anon_code=code, data_origin='REAL')
+    students = {code: StudentRecord(anon_code=code, data_origin=batch.data_origin,
+                eligible_for_processing=batch.data_origin=='SYNTHETIC',consent_documented=False,assent_documented=False)
                 for code, state in by_code.items() if state['student_id'] is None}
     db.add_all(list(students.values()))
     db.flush()
     student_ids = {code: UUID(state['student_id']) if state['student_id'] else students[code].id
                    for code, state in by_code.items()}
     enrollments = {code: EnrollmentRecord(student_id=student_ids[code], period_id=batch.period_id,
-                    section_id=UUID(state['section_id']), data_origin='REAL')
+                    section_id=UUID(state['section_id']), data_origin=batch.data_origin)
                    for code, state in by_code.items() if state['enrollment_id'] is None}
     db.add_all(list(enrollments.values()))
     db.flush()
@@ -170,7 +187,7 @@ def insert_snapshots(db, batch, rows, observed):
     for row, state in zip(rows, observed, strict=True):
         code = row["student_code"]
         if state["create_snapshot"]:
-            record = SnapshotRecord(enrollment_id=enrollment_ids[code], period_id=batch.period_id, data_origin="REAL",
+            record = SnapshotRecord(enrollment_id=enrollment_ids[code], period_id=batch.period_id, data_origin=batch.data_origin,
                 import_batch_id=batch.id, revision=(state["predecessor_revision"] or 0) + 1,
                 supersedes_id=UUID(state["predecessor_id"]) if state["predecessor_id"] else None,
                 **{k: row[k] for k in (*FEATURES, "window_start", "cutoff_at", "available_at", "target_date",
@@ -182,10 +199,12 @@ def insert_snapshots(db, batch, rows, observed):
 
 def commit(db, user, settings, batch_id, expected_version, request_id):
     require_admin(user)
-    require_processing_protocol()
+    precheck(db)
     initial = get_batch(db, user, batch_id)
     period = repository.locked_period(db, initial.period_id)
     institutional_period(period)
+    if period.data_origin=='REAL':
+        require_processing_protocol()
     batch = repository.locked_batch(db, period.id, initial.file_sha256)
     if batch.status == "COMMITTED":
         return committed_result(db, batch, True)
@@ -195,6 +214,7 @@ def commit(db, user, settings, batch_id, expected_version, request_id):
     if batch.status != "READY" or batch.invalid_rows or batch.errors:
         raise AppError(422, "IMPORT_INVALID", "Corrige todas las filas y revisa una nueva vista previa antes de confirmar.")
     content = ImportStorage(settings.import_storage_dir).read(batch.storage_key, batch.file_sha256)
+    study = registered_source(db,settings,period,content)
     try:
         parsed = parse_csv(content, period)
         observed, errors, counts = observed_plan(db, period, parsed)
@@ -206,6 +226,9 @@ def commit(db, user, settings, batch_id, expected_version, request_id):
         raise stale()
     try:
         insert_snapshots(db, batch, parsed.rows, observed)
+        if study:
+            from app.services.synthetic_study import bind_imported
+            bind_imported(db,study,batch,parsed.rows,settings)
         batch.status, batch.committed_at = "COMMITTED", datetime.now(UTC)
         audit(db, user, batch, request_id, "IMPORT_COMMITTED", **counts)
         db.flush()

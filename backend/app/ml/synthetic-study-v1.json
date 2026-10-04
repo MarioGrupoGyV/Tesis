@@ -1,0 +1,33 @@
+{
+  "version": "synthetic-study-v1",
+  "generator_version": "synthetic-generator-v1",
+  "timezone": "America/Lima",
+  "student_count": 60,
+  "school_year": 2025,
+  "period_start": "2025-01-01",
+  "period_end": "2025-12-31",
+  "development_cutoffs": ["2025-01-31", "2025-02-28", "2025-03-31"],
+  "external_cutoffs": ["2025-07-31", "2025-08-31", "2025-09-30"],
+  "fit_date": "2025-05-01",
+  "horizon_days": 14,
+  "label_delay_days": 1,
+  "window_days": 30,
+  "external_fraction": 0.2,
+  "requested_folds": 5,
+  "missing_probability": 0.04,
+  "research_max_missing_fraction": 0.4,
+  "inference_max_missing_fraction": 0.4,
+  "required_features": ["average_grade"],
+  "abstention_student_every": 17,
+  "criterion": {
+    "version": "synthetic-future-v1",
+    "high_grade_below": 10,
+    "high_attendance_below": 65,
+    "high_incidents_at_least": 6,
+    "medium_grade_below": 14,
+    "medium_attendance_below": 85,
+    "medium_incidents_at_least": 3,
+    "precedence": "HIGH_THEN_MEDIUM_THEN_LOW"
+  },
+  "selection": "DEV_MACRO_F1_THEN_BALANCED_ACCURACY_THEN_FIXED_ORDER"
+}

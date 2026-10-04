@@ -13,8 +13,9 @@ def authorize_period(db, user, period_id, section_id=None):
     period = db.get(AcademicPeriod, period_id)
     if period is None:
         raise AppError(404, "PERIOD_NOT_FOUND", "El periodo solicitado no existe.")
-    if user.role == "TUTOR" and not db.scalar(select(GradeSection.id).where(
-            GradeSection.school_year == period.school_year, GradeSection.tutor_id == user.id).limit(1)):
+    from app.repositories.s1 import sections_for_period
+    allowed_sections=sections_for_period(db,period,user.id if user.role=='TUTOR' else None)
+    if user.role == "TUTOR" and not allowed_sections:
         raise AppError(403, "FORBIDDEN", "No tienes secciones asignadas en este periodo.")
     if section_id:
         section = db.get(GradeSection, section_id)
@@ -22,6 +23,8 @@ def authorize_period(db, user, period_id, section_id=None):
             raise AppError(404, "SECTION_NOT_FOUND", "La sección no está disponible en este periodo.")
         if user.role == "TUTOR" and section.tutor_id != user.id:
             raise AppError(403, "FORBIDDEN", "No tienes acceso a esta sección.")
+        if section_id not in {section.id for section in allowed_sections}:
+            raise AppError(404,'SECTION_NOT_FOUND','La sección no pertenece al contexto de este periodo.')
     institutional_period(period)
     return period
 
@@ -39,7 +42,7 @@ def authorize_student(db, user, student_id, period_id):
     if user.role == "TUTOR" and section.tutor_id != user.id:
         raise AppError(403, "FORBIDDEN", "No tienes acceso a este estudiante.")
     institutional_period(period)
-    if student.data_origin != "REAL" or enrollment.data_origin != "REAL":
+    if student.data_origin != period.data_origin or enrollment.data_origin != period.data_origin:
         raise AppError(422, "ORIGIN_NOT_SUPPORTED", "Origen no admitido en este entorno.")
     return enrollment
 

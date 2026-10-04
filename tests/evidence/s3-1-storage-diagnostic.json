@@ -1,0 +1,25 @@
+{
+  "status": "FALLO_CORREGIDO_COMPROBADO",
+  "failure": "PRIVATE_STORAGE_REQUIRED por raíz de código calculada como / en imagen API",
+  "role": "riesgo_app",
+  "tables": 14,
+  "uid": 10001,
+  "ml_volume_uid": 10001,
+  "ml_mode": "0700",
+  "ml_writable": true,
+  "after_failed_prepare": {
+    "academic_periods": 0,
+    "grade_sections": 0,
+    "students": 0,
+    "enrollments": 0,
+    "academic_snapshots": 0,
+    "synthetic_studies": 0,
+    "model_versions": 0,
+    "predictions": 0,
+    "app_users": 4,
+    "ml_files": 0
+  },
+  "resolution": "Raíz /app en imagen API y repositorio completo en layout backend/app; dos pruebas de compatibilidad de layout.",
+  "final_backend_tests": 217,
+  "active_walk_status": "COMPROBADO"
+}

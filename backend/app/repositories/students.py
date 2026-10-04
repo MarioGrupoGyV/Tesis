@@ -9,6 +9,12 @@ LEFT JOIN LATERAL (
  SELECT sn.* FROM risk_school.academic_snapshots sn WHERE sn.enrollment_id=e.id
  ORDER BY sn.cutoff_at DESC, sn.revision DESC LIMIT 1
 ) sn ON true
+LEFT JOIN risk_school.import_batches ib ON ib.id=sn.import_batch_id
+LEFT JOIN LATERAL (
+ SELECT m.* FROM risk_school.model_versions m WHERE m.is_active AND m.status='APPROVED'
+ AND m.data_origin=e.data_origin AND (e.data_origin<>'SYNTHETIC' OR m.study_id=ib.study_id)
+ LIMIT 1
+) current_model ON true
 LEFT JOIN LATERAL (
  SELECT p.* FROM risk_school.predictions p JOIN risk_school.model_versions m ON m.id=p.model_id
  WHERE p.snapshot_id=sn.id AND p.data_origin=e.data_origin AND m.data_origin=e.data_origin
@@ -20,7 +26,14 @@ LEFT JOIN risk_school.alerts a ON a.enrollment_id=e.id AND a.status IN ('OPEN','
 STUDENT_COLUMNS = """s.id,s.anon_code,e.id AS enrollment_id,e.period_id,e.section_id,
 g.code AS section_code,g.grade,e.data_origin,sn.average_grade,sn.attendance_pct,
 sn.cutoff_at AS latest_cutoff_at,pred.risk_level,
-CASE WHEN pred.id IS NULL THEN 'NOT_EVALUATED' ELSE 'EVALUATED' END AS evaluation_status,
+CASE WHEN pred.id IS NOT NULL THEN 'EVALUATED'
+ WHEN current_model.id IS NOT NULL AND sn.id IS NOT NULL AND (
+   ((sn.average_grade IS NULL)::int+(sn.attendance_pct IS NULL)::int+(sn.activities_pct IS NULL)::int+
+    (sn.participation_level IS NULL)::int+(sn.behavior_incidents IS NULL)::int)/5.0 >
+     (current_model.manifest->'feature_schema'->>'inference_max_missing_fraction')::numeric
+   OR EXISTS(SELECT 1 FROM jsonb_array_elements_text(current_model.manifest->'feature_schema'->'required_features') required(name)
+      WHERE to_jsonb(sn)->required.name='null'::jsonb)) THEN 'INSUFFICIENT_DATA'
+ ELSE 'NOT_EVALUATED' END AS evaluation_status,
 a.id AS active_alert_id"""
 SORTS = {
     "anon_code": "s.anon_code,s.id,e.id",
@@ -30,7 +43,7 @@ SORTS = {
 
 
 def list_students(db, user, period_id, section_id, search, risk_level, sort, page, page_size):
-    clauses, params = ["e.period_id=:period", "e.data_origin='REAL'"], {"period": period_id}
+    clauses, params = ["e.period_id=:period", "e.data_origin IN ('REAL','SYNTHETIC')"], {"period": period_id}
     if user.role == "TUTOR":
         clauses.append("g.tutor_id=:user")
         params['user'] = user.id

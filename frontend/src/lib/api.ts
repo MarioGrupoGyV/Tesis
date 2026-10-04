@@ -3,6 +3,7 @@ import type { components } from './api.generated';
 export type User = components['schemas']['User'];
 export type Period = components['schemas']['Period'];
 export type Section = components['schemas']['Section'];
+export type ProcessingStatus = components['schemas']['ProcessingStatus'];
 type ApiErrorBody = components['schemas']['Error'];
 type LoginInput = components['schemas']['LoginInput'];
 type LoginResult = components['schemas']['LoginResult'];
@@ -80,6 +81,9 @@ export const api = {
   },
   sections(periodId: Period['id']): Promise<Section[]> {
     return request<Section[]>(`/sections?period_id=${encodeURIComponent(periodId)}`);
+  },
+  processingStatus(): Promise<ProcessingStatus> {
+    return request<ProcessingStatus>('/processing/status');
   },
 };
 

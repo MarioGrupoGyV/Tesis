@@ -32,8 +32,19 @@ def metrics(y, predicted):
     def macro(key):
         values = [v[key] for v in per_class.values()]
         return sum(values)/3 if all(v is not None for v in values) else None
+    reasons = {'auc': 'PROBABILITIES_NOT_CALIBRATED_OR_AUC_NOT_IMPLEMENTED'}
+    for name, values in per_class.items():
+        for key in ('precision', 'recall', 'f1'):
+            if values[key] is None:
+                reasons[f'per_class.{name}.{key}'] = 'NO_PREDICTED_SUPPORT' if key == 'precision' else 'NO_OBSERVED_SUPPORT'
+    for key in ('precision', 'recall', 'f1'):
+        if macro(key) is None:
+            reasons[f'macro.{key}'] = 'CLASS_METRIC_NOT_ESTIMABLE'
+    if macro('recall') is None:
+        reasons['balanced_accuracy'] = 'CLASS_RECALL_NOT_ESTIMABLE'
     return {'class_order':list(CLASSES),'confusion_matrix':matrix.tolist(),'per_class':per_class,
             'macro':{k:macro(k) for k in ('precision','recall','f1')},
             'accuracy':float(np.trace(matrix)/matrix.sum()) if matrix.sum() else None,
             'balanced_accuracy':macro('recall'), 'auc':None,
-            'limitations':['Sin calibración ni evaluación prospectiva; null significa no estimable.']}
+            'not_estimable_reasons': reasons,
+            'limitations':['Sin calibración ni evaluación prospectiva institucional; null significa no estimable.']}

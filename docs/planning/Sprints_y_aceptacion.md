@@ -8,6 +8,7 @@ se conservan intactos. S2.1 reemplaza las instrucciones operativas de ese alcanc
 | S2.1 | Implementado; resultados en Estado_Sprint_2_1.md | Windows/PowerShell con Docker, respaldo restaurado, nuevo entorno vacío, bootstrap explícito, contrato 0.2.0, bloqueo institucional y regresión |
 | S2.2 | Comprobado; Estado_Sprint_2_2.md y Matriz_verificacion_S2_2.md | Cuatro cuentas locales explícitas con credenciales privadas Windows; revisión de 14 rutas y UI por rol/tamaño; persistencia con usuarios y regresión aislada; sin registros escolares ni habilitación institucional |
 | S3 | Infraestructura implementada; Estado_Sprint_3.md | S2.2 preservado; núcleo ML y persistencia comprobados aisladamente. Entrenamiento/evaluación/activación institucional pendientes de datos, etiquetas, protocolo y migración |
+| S3.1 | Comprobado; Estado_Sprint_3_1.md y Matriz_verificacion_S3_1.md | Estudio SYNTHETIC nuevo verificado, comparación con reserva temporal, activación explícita técnica y recorrido API/DB; REAL bloqueado |
 | S4 | Pendiente | S2.1/S3 para flujos iniciales; S5 para integración completa. Pantallas reales, estados útiles, teclado y tres tamaños |
 | S5 | Pendiente | Predicción válida, sesiones, matrículas y protocolo; alertas únicas, seguimiento versionado, auditoría y exportaciones autorizadas |
 | S6 | Pendiente | S3–S5 integrados; recorrido completo, persistencia, restauración, documentación y evidencias verificables |
@@ -53,7 +54,7 @@ se conservan intactos. S2.1 reemplaza las instrucciones operativas de ese alcanc
 
 ### Dependencias institucionales
 
-No reutilizar una escuela ficticia ni planificar un generador de 60 alumnos.
+No reutilizar la antigua DEMO. La nueva solicitud S3.1 autoriza un generador de 60 estudiantes ficticios configurables bajo synthetic-study-v1; nunca se presentan como personas reales.
 S3 conserva baseline, Random Forest, SVM y XGBoost según el plan académico, Pipeline,
 separación por estudiante, prevención de fuga, trazabilidad y abstención.
 No prometer precisión, fabricar riesgo bajo ni declarar evaluada la hipótesis.
@@ -61,3 +62,16 @@ S4/S5/S6 mantendrán permisos servidor/sección, UTC y días Lima, campos públi
 evidencias inmutables, versiones esperadas y auditoría transaccional.
 Los criterios previos detallados se preservan en history/Sprints_y_aceptacion_S2.md
 como historia; las obligaciones de crear/entrenar/mostrar una demo quedan sustituidas.
+
+### Aceptación S3.1
+
+1. ADR previa y separación software/comparación sintética/evaluación real; revisión académica pendiente explícita.
+2. Migración 0003 limpia y desde S3, orígenes y estudio coherentes por DB/servicios; 0001/0002 e histórico intactos.
+3. Configuración/generación deterministas, 60 estudiantes por defecto, calendario cerrado, cinco variables, futuros resultados y faltantes.
+4. CSV exacto registrado, preview sin filas académicas, confirmación atómica/versionada, claves verificadas a etiquetas privadas; REAL y archivos modificados bloqueados.
+5. Desarrollo y reserva diferentes por persona/tiempo; etiquetas disponibles antes del ajuste; misma CV para cuatro algoritmos, sin tuning ni reserva en fit/selección.
+6. Artefactos privados firmados/compatibles, registro y activación técnica ADMIN explícitos/auditados; probabilidades null y abstención.
+7. GET processing/status, orígenes públicos, tipos/contrato 0.4.0 y aviso servidor; RESEARCHER sin casos/modelos; no pantallas S4.
+8. Recorrido API/DB generado→importado→comparado→registrado→activado→inferido→consultado; repetición y permisos comprobados.
+9. Regresión backend/contrato/build/navegador/persistencia; cuentas/secretos/volúmenes conservados, evidencia sanitizada y fallos/omisiones registrados.
+10. Sin REAL, hipótesis validada, S4–S6, commit/push/despliegue externo.

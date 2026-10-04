@@ -10,6 +10,7 @@ TABLES = {
     "app_users", "user_sessions", "academic_periods", "grade_sections", "students",
     "enrollments", "import_batches", "academic_snapshots", "model_versions",
     "predictions", "alerts", "interventions", "audit_events",
+    "synthetic_studies",
 }
 
 
@@ -23,7 +24,7 @@ def assert_sqlstate(db, statement, values, sqlstate):
         savepoint.rollback()
 
 
-def test_migration_has_exact_13_design_tables_and_reviewed_fields(db):
+def test_migration_has_design_tables_and_s31_provenance_registry(db):
     inspector = inspect(db)
     assert set(inspector.get_table_names(schema="risk_school")) == TABLES
     assert "school_year" in {row["name"] for row in inspector.get_columns("academic_periods", schema="risk_school")}
@@ -74,10 +75,13 @@ def test_immutable_evidence_triggers_are_installed(db):
     assert {"snapshots_immutable", "predictions_immutable", "audit_immutable", "snapshot_period_guard", "alert_change_guard", "intervention_change_guard"} <= triggers
 
 
-def test_institutional_migration_validated_without_relabeling(db):
-    assert db.scalar(text("SELECT count(*) FROM pg_constraint WHERE conname='institutional_origin' AND convalidated")) == 9
+def test_processing_migration_preserves_institutional_block_and_historical_origins(db):
+    # S3.1 replaces the total block with an explicit REAL/SYNTHETIC write guard.
+    # DEMO remains a historical value, never an accepted new processing context.
+    assert db.scalar(text("SELECT count(*) FROM pg_constraint WHERE conname='processing_origin' AND convalidated")) == 9
     assert_sqlstate(db, "INSERT INTO risk_school.academic_periods(code,school_year,start_date,end_date,data_origin) VALUES (:code,2026,'2026-01-01','2026-12-31','DEMO')", {'code':uuid4().hex}, '23514')
-    assert db.scalar(text("SELECT count(*) FROM pg_constraint WHERE conname='model_activation_pending'")) == 1
+    assert db.scalar(text("SELECT count(*) FROM pg_constraint WHERE conname='synthetic_only_active_model'")) == 1
+    assert db.scalar(text("SELECT count(*) FROM pg_constraint WHERE conname IN ('model_activation_pending','demo_only_active_model','institutional_origin')")) == 0
 
 
 @pytest.mark.parametrize("mutation", ("UPDATE risk_school.audit_events SET action='changed' WHERE id=:id", "DELETE FROM risk_school.audit_events WHERE id=:id"))

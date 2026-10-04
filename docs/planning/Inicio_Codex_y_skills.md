@@ -1,7 +1,8 @@
-# Inicio de trabajo — alcance vigente S3
+# Inicio de trabajo — alcance vigente S3.1
 
-Leer AGENTS.md, README, Estado_Sprint_3.md, Estado_Sprint_2_2.md, Estado_Sprint_2_1.md, ADR 004/005, Plan_tesis_riesgo_escolar.md,
-Sprints_y_aceptacion.md, Contrato_API.yaml y Esquema.sql antes de modificar.
+Leer AGENTS.md, README, Estado_Sprint_3_1.md y cierres S3/S2.2/S2.1, ADR 004/005/006,
+Manual_Estudio_Sintetico.md, Plan_tesis_riesgo_escolar.md, Sprints_y_aceptacion.md,
+Contrato_API.yaml y Esquema.sql antes de modificar.
 Los cierres S0/S1/S2 y documentos en history son evidencia histórica, no instrucciones.
 
 Usar PowerShell en Windows y Docker Desktop. infra/manage.py prepara infraestructura,
@@ -9,14 +10,16 @@ arranca, migra, reinicia, detiene y permite bootstrap explícito. No instalar un
 distribución, GNU Make ni exigir terminal WSL. Python 3.12.12 de backend ejecuta
 dentro del contenedor; el launcher del host solo coordina. Runtimes/locks conservados.
 
-No crear cuentas predeterminadas, semillas, generadores, ejemplos escolares en el
-entorno activo ni modos de demostración. No habilitar importación institucional:
+No crear cuentas predeterminadas, semillas al arrancar ni modos de demostración.
+S3.1 autoriza exclusivamente generación/importación controlada de SYNTHETIC mediante
+comandos ADMIN explícitos y CSV registrado exacto. No habilitar importación institucional:
 falta protocolo de procedencia, escala, periodo, ventana, fechas y calidad.
-Fixtures fabricados solo en bases aisladas de prueba, identificados como tales.
+Los fixtures de prueba permanecen aislados; el estudio activo identifica sus
+registros generados como SYNTHETIC, sin convertirlos en información institucional.
 No enviar contraseñas por argumentos, archivos de cuentas o logs.
 
 Conservar separación rutas/esquemas/servicios/repositorios/ML; contrato antes de UI.
-Migraciones nuevas revisadas manualmente; ORM parcial no representa trece tablas.
+Migraciones nuevas revisadas manualmente; no usar autogeneración con la metadata ORM parcial.
 No descartar cambios del usuario ni datos existentes. Probar con riesgo_app; propietario
 solo para migración/diagnóstico. Respaldo y restauración preceden a retirar un entorno.
 
@@ -26,11 +29,14 @@ Random Forest/SVM/XGBoost según plan, separación por estudiante, Pipeline sin 
 trazabilidad y abstención. Sin modelo: Modelo no disponible. No avanzar sin encargo.
 
 No recrear cuentas S2.2 ni sus credenciales Windows. ML usa volumen privado separado,
-manifestación de alcance aislado y confianza interna; una firma/hash no aprueba un
-modelo institucional. Ambas restricciones de activación siguen vigentes. Consultar
-docs/manuals/ML_S3.md. S4–S6 requieren nuevo encargo.
+manifiestos v2 SYNTHETIC_STUDY/SYNTHETIC y compatibilidad con v1 ISOLATED_TEST/REAL de
+las pruebas S3. Una firma/hash no aprueba un modelo institucional. 0003 sustituye
+las restricciones de activación por aprobación técnica exclusivamente SYNTHETIC;
+REAL sigue prohibido. Consultar los manuales ML y del estudio. S4–S6 requieren nuevo encargo.
 
 Elegir skills por necesidad real, no por palabras clave. Ninguna skill autoriza
 cambiar metodología, enviar mensajes a terceros ni cargar datos personales.
 Cierre: comandos PowerShell, host y runtime reales, comprobado/fallido/no ejecutado,
 evidencias, archivos y dependencia siguiente. No fabricar pruebas visuales o métricas.
+
+Consultar también Estado_Sprint_3_1.md y contrato 0.4.0; no reescribir los cierres ni migraciones históricos.

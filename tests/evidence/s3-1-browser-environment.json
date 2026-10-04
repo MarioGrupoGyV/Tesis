@@ -1,0 +1,14 @@
+{
+  "status": "COMPROBADO",
+  "database": "riesgo_escolar_test_browser_93b109f96fb8",
+  "data_scope": "isolated_test_only",
+  "bootstrap_repeated_rejected": true,
+  "account_survives_restart": true,
+  "active_environment_untouched": true,
+  "roles": [
+    "ADMIN",
+    "TUTOR",
+    "DIRECTOR",
+    "RESEARCHER"
+  ]
+}

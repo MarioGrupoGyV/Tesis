@@ -27,7 +27,7 @@ def list_models(db,user,page,page_size):
 def model_detail(db,user,id):
     require_admin(user)
     row = db.get(ModelVersion,id)
-    if row is None or row.data_origin != 'REAL':
+    if row is None or row.data_origin not in ('REAL','SYNTHETIC'):
         raise AppError(404,'MODEL_NOT_FOUND','El modelo no está disponible.')
     return schemas.Model.model_validate(row)
 
@@ -58,9 +58,10 @@ def persist_evaluated(db, *, snapshot_id, model_id, result, actor_id, request_id
         raise AppError(409,'PERIOD_LOCKED','El periodo está bloqueado.')
     enrollment = db.get(EnrollmentRecord,snapshot.enrollment_id)
     student = db.get(StudentRecord,enrollment.student_id)
-    if not (student.is_active and student.eligible_for_processing and student.consent_documented and student.assent_documented):
+    if not (student.is_active and student.eligible_for_processing and
+            (student.data_origin=='SYNTHETIC' or(student.consent_documented and student.assent_documented))):
         raise AppError(422,'NOT_ELIGIBLE','El corte no es elegible para inferencia.')
-    if snapshot.data_origin != model.data_origin or snapshot.data_origin != 'REAL':
+    if snapshot.data_origin != model.data_origin or snapshot.data_origin not in ('REAL','SYNTHETIC'):
         raise AppError(422,'ORIGIN_NOT_SUPPORTED','Corte y modelo deben conservar el mismo origen.')
     # La persistencia aislada prueba integridad con modelos inactivos. La selección
     # operativa exige protocolo + modelo aprobado/activo en run_period, sin bypass.
@@ -96,7 +97,8 @@ def infer_selected(db, user, period, as_of, model, bundle, request_id):
             schema_version=row['schema_version'],revision=row['revision'],supersedes_id=row['supersedes_id'],
             window_start=row['window_start'],available_at=row['available_at'],cutoff_at=row['cutoff_at'],
             target_date=row['target_date'],created_at=row['created_at'],
-            eligible=all(row[k] for k in ('student_active','eligible_for_processing','consent_documented','assent_documented')),
+            eligible=bool(row['student_active'] and row['eligible_for_processing'] and
+                (row['data_origin']=='SYNTHETIC' or(row['consent_documented'] and row['assent_documented']))),
             values={name:float(row[name]) if row[name] is not None else None for name in bundle.config.features},
             feature_available_at={name:row['available_at'] for name in bundle.config.features},
             input_provenance='snapshot:'+str(row['id']))
@@ -114,26 +116,35 @@ def infer_selected(db, user, period, as_of, model, bundle, request_id):
 
 def run_period(db,user,payload,settings,request_id):
     require_admin(user)
-    require_ml_protocol()
-    if payload.as_of > datetime.now(UTC):
-        raise AppError(422,'AS_OF_IN_FUTURE','as_of no puede estar en el futuro.')
+    from app.services.synthetic_study import validate_registered
+    from app.models.synthetic import SyntheticStudyRecord
     period = db.scalar(select(AcademicPeriod).where(AcademicPeriod.id==payload.period_id).with_for_update(read=True))
     if period is None:
         raise AppError(404,'PERIOD_NOT_FOUND','El periodo no está disponible.')
+    if period.data_origin!='SYNTHETIC':
+        require_ml_protocol()
     if period.is_locked:
         raise AppError(409,'PERIOD_LOCKED','El periodo está bloqueado.')
-    if period.data_origin != 'REAL':
-        raise AppError(422,'ORIGIN_NOT_SUPPORTED','Origen no admitido.')
+    if payload.as_of > datetime.now(UTC):
+        raise AppError(422,'AS_OF_IN_FUTURE','as_of no puede estar en el futuro.')
+    study=db.scalar(select(SyntheticStudyRecord).where(SyntheticStudyRecord.period_id==period.id))
+    if study is None:
+        raise AppError(422,'SYNTHETIC_STUDY_NOT_PREPARED','El estudio sintético no está preparado.')
+    validate_registered(db,settings,study)
     model = db.scalar(select(ModelVersion).where(ModelVersion.is_active.is_(True),ModelVersion.status=='APPROVED',
-                        ModelVersion.data_origin==period.data_origin,ModelVersion.created_at<=payload.as_of))
+                        ModelVersion.data_origin==period.data_origin,ModelVersion.study_id==study.id,
+                        ModelVersion.created_at<=payload.as_of))
     if model is None or settings.ml_storage_dir is None:
         raise AppError(409,'MODEL_NOT_AVAILABLE','Modelo no disponible.')
     from app.ml.artifacts import ArtifactStore
     from app.ml.features import MLDiagnostic
     try:
+        from app.services.synthetic_study import compatible_model
+        compatible_model(settings,study,model)
         bundle = ArtifactStore(settings.ml_storage_dir).load(model.artifact_key)
-        # Ningún artefacto ISOLATED_TEST puede emplearse operativamente.
-        if bundle.manifest['scope'] != 'INSTITUTIONAL' or not bundle.manifest['approved']:
+        # Solo simulación registrada; una firma nunca habilita REAL.
+        if (bundle.manifest['scope']!='SYNTHETIC_STUDY' or str(bundle.manifest['study_id'])!=str(study.id)
+            or model.manifest.get('approval_kind')!='TECHNICAL_SIMULATION'):
             raise MLDiagnostic('MODEL_NOT_APPROVED')
         if bundle.manifest['artifact_sha256'] != model.artifact_sha256 or bundle.manifest['dataset_hash'] != model.dataset_hash:
             raise MLDiagnostic('MODEL_HASH_MISMATCH')

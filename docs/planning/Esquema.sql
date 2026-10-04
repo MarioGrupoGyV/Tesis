@@ -1,5 +1,5 @@
--- Diseno efectivo S2.1. Solo referencia; aplicar Alembic 0001 y 0002.
--- Origen institucional no habilita procesamiento. Escalas pendientes de protocolo.
+-- Referencia efectiva S3.1. Aplicar Alembic 0001/0002/0003, nunca este diseño sobre una base existente.
+-- REAL bloqueado; SYNTHETIC es simulación explícita. DEMO histórico se conserva sin nuevas escrituras.
 BEGIN;
 CREATE SCHEMA risk_school;
 SET LOCAL search_path TO risk_school, public;
@@ -32,7 +32,7 @@ CREATE TABLE academic_periods (
   school_year smallint NOT NULL CHECK (school_year BETWEEN 2000 AND 2100),
   start_date date NOT NULL,
   end_date date NOT NULL,
-  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
+  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL','SYNTHETIC')),
   is_locked boolean NOT NULL DEFAULT false,
   created_at timestamptz NOT NULL DEFAULT now(),
   CHECK (end_date > start_date),
@@ -53,14 +53,14 @@ CREATE INDEX ix_sections_tutor ON grade_sections(tutor_id);
 CREATE TABLE students (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   anon_code text NOT NULL UNIQUE CHECK (length(anon_code) BETWEEN 3 AND 40),
-  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
+  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL','SYNTHETIC')),
   is_active boolean NOT NULL DEFAULT true,
   eligible_for_processing boolean NOT NULL DEFAULT false,
   consent_documented boolean NOT NULL DEFAULT false,
   assent_documented boolean NOT NULL DEFAULT false,
   created_at timestamptz NOT NULL DEFAULT now(),
   UNIQUE (id, data_origin),
-  CHECK (NOT eligible_for_processing
+  CHECK (data_origin IN ('DEMO','SYNTHETIC') OR NOT eligible_for_processing
          OR (consent_documented AND assent_documented))
 );
 
@@ -69,7 +69,7 @@ CREATE TABLE enrollments (
   student_id uuid NOT NULL,
   period_id uuid NOT NULL,
   section_id uuid NOT NULL REFERENCES grade_sections(id) ON DELETE RESTRICT,
-  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
+  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL','SYNTHETIC')),
   created_at timestamptz NOT NULL DEFAULT now(),
   FOREIGN KEY (student_id, data_origin) REFERENCES students(id, data_origin),
   FOREIGN KEY (period_id, data_origin) REFERENCES academic_periods(id, data_origin),
@@ -79,10 +79,30 @@ CREATE TABLE enrollments (
 );
 CREATE INDEX ix_enrollments_period_section ON enrollments(period_id, section_id);
 
+CREATE TABLE risk_school.synthetic_studies(
+        id uuid PRIMARY KEY,
+        period_id uuid NOT NULL UNIQUE,
+        data_origin text NOT NULL CHECK(data_origin='SYNTHETIC'),
+        generator_version text NOT NULL CHECK(generator_version='synthetic-generator-v1'),
+        seed bigint NOT NULL CHECK(seed>=0 AND seed<4294967296),
+        config jsonb NOT NULL,
+        manifest jsonb NOT NULL,
+        csv_sha256 char(64) NOT NULL CHECK(csv_sha256 ~ '^[0-9a-f]{64}$'),
+        storage_key text NOT NULL UNIQUE CHECK(storage_key ~ '^[0-9a-f]{32}\.json$'),
+        payload_sha256 char(64) NOT NULL CHECK(payload_sha256 ~ '^[0-9a-f]{64}$'),
+        bindings jsonb NOT NULL DEFAULT '[]'::jsonb CHECK(jsonb_typeof(bindings)='array'),
+        comparison jsonb CHECK(comparison IS NULL OR jsonb_typeof(comparison)='object'),
+        created_by uuid NOT NULL REFERENCES risk_school.app_users(id),
+        created_at timestamptz NOT NULL DEFAULT now(),
+        FOREIGN KEY(period_id,data_origin) REFERENCES risk_school.academic_periods(id,data_origin),
+        UNIQUE(id,data_origin), UNIQUE(id,period_id,data_origin,csv_sha256)
+    );
+
 CREATE TABLE import_batches (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  study_id uuid,
   period_id uuid NOT NULL,
-  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
+  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL','SYNTHETIC')),
   created_by uuid NOT NULL REFERENCES app_users(id),
   file_name text NOT NULL,
   file_sha256 char(64) NOT NULL CHECK (file_sha256 ~ '^[0-9a-f]{64}$'),
@@ -114,7 +134,7 @@ CREATE TABLE academic_snapshots (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   enrollment_id uuid NOT NULL,
   period_id uuid NOT NULL,
-  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
+  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL','SYNTHETIC')),
   import_batch_id uuid NOT NULL,
   window_start date NOT NULL,
   cutoff_at timestamptz NOT NULL,
@@ -151,10 +171,11 @@ CREATE INDEX ix_snapshots_enrollment_cutoff ON academic_snapshots(enrollment_id,
 
 CREATE TABLE model_versions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  study_id uuid,
   name text NOT NULL,
   version text NOT NULL,
   algorithm text NOT NULL CHECK (algorithm IN ('DUMMY','RANDOM_FOREST','SVM','XGBOOST')),
-  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
+  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL','SYNTHETIC')),
   dataset_hash char(64) NOT NULL CHECK (dataset_hash ~ '^[0-9a-f]{64}$'),
   artifact_sha256 char(64) NOT NULL CHECK (artifact_sha256 ~ '^[0-9a-f]{64}$'),
   artifact_key text NOT NULL,
@@ -170,10 +191,7 @@ CREATE TABLE model_versions (
   UNIQUE (name, version, data_origin),
   UNIQUE (id, data_origin),
   CHECK (NOT is_active OR status = 'APPROVED'),
-  -- Guard de esta fase. Retirar solo en una migración que habilite el protocolo REAL.
-  CONSTRAINT model_activation_pending CHECK (NOT is_active),
-  -- Restricción histórica 0001 también permanece vigente; no habilita DEMO.
-  CONSTRAINT demo_only_active_model CHECK (NOT is_active OR data_origin = 'DEMO')
+  CONSTRAINT synthetic_only_active_model CHECK(NOT is_active OR COALESCE((data_origin='SYNTHETIC' AND status='APPROVED' AND study_id IS NOT NULL AND manifest->>'scope'='SYNTHETIC_STUDY' AND manifest->>'data_origin'='SYNTHETIC' AND manifest->>'study_id'=study_id::text AND manifest->>'approval_kind'='TECHNICAL_SIMULATION'),false))
 );
 CREATE UNIQUE INDEX ux_active_model_origin ON model_versions(data_origin) WHERE is_active;
 
@@ -182,7 +200,7 @@ CREATE TABLE predictions (
   enrollment_id uuid NOT NULL,
   snapshot_id uuid NOT NULL,
   model_id uuid NOT NULL,
-  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
+  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL','SYNTHETIC')),
   risk_level text NOT NULL CHECK (risk_level IN ('LOW','MEDIUM','HIGH')),
   probability_low numeric(8,7),
   probability_medium numeric(8,7),
@@ -209,7 +227,7 @@ CREATE TABLE alerts (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   enrollment_id uuid NOT NULL,
   prediction_id uuid NOT NULL,
-  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
+  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL','SYNTHETIC')),
   assigned_to uuid REFERENCES app_users(id),
   severity text NOT NULL CHECK (severity IN ('MEDIUM','HIGH')),
   status text NOT NULL DEFAULT 'OPEN' CHECK (status IN ('OPEN','IN_REVIEW','RESOLVED','DISMISSED')),
@@ -234,7 +252,7 @@ CREATE TABLE interventions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   enrollment_id uuid NOT NULL,
   alert_id uuid,
-  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
+  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL','SYNTHETIC')),
   created_by uuid NOT NULL REFERENCES app_users(id),
   kind text NOT NULL CHECK (kind IN ('TUTORING','REINFORCEMENT','FAMILY_MEETING','OTHER')),
   objective text NOT NULL CHECK (length(btrim(objective)) BETWEEN 1 AND 1000),
@@ -316,6 +334,48 @@ CREATE TRIGGER alert_change_guard BEFORE INSERT OR UPDATE ON alerts
 CREATE TRIGGER intervention_change_guard BEFORE INSERT OR UPDATE ON interventions
   FOR EACH ROW EXECUTE FUNCTION check_followup_change();
 
+ALTER TABLE academic_periods ADD CONSTRAINT processing_origin CHECK(data_origin IN ('REAL','SYNTHETIC')) NOT VALID;
+ALTER TABLE students ADD CONSTRAINT processing_origin CHECK(data_origin IN ('REAL','SYNTHETIC')) NOT VALID;
+ALTER TABLE enrollments ADD CONSTRAINT processing_origin CHECK(data_origin IN ('REAL','SYNTHETIC')) NOT VALID;
+ALTER TABLE import_batches ADD CONSTRAINT processing_origin CHECK(data_origin IN ('REAL','SYNTHETIC')) NOT VALID;
+ALTER TABLE academic_snapshots ADD CONSTRAINT processing_origin CHECK(data_origin IN ('REAL','SYNTHETIC')) NOT VALID;
+ALTER TABLE model_versions ADD CONSTRAINT processing_origin CHECK(data_origin IN ('REAL','SYNTHETIC')) NOT VALID;
+ALTER TABLE predictions ADD CONSTRAINT processing_origin CHECK(data_origin IN ('REAL','SYNTHETIC')) NOT VALID;
+ALTER TABLE alerts ADD CONSTRAINT processing_origin CHECK(data_origin IN ('REAL','SYNTHETIC')) NOT VALID;
+ALTER TABLE interventions ADD CONSTRAINT processing_origin CHECK(data_origin IN ('REAL','SYNTHETIC')) NOT VALID;
+ALTER TABLE import_batches ADD CONSTRAINT import_batches_study_origin_fk FOREIGN KEY(study_id,data_origin) REFERENCES synthetic_studies(id,data_origin);
+ALTER TABLE import_batches ADD CONSTRAINT import_batches_synthetic_provenance CHECK((data_origin='SYNTHETIC')=(study_id IS NOT NULL));
+ALTER TABLE model_versions ADD CONSTRAINT model_versions_study_origin_fk FOREIGN KEY(study_id,data_origin) REFERENCES synthetic_studies(id,data_origin);
+ALTER TABLE model_versions ADD CONSTRAINT model_versions_synthetic_provenance CHECK((data_origin='SYNTHETIC')=(study_id IS NOT NULL));
+ALTER TABLE import_batches ADD CONSTRAINT import_registered_csv_fk FOREIGN KEY(study_id,period_id,data_origin,file_sha256) REFERENCES synthetic_studies(id,period_id,data_origin,csv_sha256);
+CREATE FUNCTION risk_school.check_prediction_study() RETURNS trigger LANGUAGE plpgsql
+        SET search_path=risk_school,pg_catalog AS $$
+        DECLARE batch_study uuid; model_study uuid;
+        BEGIN
+          IF NEW.data_origin='SYNTHETIC' THEN
+            SELECT b.study_id INTO STRICT batch_study FROM academic_snapshots s
+              JOIN import_batches b ON b.id=s.import_batch_id WHERE s.id=NEW.snapshot_id;
+            SELECT study_id INTO STRICT model_study FROM model_versions WHERE id=NEW.model_id;
+            IF batch_study IS NULL OR batch_study IS DISTINCT FROM model_study THEN
+              RAISE EXCEPTION 'Incompatible study provenance' USING ERRCODE='23514';
+            END IF;
+          END IF;
+          RETURN NEW;
+        END; $$;
+CREATE TRIGGER prediction_study_guard BEFORE INSERT ON predictions FOR EACH ROW EXECUTE FUNCTION check_prediction_study();
+
+CREATE FUNCTION risk_school.check_study_evidence() RETURNS trigger LANGUAGE plpgsql
+        SET search_path=risk_school,pg_catalog AS $$
+        BEGIN
+          IF TG_OP='DELETE' OR
+             (to_jsonb(NEW)-'bindings'-'comparison') IS DISTINCT FROM (to_jsonb(OLD)-'bindings'-'comparison') OR
+             (jsonb_array_length(OLD.bindings)>0 AND NEW.bindings IS DISTINCT FROM OLD.bindings) OR
+             (OLD.comparison IS NOT NULL AND NEW.comparison IS DISTINCT FROM OLD.comparison) THEN
+            RAISE EXCEPTION 'Study evidence is immutable' USING ERRCODE='55000';
+          END IF;
+          RETURN NEW;
+        END; $$;
+CREATE TRIGGER study_evidence_guard BEFORE UPDATE OR DELETE ON synthetic_studies FOR EACH ROW EXECUTE FUNCTION check_study_evidence();
 COMMIT;
 
 -- También comprobar en servicios: rol del tutor asignado, elegibilidad, cierre del periodo

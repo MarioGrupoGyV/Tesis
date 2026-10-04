@@ -36,6 +36,7 @@ class EnrollmentRecord(Base):
 class ImportBatchRecord(Base):
     __tablename__ = "import_batches"
     id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    study_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True))
     period_id: Mapped[UUID] = mapped_column(ForeignKey("risk_school.academic_periods.id"))
     data_origin: Mapped[str] = mapped_column(Text)
     created_by: Mapped[UUID] = mapped_column(ForeignKey("risk_school.app_users.id"))

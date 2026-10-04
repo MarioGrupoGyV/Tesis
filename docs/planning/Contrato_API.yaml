@@ -1,9 +1,9 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.3.0
-  description: 'S3: infraestructura predictiva comprobable aisladamente. Importación, entrenamiento, inferencia
-    institucional y activación bloqueados. Solo operaciones implementadas.'
+  version: 0.4.0
+  description: 'S3.1: Estudio con datos sintéticos explícitos. REAL bloqueado; sin entrenamiento/activación
+    HTTP ni pantallas S4–S6. Cambio incompatible de origen público REAL/SYNTHETIC.'
 servers:
 - url: /api/v1
   description: Preferir proxy de mismo origen para cookies y CSRF
@@ -16,6 +16,7 @@ tags:
 - name: students
 - name: imports
 - name: ml
+- name: processing
 paths:
   /health/live:
     get:
@@ -708,13 +709,14 @@ paths:
       summary: Validar CSV y crear vista previa
       tags:
       - imports
-      x-stage: S2.1
+      x-stage: S3.1
       x-roles:
       - ADMIN
-      description: 'Bloqueado con 422 INSTITUTIONAL_PROCESSING_NOT_READY hasta implementar procedencia autorizada,
-        escala, periodo, ventanas, fechas y calidad. Exige sesion ADMIN y CSRF. No persiste archivos ni registros
-        escolares. Motor preservado: UTF-8, 5 MiB, 10000 filas, transaccion, idempotencia, revision inmutable
-        y expected_preview_version.'
+      description: 'Sesión → ADMIN → CSRF → preparación del servidor → entrada → contexto/origen → procedencia
+        exacta. REAL: 422 INSTITUTIONAL_PROCESSING_NOT_READY. SYNTHETIC: solo archivo/hash/contexto del estudio
+        registrado, UNREGISTERED_SYNTHETIC_FILE 422 para modificado/no registrado. Sin flag de origen del cliente.
+        Conserva parser, límites, expected_preview_version, stale 409, transacción, revisiones e idempotencia.
+        Confirmación vincula etiquetas/resultados privados a cortes verificados sin exponerlos.'
       responses:
         '201': &id006
           description: Operación completada
@@ -861,13 +863,14 @@ paths:
       summary: Confirmar lote sin errores
       tags:
       - imports
-      x-stage: S2.1
+      x-stage: S3.1
       x-roles:
       - ADMIN
-      description: 'Bloqueado con 422 INSTITUTIONAL_PROCESSING_NOT_READY hasta implementar procedencia autorizada,
-        escala, periodo, ventanas, fechas y calidad. Exige sesion ADMIN y CSRF. No persiste archivos ni registros
-        escolares. Motor preservado: UTF-8, 5 MiB, 10000 filas, transaccion, idempotencia, revision inmutable
-        y expected_preview_version.'
+      description: 'Sesión → ADMIN → CSRF → preparación del servidor → entrada → contexto/origen → procedencia
+        exacta. REAL: 422 INSTITUTIONAL_PROCESSING_NOT_READY. SYNTHETIC: solo archivo/hash/contexto del estudio
+        registrado, UNREGISTERED_SYNTHETIC_FILE 422 para modificado/no registrado. Sin flag de origen del cliente.
+        Conserva parser, límites, expected_preview_version, stale 409, transacción, revisiones e idempotencia.
+        Confirmación vincula etiquetas/resultados privados a cortes verificados sin exponerlos.'
       responses:
         '200':
           description: Operación completada
@@ -952,8 +955,9 @@ paths:
       x-stage: S3
       x-roles:
       - ADMIN
-      description: Modelos paginados; orden created_at descendente e id ascendente. Lista vacía en activo.
-        Sin hashes, rutas, particiones ni métricas privadas.
+      description: ADMIN; modelos REAL históricos inactivos y SYNTHETIC de simulación; orden created_at DESC/id
+        ASC. Origen explícito. APPROVED significa aprobación técnica de simulación para SYNTHETIC; nunca aprobación
+        escolar. Sin artefactos, métricas individuales, particiones o etiquetas.
       parameters:
       - name: page
         in: query
@@ -1087,13 +1091,15 @@ paths:
       summary: runPredictions
       tags:
       - ml
-      x-stage: S3
+      x-stage: S3.1
       x-roles:
       - ADMIN
-      description: 'Orden: sesión, rol, CSRF, protocolo, cuerpo, periodo/modelo. En S3 devuelve bloqueo 422
-        incluso con cuerpo inválido después de CSRF; nunca procesa información institucional. Núcleo aislado:
-        última revisión incorporada/disponible hasta as_of, abstención sin fila, reutilización snapshot/model
-        y auditoría atómica. Modelo no disponible: 409 posterior al protocolo. Sin entrenamiento HTTP ni alertas.'
+      description: Sesión → ADMIN → CSRF → preparación del servidor → cuerpo → contexto/origen → modelo. REAL
+        bloqueado con INSTITUTIONAL_PROCESSING_NOT_READY 422. Solo estudio SYNTHETIC registrado, modelo de
+        simulación aprobado técnicamente y activo por CLI explícita. as_of no futuro; última revisión incorporada/disponible
+        <= as_of. 409 MODEL_NOT_AVAILABLE/MODEL_INCOMPATIBLE/PERIOD_LOCKED. Abstenciones no insertan riesgo;
+        probabilidades null/no calibradas. INSERT único snapshot/model y auditoría atómica; repetición/concurrencia
+        reutiliza resultado. No usa etiquetas de reserva ni crea alertas.
       parameters:
       - name: X-CSRF-Token
         in: header
@@ -1120,6 +1126,46 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PredictionRunInput'
+  /processing/status:
+    get:
+      operationId: processingStatus
+      summary: Preparación efectiva por alcance y rol
+      tags:
+      - processing
+      x-stage: S3.1
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      - RESEARCHER
+      description: Autenticado. Estado general derivado de registro/configuración/archivos privados y política
+        de escritura; no revela estudiantes, etiquetas, modelos ni rutas. REAL siempre false; health no habilita
+        procesamiento.
+      responses:
+        '200':
+          description: Estado público sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessingStatus'
+        '401':
+          description: SESSION_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: SERVICE_UNAVAILABLE sanitizado; sin consultas/secretos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     sessionCookie:
@@ -1244,6 +1290,7 @@ components:
           type: string
           enum:
           - REAL
+          - SYNTHETIC
         is_locked:
           type: boolean
       required:
@@ -1851,7 +1898,9 @@ components:
           title: Algorithm
           type: string
         data_origin:
-          const: REAL
+          enum:
+          - REAL
+          - SYNTHETIC
           title: Data Origin
           type: string
         feature_schema_version:
@@ -1990,5 +2039,75 @@ components:
       - reused
       - abstentions
       title: PredictionRunResult
+      type: object
+    ProcessingOperation:
+      additionalProperties: false
+      properties:
+        available:
+          title: Available
+          type: boolean
+        reason:
+          type:
+          - string
+          - 'null'
+          title: Reason
+      required:
+      - available
+      - reason
+      title: ProcessingOperation
+      type: object
+    ProcessingOperations:
+      additionalProperties: false
+      properties:
+        compare:
+          $ref: '#/components/schemas/ProcessingOperation'
+        register:
+          $ref: '#/components/schemas/ProcessingOperation'
+        activate:
+          $ref: '#/components/schemas/ProcessingOperation'
+        predict:
+          $ref: '#/components/schemas/ProcessingOperation'
+        read_students:
+          $ref: '#/components/schemas/ProcessingOperation'
+        read_models:
+          $ref: '#/components/schemas/ProcessingOperation'
+        import:
+          $ref: '#/components/schemas/ProcessingOperation'
+      required:
+      - compare
+      - register
+      - activate
+      - predict
+      - read_students
+      - read_models
+      - import
+      title: ProcessingOperations
+      type: object
+    ProcessingStatus:
+      additionalProperties: false
+      properties:
+        scope:
+          const: SYNTHETIC_STUDY
+          title: Scope
+          type: string
+        notice:
+          title: Notice
+          type: string
+        institutional_ready:
+          const: false
+          title: Institutional Ready
+          type: boolean
+        synthetic_ready:
+          title: Synthetic Ready
+          type: boolean
+        operations:
+          $ref: '#/components/schemas/ProcessingOperations'
+      required:
+      - scope
+      - notice
+      - institutional_ready
+      - synthetic_ready
+      - operations
+      title: ProcessingStatus
       type: object
 x-current-sprint: S2.1

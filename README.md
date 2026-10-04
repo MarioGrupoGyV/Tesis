@@ -1,9 +1,14 @@
 # Seguimiento Escolar
 
-**S3: infraestructura predictiva con pruebas aisladas en Windows y Docker.** Se conservan
-las cuatro cuentas de S2.2; sin registros escolares ni semillas al arrancar.
-Importación, entrenamiento, inferencia y activación institucional siguen bloqueados.
-No existe un modelo operativo ni evaluación de la tesis. S4–S6 siguen pendientes.
+**S3.1: Estudio con datos sintéticos en Windows y Docker.** Registros nuevos de
+origen SYNTHETIC ingresan únicamente por el importador verificado y comandos ADMIN
+explícitos. Comparación de cuatro algoritmos e inferencia local de simulación.
+REAL sigue bloqueado; no hay resultados escolares ni hipótesis validada. Las cuatro
+cuentas S2.2 y el histórico se conservan. S4–S6 pendientes.
+
+Consultar [manual del estudio](docs/manuals/Manual_Estudio_Sintetico.md),
+[ADR 006](docs/adr/006-estudio-sintetico-s3-1.md) y
+[cierre S3.1](docs/planning/Estado_Sprint_3_1.md).
 
 ## Preparación y operación
 
@@ -66,11 +71,11 @@ ocultas, usa PowerShell desde este repositorio (sustituye ADMIN por el rol):
 py -3.12 infra/windows_credentials.py ADMIN
 ```
 
-No se envían correos ni se guardan contraseñas en archivos de cuentas. La herramienta
-explícita `infra/review_accounts.py` crea/reutiliza solo estas cuentas mediante los
-servicios existentes; nunca se ejecuta al arrancar. Si encuentra un administrador
-sin credencial autorizada disponible, se detiene y conserva su identidad. La revisión
-no configura periodos/secciones ni habilita importación. Detalles y resultados en
+No se envían correos ni se guardan contraseñas en archivos de cuentas. La preparación
+explícita S2.2 utilizó `infra/review_accounts.py` mediante los servicios existentes;
+nunca se ejecuta al arrancar. Conserva las cuatro cuentas actuales y sus credenciales;
+no repitas su preparación en S3.1. Esa revisión no configuró periodos/secciones ni
+habilitó importación. Detalles y resultados históricos en
 [Estado S2.2](docs/planning/Estado_Sprint_2_2.md) y su [matriz](docs/planning/Matriz_verificacion_S2_2.md).
 
 Para crear posteriormente un usuario autorizado, periodo o sección:
@@ -81,8 +86,9 @@ py -3.12 infra/manage.py configure
 
 Se autentica un administrador y el operador elige `usuario`, `periodo` o `seccion`.
 Todos los valores proceden del operador; no se inventan calendarios ni tutores.
-Se rechazan duplicados y se audita en la misma transacción. Crear contexto no autoriza
-importación. Las escalas y requisitos institucionales deben acordarse antes de habilitarla.
+Se rechazan duplicados y se audita en la misma transacción. Crear contexto REAL no
+autoriza importación institucional. El contexto SYNTHETIC se prepara exclusivamente
+con `infra/study.py generate`, según el [manual del estudio](docs/manuals/Manual_Estudio_Sintetico.md).
 
 ```powershell
 py -3.12 infra/manage.py migrate
@@ -98,10 +104,10 @@ rutas Linux pertenecen a Docker, no son instrucciones para la consola del usuari
 ## Comprobaciones desde PowerShell
 
 ```powershell
-$env:TEST_REPORT_NAME = 's3-backend'
+$env:TEST_REPORT_NAME = 's3-1-backend'
 docker compose -f infra/compose.test.yaml build tester
 docker compose -f infra/compose.test.yaml run --rm tester
-$env:BROWSER_REPORT_PREFIX = 's3'
+$env:BROWSER_REPORT_PREFIX = 's3-1'
 py -3.12 infra/test_browser.py
 py -3.12 -m venv .venv-s0
 .\.venv-s0\Scripts\python.exe -m pip install --require-hashes -r infra/requirements-s0.txt
@@ -114,9 +120,10 @@ git diff --check
 
 Las pruebas backend usan una base nueva `riesgo_escolar_test_<id>` en otro proyecto
 Compose sin puerto de base publicado. Conservan sesiones, atomicidad, concurrencia,
-revisiones, fechas, permisos e idempotencia. La política bloqueada se sustituye
-**solo mediante monkeypatch de pytest** para comprobar el motor; no existe interruptor
-operativo. Las filas fabricadas son fixtures aislados, no datos institucionales.
+revisiones, fechas, permisos e idempotencia. Las pruebas históricas del motor REAL
+sustituyen el bloqueo **solo mediante monkeypatch de pytest**; no existe interruptor
+operativo institucional. Las pruebas S3.1 usan el registro sintético y la política
+efectiva sin ese reemplazo. Todos sus registros y artefactos son fixtures aislados.
 
 El runner de navegador necesita Chromium de Playwright instalado (`npx playwright
 install chromium` si falta), usa puerto 15174 y otra base nueva. No guarda la contraseña
@@ -127,23 +134,30 @@ contexto vacío y revocación en escritorio, tablet y móvil.
 recrea contenedores y conserva un marcador de infraestructura en el volumen. Rechaza
 ejecutarse si ya hay registros; no borra ni inventa datos para que pase.
 
-Con las cuentas actuales usa `py -3.12 infra/check_access_persistence.py`: captura
-el estado, recrea sin eliminar volúmenes y verifica cuentas, roles, auditoría,
-archivos y acceso. `py -3.12 infra/review_endpoints.py` revisa las 14 rutas activas;
-`py -3.12 infra/review_browser.py` revisa los cuatro roles en localhost usando el
-almacén privado. No ejecutar revisiones de login repetidamente: el límite vigente
+Con las cuentas actuales usa `py -3.12 infra/check_access_persistence.py`, con
+`$env:PERSISTENCE_REPORT_PREFIX = 's3-1'`: captura el estado, recrea sin eliminar
+volúmenes y verifica cuentas, roles, auditoría, estudio y archivos. La revisión
+S3.1 de las 19 operaciones usa `infra/review_study.py`, según el manual del estudio;
+los revisores históricos `review_endpoints.py` y `review_s3.py` esperan bloqueo
+total y no se ejecutan sobre el estudio poblado. `infra/review_browser.py` revisa
+los cuatro roles en localhost usando el almacén privado, con
+`$env:REVIEW_REPORT_PREFIX = 's3-1-active'`. No ejecutar revisiones de login repetidamente: el límite vigente
 es 10 intentos por IP cada 300 segundos y también cuenta accesos correctos.
 
 ## Contrato, conservación y límites
 
-Contrato vigente [OpenAPI 0.3.0](docs/planning/Contrato_API.yaml), con solo rutas
+Contrato vigente [OpenAPI 0.4.0](docs/planning/Contrato_API.yaml), con solo rutas
 implementadas. [Esquema](docs/planning/Esquema.sql) es referencia; aplicar Alembic,
 nunca ejecutar manualmente ese SQL. La migración 0001 y su snapshot permanecen intactos;
-0002 añade restricciones institucionales sin transformar registros anteriores.
+0002 añadió restricciones institucionales sin transformar registros anteriores.
+0003 permite SYNTHETIC y activación técnica de simulación en un contexto separado,
+conservando datos anteriores y la prohibición de activar REAL.
 
-POST de importación exige ADMIN/CSRF y devuelve 422
-`INSTITUTIONAL_PROCESSING_NOT_READY`, sin guardar archivos ni filas académicas.
-Contexto vacío es consultable. Se conservan 409 de integridad y 503 Error sanitizado;
+POST de importación exige ADMIN/CSRF. REAL devuelve 422
+`INSTITUTIONAL_PROCESSING_NOT_READY`; SYNTHETIC exige CSV exacto registrado por el
+generador local. Preview/commit conservan versiones, transacción y reutilización.
+`GET /api/v1/processing/status` informa preparación y permisos por operación;
+institutional_ready sigue false. Se conservan 409 de integridad y 503 Error sanitizado;
 health/ready mantiene Health. Sin modelo válido no existe riesgo calculado.
 
 El entorno anterior permanece detenido, con sus volúmenes y secretos conservados.
@@ -156,35 +170,39 @@ Véanse [ADR de transición](docs/adr/004-transicion-windows.md),
 No se realizaron push ni despliegues externos. HTTPS, protocolo de datos y validación
 institucional permanecen pendientes; la demo anterior se retiró del producto.
 
-## Infraestructura predictiva S3
+## Núcleo S3 y simulación S3.1
 
 Núcleo con dataset/manifiesto versionados, validación temporal, Pipeline y particiones
 por estudiante para Dummy, Random Forest, SVM y XGBoost CPU 3.4.1. Edad/grado requieren
-justificación; escalas, criterio y política de faltantes son explícitos. No se activa
-un ganador ni se presentan probabilidades sin calibración. Los artefactos internos
-van a `/var/lib/riesgo/ml`, privado y fuera del checkout; en activo permanece vacío.
+justificación; escalas, criterio y política de faltantes son explícitos. La selección
+usa únicamente desarrollo; registro y activación requieren comandos ADMIN explícitos.
+No se presentan probabilidades sin calibración. El estudio y los artefactos internos
+van a `/var/lib/riesgo/ml`, privado, persistente y fuera del checkout.
 
-Rutas nuevas: `GET /api/v1/models`, `GET /api/v1/models/{id}` (ADMIN),
-`POST /api/v1/predictions/run` (ADMIN/CSRF, bloqueado por protocolo) y
+Rutas S3 conservadas: `GET /api/v1/models`, `GET /api/v1/models/{id}` (ADMIN),
+`POST /api/v1/predictions/run` (ADMIN/CSRF, simulación SYNTHETIC registrada) y
 `GET /api/v1/predictions/{id}` (ADMIN/TUTOR/DIRECTOR, alcance por sección).
-Sin entrenamiento HTTP, activación ni nuevas pantallas.
+S3.1 añade `GET /api/v1/processing/status`, autenticado y general por rol, y el aviso
+del servidor en inicio. REAL continúa bloqueado. Sin entrenamiento/activación HTTP
+ni pantallas S4.
 
 ```powershell
 py -3.12 infra/ml.py readiness
 py -3.12 infra/ml.py configuration
 py -3.12 infra/ml.py compatibility
 py -3.12 infra/ml.py train  # Rechazo esperado, código de salida 2
-py -3.12 infra/review_s3.py
-$env:REVIEW_REPORT_PREFIX = 's3-active'
+py -3.12 infra/study.py status --admin-credential ADMIN
+$env:REVIEW_REPORT_PREFIX = 's3-1-active'
 py -3.12 infra/review_browser.py
-$env:PERSISTENCE_REPORT_PREFIX = 's3'
+$env:PERSISTENCE_REPORT_PREFIX = 's3-1'
 py -3.12 infra/check_access_persistence.py
-.\.venv-s0\Scripts\python.exe infra/check_s3.py
+.\.venv-s0\Scripts\python.exe infra/check_study.py
 ```
 
-`check_s3.py` es el cierre de esta revisión y necesita su captura privada previa
-`.local/s3-before.json` y evidencias generadas. No crea cuentas. Los reportes antiguos
-S2.2 permanecen intactos; utiliza prefijos nuevos para revisiones posteriores.
-Detalle de esquema, límites, confianza de artefactos y comandos en el
-[manual ML](docs/manuals/ML_S3.md), [ADR 005](docs/adr/005-infraestructura-ml-s3.md)
-y [Estado S3](docs/planning/Estado_Sprint_3.md).
+`check_study.py` contrasta la evidencia S3.1. `check_s3.py` y `.local/s3-before.json`
+pertenecen al cierre histórico S3 y sus expectativas de base vacía. Los reportes
+anteriores permanecen intactos; utiliza prefijos nuevos para revisiones posteriores.
+El [manual del estudio](docs/manuals/Manual_Estudio_Sintetico.md) describe generación,
+importación, comparación, registro y activación explícitos. El [manual ML](docs/manuals/ML_S3.md),
+[ADR 005](docs/adr/005-infraestructura-ml-s3.md) y [Estado S3](docs/planning/Estado_Sprint_3.md)
+conservan la infraestructura y evidencia de aquella iteración.

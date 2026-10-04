@@ -1,0 +1,523 @@
+{
+  "initial_sha": "412c370519900351f37bf2d444df9c943e58288d",
+  "final_sha": "412c370519900351f37bf2d444df9c943e58288d",
+  "commit_created": false,
+  "changed_files": [
+    {
+      "status": "M",
+      "path": "AGENTS.md"
+    },
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "backend/README.md"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/api/v1/imports.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/api/v1/ml.py"
+    },
+    {
+      "status": "??",
+      "path": "backend/app/api/v1/processing.py"
+    },
+    {
+      "status": "??",
+      "path": "backend/app/core/study_storage.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/main.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/ml/artifacts.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/ml/evaluate/__init__.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/ml/features/__init__.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/ml/manifest.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/ml/predict/__init__.py"
+    },
+    {
+      "status": "??",
+      "path": "backend/app/ml/synthetic-study-v1.json"
+    },
+    {
+      "status": "??",
+      "path": "backend/app/ml/synthetic.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/ml/train/__init__.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/models/ml.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/models/s2.py"
+    },
+    {
+      "status": "??",
+      "path": "backend/app/models/synthetic.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/repositories/ml.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/repositories/s1.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/repositories/students.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/schemas/ml.py"
+    },
+    {
+      "status": "??",
+      "path": "backend/app/schemas/processing.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/schemas/s1.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/schemas/s2.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/services/catalogs.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/services/imports.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/services/ml.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/services/processing_policy.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/services/students.py"
+    },
+    {
+      "status": "??",
+      "path": "backend/app/services/synthetic_study.py"
+    },
+    {
+      "status": "??",
+      "path": "backend/app/synthetic_cli.py"
+    },
+    {
+      "status": "??",
+      "path": "backend/migrations/versions/0003_synthetic_study.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/conftest.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/test_s1_schema.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/test_s2_imports.py"
+    },
+    {
+      "status": "??",
+      "path": "backend/tests/test_s3_1_integration.py"
+    },
+    {
+      "status": "??",
+      "path": "backend/tests/test_s3_1_migration.py"
+    },
+    {
+      "status": "??",
+      "path": "backend/tests/test_s3_1_ml.py"
+    },
+    {
+      "status": "??",
+      "path": "backend/tests/test_s3_1_public_projection.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/test_s3_api.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/test_s3_ml.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/test_s3_persistence.py"
+    },
+    {
+      "status": "M",
+      "path": "compose.yaml"
+    },
+    {
+      "status": "??",
+      "path": "docs/adr/006-estudio-sintetico-s3-1.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/manuals/ML_S3.md"
+    },
+    {
+      "status": "??",
+      "path": "docs/manuals/Manual_Estudio_Sintetico.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/manuals/README.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/planning/Conciliacion_SQL_API.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/planning/Contrato_API.yaml"
+    },
+    {
+      "status": "M",
+      "path": "docs/planning/Esquema.sql"
+    },
+    {
+      "status": "??",
+      "path": "docs/planning/Estado_Sprint_3_1.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/planning/Inicio_Codex_y_skills.md"
+    },
+    {
+      "status": "??",
+      "path": "docs/planning/Matriz_verificacion_S3_1.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/planning/Plan_tesis_riesgo_escolar.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/planning/Sprints_y_aceptacion.md"
+    },
+    {
+      "status": "M",
+      "path": "frontend/src/app/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "frontend/src/lib/api.generated.d.ts"
+    },
+    {
+      "status": "M",
+      "path": "frontend/src/lib/api.ts"
+    },
+    {
+      "status": "M",
+      "path": "infra/README.md"
+    },
+    {
+      "status": "M",
+      "path": "infra/check_access_persistence.py"
+    },
+    {
+      "status": "M",
+      "path": "infra/check_s0.py"
+    },
+    {
+      "status": "??",
+      "path": "infra/check_study.py"
+    },
+    {
+      "status": "M",
+      "path": "infra/compose.test.yaml"
+    },
+    {
+      "status": "M",
+      "path": "infra/review_browser.py"
+    },
+    {
+      "status": "??",
+      "path": "infra/review_study.py"
+    },
+    {
+      "status": "M",
+      "path": "infra/run_backend_tests.py"
+    },
+    {
+      "status": "M",
+      "path": "infra/runtime_snapshot.py"
+    },
+    {
+      "status": "??",
+      "path": "infra/study.py"
+    },
+    {
+      "status": "??",
+      "path": "infra/sync_study_contract.py"
+    },
+    {
+      "status": "M",
+      "path": "infra/test_browser.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/e2e/access.spec.ts"
+    },
+    {
+      "status": "M",
+      "path": "tests/e2e/review-reporter.ts"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-admin-1440x900.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-admin-390x844.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-admin-768x1024.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-director-1440x900.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-director-390x844.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-director-768x1024.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-endpoints.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-first-endpoints.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-invalid-login.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-login-1440x900.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-login-390x844.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-login-768x1024.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-playwright.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-researcher-1440x900.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-researcher-390x844.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-researcher-768x1024.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-tutor-1440x900.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-tutor-390x844.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-active-tutor-768x1024.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-backend-environment.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-backend-first-environment.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-backend-first-response-samples.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-backend-first.xml"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-backend-lock-probe-environment.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-backend-lock-probe.xml"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-backend-second-environment.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-backend-second.xml"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-backend.xml"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-browser-environment.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-changed-files.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-comparison.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-contracts.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-admin-1440x900.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-admin-390x844.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-admin-768x1024.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-director-1440x900.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-director-390x844.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-director-768x1024.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-invalid-login.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-login-1440x900.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-login-390x844.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-login-768x1024.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-playwright.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-researcher-1440x900.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-researcher-390x844.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-researcher-768x1024.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-tutor-1440x900.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-tutor-390x844.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-isolated-tutor-768x1024.png"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-ml-response-samples.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-ml-summary.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-persistence.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-response-samples.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-review.json"
+    },
+    {
+      "status": "??",
+      "path": "tests/evidence/s3-1-storage-diagnostic.json"
+    }
+  ]
+}

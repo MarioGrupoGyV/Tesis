@@ -1,6 +1,7 @@
 """Contrato interno ML v1. Metadatos y etiquetas nunca forman parte de X."""
 from datetime import date
 from decimal import Decimal
+import json
 from typing import Literal
 from uuid import UUID
 from zoneinfo import ZoneInfo
@@ -74,7 +75,7 @@ class Observation(InternalModel):
     snapshot_id: UUID
     enrollment_id: UUID
     period_id: UUID
-    data_origin: Literal['REAL']
+    data_origin: Literal['REAL', 'SYNTHETIC']
     schema_version: Literal['academic-v1'] = 'academic-v1'
     revision: int = Field(ge=1)
     supersedes_id: UUID | None = None
@@ -97,16 +98,38 @@ class Label(InternalModel):
     provenance: str = Field(min_length=1)
     observed_at: AwareDatetime
     available_at: AwareDatetime
+    future_outcome: dict[str, float] | None = None
 
 
 class Dataset(InternalModel):
-    schema_version: Literal['ml-dataset-v1'] = 'ml-dataset-v1'
-    scope: Literal['ISOLATED_TEST', 'INSTITUTIONAL']
+    schema_version: Literal['ml-dataset-v1', 'ml-dataset-v2'] = 'ml-dataset-v1'
+    scope: Literal['ISOLATED_TEST', 'INSTITUTIONAL', 'SYNTHETIC_STUDY']
     provenance: str = Field(min_length=1)
     evaluation_as_of: AwareDatetime
     config: FeatureConfig
     observations: list[Observation] = Field(min_length=1, max_length=10000)
     labels: list[Label]
+    synthetic_protocol: dict | None = None
+
+    def model_dump_json(self, **kwargs) -> str:
+        raw = super().model_dump_json(**kwargs)
+        if self.schema_version == 'ml-dataset-v1':
+            # Preserve historical S3 artifact bytes and their existing hashes.
+            return raw
+        # Private storage sorts mappings. Pydantic otherwise keeps input mapping
+        # order, so equivalent v2 datasets would hash differently after reload.
+        # Arrays retain their semantic order (observations, labels and partitions).
+        return json.dumps(json.loads(raw), sort_keys=True, ensure_ascii=False,
+                          separators=(',', ':'), allow_nan=False)
+
+    @model_validator(mode='after')
+    def scope_origin(self):
+        synthetic = self.scope == 'SYNTHETIC_STUDY'
+        if (synthetic != (self.schema_version == 'ml-dataset-v2') or
+                any(row.data_origin != ('SYNTHETIC' if synthetic else 'REAL') for row in self.observations) or
+                synthetic != (self.synthetic_protocol is not None)):
+            raise ValueError('DATASET_SCOPE_ORIGIN_INCOMPATIBLE')
+        return self
 
 
 def validate_observation(row: Observation, config: FeatureConfig):
@@ -133,7 +156,12 @@ def validate_observation(row: Observation, config: FeatureConfig):
             raise MLDiagnostic('UNKNOWN_PARTICIPATION')
 
 
-def validate_dataset(dataset: Dataset):
+def validate_dataset(dataset: Dataset, *, allow_ineligible: bool = False):
+    # model_copy deliberately bypasses Pydantic; recheck before fit or serialization.
+    try:
+        Dataset.model_validate(dataset.model_dump())
+    except ValueError:
+        raise MLDiagnostic('DATASET_SCOPE_ORIGIN_INCOMPATIBLE') from None
     config = dataset.config
     rows = {r.snapshot_id: r for r in dataset.observations}
     labels = {label.snapshot_id: label for label in dataset.labels}
@@ -145,7 +173,7 @@ def validate_dataset(dataset: Dataset):
     enrollment_students = {}
     for row in dataset.observations:
         validate_observation(row, config)
-        if not row.eligible:
+        if not row.eligible and not allow_ineligible:
             raise MLDiagnostic('NOT_ELIGIBLE')
         if row.created_at > dataset.evaluation_as_of:
             raise MLDiagnostic('OBSERVATION_NOT_AVAILABLE')

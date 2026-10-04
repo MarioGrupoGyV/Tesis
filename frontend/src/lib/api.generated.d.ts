@@ -235,7 +235,7 @@ export interface paths {
         put?: never;
         /**
          * Validar CSV y crear vista previa
-         * @description Bloqueado con 422 INSTITUTIONAL_PROCESSING_NOT_READY hasta implementar procedencia autorizada, escala, periodo, ventanas, fechas y calidad. Exige sesion ADMIN y CSRF. No persiste archivos ni registros escolares. Motor preservado: UTF-8, 5 MiB, 10000 filas, transaccion, idempotencia, revision inmutable y expected_preview_version.
+         * @description Sesión → ADMIN → CSRF → preparación del servidor → entrada → contexto/origen → procedencia exacta. REAL: 422 INSTITUTIONAL_PROCESSING_NOT_READY. SYNTHETIC: solo archivo/hash/contexto del estudio registrado, UNREGISTERED_SYNTHETIC_FILE 422 para modificado/no registrado. Sin flag de origen del cliente. Conserva parser, límites, expected_preview_version, stale 409, transacción, revisiones e idempotencia. Confirmación vincula etiquetas/resultados privados a cortes verificados sin exponerlos.
          */
         post: operations["previewImport"];
         delete?: never;
@@ -275,7 +275,7 @@ export interface paths {
         put?: never;
         /**
          * Confirmar lote sin errores
-         * @description Bloqueado con 422 INSTITUTIONAL_PROCESSING_NOT_READY hasta implementar procedencia autorizada, escala, periodo, ventanas, fechas y calidad. Exige sesion ADMIN y CSRF. No persiste archivos ni registros escolares. Motor preservado: UTF-8, 5 MiB, 10000 filas, transaccion, idempotencia, revision inmutable y expected_preview_version.
+         * @description Sesión → ADMIN → CSRF → preparación del servidor → entrada → contexto/origen → procedencia exacta. REAL: 422 INSTITUTIONAL_PROCESSING_NOT_READY. SYNTHETIC: solo archivo/hash/contexto del estudio registrado, UNREGISTERED_SYNTHETIC_FILE 422 para modificado/no registrado. Sin flag de origen del cliente. Conserva parser, límites, expected_preview_version, stale 409, transacción, revisiones e idempotencia. Confirmación vincula etiquetas/resultados privados a cortes verificados sin exponerlos.
          */
         post: operations["commitImport"];
         delete?: never;
@@ -293,7 +293,7 @@ export interface paths {
         };
         /**
          * listModels
-         * @description Modelos paginados; orden created_at descendente e id ascendente. Lista vacía en activo. Sin hashes, rutas, particiones ni métricas privadas.
+         * @description ADMIN; modelos REAL históricos inactivos y SYNTHETIC de simulación; orden created_at DESC/id ASC. Origen explícito. APPROVED significa aprobación técnica de simulación para SYNTHETIC; nunca aprobación escolar. Sin artefactos, métricas individuales, particiones o etiquetas.
          */
         get: operations["listModels"];
         put?: never;
@@ -355,9 +355,29 @@ export interface paths {
         put?: never;
         /**
          * runPredictions
-         * @description Orden: sesión, rol, CSRF, protocolo, cuerpo, periodo/modelo. En S3 devuelve bloqueo 422 incluso con cuerpo inválido después de CSRF; nunca procesa información institucional. Núcleo aislado: última revisión incorporada/disponible hasta as_of, abstención sin fila, reutilización snapshot/model y auditoría atómica. Modelo no disponible: 409 posterior al protocolo. Sin entrenamiento HTTP ni alertas.
+         * @description Sesión → ADMIN → CSRF → preparación del servidor → cuerpo → contexto/origen → modelo. REAL bloqueado con INSTITUTIONAL_PROCESSING_NOT_READY 422. Solo estudio SYNTHETIC registrado, modelo de simulación aprobado técnicamente y activo por CLI explícita. as_of no futuro; última revisión incorporada/disponible <= as_of. 409 MODEL_NOT_AVAILABLE/MODEL_INCOMPATIBLE/PERIOD_LOCKED. Abstenciones no insertan riesgo; probabilidades null/no calibradas. INSERT único snapshot/model y auditoría atómica; repetición/concurrencia reutiliza resultado. No usa etiquetas de reserva ni crea alertas.
          */
         post: operations["runPredictions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/processing/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Preparación efectiva por alcance y rol
+         * @description Autenticado. Estado general derivado de registro/configuración/archivos privados y política de escritura; no revela estudiantes, etiquetas, modelos ni rutas. REAL siempre false; health no habilita procesamiento.
+         */
+        get: operations["processingStatus"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -417,7 +437,7 @@ export interface components {
             /** Format: date */
             end_date: string;
             /** @enum {string} */
-            data_origin: "REAL";
+            data_origin: "REAL" | "SYNTHETIC";
             is_locked: boolean;
         };
         Section: {
@@ -437,7 +457,7 @@ export interface components {
             /** Format: uuid */
             period_id: string;
             /** @enum {string} */
-            data_origin: "REAL";
+            data_origin: "REAL" | "SYNTHETIC";
             /** Format: date */
             window_start: string;
             /**
@@ -477,7 +497,7 @@ export interface components {
             /** Format: uuid */
             model_id: string;
             /** @enum {string} */
-            data_origin: "REAL";
+            data_origin: "REAL" | "SYNTHETIC";
             /** @enum {string} */
             risk_level: "LOW" | "MEDIUM" | "HIGH";
             /**
@@ -518,7 +538,7 @@ export interface components {
             section_code: string;
             grade: number;
             /** @enum {string} */
-            data_origin: "REAL";
+            data_origin: "REAL" | "SYNTHETIC";
             average_grade: number | null;
             attendance_pct: number | null;
             /** Format: date-time */
@@ -563,7 +583,7 @@ export interface components {
             /** Format: uuid */
             period_id: string;
             /** @enum {string} */
-            data_origin: "REAL";
+            data_origin: "REAL" | "SYNTHETIC";
             file_name: string;
             file_sha256: string;
             schema_version: string;
@@ -604,7 +624,7 @@ export interface components {
             /** Format: uuid */
             prediction_id: string;
             /** @enum {string} */
-            data_origin: "REAL";
+            data_origin: "REAL" | "SYNTHETIC";
             /** @enum {string} */
             severity: "MEDIUM" | "HIGH";
             /** @enum {string} */
@@ -634,7 +654,7 @@ export interface components {
             /** Format: uuid */
             alert_id: string | null;
             /** @enum {string} */
-            data_origin: "REAL";
+            data_origin: "REAL" | "SYNTHETIC";
             /** @enum {string} */
             kind: "TUTORING" | "REINFORCEMENT" | "FAMILY_MEETING" | "OTHER";
             objective: string;
@@ -690,9 +710,9 @@ export interface components {
             algorithm: "DUMMY" | "RANDOM_FOREST" | "SVM" | "XGBOOST";
             /**
              * Data Origin
-             * @constant
+             * @enum {string}
              */
-            data_origin: "REAL";
+            data_origin: "REAL" | "SYNTHETIC";
             /** Feature Schema Version */
             feature_schema_version: string;
             /** Reference Criterion Version */
@@ -774,6 +794,41 @@ export interface components {
             reused: number;
             /** Abstentions */
             abstentions: components["schemas"]["Abstention"][];
+        };
+        /** ProcessingOperation */
+        ProcessingOperation: {
+            /** Available */
+            available: boolean;
+            /** Reason */
+            reason: string | null;
+        };
+        /** ProcessingOperations */
+        ProcessingOperations: {
+            compare: components["schemas"]["ProcessingOperation"];
+            register: components["schemas"]["ProcessingOperation"];
+            activate: components["schemas"]["ProcessingOperation"];
+            predict: components["schemas"]["ProcessingOperation"];
+            read_students: components["schemas"]["ProcessingOperation"];
+            read_models: components["schemas"]["ProcessingOperation"];
+            import: components["schemas"]["ProcessingOperation"];
+        };
+        /** ProcessingStatus */
+        ProcessingStatus: {
+            /**
+             * Scope
+             * @constant
+             */
+            scope: "SYNTHETIC_STUDY";
+            /** Notice */
+            notice: string;
+            /**
+             * Institutional Ready
+             * @constant
+             */
+            institutional_ready: false;
+            /** Synthetic Ready */
+            synthetic_ready: boolean;
+            operations: components["schemas"]["ProcessingOperations"];
         };
     };
     responses: never;
@@ -2225,6 +2280,53 @@ export interface operations {
                 };
             };
             /** @description Base no disponible: Error sanitizado, sin consultas, parámetros ni secretos; nunca para integridad. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    processingStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Estado público sanitizado */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProcessingStatus"];
+                };
+            };
+            /** @description SESSION_INVALID */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description SERVICE_UNAVAILABLE sanitizado; sin consultas/secretos */
             503: {
                 headers: {
                     [name: string]: unknown;

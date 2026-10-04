@@ -12,6 +12,7 @@ from app.models import s1, s2
 class ModelVersion(Base):
     __tablename__ = 'model_versions'
     id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True),primary_key=True,default=uuid4)
+    study_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True))
     name: Mapped[str] = mapped_column(Text)
     version: Mapped[str] = mapped_column(Text)
     algorithm: Mapped[str] = mapped_column(Text)

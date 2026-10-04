@@ -10,7 +10,7 @@ export default class ReviewReporter implements Reporter {
     console.log(`${result.status}: ${test.title}`);
   }
   onEnd(result:FullResult) {
-    writeFileSync(process.env.E2E_REPORT_FILE ?? 'tests/evidence/s2-2-isolated-playwright.json',
+    writeFileSync(process.env.E2E_REPORT_FILE ?? 'tests/evidence/s3-1-isolated-playwright.json',
       JSON.stringify({status:result.status,scope:process.env.E2E_SCOPE,cases:this.cases},null,2)+'\n');
   }
 }

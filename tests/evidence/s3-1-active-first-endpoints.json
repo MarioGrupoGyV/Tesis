@@ -1,0 +1,21 @@
+{
+  "status": "FALLIDO",
+  "contract_version": "0.4.0",
+  "scope": "SYNTHETIC_STUDY",
+  "cases": [
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/processing/status",
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "2474087a-4ce6-41fc-873c-c1ca4ec9e860"
+      },
+      "result": "COMPROBADO"
+    }
+  ]
+}

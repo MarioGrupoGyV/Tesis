@@ -1,0 +1,4165 @@
+{
+  "status": "COMPROBADO",
+  "contract_version": "0.4.0",
+  "scope": "SYNTHETIC_STUDY",
+  "cases": [
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/processing/status",
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "3b766f87-7f35-437e-a5c5-2579dda077bc"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "user": {
+          "id": "7a4ee76f-aee1-4712-a35b-88cc3d78ea2c",
+          "display_name": "Revisión local · ADMIN",
+          "role": "ADMIN"
+        },
+        "csrf_token": "[REDACTED]",
+        "expires_at": "2026-10-04T22:36:56.347281Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/processing/status",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "scope": "SYNTHETIC_STUDY",
+        "notice": "Estudio con datos sintéticos. No corresponde a estudiantes reales.",
+        "institutional_ready": false,
+        "synthetic_ready": true,
+        "operations": {
+          "compare": {
+            "available": false,
+            "reason": "SYNTHETIC_IMPORT_REQUIRED"
+          },
+          "register": {
+            "available": false,
+            "reason": "SYNTHETIC_COMPARISON_REQUIRED"
+          },
+          "activate": {
+            "available": false,
+            "reason": "SYNTHETIC_REGISTERED_MODEL_REQUIRED"
+          },
+          "predict": {
+            "available": false,
+            "reason": "MODEL_NOT_AVAILABLE"
+          },
+          "read_students": {
+            "available": true,
+            "reason": null
+          },
+          "read_models": {
+            "available": true,
+            "reason": null
+          },
+          "import": {
+            "available": true,
+            "reason": null
+          }
+        }
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "expected_status": 201,
+      "status": 201,
+      "response": {
+        "id": "4e4adb29-5fcc-445c-8e2e-04bee63aca39",
+        "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+        "data_origin": "SYNTHETIC",
+        "file_name": "synthetic-study.csv",
+        "file_sha256": "79fedc114a952631977bbd46cabe5c5a76faeef7e7293e709d5a1a11c9b31374",
+        "schema_version": "academic-v1",
+        "status": "READY",
+        "total_rows": 360,
+        "valid_rows": 360,
+        "invalid_rows": 0,
+        "planned_students": 60,
+        "planned_enrollments": 60,
+        "planned_snapshots": 360,
+        "preview_version": 1,
+        "errors": [],
+        "created_at": "2026-10-04T14:37:07.961822Z",
+        "committed_at": null
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/imports/4e4adb29-5fcc-445c-8e2e-04bee63aca39",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "id": "4e4adb29-5fcc-445c-8e2e-04bee63aca39",
+        "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+        "data_origin": "SYNTHETIC",
+        "file_name": "synthetic-study.csv",
+        "file_sha256": "79fedc114a952631977bbd46cabe5c5a76faeef7e7293e709d5a1a11c9b31374",
+        "schema_version": "academic-v1",
+        "status": "READY",
+        "total_rows": 360,
+        "valid_rows": 360,
+        "invalid_rows": 0,
+        "planned_students": 60,
+        "planned_enrollments": 60,
+        "planned_snapshots": 360,
+        "preview_version": 1,
+        "errors": [],
+        "created_at": "2026-10-04T14:37:07.961822Z",
+        "committed_at": null
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/imports/4e4adb29-5fcc-445c-8e2e-04bee63aca39/commit",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "batch_id": "4e4adb29-5fcc-445c-8e2e-04bee63aca39",
+        "status": "COMMITTED",
+        "created_snapshots": 360,
+        "reused_result": false
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "items": [
+          {
+            "id": "da06d9f2-89d3-40bd-99ec-6329f728c292",
+            "name": "Estudio sintético SVM",
+            "version": "e3a2d28b2f2356ae878c1a8f4a257e7e",
+            "algorithm": "SVM",
+            "data_origin": "SYNTHETIC",
+            "feature_schema_version": "ml-features-v1",
+            "reference_criterion_version": "synthetic-future-v1",
+            "status": "APPROVED",
+            "is_active": true,
+            "created_at": "2026-10-04T14:37:23.587895Z"
+          }
+        ],
+        "total": 1,
+        "page": 1,
+        "page_size": 25
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/models/da06d9f2-89d3-40bd-99ec-6329f728c292",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "id": "da06d9f2-89d3-40bd-99ec-6329f728c292",
+        "name": "Estudio sintético SVM",
+        "version": "e3a2d28b2f2356ae878c1a8f4a257e7e",
+        "algorithm": "SVM",
+        "data_origin": "SYNTHETIC",
+        "feature_schema_version": "ml-features-v1",
+        "reference_criterion_version": "synthetic-future-v1",
+        "status": "APPROVED",
+        "is_active": true,
+        "created_at": "2026-10-04T14:37:23.587895Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "fe8a351a-1498-4030-acd0-7ec11d061f50"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+        "as_of": "2026-10-04T14:37:38.413120Z",
+        "model_id": "da06d9f2-89d3-40bd-99ec-6329f728c292",
+        "selected": 60,
+        "created": 55,
+        "reused": 0,
+        "abstentions": [
+          {
+            "snapshot_id": "58e6086e-9866-4cf2-be03-3a8b8bec7a6e",
+            "status": "INSUFFICIENT_DATA",
+            "reason": "Datos insuficientes"
+          },
+          {
+            "snapshot_id": "2c22effd-655c-47b1-bfb5-beddcb18ff46",
+            "status": "INSUFFICIENT_DATA",
+            "reason": "Datos insuficientes"
+          },
+          {
+            "snapshot_id": "4016cd33-0ecf-4fd1-9283-b8aac70fd5bb",
+            "status": "INSUFFICIENT_DATA",
+            "reason": "Datos insuficientes"
+          },
+          {
+            "snapshot_id": "248cfaad-f40a-414a-be8a-5a6787c026fe",
+            "status": "INSUFFICIENT_DATA",
+            "reason": "Datos insuficientes"
+          },
+          {
+            "snapshot_id": "53f6e042-f51d-4c82-a451-5b034ee9f3c8",
+            "status": "INSUFFICIENT_DATA",
+            "reason": "Datos insuficientes"
+          }
+        ]
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+        "as_of": "2026-10-04T14:37:38.413120Z",
+        "model_id": "da06d9f2-89d3-40bd-99ec-6329f728c292",
+        "selected": 60,
+        "created": 0,
+        "reused": 55,
+        "abstentions": [
+          {
+            "snapshot_id": "58e6086e-9866-4cf2-be03-3a8b8bec7a6e",
+            "status": "INSUFFICIENT_DATA",
+            "reason": "Datos insuficientes"
+          },
+          {
+            "snapshot_id": "2c22effd-655c-47b1-bfb5-beddcb18ff46",
+            "status": "INSUFFICIENT_DATA",
+            "reason": "Datos insuficientes"
+          },
+          {
+            "snapshot_id": "4016cd33-0ecf-4fd1-9283-b8aac70fd5bb",
+            "status": "INSUFFICIENT_DATA",
+            "reason": "Datos insuficientes"
+          },
+          {
+            "snapshot_id": "248cfaad-f40a-414a-be8a-5a6787c026fe",
+            "status": "INSUFFICIENT_DATA",
+            "reason": "Datos insuficientes"
+          },
+          {
+            "snapshot_id": "53f6e042-f51d-4c82-a451-5b034ee9f3c8",
+            "status": "INSUFFICIENT_DATA",
+            "reason": "Datos insuficientes"
+          }
+        ]
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/students?period_id=c036cbcb-87db-5ed0-bcfa-bbd644928ccb&page_size=100",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "items": [
+          {
+            "id": "170d4e87-60df-4323-a4f3-4f17f5a12e99",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "f5b9949e-c5f3-4f67-81be-422967301592",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.51,
+            "attendance_pct": 59.75,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8840af55-2330-415e-98ff-5e3bd55d7c5b",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "7c097237-e00d-410e-b897-f149982b565b",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 13.79,
+            "attendance_pct": 56.96,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "92c11663-2861-4206-a4c9-52397b2cbe63",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "8c2f97af-2486-434c-bbdd-63c885d3bf19",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.26,
+            "attendance_pct": 66.16,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "5d688c6c-5518-404a-9553-7cef9d4aa38b",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "a54bffa7-0f24-4efc-ba82-604bc0ef833f",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.23,
+            "attendance_pct": 54.23,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "340a6dd9-216f-4c24-89d3-86bdc0c775fe",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "fe80140a-4fb5-4709-82b5-589a32554d36",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 6.43,
+            "attendance_pct": 64.41,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "20d8de82-c2de-4158-84e0-0ce890b9a71b",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "1bda5dce-032a-4a36-a33e-9f3d8c809d85",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.07,
+            "attendance_pct": 65.0,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "efb7f3c2-022f-40f2-a1da-a629f2ba508c",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "50e3f5bd-fb87-4bee-bd33-8f5588969aab",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 17.62,
+            "attendance_pct": 72.06,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "35fb0d14-c71a-4d3d-99a4-9dbea732b41c",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "e3ae6928-37bb-4f8a-8720-5719f4cf1ada",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.22,
+            "attendance_pct": 65.15,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "c93c265e-cc15-4fba-8a2d-f8d4e2fdce4a",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "d750c518-3517-49a0-9933-2bcd2c802b3d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.98,
+            "attendance_pct": 75.37,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "7db119db-505a-4d25-ad04-7c40337159a4",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "37b49423-a565-413a-b412-88d314b43e48",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 16.0,
+            "attendance_pct": 87.51,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "LOW",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "9b5ba7ba-10c2-4b5c-bac3-2c2d55ed26fe",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "bd75efd0-79c2-4596-8226-dbd6fa382900",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 6.36,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "cd26b536-c966-446a-80e2-c12e8a2348d1",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "7a662ec9-c4cd-442e-800d-52eaee03969d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.22,
+            "attendance_pct": 76.62,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "3429ffa1-6e69-4335-a6f4-b411c205a420",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "bb5568d9-53cb-4468-9f38-34ce2bbcb125",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 16.69,
+            "attendance_pct": 76.68,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "3345a3ae-d32a-4d32-bbf7-ade2ca5f4edd",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "2a820014-49ae-45ad-9703-7b968a212c06",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.79,
+            "attendance_pct": 80.09,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "653639c6-4302-466b-955d-fce3b628b36b",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "c54e4bfd-48e4-41d8-a7cb-e4aadc7b766a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.41,
+            "attendance_pct": 96.98,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "LOW",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "3b2a1519-26cb-4b51-8fe0-1a0690f9b4b5",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "474b8a78-5a7a-4d8b-90e0-ae90df1b0315",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 19.32,
+            "attendance_pct": 58.17,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "74105a33-60d4-40eb-820c-3794356e6590",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "0cfba869-9114-4f66-8f89-3064d3ea185d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": null,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": null,
+            "evaluation_status": "INSUFFICIENT_DATA",
+            "active_alert_id": null
+          },
+          {
+            "id": "cc22c6b9-ec11-4808-8d1a-0d32c3318062",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "435d97f6-5a04-4482-84e4-e5bc4a4a2b60",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 7.99,
+            "attendance_pct": 89.11,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "579e2187-8a59-41d7-bf97-b0e71bb2a682",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "9cdc265e-6067-4977-a684-96f92bedae2c",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 12.01,
+            "attendance_pct": 83.06,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "e76026c4-2feb-44a1-8a43-81eccfa523a1",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "f59bf94a-2eba-49f1-a60a-dec9455478d6",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": null,
+            "attendance_pct": 70.97,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": null,
+            "evaluation_status": "INSUFFICIENT_DATA",
+            "active_alert_id": null
+          },
+          {
+            "id": "de30d3e3-a558-4e4d-8cd1-9ac7ee963739",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "72c81692-8676-4822-9363-4b7cec6a180d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 12.38,
+            "attendance_pct": 67.76,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "5e5367bc-5c68-4679-baff-7cf5edd3160c",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "04d146a6-a31f-4ba8-bb88-f57829694a41",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.74,
+            "attendance_pct": 55.85,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8faaee7e-0ec1-4baa-9b61-11f1f7af09b0",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "9eafa8a6-ffcd-474d-b56f-5eeafdec5cfe",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 20.0,
+            "attendance_pct": 72.2,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "b3ca0125-000b-40d8-ba18-938009fe93a0",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "efd4f02c-be1d-4a20-aa82-2149a3a738bf",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.97,
+            "attendance_pct": 61.6,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "29939b67-55a6-404e-bf0f-745de897548e",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "58f15b8a-23a8-4c2e-bb73-185a3b3b58da",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.66,
+            "attendance_pct": 96.25,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "LOW",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "46f7cefb-600a-483b-8252-f79aa7cada34",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "0c833f84-876c-48c2-b5ae-0aa251e3e346",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.49,
+            "attendance_pct": 93.77,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "70d6e80a-7e31-44d9-b9cd-fb2d4df76928",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "de543779-bd87-4229-9262-69a86efeeab7",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 18.06,
+            "attendance_pct": 89.51,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "9b054631-81a6-4bae-b136-fefb520782af",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "3b826475-c3e2-4e91-9b63-089871043155",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 10.79,
+            "attendance_pct": 79.83,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "86ee8078-9b05-4d8d-b0a0-7b077e9c82e2",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "2de87300-a556-46b2-aa5d-b48738356b25",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 6.69,
+            "attendance_pct": 59.94,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "d58bbb6f-5a2d-4dc3-be15-5da2e361dd5d",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "ba87832e-c16a-4428-aacc-c35e647f400c",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.98,
+            "attendance_pct": 91.87,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "LOW",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "6ccc1361-bc5f-4feb-b87f-bcfa4656d4c4",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "93c86c33-71db-45b2-9738-a1aa97bbd64d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.68,
+            "attendance_pct": 88.17,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "689bd49f-a252-4ea3-a6c2-c641e7d53bee",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "4ae34c0e-f510-4732-9c03-18ed86c9e1cc",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 20.0,
+            "attendance_pct": 70.97,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "aee38367-d6fe-4f8c-9a2e-5a1938644ea1",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "71dc0ad2-4b53-4b9c-b808-5cdb1edaaee4",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 11.56,
+            "attendance_pct": 54.72,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "ff93e848-1441-4ff9-b4d8-122dfb0ca231",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "045bb405-d667-4c59-b201-30ddc42d296e",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": null,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": null,
+            "evaluation_status": "INSUFFICIENT_DATA",
+            "active_alert_id": null
+          },
+          {
+            "id": "78898fc7-1b0a-4ae6-8bef-6bf981b005e3",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "96e9eba9-fc95-42e0-b86a-3b3ba7336467",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.25,
+            "attendance_pct": 66.84,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "2d9738ca-0d8b-4868-a5f9-4618bfabc19b",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "3e27f278-cee5-459a-9986-3685bc9b6916",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 10.07,
+            "attendance_pct": 77.58,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "da66e7dc-490f-4474-9faf-e17b8ce7255e",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "9e780d68-b3cd-4732-8e82-b28ebdc14d00",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.75,
+            "attendance_pct": 87.28,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "fc25e709-f918-4592-ad48-f4e2c34771f0",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "63358f2f-92a0-41ab-8712-041a5cfa5149",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 12.96,
+            "attendance_pct": 58.9,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "2399739e-da1c-4040-8718-61b65ce82238",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "5420f1c7-0287-4308-a4ff-69decefed40d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 8.01,
+            "attendance_pct": 91.76,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "5c13cabd-aea2-4693-a61f-463aaf9a5a5e",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "68c225d2-e983-4ac5-b956-71aa902a7d70",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.66,
+            "attendance_pct": 83.07,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8b73c19c-9591-4f8e-995a-070ad00c941d",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "aab7e69b-b18d-47a6-b054-8d1321b2066f",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.04,
+            "attendance_pct": 47.22,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "93663e35-3ae2-406f-84f7-4fe30d2e5ee6",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "22e460b6-0bf0-40e9-a492-58f166b4439a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 20.0,
+            "attendance_pct": 83.0,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "44c9a440-bc95-41b2-ae26-5382e69f24f2",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "1fe4aafd-da61-4674-aee6-18b481a776df",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 10.09,
+            "attendance_pct": 66.03,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "24646f10-1437-4611-99ba-7f4de68ea511",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "9b5738b7-9128-41f6-b386-bc382e06937d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.87,
+            "attendance_pct": 86.12,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8730a45a-0edb-490a-af72-c0a41958f1bf",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "6c440a0c-e23b-44bb-9833-45db1f399a23",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.21,
+            "attendance_pct": 76.27,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8ced09f4-1931-42cc-a472-3561c13127c5",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "c5ee6434-76dc-411e-a439-4ee8a55c2887",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 13.35,
+            "attendance_pct": 71.01,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "26857cec-97f8-4680-9c25-274891c567d1",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "6029098b-ab4e-4041-b6f2-d0368a3e8a87",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 20.0,
+            "attendance_pct": 58.6,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "79431aea-5899-47af-916f-761cd87b262f",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "803001b0-3347-47cd-b98f-859b7253a922",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 20.0,
+            "attendance_pct": 63.83,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "74080a8f-b85c-4b60-aa64-fb1eeae43514",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "c174f535-982d-42c9-8192-17e6df9ab78a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.91,
+            "attendance_pct": 50.56,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "00afcbcc-8439-4268-8b4a-d054d9135081",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "21e60adb-28a9-4b92-b7ae-264012fc6120",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 12.1,
+            "attendance_pct": 52.41,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "6fb75043-44d3-4880-8141-e2ad71c3001e",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "f9a215e7-4a87-4dd8-9f95-8533331b7b5a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": null,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": null,
+            "evaluation_status": "INSUFFICIENT_DATA",
+            "active_alert_id": null
+          },
+          {
+            "id": "fcce10f2-99eb-4a73-accb-f9abe2bc6320",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "efcf7743-625d-4b2d-80cb-0d184496cb46",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 19.09,
+            "attendance_pct": 67.38,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "f0273a19-0e02-41f8-9d0d-d8dc4669bc8c",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "77c9e824-ceac-49eb-a8b0-d02542cda198",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.42,
+            "attendance_pct": 88.9,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "dea9510a-7af6-4a55-854c-bde0d26ad8a8",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "ec2510a6-40d0-497d-b2fb-a4585b7bc423",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 12.28,
+            "attendance_pct": 67.2,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "141ba164-1c16-4484-adae-49181d813248",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "a67e74ff-0cc2-42db-ab31-74b91e10f83f",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 11.14,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "d3c71ef5-ee34-439c-b6a3-1c5c5bd7a30f",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "8041313c-ad44-4bca-a350-d732ac7e7e79",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 11.85,
+            "attendance_pct": 77.07,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "1eb344ee-1a58-4c2e-afe8-4181c3749910",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "e23c6bb6-49ce-4a11-8380-a2c09b253186",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.81,
+            "attendance_pct": 65.91,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "2ccae15e-4972-4ed4-b998-deddf822618c",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "a4e18ff7-7d4a-425d-8a91-92e58d1958af",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 10.78,
+            "attendance_pct": 86.96,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "d2314f90-ba12-4d12-81e5-7cb13faa5cc7",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "c59940c6-c304-4321-b264-093d6a829190",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 17.41,
+            "attendance_pct": 77.79,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "051a6fc5-e597-44f7-a8e7-c3a7f309700d",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "2d4c8fff-93c6-4881-ac6a-1ae866eb022a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": null,
+            "attendance_pct": 94.98,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": null,
+            "evaluation_status": "INSUFFICIENT_DATA",
+            "active_alert_id": null
+          }
+        ],
+        "total": 60,
+        "page": 1,
+        "page_size": 100
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/students/170d4e87-60df-4323-a4f3-4f17f5a12e99?period_id=c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "student": {
+          "id": "170d4e87-60df-4323-a4f3-4f17f5a12e99",
+          "anon_code": "[SYNTHETIC_CODE]",
+          "enrollment_id": "f5b9949e-c5f3-4f67-81be-422967301592",
+          "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "data_origin": "SYNTHETIC",
+          "average_grade": 14.51,
+          "attendance_pct": 59.75,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "risk_level": "HIGH",
+          "evaluation_status": "EVALUATED",
+          "active_alert_id": null
+        },
+        "latest_snapshot": {
+          "id": "aa7715eb-14fd-4243-a2b2-37d3100f90a4",
+          "enrollment_id": "f5b9949e-c5f3-4f67-81be-422967301592",
+          "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+          "data_origin": "SYNTHETIC",
+          "window_start": "2025-08-31",
+          "cutoff_at": "2025-09-30T22:00:00Z",
+          "available_at": "2025-09-30T21:00:00Z",
+          "target_date": "2025-10-14",
+          "revision": 1,
+          "supersedes_id": null,
+          "average_grade": 14.51,
+          "attendance_pct": 59.75,
+          "activities_pct": 47.95,
+          "participation_level": 2,
+          "behavior_incidents": 3,
+          "age_years": 13,
+          "missing_fraction": 0.0
+        },
+        "latest_prediction": {
+          "id": "f6881212-5727-4b92-b3f8-0eda4821acc2",
+          "enrollment_id": "f5b9949e-c5f3-4f67-81be-422967301592",
+          "snapshot_id": "aa7715eb-14fd-4243-a2b2-37d3100f90a4",
+          "model_id": "da06d9f2-89d3-40bd-99ec-6329f728c292",
+          "data_origin": "SYNTHETIC",
+          "risk_level": "HIGH",
+          "cutoff_at": "2025-09-30T22:00:00Z",
+          "target_date": "2025-10-14",
+          "predicted_at": "2026-10-04T14:37:40.466723Z",
+          "probability_low": null,
+          "probability_medium": null,
+          "probability_high": null,
+          "probabilities_calibrated": false
+        },
+        "alerts": [],
+        "interventions": []
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/students/170d4e87-60df-4323-a4f3-4f17f5a12e99/timeline?period_id=c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "items": [
+          {
+            "id": "f6881212-5727-4b92-b3f8-0eda4821acc2",
+            "event_type": "PREDICTION",
+            "occurred_at": "2026-10-04T14:37:40.466723Z",
+            "summary": "Evaluación registrada",
+            "entity_id": "f6881212-5727-4b92-b3f8-0eda4821acc2"
+          },
+          {
+            "id": "f50b2fdd-1f74-4f9b-970c-18e782bcc97c",
+            "event_type": "SNAPSHOT",
+            "occurred_at": "2026-10-04T14:37:14.776916Z",
+            "summary": "Corte académico · revisión 1",
+            "entity_id": "f50b2fdd-1f74-4f9b-970c-18e782bcc97c"
+          },
+          {
+            "id": "e8c5322c-cbd7-4f43-b660-f35d0a7356e6",
+            "event_type": "SNAPSHOT",
+            "occurred_at": "2026-10-04T14:37:14.776916Z",
+            "summary": "Corte académico · revisión 1",
+            "entity_id": "e8c5322c-cbd7-4f43-b660-f35d0a7356e6"
+          },
+          {
+            "id": "c620945d-fc61-4fc3-8e07-d4db9fce1cab",
+            "event_type": "SNAPSHOT",
+            "occurred_at": "2026-10-04T14:37:14.776916Z",
+            "summary": "Corte académico · revisión 1",
+            "entity_id": "c620945d-fc61-4fc3-8e07-d4db9fce1cab"
+          },
+          {
+            "id": "c57fe1af-947a-487e-a443-28886df50a4f",
+            "event_type": "SNAPSHOT",
+            "occurred_at": "2026-10-04T14:37:14.776916Z",
+            "summary": "Corte académico · revisión 1",
+            "entity_id": "c57fe1af-947a-487e-a443-28886df50a4f"
+          },
+          {
+            "id": "aa7715eb-14fd-4243-a2b2-37d3100f90a4",
+            "event_type": "SNAPSHOT",
+            "occurred_at": "2026-10-04T14:37:14.776916Z",
+            "summary": "Corte académico · revisión 1",
+            "entity_id": "aa7715eb-14fd-4243-a2b2-37d3100f90a4"
+          },
+          {
+            "id": "9f0d673f-a3c5-4574-9aa2-57a08ab1ce29",
+            "event_type": "SNAPSHOT",
+            "occurred_at": "2026-10-04T14:37:14.776916Z",
+            "summary": "Corte académico · revisión 1",
+            "entity_id": "9f0d673f-a3c5-4574-9aa2-57a08ab1ce29"
+          }
+        ],
+        "total": 7,
+        "page": 1,
+        "page_size": 20
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/processing/status",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "scope": "SYNTHETIC_STUDY",
+        "notice": "Estudio con datos sintéticos. No corresponde a estudiantes reales.",
+        "institutional_ready": false,
+        "synthetic_ready": true,
+        "operations": {
+          "compare": {
+            "available": true,
+            "reason": null
+          },
+          "register": {
+            "available": true,
+            "reason": null
+          },
+          "activate": {
+            "available": true,
+            "reason": null
+          },
+          "predict": {
+            "available": true,
+            "reason": null
+          },
+          "read_students": {
+            "available": true,
+            "reason": null
+          },
+          "read_models": {
+            "available": true,
+            "reason": null
+          },
+          "import": {
+            "available": true,
+            "reason": null
+          }
+        }
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "user": {
+          "id": "df354a4d-d596-45ec-b9c7-55ba58608085",
+          "display_name": "Revisión local · TUTOR",
+          "role": "TUTOR"
+        },
+        "csrf_token": "[REDACTED]",
+        "expires_at": "2026-10-04T22:37:58.907256Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/processing/status",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "scope": "SYNTHETIC_STUDY",
+        "notice": "Estudio con datos sintéticos. No corresponde a estudiantes reales.",
+        "institutional_ready": false,
+        "synthetic_ready": true,
+        "operations": {
+          "compare": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "register": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "activate": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "predict": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "read_students": {
+            "available": true,
+            "reason": null
+          },
+          "read_models": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "import": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          }
+        }
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "2b7e5d70-06cb-465b-a38a-e7ab7507c83a"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "95aac0ea-54eb-4b46-83e4-94a1fb8012c6"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/students?period_id=c036cbcb-87db-5ed0-bcfa-bbd644928ccb&page_size=100",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "items": [
+          {
+            "id": "170d4e87-60df-4323-a4f3-4f17f5a12e99",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "f5b9949e-c5f3-4f67-81be-422967301592",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.51,
+            "attendance_pct": 59.75,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "92c11663-2861-4206-a4c9-52397b2cbe63",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "8c2f97af-2486-434c-bbdd-63c885d3bf19",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.26,
+            "attendance_pct": 66.16,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "340a6dd9-216f-4c24-89d3-86bdc0c775fe",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "fe80140a-4fb5-4709-82b5-589a32554d36",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 6.43,
+            "attendance_pct": 64.41,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "efb7f3c2-022f-40f2-a1da-a629f2ba508c",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "50e3f5bd-fb87-4bee-bd33-8f5588969aab",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 17.62,
+            "attendance_pct": 72.06,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "c93c265e-cc15-4fba-8a2d-f8d4e2fdce4a",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "d750c518-3517-49a0-9933-2bcd2c802b3d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.98,
+            "attendance_pct": 75.37,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "9b5ba7ba-10c2-4b5c-bac3-2c2d55ed26fe",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "bd75efd0-79c2-4596-8226-dbd6fa382900",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 6.36,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "3429ffa1-6e69-4335-a6f4-b411c205a420",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "bb5568d9-53cb-4468-9f38-34ce2bbcb125",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 16.69,
+            "attendance_pct": 76.68,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "653639c6-4302-466b-955d-fce3b628b36b",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "c54e4bfd-48e4-41d8-a7cb-e4aadc7b766a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.41,
+            "attendance_pct": 96.98,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "LOW",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "74105a33-60d4-40eb-820c-3794356e6590",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "0cfba869-9114-4f66-8f89-3064d3ea185d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": null,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": null,
+            "evaluation_status": "INSUFFICIENT_DATA",
+            "active_alert_id": null
+          },
+          {
+            "id": "579e2187-8a59-41d7-bf97-b0e71bb2a682",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "9cdc265e-6067-4977-a684-96f92bedae2c",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 12.01,
+            "attendance_pct": 83.06,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "de30d3e3-a558-4e4d-8cd1-9ac7ee963739",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "72c81692-8676-4822-9363-4b7cec6a180d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 12.38,
+            "attendance_pct": 67.76,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8faaee7e-0ec1-4baa-9b61-11f1f7af09b0",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "9eafa8a6-ffcd-474d-b56f-5eeafdec5cfe",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 20.0,
+            "attendance_pct": 72.2,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "29939b67-55a6-404e-bf0f-745de897548e",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "58f15b8a-23a8-4c2e-bb73-185a3b3b58da",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.66,
+            "attendance_pct": 96.25,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "LOW",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "70d6e80a-7e31-44d9-b9cd-fb2d4df76928",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "de543779-bd87-4229-9262-69a86efeeab7",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 18.06,
+            "attendance_pct": 89.51,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "86ee8078-9b05-4d8d-b0a0-7b077e9c82e2",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "2de87300-a556-46b2-aa5d-b48738356b25",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 6.69,
+            "attendance_pct": 59.94,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "6ccc1361-bc5f-4feb-b87f-bcfa4656d4c4",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "93c86c33-71db-45b2-9738-a1aa97bbd64d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.68,
+            "attendance_pct": 88.17,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "aee38367-d6fe-4f8c-9a2e-5a1938644ea1",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "71dc0ad2-4b53-4b9c-b808-5cdb1edaaee4",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 11.56,
+            "attendance_pct": 54.72,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "78898fc7-1b0a-4ae6-8bef-6bf981b005e3",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "96e9eba9-fc95-42e0-b86a-3b3ba7336467",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.25,
+            "attendance_pct": 66.84,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "da66e7dc-490f-4474-9faf-e17b8ce7255e",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "9e780d68-b3cd-4732-8e82-b28ebdc14d00",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.75,
+            "attendance_pct": 87.28,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "2399739e-da1c-4040-8718-61b65ce82238",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "5420f1c7-0287-4308-a4ff-69decefed40d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 8.01,
+            "attendance_pct": 91.76,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8b73c19c-9591-4f8e-995a-070ad00c941d",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "aab7e69b-b18d-47a6-b054-8d1321b2066f",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.04,
+            "attendance_pct": 47.22,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "44c9a440-bc95-41b2-ae26-5382e69f24f2",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "1fe4aafd-da61-4674-aee6-18b481a776df",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 10.09,
+            "attendance_pct": 66.03,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8730a45a-0edb-490a-af72-c0a41958f1bf",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "6c440a0c-e23b-44bb-9833-45db1f399a23",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.21,
+            "attendance_pct": 76.27,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "26857cec-97f8-4680-9c25-274891c567d1",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "6029098b-ab4e-4041-b6f2-d0368a3e8a87",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 20.0,
+            "attendance_pct": 58.6,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "74080a8f-b85c-4b60-aa64-fb1eeae43514",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "c174f535-982d-42c9-8192-17e6df9ab78a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.91,
+            "attendance_pct": 50.56,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "6fb75043-44d3-4880-8141-e2ad71c3001e",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "f9a215e7-4a87-4dd8-9f95-8533331b7b5a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": null,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": null,
+            "evaluation_status": "INSUFFICIENT_DATA",
+            "active_alert_id": null
+          },
+          {
+            "id": "f0273a19-0e02-41f8-9d0d-d8dc4669bc8c",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "77c9e824-ceac-49eb-a8b0-d02542cda198",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.42,
+            "attendance_pct": 88.9,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "141ba164-1c16-4484-adae-49181d813248",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "a67e74ff-0cc2-42db-ab31-74b91e10f83f",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 11.14,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "1eb344ee-1a58-4c2e-afe8-4181c3749910",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "e23c6bb6-49ce-4a11-8380-a2c09b253186",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.81,
+            "attendance_pct": 65.91,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "d2314f90-ba12-4d12-81e5-7cb13faa5cc7",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "c59940c6-c304-4321-b264-093d6a829190",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 17.41,
+            "attendance_pct": 77.79,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          }
+        ],
+        "total": 30,
+        "page": 1,
+        "page_size": 100
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "expected_status": 200,
+      "status": 200,
+      "response": [
+        {
+          "id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+          "code": "SYN-e3a2d28b2f23",
+          "school_year": 2025,
+          "start_date": "2025-01-01",
+          "end_date": "2025-12-31",
+          "data_origin": "SYNTHETIC",
+          "is_locked": false
+        }
+      ],
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/predictions/d6b5ceb8-535f-4913-88b4-d76b42b59943",
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "PREDICTION_NOT_FOUND",
+        "message": "La predicción no está disponible.",
+        "details": [],
+        "request_id": "815b3a88-16ad-4496-93fc-47440c7c6b52"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/predictions/9f654806-76c2-443f-9985-0a291fbe83f2",
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "PREDICTION_NOT_FOUND",
+        "message": "La predicción no está disponible.",
+        "details": [],
+        "request_id": "62890283-d71a-4dcd-bfd2-e6b87deb4776"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/students/170d4e87-60df-4323-a4f3-4f17f5a12e99?period_id=c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "student": {
+          "id": "170d4e87-60df-4323-a4f3-4f17f5a12e99",
+          "anon_code": "[SYNTHETIC_CODE]",
+          "enrollment_id": "f5b9949e-c5f3-4f67-81be-422967301592",
+          "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+          "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+          "section_code": "SYN-e3a2d28b-A",
+          "grade": 1,
+          "data_origin": "SYNTHETIC",
+          "average_grade": 14.51,
+          "attendance_pct": 59.75,
+          "latest_cutoff_at": "2025-09-30T22:00:00Z",
+          "risk_level": "HIGH",
+          "evaluation_status": "EVALUATED",
+          "active_alert_id": null
+        },
+        "latest_snapshot": {
+          "id": "aa7715eb-14fd-4243-a2b2-37d3100f90a4",
+          "enrollment_id": "f5b9949e-c5f3-4f67-81be-422967301592",
+          "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+          "data_origin": "SYNTHETIC",
+          "window_start": "2025-08-31",
+          "cutoff_at": "2025-09-30T22:00:00Z",
+          "available_at": "2025-09-30T21:00:00Z",
+          "target_date": "2025-10-14",
+          "revision": 1,
+          "supersedes_id": null,
+          "average_grade": 14.51,
+          "attendance_pct": 59.75,
+          "activities_pct": 47.95,
+          "participation_level": 2,
+          "behavior_incidents": 3,
+          "age_years": 13,
+          "missing_fraction": 0.0
+        },
+        "latest_prediction": {
+          "id": "f6881212-5727-4b92-b3f8-0eda4821acc2",
+          "enrollment_id": "f5b9949e-c5f3-4f67-81be-422967301592",
+          "snapshot_id": "aa7715eb-14fd-4243-a2b2-37d3100f90a4",
+          "model_id": "da06d9f2-89d3-40bd-99ec-6329f728c292",
+          "data_origin": "SYNTHETIC",
+          "risk_level": "HIGH",
+          "cutoff_at": "2025-09-30T22:00:00Z",
+          "target_date": "2025-10-14",
+          "predicted_at": "2026-10-04T14:37:40.466723Z",
+          "probability_low": null,
+          "probability_medium": null,
+          "probability_high": null,
+          "probabilities_calibrated": false
+        },
+        "alerts": [],
+        "interventions": []
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/predictions/f6881212-5727-4b92-b3f8-0eda4821acc2",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "id": "f6881212-5727-4b92-b3f8-0eda4821acc2",
+        "enrollment_id": "f5b9949e-c5f3-4f67-81be-422967301592",
+        "snapshot_id": "aa7715eb-14fd-4243-a2b2-37d3100f90a4",
+        "model_id": "da06d9f2-89d3-40bd-99ec-6329f728c292",
+        "data_origin": "SYNTHETIC",
+        "risk_level": "HIGH",
+        "cutoff_at": "2025-09-30T22:00:00Z",
+        "target_date": "2025-10-14",
+        "predicted_at": "2026-10-04T14:37:40.466723Z",
+        "probability_low": null,
+        "probability_medium": null,
+        "probability_high": null,
+        "probabilities_calibrated": false
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "user": {
+          "id": "254a5ba3-f174-48bc-9bab-7b6f8284fd38",
+          "display_name": "Revisión local · DIRECTOR",
+          "role": "DIRECTOR"
+        },
+        "csrf_token": "[REDACTED]",
+        "expires_at": "2026-10-04T22:38:22.134712Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/processing/status",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "scope": "SYNTHETIC_STUDY",
+        "notice": "Estudio con datos sintéticos. No corresponde a estudiantes reales.",
+        "institutional_ready": false,
+        "synthetic_ready": true,
+        "operations": {
+          "compare": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "register": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "activate": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "predict": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "read_students": {
+            "available": true,
+            "reason": null
+          },
+          "read_models": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "import": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          }
+        }
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "6fa6cada-90bf-471b-b171-bb15ec505aec"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "28036e88-606e-4027-8fc3-6b995e610fe3"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/students?period_id=c036cbcb-87db-5ed0-bcfa-bbd644928ccb&page_size=100",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "items": [
+          {
+            "id": "170d4e87-60df-4323-a4f3-4f17f5a12e99",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "f5b9949e-c5f3-4f67-81be-422967301592",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.51,
+            "attendance_pct": 59.75,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8840af55-2330-415e-98ff-5e3bd55d7c5b",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "7c097237-e00d-410e-b897-f149982b565b",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 13.79,
+            "attendance_pct": 56.96,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "92c11663-2861-4206-a4c9-52397b2cbe63",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "8c2f97af-2486-434c-bbdd-63c885d3bf19",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.26,
+            "attendance_pct": 66.16,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "5d688c6c-5518-404a-9553-7cef9d4aa38b",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "a54bffa7-0f24-4efc-ba82-604bc0ef833f",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.23,
+            "attendance_pct": 54.23,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "340a6dd9-216f-4c24-89d3-86bdc0c775fe",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "fe80140a-4fb5-4709-82b5-589a32554d36",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 6.43,
+            "attendance_pct": 64.41,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "20d8de82-c2de-4158-84e0-0ce890b9a71b",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "1bda5dce-032a-4a36-a33e-9f3d8c809d85",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.07,
+            "attendance_pct": 65.0,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "efb7f3c2-022f-40f2-a1da-a629f2ba508c",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "50e3f5bd-fb87-4bee-bd33-8f5588969aab",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 17.62,
+            "attendance_pct": 72.06,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "35fb0d14-c71a-4d3d-99a4-9dbea732b41c",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "e3ae6928-37bb-4f8a-8720-5719f4cf1ada",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.22,
+            "attendance_pct": 65.15,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "c93c265e-cc15-4fba-8a2d-f8d4e2fdce4a",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "d750c518-3517-49a0-9933-2bcd2c802b3d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.98,
+            "attendance_pct": 75.37,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "7db119db-505a-4d25-ad04-7c40337159a4",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "37b49423-a565-413a-b412-88d314b43e48",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 16.0,
+            "attendance_pct": 87.51,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "LOW",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "9b5ba7ba-10c2-4b5c-bac3-2c2d55ed26fe",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "bd75efd0-79c2-4596-8226-dbd6fa382900",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 6.36,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "cd26b536-c966-446a-80e2-c12e8a2348d1",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "7a662ec9-c4cd-442e-800d-52eaee03969d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.22,
+            "attendance_pct": 76.62,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "3429ffa1-6e69-4335-a6f4-b411c205a420",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "bb5568d9-53cb-4468-9f38-34ce2bbcb125",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 16.69,
+            "attendance_pct": 76.68,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "3345a3ae-d32a-4d32-bbf7-ade2ca5f4edd",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "2a820014-49ae-45ad-9703-7b968a212c06",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.79,
+            "attendance_pct": 80.09,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "653639c6-4302-466b-955d-fce3b628b36b",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "c54e4bfd-48e4-41d8-a7cb-e4aadc7b766a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.41,
+            "attendance_pct": 96.98,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "LOW",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "3b2a1519-26cb-4b51-8fe0-1a0690f9b4b5",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "474b8a78-5a7a-4d8b-90e0-ae90df1b0315",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 19.32,
+            "attendance_pct": 58.17,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "74105a33-60d4-40eb-820c-3794356e6590",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "0cfba869-9114-4f66-8f89-3064d3ea185d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": null,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": null,
+            "evaluation_status": "INSUFFICIENT_DATA",
+            "active_alert_id": null
+          },
+          {
+            "id": "cc22c6b9-ec11-4808-8d1a-0d32c3318062",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "435d97f6-5a04-4482-84e4-e5bc4a4a2b60",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 7.99,
+            "attendance_pct": 89.11,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "579e2187-8a59-41d7-bf97-b0e71bb2a682",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "9cdc265e-6067-4977-a684-96f92bedae2c",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 12.01,
+            "attendance_pct": 83.06,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "e76026c4-2feb-44a1-8a43-81eccfa523a1",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "f59bf94a-2eba-49f1-a60a-dec9455478d6",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": null,
+            "attendance_pct": 70.97,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": null,
+            "evaluation_status": "INSUFFICIENT_DATA",
+            "active_alert_id": null
+          },
+          {
+            "id": "de30d3e3-a558-4e4d-8cd1-9ac7ee963739",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "72c81692-8676-4822-9363-4b7cec6a180d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 12.38,
+            "attendance_pct": 67.76,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "5e5367bc-5c68-4679-baff-7cf5edd3160c",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "04d146a6-a31f-4ba8-bb88-f57829694a41",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.74,
+            "attendance_pct": 55.85,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8faaee7e-0ec1-4baa-9b61-11f1f7af09b0",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "9eafa8a6-ffcd-474d-b56f-5eeafdec5cfe",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 20.0,
+            "attendance_pct": 72.2,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "b3ca0125-000b-40d8-ba18-938009fe93a0",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "efd4f02c-be1d-4a20-aa82-2149a3a738bf",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.97,
+            "attendance_pct": 61.6,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "29939b67-55a6-404e-bf0f-745de897548e",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "58f15b8a-23a8-4c2e-bb73-185a3b3b58da",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.66,
+            "attendance_pct": 96.25,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "LOW",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "46f7cefb-600a-483b-8252-f79aa7cada34",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "0c833f84-876c-48c2-b5ae-0aa251e3e346",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.49,
+            "attendance_pct": 93.77,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "70d6e80a-7e31-44d9-b9cd-fb2d4df76928",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "de543779-bd87-4229-9262-69a86efeeab7",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 18.06,
+            "attendance_pct": 89.51,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "9b054631-81a6-4bae-b136-fefb520782af",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "3b826475-c3e2-4e91-9b63-089871043155",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 10.79,
+            "attendance_pct": 79.83,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "86ee8078-9b05-4d8d-b0a0-7b077e9c82e2",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "2de87300-a556-46b2-aa5d-b48738356b25",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 6.69,
+            "attendance_pct": 59.94,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "d58bbb6f-5a2d-4dc3-be15-5da2e361dd5d",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "ba87832e-c16a-4428-aacc-c35e647f400c",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.98,
+            "attendance_pct": 91.87,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "LOW",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "6ccc1361-bc5f-4feb-b87f-bcfa4656d4c4",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "93c86c33-71db-45b2-9738-a1aa97bbd64d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.68,
+            "attendance_pct": 88.17,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "689bd49f-a252-4ea3-a6c2-c641e7d53bee",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "4ae34c0e-f510-4732-9c03-18ed86c9e1cc",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 20.0,
+            "attendance_pct": 70.97,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "aee38367-d6fe-4f8c-9a2e-5a1938644ea1",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "71dc0ad2-4b53-4b9c-b808-5cdb1edaaee4",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 11.56,
+            "attendance_pct": 54.72,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "ff93e848-1441-4ff9-b4d8-122dfb0ca231",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "045bb405-d667-4c59-b201-30ddc42d296e",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": null,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": null,
+            "evaluation_status": "INSUFFICIENT_DATA",
+            "active_alert_id": null
+          },
+          {
+            "id": "78898fc7-1b0a-4ae6-8bef-6bf981b005e3",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "96e9eba9-fc95-42e0-b86a-3b3ba7336467",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.25,
+            "attendance_pct": 66.84,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "2d9738ca-0d8b-4868-a5f9-4618bfabc19b",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "3e27f278-cee5-459a-9986-3685bc9b6916",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 10.07,
+            "attendance_pct": 77.58,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "da66e7dc-490f-4474-9faf-e17b8ce7255e",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "9e780d68-b3cd-4732-8e82-b28ebdc14d00",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.75,
+            "attendance_pct": 87.28,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "fc25e709-f918-4592-ad48-f4e2c34771f0",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "63358f2f-92a0-41ab-8712-041a5cfa5149",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 12.96,
+            "attendance_pct": 58.9,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "2399739e-da1c-4040-8718-61b65ce82238",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "5420f1c7-0287-4308-a4ff-69decefed40d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 8.01,
+            "attendance_pct": 91.76,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "5c13cabd-aea2-4693-a61f-463aaf9a5a5e",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "68c225d2-e983-4ac5-b956-71aa902a7d70",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.66,
+            "attendance_pct": 83.07,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8b73c19c-9591-4f8e-995a-070ad00c941d",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "aab7e69b-b18d-47a6-b054-8d1321b2066f",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.04,
+            "attendance_pct": 47.22,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "93663e35-3ae2-406f-84f7-4fe30d2e5ee6",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "22e460b6-0bf0-40e9-a492-58f166b4439a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 20.0,
+            "attendance_pct": 83.0,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "44c9a440-bc95-41b2-ae26-5382e69f24f2",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "1fe4aafd-da61-4674-aee6-18b481a776df",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 10.09,
+            "attendance_pct": 66.03,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "24646f10-1437-4611-99ba-7f4de68ea511",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "9b5738b7-9128-41f6-b386-bc382e06937d",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.87,
+            "attendance_pct": 86.12,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8730a45a-0edb-490a-af72-c0a41958f1bf",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "6c440a0c-e23b-44bb-9833-45db1f399a23",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 14.21,
+            "attendance_pct": 76.27,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "8ced09f4-1931-42cc-a472-3561c13127c5",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "c5ee6434-76dc-411e-a439-4ee8a55c2887",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 13.35,
+            "attendance_pct": 71.01,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "26857cec-97f8-4680-9c25-274891c567d1",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "6029098b-ab4e-4041-b6f2-d0368a3e8a87",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 20.0,
+            "attendance_pct": 58.6,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "79431aea-5899-47af-916f-761cd87b262f",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "803001b0-3347-47cd-b98f-859b7253a922",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 20.0,
+            "attendance_pct": 63.83,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "74080a8f-b85c-4b60-aa64-fb1eeae43514",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "c174f535-982d-42c9-8192-17e6df9ab78a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.91,
+            "attendance_pct": 50.56,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "00afcbcc-8439-4268-8b4a-d054d9135081",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "21e60adb-28a9-4b92-b7ae-264012fc6120",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 12.1,
+            "attendance_pct": 52.41,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "6fb75043-44d3-4880-8141-e2ad71c3001e",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "f9a215e7-4a87-4dd8-9f95-8533331b7b5a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": null,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": null,
+            "evaluation_status": "INSUFFICIENT_DATA",
+            "active_alert_id": null
+          },
+          {
+            "id": "fcce10f2-99eb-4a73-accb-f9abe2bc6320",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "efcf7743-625d-4b2d-80cb-0d184496cb46",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 19.09,
+            "attendance_pct": 67.38,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "f0273a19-0e02-41f8-9d0d-d8dc4669bc8c",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "77c9e824-ceac-49eb-a8b0-d02542cda198",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 9.42,
+            "attendance_pct": 88.9,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "dea9510a-7af6-4a55-854c-bde0d26ad8a8",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "ec2510a6-40d0-497d-b2fb-a4585b7bc423",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 12.28,
+            "attendance_pct": 67.2,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "HIGH",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "141ba164-1c16-4484-adae-49181d813248",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "a67e74ff-0cc2-42db-ab31-74b91e10f83f",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 11.14,
+            "attendance_pct": null,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "d3c71ef5-ee34-439c-b6a3-1c5c5bd7a30f",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "8041313c-ad44-4bca-a350-d732ac7e7e79",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 11.85,
+            "attendance_pct": 77.07,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "1eb344ee-1a58-4c2e-afe8-4181c3749910",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "e23c6bb6-49ce-4a11-8380-a2c09b253186",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 15.81,
+            "attendance_pct": 65.91,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "2ccae15e-4972-4ed4-b998-deddf822618c",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "a4e18ff7-7d4a-425d-8a91-92e58d1958af",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 10.78,
+            "attendance_pct": 86.96,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "d2314f90-ba12-4d12-81e5-7cb13faa5cc7",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "c59940c6-c304-4321-b264-093d6a829190",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "d9a57e1e-7e24-5f22-ab40-6cd520eef9f6",
+            "section_code": "SYN-e3a2d28b-A",
+            "grade": 1,
+            "data_origin": "SYNTHETIC",
+            "average_grade": 17.41,
+            "attendance_pct": 77.79,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": "MEDIUM",
+            "evaluation_status": "EVALUATED",
+            "active_alert_id": null
+          },
+          {
+            "id": "051a6fc5-e597-44f7-a8e7-c3a7f309700d",
+            "anon_code": "[SYNTHETIC_CODE]",
+            "enrollment_id": "2d4c8fff-93c6-4881-ac6a-1ae866eb022a",
+            "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+            "section_id": "3af48c81-a111-50ca-b93e-9bab40902c7c",
+            "section_code": "SYN-e3a2d28b-B",
+            "grade": 2,
+            "data_origin": "SYNTHETIC",
+            "average_grade": null,
+            "attendance_pct": 94.98,
+            "latest_cutoff_at": "2025-09-30T22:00:00Z",
+            "risk_level": null,
+            "evaluation_status": "INSUFFICIENT_DATA",
+            "active_alert_id": null
+          }
+        ],
+        "total": 60,
+        "page": 1,
+        "page_size": 100
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "expected_status": 200,
+      "status": 200,
+      "response": [
+        {
+          "id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+          "code": "SYN-e3a2d28b2f23",
+          "school_year": 2025,
+          "start_date": "2025-01-01",
+          "end_date": "2025-12-31",
+          "data_origin": "SYNTHETIC",
+          "is_locked": false
+        }
+      ],
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/predictions/f6881212-5727-4b92-b3f8-0eda4821acc2",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "id": "f6881212-5727-4b92-b3f8-0eda4821acc2",
+        "enrollment_id": "f5b9949e-c5f3-4f67-81be-422967301592",
+        "snapshot_id": "aa7715eb-14fd-4243-a2b2-37d3100f90a4",
+        "model_id": "da06d9f2-89d3-40bd-99ec-6329f728c292",
+        "data_origin": "SYNTHETIC",
+        "risk_level": "HIGH",
+        "cutoff_at": "2025-09-30T22:00:00Z",
+        "target_date": "2025-10-14",
+        "predicted_at": "2026-10-04T14:37:40.466723Z",
+        "probability_low": null,
+        "probability_medium": null,
+        "probability_high": null,
+        "probabilities_calibrated": false
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "user": {
+          "id": "e4a4633c-eb68-4188-ad0d-f0972c141af7",
+          "display_name": "Revisión local · RESEARCHER",
+          "role": "RESEARCHER"
+        },
+        "csrf_token": "[REDACTED]",
+        "expires_at": "2026-10-04T22:38:36.962662Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/processing/status",
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "scope": "SYNTHETIC_STUDY",
+        "notice": "Estudio con datos sintéticos. No corresponde a estudiantes reales.",
+        "institutional_ready": false,
+        "synthetic_ready": true,
+        "operations": {
+          "compare": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "register": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "activate": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "predict": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "read_students": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "read_models": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          },
+          "import": {
+            "available": false,
+            "reason": "ROLE_RESTRICTED"
+          }
+        }
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/models",
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "0198aa5a-bd7a-46e5-bb36-b5b21c137e94"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/predictions/run",
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+        "details": [],
+        "request_id": "e9f9135d-5cb0-4cf8-b2be-a92780732f25"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/students?period_id=c036cbcb-87db-5ed0-bcfa-bbd644928ccb&page_size=100",
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Tu rol no tiene acceso a este recurso.",
+        "details": [],
+        "request_id": "9a6c9f0f-2a45-4b94-bd3a-b7d9c1128c5b"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Tu rol no tiene acceso a este recurso.",
+        "details": [],
+        "request_id": "2002ce20-dc92-4a9d-b908-454257cf7d39"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/predictions/f6881212-5727-4b92-b3f8-0eda4821acc2",
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "No tienes acceso a predicciones.",
+        "details": [],
+        "request_id": "2d3674d8-5169-49c8-96b9-80f07c85d83a"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Tu rol no tiene acceso a este recurso.",
+        "details": [],
+        "request_id": "e6078e40-6661-4df8-963b-b0beced4e292"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "AUTHENTICATED",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "expected_status": 204,
+      "status": 204,
+      "response": null,
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "REVOKED",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "25505f13-9fa5-4f1e-bc3f-188b786df607"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "AUTHENTICATED",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "expected_status": 204,
+      "status": 204,
+      "response": null,
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "REVOKED",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "1f197e3b-b048-4f10-91b0-f548c8478a27"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "AUTHENTICATED",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "expected_status": 204,
+      "status": 204,
+      "response": null,
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "REVOKED",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "0557eaec-d317-446a-bb94-e8c37fa2f873"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "AUTHENTICATED",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "expected_status": 204,
+      "status": 204,
+      "response": null,
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "REVOKED",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "4cb0c589-2889-457d-bf12-43fd518d9866"
+      },
+      "result": "COMPROBADO"
+    }
+  ],
+  "generation": {
+    "study_id": "e3a2d28b-2f23-56ae-878c-1a8f4a257e7e",
+    "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+    "data_origin": "SYNTHETIC",
+    "scope": "SYNTHETIC_STUDY",
+    "csv_sha256": "79fedc114a952631977bbd46cabe5c5a76faeef7e7293e709d5a1a11c9b31374",
+    "manifest": {
+      "version": "synthetic-study-v1",
+      "generator_version": "synthetic-generator-v1",
+      "scope": "SYNTHETIC_STUDY",
+      "data_origin": "SYNTHETIC",
+      "study_id": "e3a2d28b-2f23-56ae-878c-1a8f4a257e7e",
+      "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "seed": 1729,
+      "config_hash": "281d1dfda233e574352b44ca3448bb3579600da92676cab012f9e6e99e2fc74e",
+      "csv_sha256": "79fedc114a952631977bbd46cabe5c5a76faeef7e7293e709d5a1a11c9b31374",
+      "dataset_sha256": "7137144ef824de51c2176656fe8032c9dcb8ffc9ddfb8c368743558f9af81d61",
+      "labels_sha256": "e0f7d131de4625be9aebd7cc2cd8067271307bb3de9eb1b8e48085a838dde95b",
+      "student_count": 60,
+      "observation_count": 360,
+      "eligible_observation_count": 356,
+      "context": {
+        "school_year": 2025,
+        "period_start": "2025-01-01",
+        "period_end": "2025-12-31",
+        "sections": [
+          {
+            "grade": 1,
+            "code": "SYN-e3a2d28b-A"
+          },
+          {
+            "grade": 2,
+            "code": "SYN-e3a2d28b-B"
+          }
+        ]
+      },
+      "limits": [
+        "Registros y resultados completamente simulados; no corresponden a personas reales.",
+        "Relaciones y métricas condicionadas por el generador; sin evidencia de eficacia escolar."
+      ]
+    },
+    "reused": false
+  },
+  "commit": {
+    "batch_id": "4e4adb29-5fcc-445c-8e2e-04bee63aca39",
+    "status": "COMMITTED",
+    "created_snapshots": 360,
+    "reused_result": false
+  },
+  "comparison": {
+    "scope": "SYNTHETIC_STUDY",
+    "data_origin": "SYNTHETIC",
+    "study_id": "e3a2d28b-2f23-56ae-878c-1a8f4a257e7e",
+    "generator_version": "synthetic-generator-v1",
+    "seed": 1729,
+    "student_count": 60,
+    "observation_count": 360,
+    "development_student_count": 48,
+    "external_student_count": 12,
+    "development_observation_count": 143,
+    "external_observation_count": 33,
+    "folds_effective": 5,
+    "fit_at": "2025-05-01T22:00:00+00:00",
+    "selection_rule": "DEV_MACRO_F1_THEN_BALANCED_ACCURACY_THEN_FIXED_ORDER",
+    "selected_algorithm": "SVM",
+    "exclusions": {
+      "DEVELOPMENT_LATER_CUT_NOT_FOR_FIT": 144,
+      "RESERVED_EARLY_CUT_NOT_FOR_EXTERNAL_EVALUATION": 36,
+      "EXTERNAL_NOT_ELIGIBLE": 3,
+      "DEVELOPMENT_NOT_ELIGIBLE": 1
+    },
+    "algorithms": {
+      "DUMMY": {
+        "development": {
+          "class_order": [
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ],
+          "confusion_matrix": [
+            [
+              0,
+              3,
+              10
+            ],
+            [
+              0,
+              12,
+              52
+            ],
+            [
+              0,
+              15,
+              51
+            ]
+          ],
+          "per_class": {
+            "LOW": {
+              "support": 13,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "MEDIUM": {
+              "support": 64,
+              "precision": 0.4,
+              "recall": 0.1875,
+              "f1": 0.2553191489361702
+            },
+            "HIGH": {
+              "support": 66,
+              "precision": 0.45132743362831856,
+              "recall": 0.7727272727272727,
+              "f1": 0.5698324022346368
+            }
+          },
+          "macro": {
+            "precision": null,
+            "recall": 0.32007575757575757,
+            "f1": 0.2750505170569357
+          },
+          "accuracy": 0.4405594405594406,
+          "balanced_accuracy": 0.32007575757575757,
+          "auc": null,
+          "not_estimable_reasons": {
+            "auc": "PROBABILITIES_NOT_CALIBRATED_OR_AUC_NOT_IMPLEMENTED",
+            "per_class.LOW.precision": "NO_PREDICTED_SUPPORT",
+            "macro.precision": "CLASS_METRIC_NOT_ESTIMABLE"
+          },
+          "limitations": [
+            "Sin calibración ni evaluación prospectiva institucional; null significa no estimable."
+          ]
+        },
+        "external": {
+          "class_order": [
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ],
+          "confusion_matrix": [
+            [
+              0,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              14
+            ],
+            [
+              0,
+              0,
+              17
+            ]
+          ],
+          "per_class": {
+            "LOW": {
+              "support": 2,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "MEDIUM": {
+              "support": 14,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "HIGH": {
+              "support": 17,
+              "precision": 0.5151515151515151,
+              "recall": 1.0,
+              "f1": 0.68
+            }
+          },
+          "macro": {
+            "precision": null,
+            "recall": 0.3333333333333333,
+            "f1": 0.22666666666666668
+          },
+          "accuracy": 0.5151515151515151,
+          "balanced_accuracy": 0.3333333333333333,
+          "auc": null,
+          "not_estimable_reasons": {
+            "auc": "PROBABILITIES_NOT_CALIBRATED_OR_AUC_NOT_IMPLEMENTED",
+            "per_class.LOW.precision": "NO_PREDICTED_SUPPORT",
+            "per_class.MEDIUM.precision": "NO_PREDICTED_SUPPORT",
+            "macro.precision": "CLASS_METRIC_NOT_ESTIMABLE"
+          },
+          "limitations": [
+            "Sin calibración ni evaluación prospectiva institucional; null significa no estimable."
+          ]
+        },
+        "fold_variation": {
+          "macro_f1": {
+            "mean": 0.20384060384060385,
+            "std": 0.00801225528128038,
+            "minimum": 0.19047619047619047,
+            "maximum": 0.21212121212121213,
+            "reason": null
+          },
+          "balanced_accuracy": {
+            "mean": 0.3333333333333333,
+            "std": 0.0,
+            "minimum": 0.3333333333333333,
+            "maximum": 0.3333333333333333,
+            "reason": null
+          }
+        }
+      },
+      "RANDOM_FOREST": {
+        "development": {
+          "class_order": [
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ],
+          "confusion_matrix": [
+            [
+              2,
+              10,
+              1
+            ],
+            [
+              2,
+              49,
+              13
+            ],
+            [
+              0,
+              21,
+              45
+            ]
+          ],
+          "per_class": {
+            "LOW": {
+              "support": 13,
+              "precision": 0.5,
+              "recall": 0.15384615384615385,
+              "f1": 0.23529411764705882
+            },
+            "MEDIUM": {
+              "support": 64,
+              "precision": 0.6125,
+              "recall": 0.765625,
+              "f1": 0.6805555555555556
+            },
+            "HIGH": {
+              "support": 66,
+              "precision": 0.7627118644067796,
+              "recall": 0.6818181818181818,
+              "f1": 0.72
+            }
+          },
+          "macro": {
+            "precision": 0.6250706214689266,
+            "recall": 0.5337631118881119,
+            "f1": 0.5452832244008715
+          },
+          "accuracy": 0.6713286713286714,
+          "balanced_accuracy": 0.5337631118881119,
+          "auc": null,
+          "not_estimable_reasons": {
+            "auc": "PROBABILITIES_NOT_CALIBRATED_OR_AUC_NOT_IMPLEMENTED"
+          },
+          "limitations": [
+            "Sin calibración ni evaluación prospectiva institucional; null significa no estimable."
+          ]
+        },
+        "external": {
+          "class_order": [
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ],
+          "confusion_matrix": [
+            [
+              0,
+              2,
+              0
+            ],
+            [
+              1,
+              11,
+              2
+            ],
+            [
+              0,
+              9,
+              8
+            ]
+          ],
+          "per_class": {
+            "LOW": {
+              "support": 2,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "MEDIUM": {
+              "support": 14,
+              "precision": 0.5,
+              "recall": 0.7857142857142857,
+              "f1": 0.6111111111111112
+            },
+            "HIGH": {
+              "support": 17,
+              "precision": 0.8,
+              "recall": 0.47058823529411764,
+              "f1": 0.5925925925925926
+            }
+          },
+          "macro": {
+            "precision": 0.43333333333333335,
+            "recall": 0.41876750700280113,
+            "f1": 0.4012345679012346
+          },
+          "accuracy": 0.5757575757575758,
+          "balanced_accuracy": 0.41876750700280113,
+          "auc": null,
+          "not_estimable_reasons": {
+            "auc": "PROBABILITIES_NOT_CALIBRATED_OR_AUC_NOT_IMPLEMENTED"
+          },
+          "limitations": [
+            "Sin calibración ni evaluación prospectiva institucional; null significa no estimable."
+          ]
+        },
+        "fold_variation": {
+          "macro_f1": {
+            "mean": 0.531890534274826,
+            "std": 0.10442295259153463,
+            "minimum": 0.38888888888888884,
+            "maximum": 0.6351098644226274,
+            "reason": null
+          },
+          "balanced_accuracy": {
+            "mean": 0.5263125763125763,
+            "std": 0.07822821516004422,
+            "minimum": 0.4157509157509158,
+            "maximum": 0.5982905982905983,
+            "reason": null
+          }
+        }
+      },
+      "SVM": {
+        "development": {
+          "class_order": [
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ],
+          "confusion_matrix": [
+            [
+              4,
+              8,
+              1
+            ],
+            [
+              3,
+              47,
+              14
+            ],
+            [
+              1,
+              16,
+              49
+            ]
+          ],
+          "per_class": {
+            "LOW": {
+              "support": 13,
+              "precision": 0.5,
+              "recall": 0.3076923076923077,
+              "f1": 0.38095238095238093
+            },
+            "MEDIUM": {
+              "support": 64,
+              "precision": 0.6619718309859155,
+              "recall": 0.734375,
+              "f1": 0.6962962962962963
+            },
+            "HIGH": {
+              "support": 66,
+              "precision": 0.765625,
+              "recall": 0.7424242424242424,
+              "f1": 0.7538461538461538
+            }
+          },
+          "macro": {
+            "precision": 0.6425322769953051,
+            "recall": 0.5948305167055167,
+            "f1": 0.610364943698277
+          },
+          "accuracy": 0.6993006993006993,
+          "balanced_accuracy": 0.5948305167055167,
+          "auc": null,
+          "not_estimable_reasons": {
+            "auc": "PROBABILITIES_NOT_CALIBRATED_OR_AUC_NOT_IMPLEMENTED"
+          },
+          "limitations": [
+            "Sin calibración ni evaluación prospectiva institucional; null significa no estimable."
+          ]
+        },
+        "external": {
+          "class_order": [
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ],
+          "confusion_matrix": [
+            [
+              0,
+              2,
+              0
+            ],
+            [
+              1,
+              10,
+              3
+            ],
+            [
+              0,
+              8,
+              9
+            ]
+          ],
+          "per_class": {
+            "LOW": {
+              "support": 2,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "MEDIUM": {
+              "support": 14,
+              "precision": 0.5,
+              "recall": 0.7142857142857143,
+              "f1": 0.5882352941176471
+            },
+            "HIGH": {
+              "support": 17,
+              "precision": 0.75,
+              "recall": 0.5294117647058824,
+              "f1": 0.6206896551724138
+            }
+          },
+          "macro": {
+            "precision": 0.4166666666666667,
+            "recall": 0.41456582633053224,
+            "f1": 0.40297498309668695
+          },
+          "accuracy": 0.5757575757575758,
+          "balanced_accuracy": 0.41456582633053224,
+          "auc": null,
+          "not_estimable_reasons": {
+            "auc": "PROBABILITIES_NOT_CALIBRATED_OR_AUC_NOT_IMPLEMENTED"
+          },
+          "limitations": [
+            "Sin calibración ni evaluación prospectiva institucional; null significa no estimable."
+          ]
+        },
+        "fold_variation": {
+          "macro_f1": {
+            "mean": 0.5893573170124895,
+            "std": 0.13690348800593308,
+            "minimum": 0.46715927750410513,
+            "maximum": 0.8055555555555555,
+            "reason": null
+          },
+          "balanced_accuracy": {
+            "mean": 0.6042002442002442,
+            "std": 0.16770990366910268,
+            "minimum": 0.49444444444444446,
+            "maximum": 0.8952991452991453,
+            "reason": null
+          }
+        }
+      },
+      "XGBOOST": {
+        "development": {
+          "class_order": [
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ],
+          "confusion_matrix": [
+            [
+              2,
+              10,
+              1
+            ],
+            [
+              4,
+              47,
+              13
+            ],
+            [
+              0,
+              20,
+              46
+            ]
+          ],
+          "per_class": {
+            "LOW": {
+              "support": 13,
+              "precision": 0.3333333333333333,
+              "recall": 0.15384615384615385,
+              "f1": 0.21052631578947367
+            },
+            "MEDIUM": {
+              "support": 64,
+              "precision": 0.6103896103896104,
+              "recall": 0.734375,
+              "f1": 0.6666666666666666
+            },
+            "HIGH": {
+              "support": 66,
+              "precision": 0.7666666666666667,
+              "recall": 0.696969696969697,
+              "f1": 0.7301587301587301
+            }
+          },
+          "macro": {
+            "precision": 0.5701298701298702,
+            "recall": 0.5283969502719503,
+            "f1": 0.5357839042049568
+          },
+          "accuracy": 0.6643356643356644,
+          "balanced_accuracy": 0.5283969502719503,
+          "auc": null,
+          "not_estimable_reasons": {
+            "auc": "PROBABILITIES_NOT_CALIBRATED_OR_AUC_NOT_IMPLEMENTED"
+          },
+          "limitations": [
+            "Sin calibración ni evaluación prospectiva institucional; null significa no estimable."
+          ]
+        },
+        "external": {
+          "class_order": [
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ],
+          "confusion_matrix": [
+            [
+              1,
+              1,
+              0
+            ],
+            [
+              1,
+              9,
+              4
+            ],
+            [
+              1,
+              6,
+              10
+            ]
+          ],
+          "per_class": {
+            "LOW": {
+              "support": 2,
+              "precision": 0.3333333333333333,
+              "recall": 0.5,
+              "f1": 0.4
+            },
+            "MEDIUM": {
+              "support": 14,
+              "precision": 0.5625,
+              "recall": 0.6428571428571429,
+              "f1": 0.6
+            },
+            "HIGH": {
+              "support": 17,
+              "precision": 0.7142857142857143,
+              "recall": 0.5882352941176471,
+              "f1": 0.6451612903225806
+            }
+          },
+          "macro": {
+            "precision": 0.5367063492063492,
+            "recall": 0.57703081232493,
+            "f1": 0.5483870967741935
+          },
+          "accuracy": 0.6060606060606061,
+          "balanced_accuracy": 0.57703081232493,
+          "auc": null,
+          "not_estimable_reasons": {
+            "auc": "PROBABILITIES_NOT_CALIBRATED_OR_AUC_NOT_IMPLEMENTED"
+          },
+          "limitations": [
+            "Sin calibración ni evaluación prospectiva institucional; null significa no estimable."
+          ]
+        },
+        "fold_variation": {
+          "macro_f1": {
+            "mean": 0.5260519467575939,
+            "std": 0.11729799395284365,
+            "minimum": 0.4027245636441039,
+            "maximum": 0.6795986622073579,
+            "reason": null
+          },
+          "balanced_accuracy": {
+            "mean": 0.5330891330891332,
+            "std": 0.11104287006650589,
+            "minimum": 0.4175824175824176,
+            "maximum": 0.7008547008547009,
+            "reason": null
+          }
+        }
+      }
+    },
+    "limits": [
+      "SYNTHETIC_STUDY: comparación condicionada por trayectorias y ruido del generador.",
+      "CV por estudiante en desarrollo y reserva externa posterior son evaluaciones distintas.",
+      "Sin evidencia de eficacia, impacto ni generalización a estudiantes reales.",
+      "Sin tuning ni calibración; aprobación técnica permite únicamente simulación."
+    ],
+    "reused": false
+  },
+  "registration": {
+    "model_id": "da06d9f2-89d3-40bd-99ec-6329f728c292",
+    "algorithm": "SVM",
+    "status": "APPROVED",
+    "data_origin": "SYNTHETIC",
+    "is_active": false,
+    "approval_kind": "TECHNICAL_SIMULATION",
+    "reused": false
+  },
+  "activation": {
+    "model_id": "da06d9f2-89d3-40bd-99ec-6329f728c292",
+    "data_origin": "SYNTHETIC",
+    "is_active": true,
+    "approval_kind": "TECHNICAL_SIMULATION",
+    "reused": false
+  },
+  "inference": {
+    "as_of": "2026-10-04T14:37:38.413120+00:00",
+    "selected": 60,
+    "created": 55,
+    "reused": 0,
+    "abstentions": 5,
+    "repeat_created": 0,
+    "repeat_reused": 55
+  },
+  "users_password_hashes_preserved": true,
+  "counts": {
+    "academic_periods": 1,
+    "academic_snapshots": 360,
+    "alerts": 0,
+    "app_users": 4,
+    "audit_events": 124,
+    "enrollments": 60,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 0,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 32
+  }
+}

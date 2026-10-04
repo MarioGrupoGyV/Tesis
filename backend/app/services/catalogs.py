@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.errors import AppError
 from app.models.s1 import AcademicPeriod, AppUser, GradeSection
-from app.repositories.s1 import institutional_periods, period_by_id, sections_for_year
+from app.repositories.s1 import institutional_periods, period_by_id, sections_for_period
 
 
 def require_catalog_role(user: AppUser) -> None:
@@ -22,9 +22,9 @@ def sections(db: Session, user: AppUser, period_id: UUID) -> list[GradeSection]:
     period = period_by_id(db, period_id)
     if period is None:
         raise AppError(404, "PERIOD_NOT_FOUND", "El periodo solicitado no está disponible.")
-    authorized = sections_for_year(db, period.school_year, user.id if user.role == "TUTOR" else None)
+    authorized = sections_for_period(db, period, user.id if user.role == "TUTOR" else None)
     if user.role == "TUTOR" and not authorized:
         raise AppError(403, "FORBIDDEN", "No tienes secciones asignadas en este periodo.")
-    if period.data_origin != "REAL":
+    if period.data_origin not in ("REAL", "SYNTHETIC"):
         raise AppError(422, "ORIGIN_NOT_SUPPORTED", "Origen no admitido en este entorno.")
     return authorized

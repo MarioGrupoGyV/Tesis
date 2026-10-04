@@ -18,7 +18,7 @@ def main():
     directory.mkdir(parents=True,exist_ok=True)
     (directory/'app-url').write_text(fixture['database_url'],encoding='utf-8')
     (directory/'csrf').write_text(secrets.token_urlsafe(48),encoding='utf-8')
-    prefix=os.environ.get('BROWSER_REPORT_PREFIX','s2-2')
+    prefix=os.environ.get('BROWSER_REPORT_PREFIX','s3-1')
     if not prefix.replace('-','').isalnum():
         raise ValueError('Prefijo inválido')
     environment = {**os.environ,'E2E_BASE_URL':'http://localhost:15174','E2E_SCOPE':'isolated',

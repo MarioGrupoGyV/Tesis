@@ -1,27 +1,26 @@
-# Backend de Seguimiento Escolar
+# Backend de Seguimiento Escolar — S3.1
 
-FastAPI/SQLAlchemy/Alembic, capas separadas. S2.1 conserva sesiones, CSRF, autorización
-y motor de importación; procesamiento institucional bloqueado por processing_policy.
-Contrato público 0.3.0 en docs/planning/Contrato_API.yaml. Rutas S1/S2 y cuatro rutas S3.
+Contrato público 0.4.0. S3.1 autoriza solo el estudio SYNTHETIC registrado; REAL sigue
+bloqueado. Capas rutas/esquemas/servicios/repositorios/ML, riesgo_app y migraciones
+revisadas con propietario temporal. 0001/0002 intactas; 0003 añade registro privado
+mínimo y guards de simulación, sin convertir/eliminar datos históricos.
 
-La API usa riesgo_app; migraciones con propietario temporal. Ningún arranque crea
-cuentas, periodos ni datos. bootstrap_admin pide entrada interactiva y configure_context
-crea contexto explícito; ambas acciones auditan y rechazan duplicados sin sobrescribir.
-Settings no ofrece un modo que habilite procesamiento. CSV privado fuera del checkout.
+Generador explícito versionado, CSV/hash/contexto verificados antes de importar,
+confirmación y bindings transaccionales. CLI authenticate ADMIN para comparar,
+registrar/activar simulación. No entrenamiento/activación HTTP, startup o flags REAL.
+Núcleo S3 conserva cuatro pipelines CPU/grupos/artefactos privados firmados; contratos
+internos v2 para SYNTHETIC, v1 aislado compatible. Desarrollo y reserva temporal externos
+se separan antes de medir. Cinco variables, probabilidades null, abstención y auditoría.
 
-No autogenerar migraciones sobre ORM parcial. 0001/snapshot inmutables; 0002 añade
-origen institucional sin actualizar datos existentes. Modelos activos bloqueados
-hasta otra iteración; S3 añade ORM explícito de modelos/predicciones sobre las tablas
-existentes sin DDL. Conserva ambas restricciones de activación.
+GET processing/status público para sesión, sanitizado por rol; las demás 18 rutas
+S1/S2/S3 conservan funcionamiento. Consulte docs/manuals/Manual_Estudio_Sintetico.md.
+Suite completa desde PowerShell, PostgreSQL aislado/Linux Python 3.12.12 dentro de Docker:
 
-app/ml/features, train, evaluate y predict implementan el núcleo probado aisladamente;
-artifacts/manifest verifican procedencia interna, hashes y compatibilidad antes de
-cargar. Servicios, repositorio y esquemas públicos ML están separados. Ningún arranque
-ni petición HTTP entrena. Persistencia snapshot/model reutilizable y auditoría atómica.
-Solo cinco variables básicas; configuración explícita de escalas, etiquetas futuras,
-faltantes y opcionales justificados. Sin calibración ni activación automática.
+```powershell
+$env:TEST_REPORT_NAME = 's3-1-backend'
+docker compose -f infra/compose.test.yaml build tester
+docker compose -f infra/compose.test.yaml run --rm tester
+```
 
-Desde PowerShell: docker compose -f infra/compose.test.yaml build tester y
-docker compose -f infra/compose.test.yaml run --rm tester. Se ejecutan dentro de
-Linux/Python 3.12.12 con PostgreSQL aislado. Fixtures fabricados nunca se cargan en
-la aplicación activa. Consultar README raíz, Estado_Sprint_3.md y docs/manuals/ML_S3.md.
+No autogenerar sobre metadata parcial, borrar evidencias/volúmenes o ejecutar tests
+sobre la base activa. Preservar cuatro cuentas/secretos Windows y locks; S4–S6 pendientes.

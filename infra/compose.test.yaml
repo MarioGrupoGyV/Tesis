@@ -27,7 +27,7 @@ services:
         condition: service_healthy
     secrets: [owner_url, app_url]
     environment:
-      TEST_REPORT_NAME: "${TEST_REPORT_NAME:-s2-1-backend}"
+      TEST_REPORT_NAME: "${TEST_REPORT_NAME:-s3-1-backend}"
       IMPORT_STORAGE_DIR: /tmp/s2-imports
     volumes:
       - ../tests/evidence:/evidence

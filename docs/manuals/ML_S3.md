@@ -1,4 +1,6 @@
-# Manual técnico ML — S3
+# Manual técnico ML — infraestructura S3 (referencia de ese cierre)
+
+La operación vigente S3.1 se describe en [Manual_Estudio_Sintetico.md](Manual_Estudio_Sintetico.md). ADR 006 autoriza un estudio nuevo SYNTHETIC, sin modificar la evidencia del cierre S3. Las restricciones totales y estado vacío descritos aquí corresponden a S3; REAL sigue bloqueado.
 
 Infraestructura implementada y comprobable en pruebas aisladas. **No hay dataset
 autorizado ni modelo operativo.** Entrenamiento, inferencia y activación institucional

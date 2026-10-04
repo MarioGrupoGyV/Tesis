@@ -5,7 +5,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHOOL = ('academic_periods','grade_sections','students','enrollments','academic_snapshots',
-          'import_batches','model_versions','predictions','alerts','interventions')
+          'import_batches','model_versions','predictions','alerts','interventions','synthetic_studies')
 CODE = '''
 import hashlib,json
 from pathlib import Path
@@ -30,4 +30,4 @@ def snapshot():
     return json.loads(output)
 
 def school_unchanged(before, after):
-    return all(before['fingerprints'][t]==after['fingerprints'][t] for t in SCHOOL) and before['files']==after['files'] and before.get('ml_files',[])==after.get('ml_files',[])
+    return all(before['fingerprints'].get(t)==after['fingerprints'].get(t) for t in SCHOOL) and before['files']==after['files'] and before.get('ml_files',[])==after.get('ml_files',[])

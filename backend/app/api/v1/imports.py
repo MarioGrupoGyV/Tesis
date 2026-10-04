@@ -3,6 +3,7 @@ from fastapi import APIRouter, Header, Request, Response
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import UploadFile
 from starlette.exceptions import HTTPException
+from pydantic import ValidationError
 from app.api.v1.dependencies import AuthenticatedSession, DbSession
 from app.core.errors import AppError, request_id
 from app.schemas.s2 import CommitInput, ImportBatch, ImportCommit
@@ -19,7 +20,7 @@ async def preview(request: Request, response: Response, context: AuthenticatedSe
     service.require_admin(context.user)
     settings = request.app.state.settings
     check_csrf(context, csrf_token, settings)
-    service.require_processing_protocol()
+    service.precheck(db)
     try:
         async with request.form(max_files=1, max_fields=1, max_part_size=MAX_BYTES) as form:
             if set(form) != {'file', 'period_id'} or any(len(form.getlist(k)) != 1 for k in form):
@@ -50,8 +51,14 @@ def detail(id: UUID, context: AuthenticatedSession, db: DbSession):
 
 
 @router.post('/{id}/commit', response_model=ImportCommit, operation_id='commitImport')
-def commit(id: UUID, payload: CommitInput, request: Request, context: AuthenticatedSession, db: DbSession,
+async def commit(id: UUID, request: Request, context: AuthenticatedSession, db: DbSession,
            csrf_token: str | None = Header(default=None, alias='X-CSRF-Token')):
     service.require_admin(context.user)
     check_csrf(context, csrf_token, request.app.state.settings)
-    return service.commit(db, context.user, request.app.state.settings, id, payload.expected_preview_version, request_id(request))
+    service.precheck(db)
+    try:
+        payload=CommitInput.model_validate(await request.json())
+    except (ValidationError,ValueError):
+        raise AppError(422,'VALIDATION_ERROR','Envía expected_preview_version como entero positivo.') from None
+    return await run_in_threadpool(service.commit, db, context.user, request.app.state.settings,
+        id, payload.expected_preview_version, request_id(request))

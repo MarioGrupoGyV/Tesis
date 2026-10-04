@@ -3,6 +3,7 @@ from datetime import UTC, date, datetime, timedelta
 import hashlib
 import hmac
 import json
+import os
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -78,7 +79,8 @@ def test_four_algorithms_and_private_validation(bundles,ml_dataset,tmp_path):
         assert (tmp_path/algorithm/key/'estimator.ubj').exists()==(algorithm=='XGBOOST')
     # Solo resumen público, sin identidades, particiones, manifiestos o datasets privados.
     directory = Path('/evidence') if Path('/evidence').exists() else tmp_path
-    (directory/'s3-ml-summary.json').write_text(json.dumps({
+    prefix = os.environ.get('TEST_REPORT_NAME', 's3-local-backend').removesuffix('-backend')
+    (directory / (prefix + '-ml-summary.json')).write_text(json.dumps({
         'status':'COMPROBADO','scope':'ISOLATED_SOFTWARE_TEST_ONLY','algorithms':list(bundles),
         'students':9,'observations':18,'folds_effective':3,'seed':1729,
         'versions':bundles['DUMMY'].manifest['versions'],'round_trip_all_algorithms':True,

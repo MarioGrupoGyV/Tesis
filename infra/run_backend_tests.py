@@ -12,8 +12,8 @@ from sqlalchemy.engine import make_url
 
 ROOT = Path(__file__).resolve().parents[1]
 assert sys.version_info[:3] == (3, 12, 12) and platform.system() == 'Linux'
-assert os.environ.get('TEST_REPORT_NAME', 's2-1-backend').replace('-', '').isalnum()
-report = os.environ.get('TEST_REPORT_NAME', 's2-1-backend')
+assert os.environ.get('TEST_REPORT_NAME', 's3-1-backend').replace('-', '').isalnum()
+report = os.environ.get('TEST_REPORT_NAME', 's3-1-backend')
 urls = {role: make_url(Path(f'/run/secrets/{role}_url').read_text().strip()).set(
     host='dbtest', port=5432, database='riesgo_escolar_test'
 ).render_as_string(hide_password=False) for role in ('owner', 'app')}

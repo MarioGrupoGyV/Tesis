@@ -30,7 +30,7 @@ def write_contract_samples():
     yield
     directory = Path('/evidence') if Path('/evidence').exists() else Path('tests/evidence')
     directory.mkdir(parents=True, exist_ok=True)
-    (directory / (os.environ.get('TEST_REPORT_NAME', 's2-2-backend').removesuffix('-backend') + '-response-samples.json')).write_text(json.dumps(SAMPLES, indent=2) + '\n', encoding='utf-8')
+    (directory / (os.environ.get('TEST_REPORT_NAME', 's3-1-backend').removesuffix('-backend') + '-response-samples.json')).write_text(json.dumps(SAMPLES, indent=2) + '\n', encoding='utf-8')
 
 
 def sample(schema, body):

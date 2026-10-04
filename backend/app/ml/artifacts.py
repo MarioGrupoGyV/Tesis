@@ -11,7 +11,7 @@ from uuid import uuid4
 
 import joblib
 
-from app.ml.features import CLASSES, Dataset, FeatureConfig, MLDiagnostic
+from app.ml.features import CLASSES, Dataset, FeatureConfig, MLDiagnostic, validate_dataset
 from app.ml.predict import class_mapping
 from app.ml.train import ALGORITHMS, ModelBundle, versions
 from app.ml.manifest import ArtifactManifest
@@ -26,7 +26,13 @@ def canonical(value):
 class ArtifactStore:
     def __init__(self, root: Path):
         self.root = Path(root)
-        checkout = Path(__file__).resolve().parents[3]
+        # Repository: <checkout>/backend/app/ml; image: /app/app/ml.
+        # Three parents from the image's file incorrectly resolves to '/', which
+        # would reject every private Docker volume. In a repository protect the
+        # whole checkout, including frontend/infra, rather than backend alone.
+        checkout = Path(__file__).resolve().parents[2]
+        if checkout.name == 'backend':
+            checkout = checkout.parent
         if not self.root.is_absolute() or self.root.resolve().is_relative_to(checkout):
             raise MLDiagnostic('PRIVATE_STORAGE_REQUIRED')
         self._safe(self.root)
@@ -69,9 +75,12 @@ class ArtifactStore:
         return self._safe(self.root/key)
 
     def save(self,bundle: ModelBundle,dataset: Dataset):
-        if dataset.scope != 'ISOLATED_TEST' or bundle.manifest['scope'] != 'ISOLATED_TEST':
+        if dataset.scope not in ('ISOLATED_TEST', 'SYNTHETIC_STUDY'):
             from app.services.processing_policy import require_ml_protocol
             require_ml_protocol()
+        if (bundle.manifest['scope'] != dataset.scope or
+                bundle.manifest['data_origin'] != ('SYNTHETIC' if dataset.scope == 'SYNTHETIC_STUDY' else 'REAL')):
+            raise MLDiagnostic('ARTIFACT_SCOPE_ORIGIN_INCOMPATIBLE')
         if hashlib.sha256(dataset.model_dump_json().encode()).hexdigest() != bundle.manifest['dataset_hash']:
             raise MLDiagnostic('DATASET_HASH_MISMATCH')
         key = uuid4().hex
@@ -106,11 +115,9 @@ class ArtifactStore:
                 raise MLDiagnostic('UNTRUSTED_ARTIFACT')
             ArtifactManifest.model_validate(manifest)
             config = FeatureConfig.model_validate(manifest['feature_schema'])
-            if (manifest['manifest_version'] != 'ml-artifact-v1' or manifest['dataset_schema_version'] != 'ml-dataset-v1'
-                    or manifest['versions'] != versions() or manifest['class_order'] != list(CLASSES)
+            if (manifest['versions'] != versions() or manifest['class_order'] != list(CLASSES)
                     or manifest['encoded_classes'] != [0,1,2] or manifest['algorithm'] not in ALGORITHMS
-                    or manifest['artifact_key'] != key or manifest['scope'] != 'ISOLATED_TEST'
-                    or manifest['data_origin'] != 'REAL' or manifest['approved'] is not False
+                    or manifest['artifact_key'] != key or manifest['approved'] is not False
                     or manifest['probabilities_calibrated'] is not False
                     or manifest['reference_criterion_version'] != config.criterion_version
                     or manifest['horizon_days'] != config.horizon_days):
@@ -125,6 +132,26 @@ class ArtifactStore:
             if (manifest['files']['dataset.json'] != manifest['dataset_hash'] or
                     manifest['files']['pipeline.joblib'] != manifest['artifact_sha256']):
                 raise MLDiagnostic('MANIFEST_HASH_MISMATCH')
+            dataset = Dataset.model_validate_json(payloads['dataset.json'])
+            if (dataset.scope != manifest['scope'] or dataset.schema_version != manifest['dataset_schema_version'] or
+                    dataset.config != config or len(dataset.observations) != manifest['observations']):
+                raise MLDiagnostic('ARTIFACT_DATASET_INCOMPATIBLE')
+            validate_dataset(dataset)
+            groups = [row.student_key for row in dataset.observations]
+            if manifest['students'] != len(set(groups)):
+                raise MLDiagnostic('ARTIFACT_GROUP_COUNTS_INCOMPATIBLE')
+            for split in manifest['partitions']:
+                if (sorted({groups[index] for index in split['train']}) != split['train_students'] or
+                        sorted({groups[index] for index in split['validation']}) != split['validation_students']):
+                    raise MLDiagnostic('ARTIFACT_GROUP_PARTITION_INCOMPATIBLE')
+            if dataset.scope == 'SYNTHETIC_STUDY':
+                protocol = dataset.synthetic_protocol
+                if (protocol.get('study_id') != manifest['study_id'] or
+                        protocol.get('generator_version') != manifest['generator_version'] or
+                        protocol.get('config_hash') != manifest['synthetic_config_hash'] or
+                        hashlib.sha256(canonical(protocol.get('config'))).hexdigest() != manifest['synthetic_config_hash'] or
+                        not set(groups) <= set(manifest['synthetic_evaluation']['development_students'])):
+                    raise MLDiagnostic('ARTIFACT_SYNTHETIC_PROVENANCE_INCOMPATIBLE')
             return manifest,config,payloads
         except (KeyError,TypeError,ValueError) as error:
             if isinstance(error,MLDiagnostic):

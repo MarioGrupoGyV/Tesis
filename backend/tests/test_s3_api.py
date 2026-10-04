@@ -1,5 +1,6 @@
 """Rutas reales con riesgo_app; sin sustituir el bloqueo de ML."""
 from uuid import uuid4
+from datetime import UTC, datetime
 import pytest
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
@@ -12,7 +13,7 @@ def test_ml_anonymous(client,path):
 
 
 @pytest.mark.parametrize('role',['ADMIN','TUTOR','DIRECTOR','RESEARCHER'])
-def test_ml_roles_and_blocking(client,login,role,db):
+def test_ml_roles_and_blocking(client,login,role,db,context):
     result=login(role).json()
     headers={'X-CSRF-Token':result['csrf_token']}
     models=client.get('/api/v1/models')
@@ -25,7 +26,11 @@ def test_ml_roles_and_blocking(client,login,role,db):
     before=db.scalar(text('SELECT count(*) FROM risk_school.predictions'))
     assert client.post('/api/v1/predictions/run').status_code==403
     assert client.post('/api/v1/predictions/run',headers={'X-CSRF-Token':'wrong'}).status_code==403
-    response=client.post('/api/v1/predictions/run',headers=headers,content=b'not json')
+    # S3.1 may have a prepared synthetic study in this isolated database. A
+    # syntactically valid REAL request still cannot process institutional data.
+    response=client.post('/api/v1/predictions/run',headers=headers,json={
+        'period_id':str(context['periods']['real']['id']),
+        'as_of':datetime.now(UTC).isoformat()})
     assert response.status_code==(422 if role=='ADMIN' else 403)
     assert response.json()['code']==('INSTITUTIONAL_PROCESSING_NOT_READY' if role=='ADMIN' else 'FORBIDDEN')
     assert db.scalar(text('SELECT count(*) FROM risk_school.predictions'))==before

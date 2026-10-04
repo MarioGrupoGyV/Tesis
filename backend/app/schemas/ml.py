@@ -10,7 +10,7 @@ class Model(ContractModel):
     name: str
     version: str
     algorithm: Literal['DUMMY','RANDOM_FOREST','SVM','XGBOOST']
-    data_origin: Literal['REAL']
+    data_origin: Literal['REAL','SYNTHETIC']
     feature_schema_version: str
     reference_criterion_version: str
     status: Literal['DRAFT','EVALUATED','APPROVED','RETIRED']

@@ -1,29 +1,30 @@
-# Conciliación vigente — 0.2.0 / S2.1
+# Conciliación vigente — 0.4.0 / S3.1
 
-Contrato_API.yaml publica 14 rutas S1/S2; no publica rutas vacías de ML, tablero,
-seguimiento, reportes o auditoría. Se retiró DEMO del origen público. REAL conserva
-el significado institucional, sin afirmar autorización ni convertir registros.
+Nueva decisión ADR 006; los cierres S2.1/S2.2/S3 conservan sus hechos anteriores.
+19 operaciones reales: S1/S2/S3 más GET /processing/status. Origen público REAL o
+SYNTHETIC; cambio incompatible frente a 0.3.0. No entrenamiento/activación HTTP.
 
-La base nueva aplica 0001 intacta y 0002_institutional_boundary: nueve tablas con
-origen institucional para nuevas escrituras; defaults academic-v1 y activación de
-modelos bloqueada. Las claves compuestas, permisos, triggers y evidencias inmutables
-se conservan. NOT VALID permite conservar evidencia histórica de otro origen sin
-reetiquetar; en una base nueva las restricciones de origen quedan validadas.
+0003 conserva 0001/0002, nueve dominios de origen, defaults academic-v1, índices,
+claves compuestas, triggers y permisos. Sustituye institutional_origin por
+processing_origin (REAL/SYNTHETIC, NOT VALID conserva DEMO histórico). Sustituye
+los dos guards activos por synthetic_only_active_model: aprobación técnica,
+SYNTHETIC_STUDY y registro de procedencia. REAL no puede activarse. Los consentimientos
+no se fabrican: SYNTHETIC es elegible como simulación, consentimiento/asentimiento false.
 
-Las escrituras de importación autenticadas/CSRF responden 422
-INSTITUTIONAL_PROCESSING_NOT_READY antes de persistir archivo/lote. El motor S2 no
-se elimina: retiene versión de preview, locks, transacción, idempotencia, límites,
-fracción faltante y revisiones, comprobados exclusivamente con fixtures aislados.
-Las escalas históricas aún no constituyen una decisión de escala institucional.
+Tabla privada mínima synthetic_studies (14 en total), payload con CSV/etiquetas/resultado
+futuro fuera del checkout y hash. Configuración/manifiesto de generación inmutables;
+bindings y comparison solo se incorporan una vez. Lotes y modelos incluyen study_id:
+FK compuesta de origen, FK exacta de CSV/periodo y trigger de predicción del mismo estudio.
+No nuevos endpoints de investigación ni exposición de etiquetas o archivos privados.
 
-Contexto REAL puede leerse; ADMIN/DIRECTOR/TUTOR mantienen alcance. Sin periodos,
-GET periods devuelve []. Error 503 sanitizado para operaciones de base; health/ready
-conserva Health. Conflictos de integridad son 409. No hay selector de modo.
+Imports verifica registro/hash/contexto; el cliente no declara origen. Preserva parser,
+5 MiB/10000 filas, fechas Lima/UTC, null/precisión, previews versionadas, transacción,
+locks, idempotencia y auditoría. REAL devuelve INSTITUTIONAL_PROCESSING_NOT_READY.
+Archivo sintético no registrado/modificado devuelve UNREGISTERED_SYNTHETIC_FILE 422.
+Errores de integridad/conflicto son 409; 503 sanitizado solo indisponibilidad de DB/
+almacenamiento. Health/ready mantiene Health. Autenticación/rol/CSRF preceden al cuerpo.
 
-Los esquemas de historial de predicción/alerta/intervención son proyecciones públicas
-de lectura para compatibilidad S2, no operaciones implementadas de S3/S5.
-Tipos frontend regenerados; validador adapta correspondencias SQL y fixtures reales
-de respuesta al contrato actual. Las evidencias 0.1.1/0.1.2 no se reescriben.
-
-Véase ADR 004 y Estado_Sprint_2_1.md. La conciliación anterior está en
-history/Conciliacion_SQL_API_S2.md; no es instrucción para crear datos de demostración.
+Modelos publican origen, esquema/criterio y estado técnico; no hashes, métricas privadas,
+particiones, etiquetas ni rutas. Predicciones son null en probabilidades no calibradas,
+unicidad snapshot/model, origen coherente y alcance servidor. Una abstención no crea riesgo.
+Tipos regenerados y validador adaptado. Evidencias históricas intactas.

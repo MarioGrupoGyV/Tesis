@@ -27,7 +27,9 @@ async def run(request: Request,context: AuthenticatedSession,db: DbSession,
     service.require_admin(context.user)
     check_csrf(context,csrf_token,request.app.state.settings)
     # Precedencia explícita antes de parsear datos institucionales o consultar cortes.
-    service.require_ml_protocol()
+    from app.services.processing_policy import synthetic_studies
+    if not synthetic_studies(db):
+        service.require_ml_protocol()
     try:
         payload = PredictionRunInput.model_validate(await request.json())
     except (ValidationError,ValueError):
