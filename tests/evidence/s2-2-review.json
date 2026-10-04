@@ -1,0 +1,137 @@
+{
+  "status": "COMPROBADO",
+  "initial_sha": "eb0bfdee140e35bb104405c6dcaa7920b344215b",
+  "final_sha": "eb0bfdee140e35bb104405c6dcaa7920b344215b",
+  "protected_files_unchanged": [
+    "package.json",
+    "package-lock.json",
+    "frontend/package.json",
+    "backend/requirements.in",
+    "backend/requirements.txt",
+    "backend/requirements-dev.in",
+    "backend/requirements-dev.txt",
+    "infra/requirements-s0.in",
+    "infra/requirements-s0.txt",
+    "backend/migrations/versions/0001_demo_schema.py",
+    "backend/migrations/versions/0001_demo_schema.sql",
+    "infra/check_runtime.py",
+    "docs/planning/Contrato_API.yaml",
+    "frontend/src/lib/api.generated.d.ts"
+  ],
+  "backup_hashes_match": true,
+  "historical_restoration_evidence": "s2-1-backup.json; no nueva restauraci\u00f3n en S2.2",
+  "previous_environment_stopped": true,
+  "current_containers_healthy": true,
+  "mounts": [
+    {
+      "container": "/riesgo-escolar-api-1",
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "riesgo-escolar_import_data",
+          "destination": "/var/lib/riesgo/imports"
+        },
+        {
+          "type": "bind",
+          "name": null,
+          "destination": "/run/secrets/app_database_url"
+        },
+        {
+          "type": "bind",
+          "name": null,
+          "destination": "/run/secrets/csrf_secret"
+        }
+      ]
+    },
+    {
+      "container": "/riesgo-escolar-web-1",
+      "mounts": []
+    },
+    {
+      "container": "/riesgo-escolar-db-1",
+      "mounts": [
+        {
+          "type": "bind",
+          "name": null,
+          "destination": "/docker-entrypoint-initdb.d/10-app-role.sh"
+        },
+        {
+          "type": "volume",
+          "name": "riesgo-escolar_db_data",
+          "destination": "/var/lib/postgresql/data"
+        },
+        {
+          "type": "bind",
+          "name": null,
+          "destination": "/run/secrets/owner_password"
+        },
+        {
+          "type": "bind",
+          "name": null,
+          "destination": "/run/secrets/app_password"
+        }
+      ]
+    }
+  ],
+  "alembic_revision": "0002_institutional_boundary",
+  "registered_routes": [
+    [
+      "GET",
+      "/api/v1/auth/csrf"
+    ],
+    [
+      "GET",
+      "/api/v1/auth/me"
+    ],
+    [
+      "GET",
+      "/api/v1/health/live"
+    ],
+    [
+      "GET",
+      "/api/v1/health/ready"
+    ],
+    [
+      "GET",
+      "/api/v1/imports/{id}"
+    ],
+    [
+      "GET",
+      "/api/v1/periods"
+    ],
+    [
+      "GET",
+      "/api/v1/sections"
+    ],
+    [
+      "GET",
+      "/api/v1/students"
+    ],
+    [
+      "GET",
+      "/api/v1/students/{id}"
+    ],
+    [
+      "GET",
+      "/api/v1/students/{id}/timeline"
+    ],
+    [
+      "POST",
+      "/api/v1/auth/login"
+    ],
+    [
+      "POST",
+      "/api/v1/auth/logout"
+    ],
+    [
+      "POST",
+      "/api/v1/imports/preview"
+    ],
+    [
+      "POST",
+      "/api/v1/imports/{id}/commit"
+    ]
+  ],
+  "contract_version": "0.2.0",
+  "active_responses_validated": 122
+}

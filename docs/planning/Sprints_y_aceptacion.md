@@ -6,6 +6,7 @@ se conservan intactos. S2.1 reemplaza las instrucciones operativas de ese alcanc
 | Sprint | Estado | Dependencia y criterio de salida |
 |---|---|---|
 | S2.1 | Implementado; resultados en Estado_Sprint_2_1.md | Windows/PowerShell con Docker, respaldo restaurado, nuevo entorno vacío, bootstrap explícito, contrato 0.2.0, bloqueo institucional y regresión |
+| S2.2 | Comprobado; Estado_Sprint_2_2.md y Matriz_verificacion_S2_2.md | Cuatro cuentas locales explícitas con credenciales privadas Windows; revisión de 14 rutas y UI por rol/tamaño; persistencia con usuarios y regresión aislada; sin registros escolares ni habilitación institucional |
 | S3 | Pendiente | S2.1; pipeline e inferencia trazables. Entrenamiento/evaluación requiere datos autorizados, etiquetas verificables y protocolo |
 | S4 | Pendiente | S2.1/S3 para flujos iniciales; S5 para integración completa. Pantallas reales, estados útiles, teclado y tres tamaños |
 | S5 | Pendiente | Predicción válida, sesiones, matrículas y protocolo; alertas únicas, seguimiento versionado, auditoría y exportaciones autorizadas |

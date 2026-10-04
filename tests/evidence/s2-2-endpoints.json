@@ -1,0 +1,2440 @@
+{
+  "status": "COMPROBADO",
+  "contract_version": "0.2.0",
+  "environment": "active_local",
+  "school_and_files_unchanged": true,
+  "school_counts": {
+    "academic_periods": 0,
+    "grade_sections": 0,
+    "students": 0,
+    "enrollments": 0,
+    "academic_snapshots": 0,
+    "import_batches": 0,
+    "model_versions": 0,
+    "predictions": 0,
+    "alerts": 0,
+    "interventions": 0
+  },
+  "cases": [
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/health/live",
+      "case": "Salud pública",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "status": "ok"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/health/ready",
+      "case": "Salud pública",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "status": "ok"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "case": "Sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "52e530b8-e0e9-4843-a621-d9c6fee9f6ae"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/auth/csrf",
+      "case": "Sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "e3067f4f-6262-4404-b85f-19f3cdf6fb15"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "case": "Sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "e1001344-2fb6-44bb-a1d8-92663b9c1202"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/sections?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "Sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "ccb09bd6-c17a-46f0-a7a4-d488793d4244"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/students?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "Sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "68f22f84-f885-4700-9e6e-21ebd070449e"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/students/00000000-0000-4000-8000-000000000222?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "Sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "980d93c1-b773-4432-bde8-2ab47c054584"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/students/00000000-0000-4000-8000-000000000222/timeline?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "Sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "2ab0913e-a239-4983-9b75-9ac958d6e297"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "GET",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222",
+      "case": "Sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "b31325d4-536d-4021-b06d-208f0be4bc16"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Escritura sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "89c33446-51eb-4e61-ae1f-1086dce78149"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "Escritura sin sesión",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "015397d9-a21e-425d-b9a7-64a9504db5c0"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "Escritura sin sesión",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "Inicia sesión para continuar.",
+        "details": [],
+        "request_id": "fda45944-8d68-4c3e-87a0-24c3b02f02bb"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Origin ausente",
+      "request": {
+        "body": {
+          "email": "revision.local.admin@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "ORIGIN_NOT_ALLOWED",
+        "message": "El origen de la solicitud no está permitido.",
+        "details": [],
+        "request_id": "b73c6550-dd65-4419-b42b-3446c276e832"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Origin ajeno",
+      "request": {
+        "body": {
+          "email": "revision.local.admin@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://untrusted.example.com"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "ORIGIN_NOT_ALLOWED",
+        "message": "El origen de la solicitud no está permitido.",
+        "details": [],
+        "request_id": "05bbf720-3851-4d8a-960b-ed0762a421c3"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Credenciales privadas autorizadas",
+      "request": {
+        "body": {
+          "email": "revision.local.admin@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://localhost:15173"
+        }
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "user": {
+          "id": "7a4ee76f-aee1-4712-a35b-88cc3d78ea2c",
+          "display_name": "Revisión local · ADMIN",
+          "role": "ADMIN"
+        },
+        "csrf_token": "[REDACTED]",
+        "expires_at": "2026-10-04T12:25:32.836921Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/health/live",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "status": "ok"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/health/ready",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "status": "ok"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "id": "7a4ee76f-aee1-4712-a35b-88cc3d78ea2c",
+        "display_name": "Revisión local · ADMIN",
+        "role": "ADMIN"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/auth/csrf",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "csrf_token": "[REDACTED]"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "case": "Contexto según rol",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": [],
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/sections?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "PERIOD_NOT_FOUND",
+        "message": "El periodo solicitado no está disponible.",
+        "details": [],
+        "request_id": "869c08ab-05a4-4329-90a2-d0e11f6d7310"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/students?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "PERIOD_NOT_FOUND",
+        "message": "El periodo solicitado no existe.",
+        "details": [],
+        "request_id": "521061b6-6b2c-449e-ba71-2cde888f9ca6"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/students/00000000-0000-4000-8000-000000000222?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "STUDENT_NOT_FOUND",
+        "message": "El estudiante no está disponible en este periodo.",
+        "details": [],
+        "request_id": "13f979e5-a96d-45f8-827d-714d0a19e9f1"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/students/00000000-0000-4000-8000-000000000222/timeline?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "STUDENT_NOT_FOUND",
+        "message": "El estudiante no está disponible en este periodo.",
+        "details": [],
+        "request_id": "bb169256-388a-488b-a650-c3be69783aa7"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222",
+      "case": "Detalle de lote inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "IMPORT_NOT_FOUND",
+        "message": "El lote solicitado no existe.",
+        "details": [],
+        "request_id": "6784f063-55ab-4d86-ae4b-3eee935d483c"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/sections",
+      "case": "Periodo obligatorio",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 422,
+      "status": 422,
+      "response": {
+        "code": "VALIDATION_ERROR",
+        "message": "Revisa los datos de la solicitud.",
+        "details": [
+          {
+            "field": "period_id",
+            "message": "Field required"
+          }
+        ],
+        "request_id": "65f52e09-f71e-4558-9eb8-421f06998cec"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/students",
+      "case": "Periodo obligatorio",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 422,
+      "status": 422,
+      "response": {
+        "code": "VALIDATION_ERROR",
+        "message": "Revisa los datos de la solicitud.",
+        "details": [
+          {
+            "field": "period_id",
+            "message": "Field required"
+          }
+        ],
+        "request_id": "498161f4-8aa9-4482-85f2-7df017114bb8"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "CSRF ausente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "51120c8b-d2a3-4ec8-9944-1dc5417989d0"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "CSRF incorrecto",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "9a51f040-c70e-44d0-a899-b3f4ec556f86"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "Bloqueo institucional o rol restringido",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 422,
+      "status": 422,
+      "response": {
+        "code": "INSTITUTIONAL_PROCESSING_NOT_READY",
+        "message": "La importación institucional está pendiente de autorización de procedencia, escala, periodo, ventanas temporales y reglas de calidad. No se guardó el archivo.",
+        "details": [],
+        "request_id": "c19eb570-3bc0-45b1-a8fd-910c7d287427"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "CSRF ausente",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "836155d6-c882-419b-a591-b0456b5f8120"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "CSRF incorrecto",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "de1790a8-11ba-4c47-9f1b-3deb815a0264"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "Bloqueo institucional o rol restringido",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 422,
+      "status": 422,
+      "response": {
+        "code": "INSTITUTIONAL_PROCESSING_NOT_READY",
+        "message": "La importación institucional está pendiente de autorización de procedencia, escala, periodo, ventanas temporales y reglas de calidad. No se guardó el archivo.",
+        "details": [],
+        "request_id": "e44cd892-06f2-4235-bea8-ca385cec4bf9"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Logout sin CSRF",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "b6c4e743-7125-4df9-9ee4-e775bc8b1a00"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Logout CSRF incorrecto",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "dc6b390e-71c2-4886-8dba-8b3ff9dd2c6c"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Logout válido",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 204,
+      "status": 204,
+      "response": null,
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "case": "Cookie anterior revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "1e91fe5f-170b-45b2-aa0c-b069a6873a86"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/auth/csrf",
+      "case": "Cookie anterior revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "383c3520-39b0-43f4-a109-b8d62406dbd3"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ADMIN",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "case": "Cookie anterior revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "22d71018-adbf-421a-b9aa-3ad5aec46bf0"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Origin ausente",
+      "request": {
+        "body": {
+          "email": "revision.local.tutor@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "ORIGIN_NOT_ALLOWED",
+        "message": "El origen de la solicitud no está permitido.",
+        "details": [],
+        "request_id": "86247342-73eb-4be1-9229-bcd7813b381c"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Origin ajeno",
+      "request": {
+        "body": {
+          "email": "revision.local.tutor@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://untrusted.example.com"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "ORIGIN_NOT_ALLOWED",
+        "message": "El origen de la solicitud no está permitido.",
+        "details": [],
+        "request_id": "ce8d1aac-be0d-4319-bb54-d5e476e91b00"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Credenciales privadas autorizadas",
+      "request": {
+        "body": {
+          "email": "revision.local.tutor@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://localhost:15173"
+        }
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "user": {
+          "id": "df354a4d-d596-45ec-b9c7-55ba58608085",
+          "display_name": "Revisión local · TUTOR",
+          "role": "TUTOR"
+        },
+        "csrf_token": "[REDACTED]",
+        "expires_at": "2026-10-04T12:26:28.718874Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/health/live",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "status": "ok"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/health/ready",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "status": "ok"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "id": "df354a4d-d596-45ec-b9c7-55ba58608085",
+        "display_name": "Revisión local · TUTOR",
+        "role": "TUTOR"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/auth/csrf",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "csrf_token": "[REDACTED]"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "case": "Contexto según rol",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": [],
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/sections?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "PERIOD_NOT_FOUND",
+        "message": "El periodo solicitado no está disponible.",
+        "details": [],
+        "request_id": "ca5dbd5e-04ca-4257-b299-b8ebf00990c9"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/students?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "PERIOD_NOT_FOUND",
+        "message": "El periodo solicitado no existe.",
+        "details": [],
+        "request_id": "b558530a-4299-41f2-9156-766ead2b5f37"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/students/00000000-0000-4000-8000-000000000222?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "STUDENT_NOT_FOUND",
+        "message": "El estudiante no está disponible en este periodo.",
+        "details": [],
+        "request_id": "a19420c2-fa6c-4521-aa48-4567f59ee5b2"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/students/00000000-0000-4000-8000-000000000222/timeline?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "STUDENT_NOT_FOUND",
+        "message": "El estudiante no está disponible en este periodo.",
+        "details": [],
+        "request_id": "df22194c-f33b-479f-abf0-745a2e508836"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222",
+      "case": "Detalle de lote inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "2f8a4544-cb10-45ea-9052-fe687a22bdee"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/sections",
+      "case": "Periodo obligatorio",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 422,
+      "status": 422,
+      "response": {
+        "code": "VALIDATION_ERROR",
+        "message": "Revisa los datos de la solicitud.",
+        "details": [
+          {
+            "field": "period_id",
+            "message": "Field required"
+          }
+        ],
+        "request_id": "f5be5150-80c6-4019-a193-7aab53ea073f"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/students",
+      "case": "Periodo obligatorio",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 422,
+      "status": 422,
+      "response": {
+        "code": "VALIDATION_ERROR",
+        "message": "Revisa los datos de la solicitud.",
+        "details": [
+          {
+            "field": "period_id",
+            "message": "Field required"
+          }
+        ],
+        "request_id": "301c6b3c-f59c-4a76-b128-34c1a8e69c59"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "CSRF ausente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "25dd72a7-2962-4e6e-9545-f4ef80cc700c"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "CSRF incorrecto",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "7cc6a597-0250-4e50-918d-0002b3bdc9c8"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "Bloqueo institucional o rol restringido",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "41d2709a-0d44-4f9f-af78-bff69b01b948"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "CSRF ausente",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "3dc3d6f0-ceed-4d50-83ae-25caef2119f5"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "CSRF incorrecto",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "2c96d754-d597-46a9-8810-ea937f260f05"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "Bloqueo institucional o rol restringido",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "e9889b18-75aa-40c0-93eb-96e43845f29d"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Logout sin CSRF",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "e25283bd-0f74-402b-b28b-1520abfa59b4"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Logout CSRF incorrecto",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "6527211d-bb61-4e5a-8939-0ae451d0ba9b"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Logout válido",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 204,
+      "status": 204,
+      "response": null,
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "case": "Cookie anterior revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "21d2e5ff-4509-4bcc-a821-348816deea51"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/auth/csrf",
+      "case": "Cookie anterior revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "1e588e23-82e5-4482-8963-13b958c28a26"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "TUTOR",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "case": "Cookie anterior revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "28bc86ed-a9bf-426a-80f0-289a6ca21973"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Origin ausente",
+      "request": {
+        "body": {
+          "email": "revision.local.director@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "ORIGIN_NOT_ALLOWED",
+        "message": "El origen de la solicitud no está permitido.",
+        "details": [],
+        "request_id": "6b843cb2-2e07-4f58-b881-358a86fb7c60"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Origin ajeno",
+      "request": {
+        "body": {
+          "email": "revision.local.director@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://untrusted.example.com"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "ORIGIN_NOT_ALLOWED",
+        "message": "El origen de la solicitud no está permitido.",
+        "details": [],
+        "request_id": "0162ffae-0b85-443a-a967-c247dcf6640c"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Credenciales privadas autorizadas",
+      "request": {
+        "body": {
+          "email": "revision.local.director@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://localhost:15173"
+        }
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "user": {
+          "id": "254a5ba3-f174-48bc-9bab-7b6f8284fd38",
+          "display_name": "Revisión local · DIRECTOR",
+          "role": "DIRECTOR"
+        },
+        "csrf_token": "[REDACTED]",
+        "expires_at": "2026-10-04T12:27:25.104933Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/health/live",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "status": "ok"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/health/ready",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "status": "ok"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "id": "254a5ba3-f174-48bc-9bab-7b6f8284fd38",
+        "display_name": "Revisión local · DIRECTOR",
+        "role": "DIRECTOR"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/auth/csrf",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "csrf_token": "[REDACTED]"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "case": "Contexto según rol",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": [],
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/sections?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "PERIOD_NOT_FOUND",
+        "message": "El periodo solicitado no está disponible.",
+        "details": [],
+        "request_id": "e8dccfaf-2f8b-43a3-8084-036a7a381351"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/students?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "PERIOD_NOT_FOUND",
+        "message": "El periodo solicitado no existe.",
+        "details": [],
+        "request_id": "5864d5e2-1837-4416-b9ab-837ba6b3c72b"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/students/00000000-0000-4000-8000-000000000222?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "STUDENT_NOT_FOUND",
+        "message": "El estudiante no está disponible en este periodo.",
+        "details": [],
+        "request_id": "16c3829e-baf0-4d53-bf67-e75b0981eea8"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/students/00000000-0000-4000-8000-000000000222/timeline?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 404,
+      "status": 404,
+      "response": {
+        "code": "STUDENT_NOT_FOUND",
+        "message": "El estudiante no está disponible en este periodo.",
+        "details": [],
+        "request_id": "75d8ba9b-2e49-42ff-8112-c9b8a9597107"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222",
+      "case": "Detalle de lote inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "28cfe473-fece-4d7b-9b41-c8ecd20fd079"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/sections",
+      "case": "Periodo obligatorio",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 422,
+      "status": 422,
+      "response": {
+        "code": "VALIDATION_ERROR",
+        "message": "Revisa los datos de la solicitud.",
+        "details": [
+          {
+            "field": "period_id",
+            "message": "Field required"
+          }
+        ],
+        "request_id": "5d792bd9-f28e-4db2-9c79-8254f4105f62"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/students",
+      "case": "Periodo obligatorio",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 422,
+      "status": 422,
+      "response": {
+        "code": "VALIDATION_ERROR",
+        "message": "Revisa los datos de la solicitud.",
+        "details": [
+          {
+            "field": "period_id",
+            "message": "Field required"
+          }
+        ],
+        "request_id": "ecae0916-9580-42ff-a0cd-e875810682f8"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "CSRF ausente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "0ca6c527-96c6-4dac-a1f4-c30c1baa7047"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "CSRF incorrecto",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "83f67a8f-82ef-442f-929d-404647883953"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "Bloqueo institucional o rol restringido",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "2147c2bc-be23-4f35-860e-afd0e3204619"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "CSRF ausente",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "6a80f668-cced-44ac-9a24-6978b4cf0aa8"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "CSRF incorrecto",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "1de7c187-807f-4b75-a0f2-b13f18997e12"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "Bloqueo institucional o rol restringido",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "f5bdbfac-5162-4011-a6e5-e52a43befce7"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Logout sin CSRF",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "0e028e32-b693-4e9c-a854-4778e30cf1e8"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Logout CSRF incorrecto",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "567f4ddd-f563-418b-a7a8-fc1d375f4ab6"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Logout válido",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 204,
+      "status": 204,
+      "response": null,
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "case": "Cookie anterior revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "98d41700-1db0-4710-9e10-2f8b2c3b9519"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/auth/csrf",
+      "case": "Cookie anterior revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "787e3c6e-fd90-475d-95ca-9f0e53f166c8"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "DIRECTOR",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "case": "Cookie anterior revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "3e7f217b-6b17-4c5c-8d91-c84ffe4eb405"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Origin ausente",
+      "request": {
+        "body": {
+          "email": "revision.local.researcher@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "ORIGIN_NOT_ALLOWED",
+        "message": "El origen de la solicitud no está permitido.",
+        "details": [],
+        "request_id": "c8282a10-953c-402f-b529-e0560c34ff8b"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Origin ajeno",
+      "request": {
+        "body": {
+          "email": "revision.local.researcher@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://untrusted.example.com"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "ORIGIN_NOT_ALLOWED",
+        "message": "El origen de la solicitud no está permitido.",
+        "details": [],
+        "request_id": "8dcf79b3-15a5-4085-aef5-04dd3a3649a6"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Credenciales privadas autorizadas",
+      "request": {
+        "body": {
+          "email": "revision.local.researcher@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://localhost:15173"
+        }
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "user": {
+          "id": "e4a4633c-eb68-4188-ad0d-f0972c141af7",
+          "display_name": "Revisión local · RESEARCHER",
+          "role": "RESEARCHER"
+        },
+        "csrf_token": "[REDACTED]",
+        "expires_at": "2026-10-04T12:28:22.099986Z"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/health/live",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "status": "ok"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/health/ready",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "status": "ok"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "id": "e4a4633c-eb68-4188-ad0d-f0972c141af7",
+        "display_name": "Revisión local · RESEARCHER",
+        "role": "RESEARCHER"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/auth/csrf",
+      "case": "Sesión vigente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 200,
+      "status": 200,
+      "response": {
+        "csrf_token": "[REDACTED]"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "case": "Contexto según rol",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Tu rol no tiene acceso a este recurso.",
+        "details": [],
+        "request_id": "605e243d-6043-474d-b1b2-cb5628b2ba30"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/sections?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Tu rol no tiene acceso a este recurso.",
+        "details": [],
+        "request_id": "7133fa14-0da4-4094-b3d8-7828eff996b6"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/students?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Tu rol no tiene acceso a este recurso.",
+        "details": [],
+        "request_id": "4f68c3af-7ba2-4d9e-a464-eaf9792f126f"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/students/00000000-0000-4000-8000-000000000222?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Tu rol no tiene acceso a este recurso.",
+        "details": [],
+        "request_id": "b8acf2c8-6b04-4e53-af43-fc46deb76b42"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/students/00000000-0000-4000-8000-000000000222/timeline?period_id=00000000-0000-4000-8000-000000000222",
+      "case": "UUID inexistente; autorización antes de recurso",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Tu rol no tiene acceso a este recurso.",
+        "details": [],
+        "request_id": "d46e9062-eb24-4791-b765-0cb26567ebcd"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222",
+      "case": "Detalle de lote inexistente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "2bba98a4-4c25-47df-b082-6611150286ca"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/sections",
+      "case": "Periodo obligatorio",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 422,
+      "status": 422,
+      "response": {
+        "code": "VALIDATION_ERROR",
+        "message": "Revisa los datos de la solicitud.",
+        "details": [
+          {
+            "field": "period_id",
+            "message": "Field required"
+          }
+        ],
+        "request_id": "db9873de-a8c3-45eb-a40b-b42ad746d3e8"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/students",
+      "case": "Periodo obligatorio",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 422,
+      "status": 422,
+      "response": {
+        "code": "VALIDATION_ERROR",
+        "message": "Revisa los datos de la solicitud.",
+        "details": [
+          {
+            "field": "period_id",
+            "message": "Field required"
+          }
+        ],
+        "request_id": "d7920b2b-da7d-4bcb-bb6f-74796b8682ca"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "CSRF ausente",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "e72822fe-8700-43a9-82fa-35990e95e084"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "CSRF incorrecto",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "8ba64402-e491-44d2-9b73-ead263d441d1"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/imports/preview",
+      "case": "Bloqueo institucional o rol restringido",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "0f9fd882-b675-4cbc-9e86-75c0f56a6ebe"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "CSRF ausente",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "f882bcdc-29a4-4808-9626-c7841daaf57e"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "CSRF incorrecto",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "ce2098d2-1429-4366-ac1b-51dfcaca0fc7"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/imports/00000000-0000-4000-8000-000000000222/commit",
+      "case": "Bloqueo institucional o rol restringido",
+      "request": {
+        "body": {
+          "expected_preview_version": 1
+        },
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "FORBIDDEN",
+        "message": "Solo el administrador puede consultar o confirmar importaciones.",
+        "details": [],
+        "request_id": "88266d30-9f18-4d18-8eaf-2b7b6f420360"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Logout sin CSRF",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "74a9008c-93bc-4d17-ab6d-2009c92ebcfe"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Logout CSRF incorrecto",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 403,
+      "status": 403,
+      "response": {
+        "code": "CSRF_INVALID",
+        "message": "La solicitud no tiene un token de seguridad válido.",
+        "details": [],
+        "request_id": "acf8288f-bd07-467a-87c0-7463c9066ad4"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "case": "Logout válido",
+      "request": {
+        "body": null,
+        "headers": {
+          "X-CSRF-Token": "[PRESENT]"
+        }
+      },
+      "expected_status": 204,
+      "status": 204,
+      "response": null,
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "case": "Cookie anterior revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "d1e3c66f-8725-45f5-8306-a0d3bf97adfd"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/auth/csrf",
+      "case": "Cookie anterior revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "e90ad85f-4e0b-4575-bd8c-feb1df654a97"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "RESEARCHER",
+      "method": "GET",
+      "path": "/api/v1/periods",
+      "case": "Cookie anterior revocada",
+      "request": {
+        "body": null,
+        "headers": {}
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "SESSION_INVALID",
+        "message": "La sesión ya no está disponible. Inicia sesión nuevamente.",
+        "details": [],
+        "request_id": "c2e10f52-3f71-425f-acc8-08e94b81002e"
+      },
+      "result": "COMPROBADO"
+    },
+    {
+      "role": "ANONYMOUS",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "case": "Credenciales incorrectas",
+      "request": {
+        "body": {
+          "email": "revision.local.admin@example.com",
+          "password": "[REDACTED]"
+        },
+        "headers": {
+          "Origin": "http://localhost:15173"
+        }
+      },
+      "expected_status": 401,
+      "status": 401,
+      "response": {
+        "code": "INVALID_CREDENTIALS",
+        "message": "El correo o la contraseña no son válidos.",
+        "details": [],
+        "request_id": "dfdbdc5f-a71c-48f7-a6cc-579f3062f31d"
+      },
+      "result": "COMPROBADO"
+    }
+  ]
+}

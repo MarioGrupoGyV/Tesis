@@ -1,6 +1,6 @@
 # Seguimiento Escolar
 
-**S2.1: Windows con PowerShell y Docker Desktop.** Sin cuentas ni registros escolares precargados.
+**S2.2: acceso local revisado en Windows con PowerShell y Docker Desktop.** Cuatro cuentas creadas explícitamente por encargo; sin registros escolares ni semillas al arrancar.
 La importación institucional permanece bloqueada. No es una habilitación de producción
 ni una evaluación de la tesis. S3–S6 no están implementados.
 
@@ -42,8 +42,35 @@ No existen valores predeterminados. La cuenta y auditoría se guardan juntas.
 Repetir el comando rechaza la creación si ya existe un administrador, incluso inactivo;
 no restablece contraseñas. No hay registro público.
 
-El entorno entregado sigue sin cuentas: el operador debe introducir sus datos.
-Las pruebas de acceso usan cuentas efímeras únicamente en PostgreSQL aislado.
+El bootstrap anterior corresponde a instalaciones nuevas sin administrador. En este
+entorno S2.2 ya existe uno: no vuelvas a crearlo ni restablezcas su contraseña.
+
+## Acceso local de revisión S2.2
+
+Abrir http://localhost:15173. Cuentas locales autorizadas, sin identidad de colegio:
+
+| Rol | Correo |
+|---|---|
+| ADMIN | revision.local.admin@example.com |
+| TUTOR | revision.local.tutor@example.com |
+| DIRECTOR | revision.local.director@example.com |
+| RESEARCHER | revision.local.researcher@example.com |
+
+Las contraseñas distintas y aleatorias están en el Administrador de credenciales
+de Windows del usuario que ejecutó la preparación, entradas genéricas
+`SeguimientoEscolar/S2.2/<ROL>`. Para consultarlas en una ventana local, inicialmente
+ocultas, usa PowerShell desde este repositorio (sustituye ADMIN por el rol):
+
+```powershell
+py -3.12 infra/windows_credentials.py ADMIN
+```
+
+No se envían correos ni se guardan contraseñas en archivos de cuentas. La herramienta
+explícita `infra/review_accounts.py` crea/reutiliza solo estas cuentas mediante los
+servicios existentes; nunca se ejecuta al arrancar. Si encuentra un administrador
+sin credencial autorizada disponible, se detiene y conserva su identidad. La revisión
+no configura periodos/secciones ni habilita importación. Detalles y resultados en
+[Estado S2.2](docs/planning/Estado_Sprint_2_2.md) y su [matriz](docs/planning/Matriz_verificacion_S2_2.md).
 
 Para crear posteriormente un usuario autorizado, periodo o sección:
 
@@ -70,6 +97,7 @@ rutas Linux pertenecen a Docker, no son instrucciones para la consola del usuari
 ## Comprobaciones desde PowerShell
 
 ```powershell
+$env:TEST_REPORT_NAME = 's2-2-backend'
 docker compose -f infra/compose.test.yaml build tester
 docker compose -f infra/compose.test.yaml run --rm tester
 py -3.12 infra/test_browser.py
@@ -96,6 +124,13 @@ contexto vacío y revocación en escritorio, tablet y móvil.
 `py -3.12 infra/check_runtime.py` comprueba únicamente una aplicación todavía vacía,
 recrea contenedores y conserva un marcador de infraestructura en el volumen. Rechaza
 ejecutarse si ya hay registros; no borra ni inventa datos para que pase.
+
+Con las cuentas actuales usa `py -3.12 infra/check_access_persistence.py`: captura
+el estado, recrea sin eliminar volúmenes y verifica cuentas, roles, auditoría,
+archivos y acceso. `py -3.12 infra/review_endpoints.py` revisa las 14 rutas activas;
+`py -3.12 infra/review_browser.py` revisa los cuatro roles en localhost usando el
+almacén privado. No ejecutar revisiones de login repetidamente: el límite vigente
+es 10 intentos por IP cada 300 segundos y también cuenta accesos correctos.
 
 ## Contrato, conservación y límites
 

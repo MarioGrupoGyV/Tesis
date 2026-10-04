@@ -136,7 +136,7 @@ def run():
         # Las muestras utilizadas solo contienen esquemas locales sin referencias externas.
         validator = Draft202012Validator(public[name], format_checker=FormatChecker())
         check(validator.is_valid(instance) == expected, f"Muestra contractual {name}: esperado {expected}")
-    response_samples = ROOT / "tests/evidence/s2-1-response-samples.json"
+    response_samples = ROOT / "tests/evidence/s2-2-response-samples.json"
     if response_samples.exists():
         for sample in json.loads(response_samples.read_text(encoding="utf-8")):
             schema = {"$ref": f"#/components/schemas/{sample['schema']}", "components": contract["components"]}
@@ -201,7 +201,7 @@ def run():
         "limitations": ["No ejecuta DDL/PLpgSQL", "No prueba permisos en servidor",
                         "No build, migración, ML, UI ni persistencia"],
     }
-    evidence_name = "s0-checks.json" if sprint == "S0" else "s2-1-contracts.json"
+    evidence_name = "s0-checks.json" if sprint == "S0" else "s2-2-contracts.json"
     (ROOT / "tests/evidence" / evidence_name).write_text(
         json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )

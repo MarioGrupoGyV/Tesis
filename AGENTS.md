@@ -1,6 +1,6 @@
 # Desarrollo del sistema de riesgo escolar
 
-Estas instrucciones se deben colocar en la raíz del repositorio de la tesis. Describen la implementación prevista. La fase vigente es S2.1: Windows/PowerShell con Docker Desktop, aplicación vacía y procesamiento institucional bloqueado. No existe una autorización implícita para cargar datos de menores ni cambiar la metodología académica.
+Estas instrucciones se deben colocar en la raíz del repositorio de la tesis. Describen la implementación prevista. La fase vigente es S2.2: revisión de acceso en Windows/PowerShell con Docker Desktop, sin registros escolares y con procesamiento institucional bloqueado. Cuatro cuentas locales se crearon por autorización explícita de este encargo, nunca por semillas de arranque. No existe una autorización implícita para cargar datos de menores ni cambiar la metodología académica.
 
 El usuario opera exclusivamente desde PowerShell en Windows. Docker conserva imágenes Linux internas; no exigir WSL, Bash ni Make. Versiones y locks fijados se conservan. El primer administrador se crea explícitamente por CLI con entrada secreta, nunca por archivo de cuentas. Los documentos y evidencias históricos S0/S1/S2 no son instrucciones operativas.
 

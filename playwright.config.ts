@@ -5,7 +5,7 @@ export default defineConfig({
   testMatch: 'access.spec.ts',
   workers: 1,
   outputDir: '.local/playwright-results',
-  reporter: [['line'], ['json', { outputFile: process.env.E2E_REPORT_FILE ?? 'tests/evidence/s2-1-playwright.json' }]],
+  reporter: './tests/e2e/review-reporter.ts',
   use: {
     baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:15174',
     trace: 'off',

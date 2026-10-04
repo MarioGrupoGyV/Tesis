@@ -1,0 +1,37 @@
+{
+  "status": "COMPROBADO",
+  "scope": "explicit_local_access_only",
+  "initial_users": [],
+  "accounts": [
+    {
+      "id": "7a4ee76f-aee1-4712-a35b-88cc3d78ea2c",
+      "email": "revision.local.admin@example.com",
+      "role": "ADMIN",
+      "created": true,
+      "credential_target": "SeguimientoEscolar/S2.2/ADMIN"
+    },
+    {
+      "id": "df354a4d-d596-45ec-b9c7-55ba58608085",
+      "email": "revision.local.tutor@example.com",
+      "role": "TUTOR",
+      "created": true,
+      "credential_target": "SeguimientoEscolar/S2.2/TUTOR"
+    },
+    {
+      "id": "254a5ba3-f174-48bc-9bab-7b6f8284fd38",
+      "email": "revision.local.director@example.com",
+      "role": "DIRECTOR",
+      "created": true,
+      "credential_target": "SeguimientoEscolar/S2.2/DIRECTOR"
+    },
+    {
+      "id": "e4a4633c-eb68-4188-ad0d-f0972c141af7",
+      "email": "revision.local.researcher@example.com",
+      "role": "RESEARCHER",
+      "created": true,
+      "credential_target": "SeguimientoEscolar/S2.2/RESEARCHER"
+    }
+  ],
+  "password_store": "Windows Credential Manager; current Windows user",
+  "school_records_created": false
+}

@@ -1,6 +1,6 @@
-# Inicio de trabajo — alcance vigente S2.1
+# Inicio de trabajo — alcance vigente S2.2
 
-Leer AGENTS.md, README, Estado_Sprint_2_1.md, ADR 004, Plan_tesis_riesgo_escolar.md,
+Leer AGENTS.md, README, Estado_Sprint_2_2.md, Estado_Sprint_2_1.md, ADR 004, Plan_tesis_riesgo_escolar.md,
 Sprints_y_aceptacion.md, Contrato_API.yaml y Esquema.sql antes de modificar.
 Los cierres S0/S1/S2 y documentos en history son evidencia histórica, no instrucciones.
 

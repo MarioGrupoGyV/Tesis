@@ -1,0 +1,66 @@
+{
+  "status": "COMPROBADO",
+  "scope": "explicit_local_access_only",
+  "initial_users": [
+    {
+      "id": "7a4ee76f-aee1-4712-a35b-88cc3d78ea2c",
+      "email": "revision.local.admin@example.com",
+      "display_name": "Revisión local · ADMIN",
+      "role": "ADMIN",
+      "is_active": true
+    },
+    {
+      "id": "254a5ba3-f174-48bc-9bab-7b6f8284fd38",
+      "email": "revision.local.director@example.com",
+      "display_name": "Revisión local · DIRECTOR",
+      "role": "DIRECTOR",
+      "is_active": true
+    },
+    {
+      "id": "e4a4633c-eb68-4188-ad0d-f0972c141af7",
+      "email": "revision.local.researcher@example.com",
+      "display_name": "Revisión local · RESEARCHER",
+      "role": "RESEARCHER",
+      "is_active": true
+    },
+    {
+      "id": "df354a4d-d596-45ec-b9c7-55ba58608085",
+      "email": "revision.local.tutor@example.com",
+      "display_name": "Revisión local · TUTOR",
+      "role": "TUTOR",
+      "is_active": true
+    }
+  ],
+  "accounts": [
+    {
+      "id": "7a4ee76f-aee1-4712-a35b-88cc3d78ea2c",
+      "email": "revision.local.admin@example.com",
+      "role": "ADMIN",
+      "created": false,
+      "credential_target": "SeguimientoEscolar/S2.2/ADMIN"
+    },
+    {
+      "id": "df354a4d-d596-45ec-b9c7-55ba58608085",
+      "email": "revision.local.tutor@example.com",
+      "role": "TUTOR",
+      "created": false,
+      "credential_target": "SeguimientoEscolar/S2.2/TUTOR"
+    },
+    {
+      "id": "254a5ba3-f174-48bc-9bab-7b6f8284fd38",
+      "email": "revision.local.director@example.com",
+      "role": "DIRECTOR",
+      "created": false,
+      "credential_target": "SeguimientoEscolar/S2.2/DIRECTOR"
+    },
+    {
+      "id": "e4a4633c-eb68-4188-ad0d-f0972c141af7",
+      "email": "revision.local.researcher@example.com",
+      "role": "RESEARCHER",
+      "created": false,
+      "credential_target": "SeguimientoEscolar/S2.2/RESEARCHER"
+    }
+  ],
+  "password_store": "Windows Credential Manager; current Windows user",
+  "school_records_created": false
+}

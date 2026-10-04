@@ -12,6 +12,8 @@ from sqlalchemy.orm import Session
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app.bootstrap_admin import AdministratorInput, BootstrapError, create_first_admin
+from app.configure_context import UserInput, configure
+from app.models.s1 import AppUser
 
 def main():
     owner = make_url(Path('/run/secrets/owner_url').read_text().strip()).set(host='dbtest', port=5432, database='riesgo_escolar_test')
@@ -38,9 +40,16 @@ def main():
             raise AssertionError('El bootstrap no rechazó repetición')
         except BootstrapError:
             pass
+        accounts = {'ADMIN': {'email':email,'password':password}}
+        admin = db.scalar(text("SELECT id FROM risk_school.app_users WHERE role='ADMIN'"))
+        admin = db.get(AppUser, admin)
+        for role in ('TUTOR','DIRECTOR','RESEARCHER'):
+            account = {'email':f'browser-{role.lower()}-{uuid4().hex}@example.com','password':secrets.token_urlsafe(24)}
+            configure(db,admin,UserInput(**account,display_name=f'Acceso aislado {role}',role=role))
+            accounts[role] = account
     engine.dispose()
     # El padre captura esta salida en memoria; no se muestra ni se escribe el password.
-    print(json.dumps({'database_url':app.render_as_string(hide_password=False),'email':email,'password':password,'database':name}))
+    print(json.dumps({'database_url':app.render_as_string(hide_password=False),'accounts':accounts,'database':name}))
 
 if __name__ == '__main__':
     main()

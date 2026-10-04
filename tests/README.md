@@ -1,7 +1,7 @@
-# Pruebas S2.1
+# Pruebas S2.2
 
-Evidencias S0/S1/S2 conservadas como historia, sin regenerarlas.
-Nuevos resultados s2-1-*: backend en contenedor Linux/Python 3.12.12, PostgreSQL 17.6
+Evidencias S0/S1/S2/S2.1 conservadas como historia, sin regenerarlas.
+Nuevos resultados s2-2-*: backend en contenedor Linux/Python 3.12.12, PostgreSQL 17.6
 aislado, host Windows. Aplicación y concurrencia usan riesgo_app; propietario solo
 migra/prepara fixtures y verifica triggers contra manipulación del propietario.
 
@@ -15,6 +15,11 @@ Las pruebas de catálogo REAL ahora comprueban lectura autorizada; importación 
 bloqueo real en pruebas sin parche. El modelo de fixture queda inactivo: se comprueba
 ausencia de riesgo vigente e historial sin permitir activación operativa.
 
-Playwright usa runner test_browser.py y cuentas solo en base aislada, con contraseña
+Playwright usa runner test_browser.py y cuatro cuentas en base aislada, con contraseña
 en memoria; comprueba teclado, contexto vacío, cookies, CSRF y revocación.
 Se retiraron CSV de ejemplo no usados; las pruebas fabrican sus bytes en memoria.
+
+review_browser.py realiza además el encargo explícito de acceso en localhost activo
+con las cuatro credenciales privadas Windows. Evidencias active/isolated separadas;
+active-first conserva el fallo inicial del estado del investigador. El reporter
+publica solo títulos, estado y duración: nunca cuerpos, argumentos, trazas o secretos.
