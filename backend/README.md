@@ -1,7 +1,8 @@
-# Backend — Sprint 1 DEMO
+# Backend — Sprints 1 y 2 DEMO
 
-S1 implementa la base FastAPI, sesiones y catálogos iniciales con datos sintéticos.
-La fuente del contrato es [OpenAPI 0.1.1](../docs/planning/Contrato_API_demo.yaml),
+S1 implementa la base FastAPI, sesiones y catálogos iniciales. S2 añade importación
+CSV, estudiantes e historial con datos sintéticos.
+La fuente del contrato es [OpenAPI 0.1.2](../docs/planning/Contrato_API_demo.yaml),
 con las decisiones de [conciliación SQL/API](../docs/planning/Conciliacion_SQL_API.md)
 y [arquitectura](../docs/adr/001-arquitectura.md). Se conservan las versiones y
 los archivos de bloqueo acordados en S0.
@@ -15,10 +16,10 @@ síncronas con SQLAlchemy y psycopg; no accede a la base desde el navegador.
 | Carpeta | Responsabilidad |
 |---|---|
 | `app/api/v1` | Rutas HTTP y dependencias de sesión |
-| `app/schemas` | Entradas y respuestas públicas de S1, sin campos privados |
-| `app/services` | Autorización, reglas y transacciones de sesión/catálogos |
+| `app/schemas` | Entradas y respuestas públicas S1/S2, sin campos privados |
+| `app/services` | Autorización, reglas y transacciones de sesiones, catálogos e importación |
 | `app/repositories` | Consultas SQLAlchemy |
-| `app/models` | Proyecciones ORM de las cinco entidades usadas por S1 |
+| `app/models` | Proyecciones ORM de nueve entidades S1/S2; no autogenerar DDL |
 | `app/core` | Configuración, conexiones, contraseñas, tokens, límites y errores |
 | `app/seed_demo.py` | Semilla explícita e idempotente |
 | `migrations` | Migración Alembic revisada de las trece tablas del diseño |
@@ -48,6 +49,11 @@ Todas las rutas tienen prefijo `/api/v1`.
 | `POST /auth/logout` | Revoca la sesión, borra la cookie y devuelve 204; exige `X-CSRF-Token` |
 | `GET /periods` | Periodos DEMO; ADMIN y DIRECTOR, o años con secciones propias para TUTOR |
 | `GET /sections?period_id=<uuid>` | Secciones del año del periodo; TUTOR solo las asignadas |
+
+S2 añade `POST /imports/preview`, `GET /imports/{id}`, `POST /imports/{id}/commit`
+para ADMIN y `GET /students`, `GET /students/{id}`, `GET /students/{id}/timeline`
+para ADMIN, DIRECTOR y TUTOR con alcance de sección. Véase el
+[manual API](../docs/manuals/Importacion_S2.md) y [ADR 003](../docs/adr/003-importacion-s2.md).
 
 RESEARCHER puede gestionar su sesión pero no consultar los catálogos operativos.
 El servidor resuelve el rol desde `app_users` y el alcance desde la asignación
@@ -87,6 +93,7 @@ y monta archivos de secretos; las pruebas usan una configuración explícita.
 | `LOGIN_ATTEMPT_LIMIT` | 10 intentos por ventana, por IP y correo normalizado |
 | `LOGIN_WINDOW_SECONDS` | 300 segundos |
 | `LOGIN_MAX_KEYS` | 10000 claves; memoria acotada con expiración y control de concurrencia |
+| `IMPORT_STORAGE_DIR` | Ruta absoluta privada fuera del checkout; Compose usa /var/lib/riesgo/imports con volumen persistente. Si falta, importación responde 503. |
 | `DEMO_CREDENTIALS_FILE` | Archivo JSON requerido solo al ejecutar la semilla |
 
 `infra/s1.py prepare` genera secretos locales en `.local/secrets`, excluido de
@@ -127,22 +134,19 @@ no usar `down -v` para comprobar persistencia.
 Para pruebas PostgreSQL en una base aislada con dependencias bloqueadas:
 
 ```powershell
-py -3.12 -m venv .venv-s1
-.\.venv-s1\Scripts\python.exe -m pip install --require-hashes -r backend/requirements-dev.txt
-.\.venv-s1\Scripts\python.exe infra/test_s1.py prepare-db
-.\.venv-s1\Scripts\python.exe infra/test_s1.py pytest
+docker compose -f infra/compose.test.yaml build tester
+docker compose -f infra/compose.test.yaml run --rm tester
 ```
 
-`infra/test_s1.py` usa `riesgo_escolar_demo_s1_test`, exige una base dedicada y
-ejecuta las pruebas dentro de transacciones revertidas. No sustituirla por una
-base institucional ni por SQLite. Sus evidencias se guardan en `tests/evidence`.
-Los comandos son instrucciones reproducibles; los resultados ejecutados se
-registran en [Estado de S1](../docs/planning/Estado_Sprint_1.md).
+El contenedor usa Linux/Python 3.12.12 y PostgreSQL 17.6 en red/volumen separados.
+Crea una base nueva por ejecución; las solicitudes usan riesgo_app. Incluye las
+57 pruebas S1 y 47 de S2. `infra/test_s1.py` queda como regresión local solo de S1.
+No sustituir PostgreSQL por SQLite. Resultados y omisiones en
+[Estado S2](../docs/planning/Estado_Sprint_2.md).
 
 ## Límite del sprint
 
-S1 no incluye importación CSV, estudiantes, matrículas, cortes, tablero,
-entrenamiento, inferencia, alertas, intervenciones ni reportes. Sus tablas existen
-por la migración pero no hay recorridos HTTP implementados. No hay registro
-público, procesamiento REAL, datos de menores ni envío de mensajes a terceros.
-El health ready confirma conexión, no la disponibilidad de módulos de S2–S6.
+S2 no incluye entrenamiento, inferencia, tablero ni escrituras de alertas,
+intervenciones o reportes. La interfaz de importación/estudiantes corresponde a S4.
+No hay registro público, procesamiento REAL, datos de menores ni mensajes a terceros.
+Health ready confirma conexión, no la disponibilidad de módulos S3–S6.

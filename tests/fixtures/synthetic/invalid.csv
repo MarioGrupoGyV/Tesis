@@ -1,0 +1,4 @@
+student_code,grade,section,cutoff_at,target_date,available_at,window_start,average_grade,attendance_pct,activities_pct,participation_level,behavior_incidents,age_years
+DEMO-S2-ERROR,1,A,2026-05-01T10:00:00-05:00,2026-05-02,2026-05-01T11:00:00-05:00,2026-04-01,20.001,101,,4,0,4
+DEMO-S2-DUP,1,A,2026-05-01T10:00:00-05:00,2026-05-02,2026-05-01T09:00:00-05:00,2026-04-01,14,90,80,2,0,13
+DEMO-S2-DUP,1,A,2026-05-01T15:00:00Z,2026-05-02,2026-05-01T14:00:00Z,2026-04-01,14,90,80,2,0,13

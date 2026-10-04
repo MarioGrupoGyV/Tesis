@@ -1,7 +1,12 @@
 # Estado del Sprint 1 — Base ejecutable DEMO
 
 Fecha: 3 de octubre de 2026 (America/Lima).
-**S1 COMPLETADO. S2–S6 pendientes y no iniciados.**
+**S1 COMPLETADO. Estado histórico al cierre de S1.**
+
+Actualización posterior: [Estado S2](Estado_Sprint_2.md) documenta la implementación
+S2 y resuelve los pendientes de suite Linux/Python 3.12.12 y respuestas 503 del
+contrato mediante OpenAPI 0.1.2. Los resultados originales de S1 se conservan debajo;
+S3–S6 siguen pendientes.
 
 Se leyeron AGENTS.md, plan, Inicio_Codex_y_skills.md, contrato OpenAPI 0.1.1,
 Esquema_demo.sql, Conciliacion_SQL_API.md y Sprints_y_aceptacion.md.

@@ -1,0 +1,3 @@
+student_code,grade,section,cutoff_at,target_date,available_at,window_start,average_grade,attendance_pct,activities_pct,participation_level,behavior_incidents,age_years
+DEMO-S2-001,1,A,2026-05-01T23:30:00-05:00,2026-05-02,2026-05-01T18:00:00-05:00,2026-04-01,14.25,90.50,80.00,2,0,13
+DEMO-S2-002,2,A,2026-05-01T12:00:00-05:00,2026-05-15,2026-05-01T10:00:00-05:00,2026-04-01,,85.00,,1,2,14

@@ -1,9 +1,9 @@
 openapi: 3.1.0
 info:
   title: Contrato demo de Seguimiento Escolar
-  version: 0.1.1
-  description: Contrato de diseño para implementar la primera demo. No representa un servidor existente. Procesamiento
-    REAL bloqueado. Escalas sintéticas 0..20 y participación 1..3. API de investigación prevista en etapa posterior.
+  version: 0.1.2
+  description: 'Contrato DEMO: S1 ejecutable y S2 importacion/estudiantes. S3-S6 pendientes. Solo datos
+    sinteticos; REAL bloqueado.'
 x-sprint-zero:
   implemented: false
   allowed-data-origin: DEMO
@@ -77,8 +77,8 @@ paths:
       - auth
       x-stage: DAY_1_DEMO
       x-roles: []
-      description: Comprobar Origin, limitar intentos y validar credenciales. Usar cookie de sesión; sin registro
-        público.
+      description: Comprobar Origin, limitar intentos y validar credenciales. Usar cookie de sesión; sin
+        registro público.
       responses:
         '200':
           description: Operación completada
@@ -112,6 +112,26 @@ paths:
                 $ref: '#/components/schemas/Error'
         '403':
           description: Origen de solicitud no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de integridad o concurrencia; resolver el estado y reintentar.
           content:
             application/json:
               schema:
@@ -173,6 +193,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /auth/csrf:
     get:
       operationId: csrf
@@ -223,6 +257,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /auth/logout:
     post:
       operationId: logout
@@ -265,6 +313,20 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
           content:
             application/json:
               schema:
@@ -327,6 +389,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /sections:
     get:
       operationId: sections
@@ -375,6 +451,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       parameters:
       - &id002
         name: period_id
@@ -391,7 +481,10 @@ paths:
       - students
       x-stage: DAY_1_DEMO
       x-roles: *id001
-      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase. Orden por defecto
+        anon_code, con desempate estable por id. updated_desc usa fecha del ultimo corte. Riesgo solo
+        de la prediccion del ultimo corte y modelo activo aprobado; si no existe, NOT_EVALUATED y risk_level
+        null. search busca codigo literal sin interpretar comodines.
       responses:
         '200':
           description: Operación completada
@@ -425,6 +518,20 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
           content:
             application/json:
               schema:
@@ -523,6 +630,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       parameters:
       - name: id
         in: path
@@ -537,7 +658,9 @@ paths:
       - students
       x-stage: DAY_1_DEMO
       x-roles: *id001
-      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase. Orden occurred_at
+        descendente, id descendente y tipo como desempate. SNAPSHOT usa created_at de la evidencia; summary
+        no incluye filas CSV ni payload de auditoria.
       responses:
         '200':
           description: Operación completada
@@ -575,6 +698,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       parameters:
       - name: id
         in: path
@@ -592,9 +729,15 @@ paths:
       x-stage: DAY_1_DEMO
       x-roles:
       - ADMIN
-      description: Máximo 5 MiB y 10000 filas. UTF-8. Cabeceras del manual. CSV confirmado no admite etiquetas
-        ni riesgo predicho. La API bloquea REAL. El hash y periodo reutilizan un lote previo. Puede devolver
-        200 si el lote ya existe.
+      description: 'Máximo 5 MiB y 10000 filas. UTF-8. Cabeceras del manual. CSV confirmado no admite
+        etiquetas ni riesgo predicho. La API bloquea REAL. El hash y periodo reutilizan un lote previo.
+        Puede devolver 200 si el lote ya existe. S2: cabeceras exactas y en orden; UTF-8 con BOM opcional,
+        coma como delimitador y vacio como null. Codigos sinteticos ASCII (3..40 letras/numeros/guion/guion
+        bajo); seccion exacta del anio del periodo. Fechas RFC 3339 con zona y hasta seis decimales de
+        segundo; decimales con punto, sin exponentes, maximo dos decimales. Filas invalidas producen lote
+        FAILED no confirmable; errores de archivo/estructura/tamanio producen 422 Error. Refrescar lote
+        no confirmado incrementa preview_version; COMMITTED reutiliza el resultado incluso con periodo
+        bloqueado. El archivo se guarda en volumen privado con identificador interno.'
       responses:
         '201': &id006
           description: Operación completada
@@ -633,6 +776,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '200': *id006
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       parameters:
       - name: X-CSRF-Token
         in: header
@@ -702,6 +859,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       parameters:
       - name: id
         in: path
@@ -716,8 +887,9 @@ paths:
       x-stage: DAY_1_DEMO
       x-roles:
       - ADMIN
-      description: Revalidar conteos planned_* y revisiones; ante cambios desde la vista previa devolver 409 IMPORT_PREVIEW_STALE y exigir nueva revisión. Una transacción para filas y auditoría. Repetir devuelve resultado previo. No confirmable
-        si hay errores o periodo bloqueado.
+      description: Revalidar conteos planned_* y revisiones; ante cambios desde la vista previa devolver
+        409 IMPORT_PREVIEW_STALE y exigir nueva revisión. Una transacción para filas y auditoría. Repetir
+        devuelve resultado previo. No confirmable si hay errores o periodo bloqueado.
       responses:
         '200':
           description: Operación completada
@@ -755,6 +927,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       parameters:
       - name: id
         in: path
@@ -776,7 +962,8 @@ paths:
                 expected_preview_version:
                   type: integer
                   minimum: 1
-              required: [expected_preview_version]
+              required:
+              - expected_preview_version
               additionalProperties: false
   /predictions/run:
     post:
@@ -787,9 +974,9 @@ paths:
       x-stage: DAY_1_DEMO
       x-roles:
       - ADMIN
-      description: Operación síncrona y acotada para 60 estudiantes de demo. Modelo activo DEMO. Elegir último
-        cutoff <= as_of y revisión mayor. No usar cortes sin datos suficientes. Persistir y auditar; reutilizar
-        snapshot model existente. Si no hay modelo, devolver 409 MODEL_NOT_AVAILABLE.
+      description: Operación síncrona y acotada para 60 estudiantes de demo. Modelo activo DEMO. Elegir
+        último cutoff <= as_of y revisión mayor. No usar cortes sin datos suficientes. Persistir y auditar;
+        reutilizar snapshot model existente. Si no hay modelo, devolver 409 MODEL_NOT_AVAILABLE.
       responses:
         '200':
           description: Operación completada
@@ -823,6 +1010,20 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
           content:
             application/json:
               schema:
@@ -886,6 +1087,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       parameters:
       - name: id
         in: path
@@ -900,10 +1115,10 @@ paths:
       x-stage: DAY_1_DEMO
       x-roles: *id001
       description: Últimos cortes y predicciones compatibles por matrícula. Solo EVALUATED si la predicción
-        corresponde al último corte y modelo activo; tras un corte nuevo, mostrar NOT_EVALUATED y riesgo actual
-        null hasta reevaluar. Conservar riesgo anterior en timeline. evaluated + not_evaluated = enrolled.
-        risk_distribution suma evaluated. active_alerts cuenta casos activos, que pueden permanecer aunque
-        baje el riesgo.
+        corresponde al último corte y modelo activo; tras un corte nuevo, mostrar NOT_EVALUATED y riesgo
+        actual null hasta reevaluar. Conservar riesgo anterior en timeline. evaluated + not_evaluated
+        = enrolled. risk_distribution suma evaluated. active_alerts cuenta casos activos, que pueden permanecer
+        aunque baje el riesgo.
       responses:
         '200':
           description: Operación completada
@@ -937,6 +1152,20 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
           content:
             application/json:
               schema:
@@ -995,6 +1224,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /models/{id}:
     get:
       operationId: modelDetail
@@ -1006,7 +1249,9 @@ paths:
       - ADMIN
       - DIRECTOR
       - RESEARCHER
-      description: Solo modelos DEMO registrados por el proceso interno; algoritmos DUMMY y RANDOM_FOREST en esta fase. No revelar artifact_key ni rutas internas. Métricas sintéticas siempre marcadas SYNTHETIC_DEVELOPMENT.
+      description: Solo modelos DEMO registrados por el proceso interno; algoritmos DUMMY y RANDOM_FOREST
+        en esta fase. No revelar artifact_key ni rutas internas. Métricas sintéticas siempre marcadas
+        SYNTHETIC_DEVELOPMENT.
       responses:
         '200':
           description: Operación completada
@@ -1040,6 +1285,20 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
           content:
             application/json:
               schema:
@@ -1058,8 +1317,8 @@ paths:
       x-stage: DAY_1_DEMO
       x-roles:
       - ADMIN
-      description: Solo algoritmos DUMMY o RANDOM_FOREST y estado APPROVED DEMO y feature schema compatible. Desactivar versión anterior y activar esta
-        en transacción. Prohibido activar REAL en esta fase.
+      description: Solo algoritmos DUMMY o RANDOM_FOREST y estado APPROVED DEMO y feature schema compatible.
+        Desactivar versión anterior y activar esta en transacción. Prohibido activar REAL en esta fase.
       responses:
         '200':
           description: Operación completada
@@ -1093,6 +1352,20 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
           content:
             application/json:
               schema:
@@ -1154,6 +1427,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       parameters:
       - *id002
       - *id007
@@ -1187,9 +1474,11 @@ paths:
       x-roles:
       - ADMIN
       - TUTOR
-      description: Responsable asignado automáticamente al tutor activo de la sección al crear el caso; null y aviso si no existe. Sin reasignación manual en demo. Recurso dentro del alcance del tutor. Exigir expected_version, incrementar versión y auditar.
-        OPEN a IN_REVIEW RESOLVED DISMISSED; IN_REVIEW a RESOLVED DISMISSED. Estados cerrados no se reabren;
-        un episodio posterior crea otro caso. Motivo obligatorio.
+      description: Responsable asignado automáticamente al tutor activo de la sección al crear el caso;
+        null y aviso si no existe. Sin reasignación manual en demo. Recurso dentro del alcance del tutor.
+        Exigir expected_version, incrementar versión y auditar. OPEN a IN_REVIEW RESOLVED DISMISSED; IN_REVIEW
+        a RESOLVED DISMISSED. Estados cerrados no se reabren; un episodio posterior crea otro caso. Motivo
+        obligatorio.
       responses:
         '200':
           description: Operación completada
@@ -1223,6 +1512,20 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
           content:
             application/json:
               schema:
@@ -1290,6 +1593,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       parameters:
       - *id002
       - *id004
@@ -1346,6 +1663,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       parameters:
       - name: X-CSRF-Token
         in: header
@@ -1369,8 +1700,8 @@ paths:
       x-roles:
       - ADMIN
       - TUTOR
-      description: Solo desde PLANNED. DONE exige performed_at no futuro y CANCELLED exige performed_at null.
-        expected_version atómico; conflicto 409. Anotar usuario y fecha.
+      description: Solo desde PLANNED. DONE exige performed_at no futuro y CANCELLED exige performed_at
+        null. expected_version atómico; conflicto 409. Anotar usuario y fecha.
       responses:
         '200':
           description: Operación completada
@@ -1404,6 +1735,20 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
           content:
             application/json:
               schema:
@@ -1471,6 +1816,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       parameters:
       - *id002
       - *id007
@@ -1483,7 +1842,8 @@ paths:
       x-stage: DAY_1_DEMO
       x-roles: *id001
       description: 'UTF-8. Columnas: anon_code,period_code,section_code,cutoff_at,data_origin,average_grade,attendance_pct,risk_level,evaluation_status,active_alerts,performed_interventions.
-        No nombres. Incluir DEMO en cada fila y proteger frente a fórmulas CSV. Registrar descarga en auditoría.'
+        No nombres. Incluir DEMO en cada fila y proteger frente a fórmulas CSV. Registrar descarga en
+        auditoría.'
       responses:
         '200':
           description: Operación completada
@@ -1521,6 +1881,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       parameters:
       - *id002
       - *id007
@@ -1533,7 +1907,8 @@ paths:
       x-stage: DAY_1_DEMO
       x-roles:
       - ADMIN
-      description: Resumen sanitizado. No exponer tokens contraseñas paths internos ni filas originales completas.
+      description: Resumen sanitizado. No exponer tokens contraseñas paths internos ni filas originales
+        completas.
       responses:
         '200':
           description: Operación completada
@@ -1567,6 +1942,20 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
           content:
             application/json:
               schema:
@@ -1760,7 +2149,9 @@ components:
           type: integer
           minimum: 1
         supersedes_id:
-          type: [string, 'null']
+          type:
+          - string
+          - 'null'
           format: uuid
           description: Revisión anterior del mismo corte y matrícula; null en la primera.
         average_grade:
@@ -1868,23 +2259,32 @@ components:
       - probability_medium
       - probability_high
       additionalProperties: false
-      description: Probabilidades todas null o todas presentes; suma 1 con tolerancia 0.00001. Validar suma en servidor. calibrated true exige valores presentes.
+      description: Probabilidades todas null o todas presentes; suma 1 con tolerancia 0.00001. Validar
+        suma en servidor. calibrated true exige valores presentes.
       allOf:
       - oneOf:
         - properties:
-            probability_low: {type: 'null'}
-            probability_medium: {type: 'null'}
-            probability_high: {type: 'null'}
+            probability_low:
+              type: 'null'
+            probability_medium:
+              type: 'null'
+            probability_high:
+              type: 'null'
         - properties:
-            probability_low: {type: number}
-            probability_medium: {type: number}
-            probability_high: {type: number}
+            probability_low:
+              type: number
+            probability_medium:
+              type: number
+            probability_high:
+              type: number
       - if:
           properties:
-            probabilities_calibrated: {const: true}
+            probabilities_calibrated:
+              const: true
         then:
           properties:
-            probability_low: {type: number}
+            probability_low:
+              type: number
     Student:
       type: object
       properties:
@@ -2034,7 +2434,7 @@ components:
           type: string
         file_sha256:
           type: string
-          pattern: '^[0-9a-f]{64}$'
+          pattern: ^[0-9a-f]{64}$
         schema_version:
           type: string
         status:
@@ -2352,7 +2752,7 @@ components:
           type: boolean
         dataset_hash:
           type: string
-          pattern: '^[0-9a-f]{64}$'
+          pattern: ^[0-9a-f]{64}$
         metrics:
           description: null si DRAFT todavía no evaluado; nunca inventar métricas.
           anyOf:
@@ -2444,7 +2844,7 @@ components:
           type: string
           minLength: 1
           maxLength: 1000
-          pattern: '\S'
+          pattern: \S
           description: Recortar espacios exteriores y validar longitud 1..1000 después.
         expected_version:
           type: integer
@@ -2533,7 +2933,7 @@ components:
           type: string
           minLength: 1
           maxLength: 1000
-          pattern: '\S'
+          pattern: \S
           description: Recortar espacios exteriores y validar longitud 1..1000 después.
         scheduled_at: *id010
         notes:
@@ -2575,14 +2975,19 @@ components:
       allOf:
       - if:
           properties:
-            status: {const: DONE}
+            status:
+              const: DONE
         then:
-          required: [performed_at]
+          required:
+          - performed_at
           properties:
-            performed_at: {type: string, format: date-time}
+            performed_at:
+              type: string
+              format: date-time
         else:
           properties:
-            performed_at: {type: 'null'}
+            performed_at:
+              type: 'null'
     ReportSummary:
       type: object
       properties:
@@ -2752,3 +3157,4 @@ components:
       - page
       - page_size
       additionalProperties: false
+x-current-sprint: S2

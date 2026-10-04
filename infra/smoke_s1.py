@@ -71,7 +71,9 @@ def main():
                                      'sections': len(sections), 'logout_without_csrf': 403}
         before = fingerprint()
         assert before['app_users']['rows'] == 3 and before['academic_periods']['rows'] == 1
-        assert before['grade_sections']['rows'] == 2 and before['students']['rows'] == 0
+        assert before['grade_sections']['rows'] == 2
+        # Desde S2 puede haber estudiantes importados: comprobar su conservación,
+        # no exigir que la demo operativa continúe vacía.
         compose('down')  # No -v: conservar el volumen y las trece tablas.
         compose('up', '-d', '--wait', 'db', 'api', 'web')
         after = fingerprint()

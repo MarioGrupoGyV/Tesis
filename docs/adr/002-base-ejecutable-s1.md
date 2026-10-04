@@ -1,7 +1,9 @@
 # ADR 002 — Base ejecutable DEMO y seguridad de S1
 
 Fecha: 3 de octubre de 2026 (America/Lima). Estado: aceptado para S1.
-Complementa ADR 001; no cambia versiones, locks, contrato 0.1.1 ni metodología.
+Complementa ADR 001; en S1 no cambió versiones, locks, contrato 0.1.1 ni metodología.
+Registro histórico: [ADR 003](003-importacion-s2.md) añade S2 y OpenAPI 0.1.2,
+conservando las versiones, sesiones y permisos de esta decisión.
 
 ## Servicios y configuración
 

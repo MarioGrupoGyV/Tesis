@@ -1,8 +1,24 @@
 # Conciliación de SQL y API — Sprint 0
 
-Fecha: 3 de octubre de 2026, America/Lima. Contrato vigente: **0.1.1**.
-Los documentos siguen describiendo una implementación futura. No se ejecutó DDL.
-El coordinador integra estos cambios; la revisión independiente fue de solo lectura.
+Fecha: 3 de octubre de 2026, America/Lima. Contrato vigente: **0.1.2**.
+La conciliación original de S0 (0.1.1) se conserva debajo como registro histórico;
+en S0 no se ejecutó DDL. S1 migró las trece tablas y S2 implementó importación y
+consultas. El SQL y la migración no cambiaron en S2.
+
+## Actualización S2
+
+OpenAPI 0.1.2 documenta 503 Error sanitizado en operaciones que acceden a la base,
+conservando 503 Health en health/ready. Conflictos de integridad son 409, no 503;
+fallos de programación son 500. Se precisaron CSV, límites, días Lima, respuestas
+FAILED/422, versión de vista previa, consultas y predicción vigente, sin añadir
+campos académicos ni modificar relaciones. Se regeneraron tipos frontend y se
+comprobaron once respuestas reales sanitizadas contra el contrato.
+
+La revalidación de predecesores y bloqueos transaccionales resuelve concurrencia
+sin cambios DDL. El almacenamiento usa un volumen privado persistente separado.
+Decisiones y resultados: [ADR 003](../adr/003-importacion-s2.md) y
+[Estado S2](Estado_Sprint_2.md). Las verificaciones marcadas futuras debajo pertenecen
+al registro inicial; su estado vigente se consulta en Sprints_y_aceptacion.md.
 
 ## Cambios resueltos
 

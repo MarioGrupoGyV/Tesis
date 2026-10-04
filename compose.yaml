@@ -36,7 +36,10 @@ services:
       SESSION_COOKIE_SECURE: "${SESSION_COOKIE_SECURE:-false}"
       TZ: UTC
       DISPLAY_TIMEZONE: America/Lima
+      IMPORT_STORAGE_DIR: /var/lib/riesgo/imports
     secrets: [app_database_url, csrf_secret]
+    volumes:
+      - import_data:/var/lib/riesgo/imports
     depends_on:
       db:
         condition: service_healthy
@@ -67,6 +70,7 @@ services:
     restart: unless-stopped
 volumes:
   db_data:
+  import_data:
 secrets:
   owner_password:
     file: "${S1_SECRETS_DIR:-./.local/secrets}/owner-password"
@@ -79,9 +83,9 @@ secrets:
   demo_credentials:
     file: "${S1_SECRETS_DIR:-./.local/secrets}/demo-credentials.json"
 x-sprint:
-  current: S1
+  current: S2
   runtime-implemented: true
-  implemented-scope: [health, auth, periods, sections]
+  implemented-scope: [health, auth, periods, sections, imports, students]
   planned-services: [web, api, db]
   planned-images:
     node: node:24.14.1-bookworm-slim

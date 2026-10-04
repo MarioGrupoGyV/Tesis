@@ -1,0 +1,45 @@
+{
+  "status": "COMPROBADO",
+  "data_origin": "DEMO",
+  "database_role": "riesgo_app",
+  "operations": [
+    {
+      "sample": "invalid.csv",
+      "batch_id": "c9475824-beb4-4236-89b9-098d9ff24fe4",
+      "status": "FAILED",
+      "rows": 3,
+      "invalid": 3
+    },
+    {
+      "sample": "valid.csv",
+      "batch_id": "4c1fd9dd-bce1-4deb-a7ab-93cd630c31df",
+      "status": "READY",
+      "rows": 2,
+      "invalid": 0
+    },
+    {
+      "sample": "correction.csv",
+      "batch_id": "4d698267-ef81-420f-903e-14c5c22c32cd",
+      "status": "READY",
+      "rows": 1,
+      "invalid": 0
+    }
+  ],
+  "all_13_tables_unchanged": true,
+  "private_files_unchanged": true,
+  "private_volume": {
+    "files": 3,
+    "sha256": "ff58a1c51bb5dd3a1f7ed66a9c9c3bca179d40e0373caf3877ca8a5b61b7da22"
+  },
+  "academic_counts": {
+    "students": 2,
+    "enrollments": 2,
+    "academic_snapshots": 3,
+    "import_batches": 3
+  },
+  "repeated_commit": true,
+  "csrf_missing_status": 403,
+  "invalid_commit_status": 422,
+  "own_other_scope": true,
+  "session_survives_restart": true
+}

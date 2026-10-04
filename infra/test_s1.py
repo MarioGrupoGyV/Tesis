@@ -67,7 +67,8 @@ def prepare_db():
 
 def run_tests():
     env = test_environment()
-    subprocess.run([sys.executable, '-m', 'pytest', 'backend/tests', '-q', '--tb=short',
+    s1_tests = sorted(str(p.relative_to(ROOT)) for p in (ROOT / 'backend/tests').glob('test_s1_*.py'))
+    subprocess.run([sys.executable, '-m', 'pytest', *s1_tests, '-q', '--tb=short',
                     '--junitxml=tests/evidence/s1-pytest.xml'], cwd=ROOT, env=env, check=True)
 
 

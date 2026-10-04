@@ -2,7 +2,7 @@
 
 Fecha de planificación: 3 de octubre de 2026 (America/Lima).
 
-Este registro desarrolla el orden de `Plan_tesis_riesgo_escolar.md` e `Inicio_Codex_y_skills.md`. La entrega inicial comprendió S0; la autorización posterior comprende exclusivamente S1. Su evidencia está en `Estado_Sprint_1.md`. Los criterios de S2 a S6 describen trabajo futuro y no constituyen evidencia de implementación o pruebas ejecutadas. La coordinación contrasta cada criterio con el contrato y las decisiones vigentes antes de aceptar un sprint.
+Este registro desarrolla el orden de `Plan_tesis_riesgo_escolar.md` e `Inicio_Codex_y_skills.md`. La entrega inicial comprendió S0; S1 y S2 se implementaron con autorizaciones posteriores. Sus evidencias están en `Estado_Sprint_1.md` y `Estado_Sprint_2.md`. Los criterios de S3 a S6 describen trabajo futuro y no constituyen evidencia de implementación o pruebas ejecutadas. La coordinación contrasta cada criterio con el contrato y las decisiones vigentes antes de aceptar un sprint.
 
 ## Estado y alcance
 
@@ -10,7 +10,7 @@ Este registro desarrolla el orden de `Plan_tesis_riesgo_escolar.md` e `Inicio_Co
 |---|---|---|---|
 | S0 Contratos y entorno | COMPLETADO: evidencia en Estado_Sprint_0.md y tests/evidence/s0-checks.json | Fuentes de planificación y repositorio inicial | Estructura, entorno diagnosticado, versiones fijadas, SQL/API reconciliados, README y este registro |
 | S1 Base ejecutable | COMPLETADO: evidencia en Estado_Sprint_1.md y tests/evidence/s1-* | S0 documentado y herramientas necesarias disponibles | Compose ejecutable, migración limpia de 13 tablas, contexto demo, sesiones/CSRF, permisos y persistencia comprobados |
-| S2 Importación y estudiantes | PENDIENTE; no iniciado | S1 aceptado y contrato de importación vigente | Vista previa y confirmación atómica, estudiantes e historial con alcance por sección |
+| S2 Importación y estudiantes | COMPLETADO: evidencia en Estado_Sprint_2.md y tests/evidence/s2-* | S1 aceptado y contrato de importación vigente | Vista previa y confirmación atómica, estudiantes e historial con alcance por sección |
 | S3 Modelo y predicción demo | PENDIENTE; no iniciado | S2 aceptado, variables y fechas acordadas; interfaz de inferencia tipada | Generador sintético, baseline, RF, manifiesto e inferencia persistida |
 | S4 Interfaz didáctica | PENDIENTE; no iniciado | Contrato de S0 para diseño; S1 para conexión; S2 y S3 para los flujos iniciales | Pantallas con API real; cierre final después de integrar S5 |
 | S5 Alertas, intervenciones y reportes | PENDIENTE; no iniciado | S3 aceptado; sesiones, matrículas y API de S1-S2 | Casos únicos, seguimiento versionado, auditoría y exportación autorizada |
@@ -82,7 +82,7 @@ Criterios de salida:
 8. Un corte nuevo sin evaluación aparece pendiente, aunque exista una predicción antigua en el historial. No se atribuye la predicción anterior al corte nuevo.
 9. La vista previa muestra planned_students/enrollments/snapshots y preview_version. Confirmar exige expected_preview_version; una pestaña vieja o un predecesor cambiado devuelve 409 IMPORT_PREVIEW_STALE sin escrituras. Refrescar conserva el lote, incrementa la versión y requiere nueva revisión humana; COMMITTED reutiliza siempre el resultado original después de autorizar el recurso.
 
-**Evidencia futura:** pruebas backend de importación válida, inválida, fallo/rollback, repetición y revisión; peticiones autenticadas de lista/detalle/timeline; comprobación de filas y auditoría en PostgreSQL; muestras CSV exclusivamente sintéticas. Usar `make test` con los casos correspondientes cuando se implemente; guardar cantidades antes/después y respuestas.
+**Evidencia ejecutada S2:** 104 pruebas backend en Linux/Python 3.12.12 con PostgreSQL aislado y riesgo_app, incluidos rollback, revisión, concurrencia y 10000 filas; 224 comprobaciones contractuales, build frontend y cuatro regresiones Playwright S1. Recorrido HTTP de las seis operaciones, archivos privados y trece tablas conservados tras recrear contenedores. OpenAPI 0.1.2, muestras sintéticas y comandos PowerShell en `Estado_Sprint_2.md`. No se aceptan pantallas S4 ni ML S3 con estas pruebas.
 
 ## S3 — Modelo y predicción demo
 

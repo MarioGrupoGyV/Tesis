@@ -65,8 +65,7 @@ def synthetic_password_hash(synthetic_password):
     return password_hash(synthetic_password)
 
 
-@pytest.fixture
-def context(db, synthetic_password, synthetic_password_hash):
+def create_context(db, synthetic_password, synthetic_password_hash):
     accounts = {}
     for role in ("ADMIN", "TUTOR", "DIRECTOR", "RESEARCHER"):
         account = {
@@ -91,6 +90,11 @@ def context(db, synthetic_password, synthetic_password_hash):
         db.execute(text("INSERT INTO risk_school.grade_sections (id,code,grade,school_year,tutor_id) VALUES (:id,:code,:grade,:school_year,:tutor_id)"), section)
         sections.append(section)
     return {"accounts": accounts, "periods": periods, "sections": sections}
+
+
+@pytest.fixture
+def context(db, synthetic_password, synthetic_password_hash):
+    return create_context(db, synthetic_password, synthetic_password_hash)
 
 
 @pytest.fixture

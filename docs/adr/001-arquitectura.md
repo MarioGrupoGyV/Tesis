@@ -5,7 +5,8 @@ Aplicación, migraciones, modelos y recorridos: **pendientes de S1–S6**.
 
 Registro histórico de S0. La autorización posterior de S1 y sus decisiones están
 en [ADR 002](002-base-ejecutable-s1.md) y [Estado S1](../planning/Estado_Sprint_1.md).
-Las versiones y archivos de bloqueo de este ADR se conservan; S2–S6 siguen pendientes.
+Las versiones y archivos de bloqueo de este ADR se conservan. S2 se completa en
+[ADR 003](003-importacion-s2.md) con OpenAPI 0.1.2; S3–S6 siguen pendientes.
 
 ## Contexto y decisiones
 

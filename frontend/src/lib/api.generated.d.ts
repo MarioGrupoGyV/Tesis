@@ -173,7 +173,7 @@ export interface paths {
         };
         /**
          * Listar estudiantes autorizados
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase. Orden por defecto anon_code, con desempate estable por id. updated_desc usa fecha del ultimo corte. Riesgo solo de la prediccion del ultimo corte y modelo activo aprobado; si no existe, NOT_EVALUATED y risk_level null. search busca codigo literal sin interpretar comodines.
          */
         get: operations["students"];
         put?: never;
@@ -213,7 +213,7 @@ export interface paths {
         };
         /**
          * Consultar historial
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase. Orden occurred_at descendente, id descendente y tipo como desempate. SNAPSHOT usa created_at de la evidencia; summary no incluye filas CSV ni payload de auditoria.
          */
         get: operations["studentTimeline"];
         put?: never;
@@ -235,7 +235,7 @@ export interface paths {
         put?: never;
         /**
          * Validar CSV y crear vista previa
-         * @description Máximo 5 MiB y 10000 filas. UTF-8. Cabeceras del manual. CSV confirmado no admite etiquetas ni riesgo predicho. La API bloquea REAL. El hash y periodo reutilizan un lote previo. Puede devolver 200 si el lote ya existe.
+         * @description Máximo 5 MiB y 10000 filas. UTF-8. Cabeceras del manual. CSV confirmado no admite etiquetas ni riesgo predicho. La API bloquea REAL. El hash y periodo reutilizan un lote previo. Puede devolver 200 si el lote ya existe. S2: cabeceras exactas y en orden; UTF-8 con BOM opcional, coma como delimitador y vacio como null. Codigos sinteticos ASCII (3..40 letras/numeros/guion/guion bajo); seccion exacta del anio del periodo. Fechas RFC 3339 con zona y hasta seis decimales de segundo; decimales con punto, sin exponentes, maximo dos decimales. Filas invalidas producen lote FAILED no confirmable; errores de archivo/estructura/tamanio producen 422 Error. Refrescar lote no confirmado incrementa preview_version; COMMITTED reutiliza el resultado incluso con periodo bloqueado. El archivo se guarda en volumen privado con identificador interno.
          */
         post: operations["previewImport"];
         delete?: never;
@@ -1137,6 +1137,15 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Conflicto de integridad o concurrencia; resolver el estado y reintentar. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
                 headers: {
@@ -1148,6 +1157,24 @@ export interface operations {
             };
             /** @description Límite de intentos excedido */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1220,6 +1247,24 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
         };
     };
     csrf: {
@@ -1278,6 +1323,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1351,6 +1414,24 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
         };
     };
     periods: {
@@ -1409,6 +1490,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1476,6 +1575,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1556,6 +1673,24 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
         };
     };
     studentDetail: {
@@ -1618,6 +1753,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1689,6 +1842,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1782,6 +1953,24 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
         };
     };
     importDetail: {
@@ -1842,6 +2031,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1925,6 +2132,24 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
         };
     };
     runPredictions: {
@@ -1997,6 +2222,24 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
         };
     };
     predictionDetail: {
@@ -2057,6 +2300,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2132,6 +2393,24 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
         };
     };
     models: {
@@ -2190,6 +2469,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2257,6 +2554,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2334,6 +2649,24 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
         };
     };
     alerts: {
@@ -2399,6 +2732,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2480,6 +2831,24 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
         };
     };
     interventions: {
@@ -2543,6 +2912,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2615,6 +3002,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2696,6 +3101,24 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
         };
     };
     reportSummary: {
@@ -2757,6 +3180,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2832,6 +3273,24 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
         };
     };
     auditEvents: {
@@ -2895,6 +3354,24 @@ export interface operations {
             };
             /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

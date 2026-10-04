@@ -4,7 +4,8 @@ React, TypeScript, Vite y Tailwind usan las versiones y el lock de S0. La web de
 S1 permite iniciar sesión, recuperar una sesión existente, consultar periodos y
 secciones autorizadas y cerrar sesión. Todas las respuestas proceden de la API.
 La marca DEMO identifica las cuentas y el contexto sintéticos. Los módulos de
-estudiantes, importación, predicción, seguimiento y reportes esperan sus sprints.
+importación y estudiantes ya tienen API S2; sus pantallas se completarán en S4.
+Predicción, seguimiento y reportes conservan sus siguientes sprints.
 
 Desde la raíz del repositorio:
 
@@ -24,7 +25,7 @@ npm run typecheck --workspace frontend
 npm run build --workspace frontend
 ```
 
-`src/lib/api.generated.d.ts` se genera desde OpenAPI 0.1.1 y el cliente usa sus
+`src/lib/api.generated.d.ts` se genera desde OpenAPI 0.1.2 y el cliente usa sus
 esquemas. Las cookies se envían con `credentials: include`; la sesión permanece
 en una cookie HttpOnly gestionada por el servidor. CSRF se conserva solo en
 memoria, se recupera tras `me` al recargar y se envía en el encabezado del logout.

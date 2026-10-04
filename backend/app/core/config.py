@@ -25,9 +25,15 @@ class Settings(BaseSettings):
     login_attempt_limit: int = Field(default=10, ge=1, le=100)
     login_window_seconds: int = Field(default=300, ge=1, le=3600)
     login_max_keys: int = Field(default=10000, ge=10, le=100000)
+    import_storage_dir: Path | None = None
 
     @model_validator(mode="after")
     def validate_demo_configuration(self) -> "Settings":
+        if self.import_storage_dir is not None:
+            code_root = Path(__file__).resolve().parents[2]
+            checkout = code_root.parent if code_root.name == "backend" else code_root
+            if not self.import_storage_dir.is_absolute() or self.import_storage_dir.resolve().is_relative_to(checkout):
+                raise ValueError("IMPORT_STORAGE_DIR debe ser absoluto y estar fuera del checkout")
         if self.real_mode_enabled:
             raise ValueError("REAL_MODE_NOT_READY: esta fase solo permite datos DEMO")
         if self.database_url_file is not None:

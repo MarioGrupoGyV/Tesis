@@ -6,3 +6,8 @@ los resultados y límites del acceso y contexto autorizados.
 
 El manual del recorrido importar/evaluar/atender/exportar y los respaldos se
 elaborarán en S6 sobre funcionalidades verificadas. No están implementados en S1.
+
+## Manual API S2
+
+[Importación por PowerShell 7](Importacion_S2.md): elegir CSV sintético, revisar,
+confirmar y consultar estudiantes/historial. Las pantallas se completarán en S4.

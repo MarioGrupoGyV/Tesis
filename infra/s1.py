@@ -1,4 +1,4 @@
-"""Comandos acotados a S1; nunca elimina volúmenes ni siembra al reiniciar."""
+"""Arranque S1/S2; conserva volúmenes y nunca siembra al reiniciar."""
 import argparse
 from pathlib import Path
 import subprocess
@@ -12,7 +12,7 @@ def docker(*args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Preparación y ejecución de S1 DEMO')
+    parser = argparse.ArgumentParser(description='Preparación y ejecución de S1/S2 DEMO')
     parser.add_argument('command', choices=['prepare', 'up', 'migrate', 'seed-demo', 'restart', 'down'])
     args = parser.parse_args()
     if args.command in ('prepare', 'up'):

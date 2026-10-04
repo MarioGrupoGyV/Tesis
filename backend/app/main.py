@@ -7,10 +7,11 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError, OperationalError, InterfaceError, TimeoutError
 from starlette.exceptions import HTTPException
 
-from app.api.v1 import auth, catalogs, health
+from app.api.v1 import auth, catalogs, health, imports, students
+from app.core.upload_limit import ImportBodyLimit
 from app.core.config import Settings, get_settings
 from app.core.database import Database
 from app.core.errors import AppError, error_content
@@ -27,8 +28,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         database.engine.dispose()
 
     application = FastAPI(
-        title="Seguimiento Escolar DEMO — S1",
-        version="0.1.1",
+        title="Seguimiento Escolar DEMO — S2",
+        version="0.1.2",
         lifespan=lifespan,
         docs_url=None,
         redoc_url=None,
@@ -36,6 +37,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     application.state.settings = settings
     application.state.database = database
+    application.add_middleware(ImportBodyLimit)
     application.state.login_limiter = LoginLimiter(
         settings.login_attempt_limit, settings.login_window_seconds, settings.login_max_keys
     )
@@ -61,7 +63,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.exception_handler(AppError)
     async def app_error(request: Request, exc: AppError):
         headers = {"Retry-After": str(exc.retry_after)} if exc.retry_after is not None else None
-        return JSONResponse(status_code=exc.status_code, content=error_content(request, exc.code, exc.message), headers=headers)
+        return JSONResponse(status_code=exc.status_code, content=error_content(request, exc.code, exc.message, exc.details), headers=headers)
 
     @application.exception_handler(RequestValidationError)
     async def invalid_request(request: Request, exc: RequestValidationError):
@@ -73,7 +75,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @application.exception_handler(SQLAlchemyError)
     async def database_unavailable(request: Request, exc: SQLAlchemyError):
-        return JSONResponse(status_code=503, content=error_content(request, "SERVICE_UNAVAILABLE", "El servicio no está disponible. Inténtalo nuevamente."))
+        state = getattr(getattr(exc, "orig", None), "sqlstate", "") or ""
+        if isinstance(exc, IntegrityError) or state.startswith(("23", "40")) or state in {"55000", "55P03"}:
+            return JSONResponse(status_code=409, content=error_content(request, "INTEGRITY_CONFLICT", "El estado cambió o no permite esta operación. Revisa los datos antes de reintentar."))
+        if isinstance(exc, (OperationalError, InterfaceError, TimeoutError)) or type(exc) is SQLAlchemyError:
+            return JSONResponse(status_code=503, content=error_content(request, "SERVICE_UNAVAILABLE", "El servicio no está disponible. Inténtalo nuevamente."))
+        return JSONResponse(status_code=500, content=error_content(request, "INTERNAL_ERROR", "No se pudo completar la operación."))
 
     @application.exception_handler(HTTPException)
     async def http_error(request: Request, exc: HTTPException):
@@ -82,6 +89,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(health.router, prefix="/api/v1")
     application.include_router(auth.router, prefix="/api/v1")
     application.include_router(catalogs.router, prefix="/api/v1")
+    application.include_router(imports.router, prefix="/api/v1")
+    application.include_router(students.router, prefix="/api/v1")
     return application
 
 
