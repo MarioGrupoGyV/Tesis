@@ -3,6 +3,7 @@
 -- Este archivo crea objetos en un esquema nuevo. No elimina datos ni crea usuarios.
 -- Fase vigente: DEMO. Las seis tablas de investigación se añaden posteriormente.
 -- Las escalas 0..20 y 1..3 se usan en datos sintéticos; confirmar escala real antes del piloto.
+-- Revisión S0 0.1.1: ver docs/adr/001-arquitectura.md y Conciliacion_SQL_API.md.
 
 BEGIN;
 CREATE SCHEMA risk_school;
@@ -33,6 +34,7 @@ CREATE INDEX ix_sessions_user_expires ON user_sessions(user_id, expires_at);
 CREATE TABLE academic_periods (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   code text NOT NULL,
+  school_year smallint NOT NULL CHECK (school_year BETWEEN 2000 AND 2100),
   start_date date NOT NULL,
   end_date date NOT NULL,
   data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL')),
@@ -49,7 +51,7 @@ CREATE TABLE grade_sections (
   grade smallint NOT NULL CHECK (grade BETWEEN 1 AND 5),
   school_year smallint NOT NULL CHECK (school_year BETWEEN 2000 AND 2100),
   tutor_id uuid REFERENCES app_users(id) ON DELETE RESTRICT,
-  UNIQUE (code, school_year)
+  UNIQUE (grade, code, school_year)
 );
 CREATE INDEX ix_sections_tutor ON grade_sections(tutor_id);
 
@@ -95,10 +97,18 @@ CREATE TABLE import_batches (
   total_rows integer NOT NULL DEFAULT 0 CHECK (total_rows >= 0),
   valid_rows integer NOT NULL DEFAULT 0 CHECK (valid_rows >= 0),
   invalid_rows integer NOT NULL DEFAULT 0 CHECK (invalid_rows >= 0),
+  planned_students integer NOT NULL DEFAULT 0 CHECK (planned_students >= 0),
+  planned_enrollments integer NOT NULL DEFAULT 0 CHECK (planned_enrollments >= 0),
+  planned_snapshots integer NOT NULL DEFAULT 0 CHECK (planned_snapshots >= 0),
+  preview_version integer NOT NULL DEFAULT 1 CHECK (preview_version >= 1),
+  preview_state jsonb NOT NULL DEFAULT '[]'::jsonb CHECK (jsonb_typeof(preview_state) = 'array'),
   errors jsonb NOT NULL DEFAULT '[]'::jsonb,
   committed_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(),
   CHECK (valid_rows + invalid_rows = total_rows),
+  CHECK (total_rows <= 10000),
+  CHECK (planned_students <= valid_rows AND planned_enrollments <= valid_rows
+         AND planned_snapshots <= valid_rows),
   CHECK (status <> 'COMMITTED' OR (invalid_rows = 0 AND committed_at IS NOT NULL)),
   FOREIGN KEY (period_id, data_origin) REFERENCES academic_periods(id, data_origin),
   UNIQUE (period_id, file_sha256),
@@ -134,12 +144,13 @@ CREATE TABLE academic_snapshots (
     REFERENCES import_batches(id, period_id, data_origin),
   UNIQUE (enrollment_id, cutoff_at, revision),
   UNIQUE (id, enrollment_id, data_origin),
-  FOREIGN KEY (supersedes_id, enrollment_id, data_origin)
-    REFERENCES academic_snapshots(id, enrollment_id, data_origin),
+  UNIQUE (id, enrollment_id, cutoff_at, data_origin),
+  FOREIGN KEY (supersedes_id, enrollment_id, cutoff_at, data_origin)
+    REFERENCES academic_snapshots(id, enrollment_id, cutoff_at, data_origin),
   CHECK (supersedes_id IS NULL OR supersedes_id <> id),
   CHECK (available_at <= cutoff_at),
-  CHECK (window_start <= (cutoff_at AT TIME ZONE 'UTC')::date),
-  CHECK (target_date > (cutoff_at AT TIME ZONE 'UTC')::date)
+  CHECK (window_start <= (cutoff_at AT TIME ZONE 'America/Lima')::date),
+  CHECK (target_date > (cutoff_at AT TIME ZONE 'America/Lima')::date)
 );
 CREATE INDEX ix_snapshots_enrollment_cutoff ON academic_snapshots(enrollment_id, cutoff_at DESC, revision DESC);
 
@@ -205,7 +216,7 @@ CREATE TABLE alerts (
   assigned_to uuid REFERENCES app_users(id),
   severity text NOT NULL CHECK (severity IN ('MEDIUM','HIGH')),
   status text NOT NULL DEFAULT 'OPEN' CHECK (status IN ('OPEN','IN_REVIEW','RESOLVED','DISMISSED')),
-  resolution_reason text,
+  resolution_reason text CHECK (length(resolution_reason) <= 1000),
   opened_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
   closed_at timestamptz,
@@ -279,7 +290,7 @@ BEGIN
     RAISE EXCEPTION 'Period is locked' USING ERRCODE = '55000';
   END IF;
   IF NEW.window_start < p.start_date OR NEW.target_date > p.end_date
-     OR (NEW.cutoff_at AT TIME ZONE 'UTC')::date < p.start_date THEN
+     OR (NEW.cutoff_at AT TIME ZONE 'America/Lima')::date < p.start_date THEN
     RAISE EXCEPTION 'Snapshot window is outside the academic period' USING ERRCODE = '23514';
   END IF;
   RETURN NEW;
@@ -313,6 +324,16 @@ COMMIT;
 -- También comprobar en servicios: rol del tutor asignado, elegibilidad, cierre del periodo
 -- antes de importar/predecir, modelo y esquema compatibles, transiciones de estado,
 -- fechas efectivas no futuras, incremento de revisión y cálculo de missing_fraction.
+-- Fechas DATE del calendario escolar en America/Lima; instantes TIMESTAMPTZ en UTC.
+-- Period.school_year determina el catálogo inicial; section.school_year debe coincidir.
+-- Section.code es local al grado (p. ej. A); único por grado/código/año.
+-- planned_* son conteos de vista previa, no evidencia de filas confirmadas. Revalidar
+-- antes de commit; conflictos de matrículas/revisiones: 409 IMPORT_PREVIEW_STALE.
+-- preview_state privado guarda estado esperado por fila/serie; preview_version aumenta
+-- al refrescar. Confirmar exige expected_preview_version y comparación transaccional.
+-- Revisiones: misma matrícula/corte/origen, revision anterior + 1; serie bajo bloqueo.
+-- asignar alerta al tutor activo de la sección o null si no existe, dejando aviso.
+-- expected_version se compara en UPDATE WHERE version = expected_version; no basta el trigger.
 -- Los cambios operativos y sus audit_events se escriben en la misma transacción.
 -- No incluir etiquetas, riesgo predicho ni intervenciones posteriores como features.
 -- Extensión posterior: criterios, etiquetas de referencia, señales, protocolo,

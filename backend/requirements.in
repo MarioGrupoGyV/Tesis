@@ -1,0 +1,19 @@
+# Dependencias previstas. No hay aplicación implementada en S0.
+fastapi==0.142.2
+pydantic==2.13.5
+pydantic-settings==2.15.0
+SQLAlchemy==2.0.54
+alembic==1.20.0
+psycopg[binary]==3.3.6
+uvicorn==0.54.0
+python-multipart==0.0.32
+email-validator==2.3.0
+tzdata==2026.5
+pwdlib[argon2]==0.3.1
+argon2-cffi==25.1.0
+# Solo ML local DEMO: baseline y Random Forest; XGBoost queda para otra fase.
+pandas==3.0.6
+numpy==2.5.3
+scipy==1.18.1
+scikit-learn==1.9.1
+joblib==1.6.0

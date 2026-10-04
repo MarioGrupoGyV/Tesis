@@ -1,9 +1,15 @@
 openapi: 3.1.0
 info:
   title: Contrato demo de Seguimiento Escolar
-  version: 0.1.0
+  version: 0.1.1
   description: Contrato de diseño para implementar la primera demo. No representa un servidor existente. Procesamiento
     REAL bloqueado. Escalas sintéticas 0..20 y participación 1..3. API de investigación prevista en etapa posterior.
+x-sprint-zero:
+  implemented: false
+  allowed-data-origin: DEMO
+  reconciliation: docs/planning/Conciliacion_SQL_API.md
+  calendar-timezone: America/Lima
+  event-timezone: UTC
 servers:
 - url: /api/v1
   description: Preferir proxy de mismo origen para cookies y CSRF
@@ -170,7 +176,7 @@ paths:
   /auth/csrf:
     get:
       operationId: csrf
-      summary: Obtener CSRF ligado a la sesión
+      summary: Obtener CSRF ligado a la sesión (HMAC determinista)
       tags:
       - auth
       x-stage: DAY_1_DEMO
@@ -324,7 +330,7 @@ paths:
   /sections:
     get:
       operationId: sections
-      summary: Listar secciones autorizadas
+      summary: Listar secciones autorizadas del año del periodo
       tags:
       - catalogs
       x-stage: DAY_1_DEMO
@@ -710,7 +716,7 @@ paths:
       x-stage: DAY_1_DEMO
       x-roles:
       - ADMIN
-      description: Una transacción para filas y auditoría. Repetir devuelve resultado previo. No confirmable
+      description: Revalidar conteos planned_* y revisiones; ante cambios desde la vista previa devolver 409 IMPORT_PREVIEW_STALE y exigir nueva revisión. Una transacción para filas y auditoría. Repetir devuelve resultado previo. No confirmable
         si hay errores o periodo bloqueado.
       responses:
         '200':
@@ -760,6 +766,18 @@ paths:
         schema:
           type: string
         description: Token CSRF ligado a la sesión; validarlo en servidor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expected_preview_version:
+                  type: integer
+                  minimum: 1
+              required: [expected_preview_version]
+              additionalProperties: false
   /predictions/run:
     post:
       operationId: runPredictions
@@ -988,7 +1006,7 @@ paths:
       - ADMIN
       - DIRECTOR
       - RESEARCHER
-      description: No revelar artifact_key ni rutas internas. Métricas sintéticas siempre marcadas SYNTHETIC_DEVELOPMENT.
+      description: Solo modelos DEMO registrados por el proceso interno; algoritmos DUMMY y RANDOM_FOREST en esta fase. No revelar artifact_key ni rutas internas. Métricas sintéticas siempre marcadas SYNTHETIC_DEVELOPMENT.
       responses:
         '200':
           description: Operación completada
@@ -1040,7 +1058,7 @@ paths:
       x-stage: DAY_1_DEMO
       x-roles:
       - ADMIN
-      description: Solo APPROVED DEMO y feature schema compatible. Desactivar versión anterior y activar esta
+      description: Solo algoritmos DUMMY o RANDOM_FOREST y estado APPROVED DEMO y feature schema compatible. Desactivar versión anterior y activar esta
         en transacción. Prohibido activar REAL en esta fase.
       responses:
         '200':
@@ -1169,7 +1187,7 @@ paths:
       x-roles:
       - ADMIN
       - TUTOR
-      description: Recurso dentro del alcance del tutor. Exigir expected_version, incrementar versión y auditar.
+      description: Responsable asignado automáticamente al tutor activo de la sección al crear el caso; null y aviso si no existe. Sin reasignación manual en demo. Recurso dentro del alcance del tutor. Exigir expected_version, incrementar versión y auditar.
         OPEN a IN_REVIEW RESOLVED DISMISSED; IN_REVIEW a RESOLVED DISMISSED. Estados cerrados no se reabren;
         un episodio posterior crea otro caso. Motivo obligatorio.
       responses:
@@ -1657,6 +1675,7 @@ components:
         expires_at: &id010
           type: string
           format: date-time
+          description: RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
       required:
       - user
       - csrf_token
@@ -1676,6 +1695,10 @@ components:
         id: *id003
         code:
           type: string
+        school_year:
+          type: integer
+          minimum: 2000
+          maximum: 2100
         start_date: &id008
           type: string
           format: date
@@ -1694,6 +1717,7 @@ components:
       - end_date
       - data_origin
       - is_locked
+      - school_year
       additionalProperties: false
     Section:
       type: object
@@ -1707,6 +1731,8 @@ components:
           maximum: 5
         school_year:
           type: integer
+          minimum: 2000
+          maximum: 2100
         tutor_id:
           type:
           - string
@@ -1717,6 +1743,7 @@ components:
       - code
       - grade
       - school_year
+      - tutor_id
       additionalProperties: false
     Snapshot:
       type: object
@@ -1732,6 +1759,10 @@ components:
         revision:
           type: integer
           minimum: 1
+        supersedes_id:
+          type: [string, 'null']
+          format: uuid
+          description: Revisión anterior del mismo corte y matrícula; null en la primera.
         average_grade:
           type:
           - number
@@ -1782,6 +1813,13 @@ components:
       - target_date
       - revision
       - missing_fraction
+      - supersedes_id
+      - average_grade
+      - attendance_pct
+      - activities_pct
+      - participation_level
+      - behavior_incidents
+      - age_years
       additionalProperties: false
     Prediction:
       type: object
@@ -1826,13 +1864,35 @@ components:
       - target_date
       - predicted_at
       - probabilities_calibrated
+      - probability_low
+      - probability_medium
+      - probability_high
       additionalProperties: false
+      description: Probabilidades todas null o todas presentes; suma 1 con tolerancia 0.00001. Validar suma en servidor. calibrated true exige valores presentes.
+      allOf:
+      - oneOf:
+        - properties:
+            probability_low: {type: 'null'}
+            probability_medium: {type: 'null'}
+            probability_high: {type: 'null'}
+        - properties:
+            probability_low: {type: number}
+            probability_medium: {type: number}
+            probability_high: {type: number}
+      - if:
+          properties:
+            probabilities_calibrated: {const: true}
+        then:
+          properties:
+            probability_low: {type: number}
     Student:
       type: object
       properties:
         id: *id003
         anon_code:
           type: string
+          minLength: 3
+          maxLength: 40
         enrollment_id: *id003
         period_id: *id003
         section_id: *id003
@@ -1840,15 +1900,21 @@ components:
           type: string
         grade:
           type: integer
+          minimum: 1
+          maximum: 5
         data_origin: *id009
         average_grade:
           type:
           - number
           - 'null'
+          minimum: 0
+          maximum: 20
         attendance_pct:
           type:
           - number
           - 'null'
+          minimum: 0
+          maximum: 100
         latest_cutoff_at:
           type:
           - string
@@ -1884,6 +1950,11 @@ components:
       - grade
       - data_origin
       - evaluation_status
+      - average_grade
+      - attendance_pct
+      - latest_cutoff_at
+      - risk_level
+      - active_alert_id
       additionalProperties: false
     StudentDetail:
       type: object
@@ -1963,6 +2034,7 @@ components:
           type: string
         file_sha256:
           type: string
+          pattern: '^[0-9a-f]{64}$'
         schema_version:
           type: string
         status:
@@ -1975,12 +2047,30 @@ components:
         total_rows:
           type: integer
           minimum: 0
+          maximum: 10000
         valid_rows:
           type: integer
           minimum: 0
+          maximum: 10000
         invalid_rows:
           type: integer
           minimum: 0
+          maximum: 10000
+        planned_students:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        planned_enrollments:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        planned_snapshots:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        preview_version:
+          type: integer
+          minimum: 1
         errors:
           type: array
           items:
@@ -2004,6 +2094,11 @@ components:
       - invalid_rows
       - errors
       - created_at
+      - planned_students
+      - planned_enrollments
+      - planned_snapshots
+      - committed_at
+      - preview_version
       additionalProperties: false
     ImportCommit:
       type: object
@@ -2257,8 +2352,12 @@ components:
           type: boolean
         dataset_hash:
           type: string
+          pattern: '^[0-9a-f]{64}$'
         metrics:
-          $ref: '#/components/schemas/Metrics'
+          description: null si DRAFT todavía no evaluado; nunca inventar métricas.
+          anyOf:
+          - $ref: '#/components/schemas/Metrics'
+          - type: 'null'
         created_at: *id010
       required:
       - id
@@ -2305,6 +2404,7 @@ components:
           type:
           - string
           - 'null'
+          maxLength: 1000
         opened_at: *id010
         updated_at: *id010
         closed_at:
@@ -2327,6 +2427,9 @@ components:
       - opened_at
       - updated_at
       - version
+      - assigned_to
+      - resolution_reason
+      - closed_at
       additionalProperties: false
     AlertUpdate:
       type: object
@@ -2341,6 +2444,8 @@ components:
           type: string
           minLength: 1
           maxLength: 1000
+          pattern: '\S'
+          description: Recortar espacios exteriores y validar longitud 1..1000 después.
         expected_version:
           type: integer
           minimum: 1
@@ -2369,6 +2474,8 @@ components:
           - OTHER
         objective:
           type: string
+          minLength: 1
+          maxLength: 1000
         status:
           type: string
           enum:
@@ -2385,6 +2492,7 @@ components:
           type:
           - string
           - 'null'
+          maxLength: 2000
         version:
           type: integer
           minimum: 1
@@ -2401,6 +2509,9 @@ components:
       - version
       - created_at
       - updated_at
+      - alert_id
+      - performed_at
+      - notes
       additionalProperties: false
     InterventionCreate:
       type: object
@@ -2422,6 +2533,8 @@ components:
           type: string
           minLength: 1
           maxLength: 1000
+          pattern: '\S'
+          description: Recortar espacios exteriores y validar longitud 1..1000 después.
         scheduled_at: *id010
         notes:
           type:
@@ -2459,6 +2572,17 @@ components:
       - status
       - expected_version
       additionalProperties: false
+      allOf:
+      - if:
+          properties:
+            status: {const: DONE}
+        then:
+          required: [performed_at]
+          properties:
+            performed_at: {type: string, format: date-time}
+        else:
+          properties:
+            performed_at: {type: 'null'}
     ReportSummary:
       type: object
       properties:

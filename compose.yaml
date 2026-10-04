@@ -1,0 +1,12 @@
+# S0: reserva declarativa. S1 creará web/api/db, Dockerfiles y volúmenes.
+# No hay aplicación ni base desplegada en este sprint.
+name: riesgo-escolar-demo
+services: {}
+x-sprint:
+  current: S0
+  runtime-implemented: false
+  planned-services: [web, api, db]
+  planned-images:
+    node: node:24.14.1-bookworm-slim
+    python: python:3.12.12-slim-bookworm
+    postgres: postgres:17.6-bookworm

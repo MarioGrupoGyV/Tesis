@@ -1,0 +1,6 @@
+# Herramientas de preparación, independientes del backend futuro.
+pip==25.2
+pip-tools==7.5.1
+PyYAML==6.0.2
+openapi-spec-validator==0.7.2
+pglast==7.7

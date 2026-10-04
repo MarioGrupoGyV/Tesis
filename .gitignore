@@ -1,0 +1,41 @@
+# Entornos y dependencias locales
+.venv*/
+venv/
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Configuración privada: solo se versiona el ejemplo sin secretos
+.env
+.env.*
+!.env.example
+
+# Datos, importaciones y artefactos nunca se guardan en Git
+data/
+storage/
+artifacts/
+backups/
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.pkl
+*.pickle
+*.joblib
+*.dump
+*.log
+
+# Salidas locales de navegador
+playwright-report/
+test-results/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

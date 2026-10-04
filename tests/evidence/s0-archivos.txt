@@ -1,0 +1,65 @@
+Inventario de entrega S0 - 2026-10-03 America/Lima
+Incluye archivos modificados y nuevos; sin commits ni datos reales.
+
+.env.example
+.gitattributes
+.gitignore
+.node-version
+.python-version
+backend/app/api/v1/.gitkeep
+backend/app/core/.gitkeep
+backend/app/ml/evaluate/.gitkeep
+backend/app/ml/features/.gitkeep
+backend/app/ml/predict/.gitkeep
+backend/app/ml/train/.gitkeep
+backend/app/models/.gitkeep
+backend/app/repositories/.gitkeep
+backend/app/schemas/.gitkeep
+backend/app/services/.gitkeep
+backend/migrations/versions/.gitkeep
+backend/README.md
+backend/requirements-dev.in
+backend/requirements-dev.txt
+backend/requirements.in
+backend/requirements.txt
+backend/tests/.gitkeep
+compose.yaml
+docs/adr/001-arquitectura.md
+docs/manuals/README.md
+docs/planning/Conciliacion_SQL_API.md
+docs/planning/Contrato_API_demo.yaml
+docs/planning/Esquema_demo.sql
+docs/planning/Estado_Sprint_0.md
+docs/planning/Plan_tesis_riesgo_escolar.md
+docs/planning/Sprints_y_aceptacion.md
+docs/research/README.md
+frontend/package.json
+frontend/README.md
+frontend/src/app/.gitkeep
+frontend/src/components/.gitkeep
+frontend/src/features/alerts/.gitkeep
+frontend/src/features/auth/.gitkeep
+frontend/src/features/dashboard/.gitkeep
+frontend/src/features/imports/.gitkeep
+frontend/src/features/models/.gitkeep
+frontend/src/features/reports/.gitkeep
+frontend/src/features/students/.gitkeep
+frontend/src/lib/.gitkeep
+infra/check_s0.py
+infra/README.md
+infra/requirements-s0.in
+infra/requirements-s0.txt
+Makefile
+package-lock.json
+package.json
+README.md
+tests/e2e/.gitkeep
+tests/evidence/.gitkeep
+tests/evidence/s0-archivos.txt
+tests/evidence/s0-checks.json
+tests/evidence/s0-entorno.txt
+tests/README.md
+
+Originales sin cambios:
+AGENTS.md SHA256 4279559AEE7333FF2197C33C2F5EFACE52488E14C3444F3513EDB4874DE2E917
+docs/planning/Inicio_Codex_y_skills.md SHA256 3560DE480EF5F884F89CF04966142B3A02B10BAC199E388E221BC072E50502DF

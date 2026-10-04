@@ -6,6 +6,11 @@ La primera entrega será una aplicación web interna que permita importar regist
 
 El nombre de trabajo de la aplicación será **Seguimiento Escolar**. No cambia el título académico de la tesis. Este plan define la arquitectura y los contratos para iniciar la programación; no acredita que la aplicación ya esté implementada.
 
+Actualización técnica de Sprint 0 (3 de octubre de 2026): contrato vigente 0.1.1.
+Las decisiones exactas están en `../adr/001-arquitectura.md`; las diferencias de
+SQL/API, fechas y permisos en `Conciliacion_SQL_API.md`; aceptación y dependencias
+en `Sprints_y_aceptacion.md`. Solo se preparó S0, sin iniciar S1 ni alterar el estudio.
+
 ## 1 Alcance académico y decisiones iniciales
 
 El documento de tesis plantea un sistema predictivo con Machine Learning para gestionar el rendimiento escolar y los riesgos académicos en un colegio privado de Lima. La unidad de análisis es el estudiante de secundaria y la población inicial es de 60 estudiantes. El estudio propone un diseño preexperimental de un grupo con mediciones pretest y postest, y un censo de estudiantes elegibles. El número definitivo dependerá de la permanencia, la suficiencia de registros y las autorizaciones. El número de observaciones de entrenamiento puede ser mayor que el número de estudiantes, pero esas observaciones no constituyen estudiantes independientes.
@@ -108,7 +113,7 @@ Comandos que debe implementar el proyecto: make up, make migrate, make seed-demo
 
 **Predicción.** Seleccionar el modelo activo del mismo origen que los datos y el último corte disponible de cada matrícula hasta el instante solicitado. Comprobar que el corte corresponde a una fecha anterior al resultado que se pretende anticipar. Si faltan demasiados datos o no hay modelo compatible, devolver un estado explicativo sin inventar un nivel bajo. Persistir clase, versión, corte, fecha objetivo y probabilidades solo cuando estén disponibles. Ejecutar de nuevo la misma combinación de corte y modelo reutiliza la predicción existente.
 
-**Alerta.** Una predicción de riesgo medio o alto abre o actualiza un caso de la matrícula. La restricción de base de datos permite como máximo una alerta activa por matrícula. Cuando exista otro corte, se actualiza la referencia a la nueva predicción y se añade auditoría, sin crear una alerta idéntica. La transición de estado será ABIERTA → EN_ATENCION → RESUELTA; también podrá descartarse con motivo desde un estado activo. Un nuevo episodio posterior puede abrir otro caso. Todo cambio se registra con usuario y fecha.
+**Alerta.** Una predicción de riesgo medio o alto abre o actualiza un caso de la matrícula. La restricción de base de datos permite como máximo una alerta activa por matrícula. Cuando exista otro corte, se actualiza la referencia a la nueva predicción y se añade auditoría, sin crear una alerta idéntica. Las transiciones son ABIERTA → EN_ATENCION o RESUELTA, y EN_ATENCION → RESUELTA; también podrá descartarse con motivo desde un estado activo. Resolver directamente exige motivo y versión. Un nuevo episodio posterior puede abrir otro caso. Todo cambio se registra con usuario y fecha.
 
 **Intervención.** El tutor registra tipo, fecha prevista, objetivo y estado. Una acción PLANIFICADA no cuenta como intervención realizada. Al marcar REALIZADA se exige fecha efectiva y se conserva la bitácora. Una alerta resuelta puede tener varias intervenciones. El frontend no calcula ni modifica de forma independiente el indicador de oportunidad.
 
