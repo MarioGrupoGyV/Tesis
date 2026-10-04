@@ -1,0 +1,71 @@
+{
+  "status": "COMPROBADO",
+  "target": {
+    "kind": "RESTORE",
+    "project": "s6-restore-7c98afc40ad1",
+    "database": "s6_restore_7c98afc40ad1",
+    "target_id": "e8c25d82-d104-4e87-9a59-59b2dd484cc6",
+    "web_url": "http://localhost:15274",
+    "api_url": "http://localhost:18101",
+    "ports": {
+      "web": 15274,
+      "api": 18101,
+      "db": 55463
+    },
+    "volumes": {
+      "db_data": "s6-restore-7c98afc40ad1_db_data",
+      "import_data": "s6-restore-7c98afc40ad1_import_data",
+      "ml_data": "s6-restore-7c98afc40ad1_ml_data"
+    },
+    "images": {
+      "api": "sha256:a0a9d26b7f04b5a31a19296e6def49682425fc83d471bc569d5b17285bf1b81e",
+      "db": "sha256:567d5d704a3e5a4864393b623a0d50eb1b5a4ad134cdac7cf19555cb2d8ffe9e",
+      "web": "sha256:d66700635d3ae18fdc432197a53fca9baa185c2ec237d43573110e27e05daf6a"
+    }
+  },
+  "started_at": "2026-10-04T20:47:55.243207+00:00",
+  "finished_at": "2026-10-04T20:49:58.002474+00:00",
+  "counts_before": {
+    "academic_periods": 1,
+    "academic_snapshots": 360,
+    "alerts": 51,
+    "app_users": 4,
+    "audit_events": 305,
+    "enrollments": 60,
+    "followup_decisions": 55,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 2,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 65
+  },
+  "counts_after": {
+    "academic_periods": 1,
+    "academic_snapshots": 360,
+    "alerts": 51,
+    "app_users": 4,
+    "audit_events": 318,
+    "enrollments": 60,
+    "followup_decisions": 55,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 2,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 70
+  },
+  "protected_table_fingerprints_preserved": true,
+  "private_file_hashes_preserved": true,
+  "previous_sessions_audit_rows_preserved": true,
+  "new_sessions": 5,
+  "new_audit_events": 13,
+  "human_followup_mutations": false,
+  "regenerated_or_retrained": false,
+  "verification_changes": "Sesiones y auditor\u00eda nuevas de acceso, cierre, exportaci\u00f3n y reutilizaci\u00f3n.",
+  "real_postgresql_outage": true
+}

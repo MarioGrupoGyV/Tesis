@@ -1,0 +1,14 @@
+{
+  "status": "COMPROBADO",
+  "target": {
+    "kind": "RESTORE",
+    "project": "s6-restore-7c98afc40ad1",
+    "database": "s6_restore_7c98afc40ad1",
+    "web_url": "http://localhost:15274"
+  },
+  "http_login_attempts": 1,
+  "authentication": "HTTP_LOGIN_ME_LOGOUT",
+  "credential_selection": "ADMIN_ONLY",
+  "s22_entries_unchanged": true,
+  "institutional_ready": false
+}

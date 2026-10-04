@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "scope": "INSTALL",
+  "cases": [
+    {
+      "title": "S6 instalación: primera importación por interfaz sin preparación académica",
+      "status": "passed",
+      "duration_ms": 8261,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    }
+  ]
+}

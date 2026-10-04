@@ -1,0 +1,171 @@
+{
+  "status": "COMPROBADO",
+  "target": {
+    "kind": "INSTALL",
+    "project": "s6-install-041bbf87a38b",
+    "database": "s6_install_041bbf87a38b",
+    "target_id": "fda2762d-417d-44d5-b20c-bb4a770a09f9",
+    "web_url": "http://localhost:15273",
+    "api_url": "http://localhost:18100",
+    "ports": {
+      "web": 15273,
+      "api": 18100,
+      "db": 55462
+    },
+    "volumes": {
+      "db_data": "s6-install-041bbf87a38b_db_data",
+      "import_data": "s6-install-041bbf87a38b_import_data",
+      "ml_data": "s6-install-041bbf87a38b_ml_data"
+    },
+    "images": {
+      "api": "sha256:a0a9d26b7f04b5a31a19296e6def49682425fc83d471bc569d5b17285bf1b81e",
+      "web": "sha256:1578157e456ea957407ac4bb00488422e824f589b5c4f714daad68d962ee78ea",
+      "db": "sha256:567d5d704a3e5a4864393b623a0d50eb1b5a4ad134cdac7cf19555cb2d8ffe9e"
+    }
+  },
+  "started_at": "2026-10-04T21:03:31.785282+00:00",
+  "clean_counts": {
+    "academic_periods": 0,
+    "academic_snapshots": 0,
+    "alerts": 0,
+    "app_users": 0,
+    "audit_events": 0,
+    "enrollments": 0,
+    "followup_decisions": 0,
+    "grade_sections": 0,
+    "import_batches": 0,
+    "interventions": 0,
+    "model_versions": 0,
+    "predictions": 0,
+    "students": 0,
+    "synthetic_studies": 0,
+    "user_sessions": 0
+  },
+  "clean_tables": 15,
+  "database_role": "riesgo_app",
+  "copied_database_or_artifacts": false,
+  "automatic_bootstrap": false,
+  "bootstrap_scope": "Cuentas aleatorias temporales preparadas expl\u00edcitamente por servicios reales en el destino aislado; no entrada manual.",
+  "institutional_processing": false,
+  "explicit_admin_profile_check": {
+    "status": "COMPROBADO",
+    "target": {
+      "kind": "INSTALL",
+      "project": "s6-install-041bbf87a38b",
+      "database": "s6_install_041bbf87a38b",
+      "web_url": "http://localhost:15273"
+    },
+    "http_login_attempts": 4,
+    "cases": [
+      {
+        "case": "own_admin_valid_12_to_19",
+        "status": "COMPROBADO",
+        "authentication": "HTTP_LOGIN_ME_LOGOUT",
+        "private_command": "study_status",
+        "users_created_by_profile": false,
+        "password_exported": false
+      },
+      {
+        "case": "invalid",
+        "status": "COMPROBADO",
+        "authentication": "REAL_HTTP_REJECTED",
+        "credential_stored": false
+      },
+      {
+        "case": "non_admin",
+        "status": "COMPROBADO",
+        "authentication": "REAL_HTTP_REJECTED",
+        "credential_stored": false
+      },
+      {
+        "case": "inactive",
+        "status": "COMPROBADO",
+        "authentication": "REAL_HTTP_REJECTED",
+        "credential_stored": false,
+        "scope": "TEMPORARY_INSTALL_ADMIN_FLAG_ONLY"
+      }
+    ],
+    "temporary_profiles_cleaned": true,
+    "s22_entries_unchanged": true,
+    "admin_active_restored": true,
+    "secret_files_created": false,
+    "executed_code_sha256": {
+      "test_s6_profiles_live.py": "59d192ff2452eab51816142d5b1b59c03778914f1fbdee9b9643b228016459f7"
+    }
+  },
+  "bootstrap_repeated_rejected": true,
+  "study_id": "e3a2d28b-2f23-56ae-878c-1a8f4a257e7e",
+  "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+  "generation_version": "synthetic-generator-v1",
+  "seed": 1729,
+  "csv_sha256": "79fedc114a952631977bbd46cabe5c5a76faeef7e7293e709d5a1a11c9b31374",
+  "reproducible_generation_reused": true,
+  "first_import_via_real_browser_api": true,
+  "selected_algorithm": "SVM",
+  "explicit_cli_comparison_registration_activation": true,
+  "login_wait_before_integrated_seconds": 0,
+  "login_wait_before_review_seconds": 182.3,
+  "first_inference_via_real_browser_api": true,
+  "initial_inference": {
+    "selected": 60,
+    "created": 55,
+    "reused": 0,
+    "followup": {
+      "policy_version": "followup-policy-v1",
+      "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+      "created": 51,
+      "updated": 0,
+      "retained_low": 0,
+      "no_alert": 4,
+      "reused": 0,
+      "ignored_stale": 0,
+      "skipped_missing": 5
+    }
+  },
+  "abstentions": 5,
+  "integrated_roles": [
+    "ADMIN",
+    "TUTOR",
+    "DIRECTOR",
+    "RESEARCHER"
+  ],
+  "counts_after": {
+    "academic_periods": 2,
+    "academic_snapshots": 360,
+    "alerts": 51,
+    "app_users": 4,
+    "audit_events": 195,
+    "enrollments": 60,
+    "followup_decisions": 55,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 2,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 7
+  },
+  "period_lock_real_api_ui": true,
+  "review_evidence_prefix": "s6-install-verified-review",
+  "csv_removed_after_review": true,
+  "finished_at": "2026-10-04T21:19:31.788643+00:00",
+  "counts_at_finish": {
+    "academic_periods": 2,
+    "academic_snapshots": 360,
+    "alerts": 51,
+    "app_users": 4,
+    "audit_events": 212,
+    "enrollments": 60,
+    "followup_decisions": 55,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 2,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 13
+  },
+  "target_stopped_and_preserved": true
+}

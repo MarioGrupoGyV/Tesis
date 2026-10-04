@@ -1,4 +1,6 @@
 .students-feature { display: grid; gap: 24px; min-width: 0; }
+.student-detail-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+#student-history-title { scroll-margin-top: 20px; }
 .student-filters, .student-list-panel, .student-detail-panel { padding: 24px; min-width: 0; }
 .student-filter-grid { display: grid; grid-template-columns: minmax(180px, 1.5fr) repeat(2, minmax(140px, 1fr)) minmax(125px, .7fr); gap: 16px; }
 .student-filter-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
@@ -26,7 +28,7 @@
 .student-history-body { min-width: 0; flex: 1; }
 .student-history-body strong { font-size: 13px; }
 .student-history-body p { overflow-wrap: anywhere; margin: 8px 0; font-size: 13px; line-height: 1.6; }
-.student-history-body time { display: block; margin-top: 4px; font-size: 12px; color: #748275; }
+.student-history-body time { display: block; margin-top: 4px; font-size: 12px; color: #536a57; }
 .student-history-body button { margin-top: 6px; }
 .student-historical-prediction { border: 1px solid #d4e1d2; border-radius: 8px; background: #f6f9f3; padding: 20px; margin: 20px 0; }
 .student-historical-prediction > header { display: flex; justify-content: space-between; gap: 12px; align-items: start; }

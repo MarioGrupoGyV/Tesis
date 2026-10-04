@@ -1,0 +1,614 @@
+{
+  "status": "COMPROBADO",
+  "method": "Inspección directa de PNG reales mediante view_image, atribuida al revisor indicado. Los PNG originales no fueron editados ni montados. images conserva antecedentes intermedios; final_images incluye exclusivamente imágenes finales verificadas. No es una certificación WCAG integral ni evidencia de eficacia escolar.",
+  "reviewed_at": "2026-10-04T20:59:20.862110+00:00",
+  "images": [
+    {
+      "file": "s5-active-final-tutor-case-completed-390x844.png",
+      "scope": "HISTORICAL_S5",
+      "sha256": "936e2f7f56b281718a55331e4285f0d396bb7a8e56a0a3a75f734b192447fe4b",
+      "notes": "Caso cerrado móvil: dos formularios limpios deshabilitados ocupaban espacio; la evidencia previa permanece intacta."
+    },
+    {
+      "file": "s5-active-final-tutor-student-followup-390x844.png",
+      "scope": "HISTORICAL_S5",
+      "sha256": "1efa9a6c5036c45e5aca7cc058bb9cf1bc761c3bdee277124bb5f1b76695e6d4",
+      "notes": "Historial móvil extenso: origen de la mejora de salto y foco al historial; no se alteró esta evidencia."
+    },
+    {
+      "file": "s6-install-first-import-first-import-review-390x844.png",
+      "scope": "INTERIM_FAILED_INSTALL",
+      "sha256": "c66ae48bfa4134e382f971cb0d2d05af1d725a63c1d9b0c0e5c089c077b921b6",
+      "notes": "Vista previa real de CSV registrado: tres pasos,360filas válidas,60estudiantes previstos, sin filas académicas antes de confirmar; texto y controles legibles."
+    },
+    {
+      "file": "s6-install-first-import-first-import-review-768x1024.png",
+      "scope": "INTERIM_FAILED_INSTALL",
+      "sha256": "03bb26b7824f014e3a6dcd54b38e84ab2768bda024a7f1c1024f35c68beaa90b",
+      "notes": "Vista previa real en tableta: resumen y confirmación visibles; sin desbordamiento horizontal global."
+    },
+    {
+      "file": "s6-install-first-import-first-import-committed-1440x900.png",
+      "scope": "INTERIM_FAILED_INSTALL",
+      "sha256": "3d79a501b6a3b920a62d0789c0ddc8eedf0649698887a551b579a63c0aad4e05",
+      "notes": "Importación confirmada real: estudiantes todavía pendientes de evaluación, sin riesgo bajo inventado."
+    },
+    {
+      "file": "s6-install-complete-integrated-case-completed-390x844.png",
+      "scope": "INTERIM_FAILED_INSTALL",
+      "sha256": "f4ab1517f1cda4012270d7cf5f9fb62c9ac03190e90b0f67862ddebb1b670d73",
+      "notes": "Caso cerrado con dos actividades reales de simulación: formularios limpios omitidos; estados realizada/cancelada y fechas legibles."
+    },
+    {
+      "file": "s6-install-complete-integrated-tutor-student-history-long-390x844.png",
+      "scope": "INTERIM_FAILED_INSTALL",
+      "sha256": "008412b97d73814eb3e39c51cbe43f20de11f7581cf46156cb54db52d14470a7",
+      "notes": "Historial extenso móvil: salto disponible y foco comprobado por test; tiempo con contraste mejorado y eventos envueltos en varias líneas."
+    },
+    {
+      "file": "s6-install-complete-integrated-http-simulated-terminal-conflict-drafts-768x1024.png",
+      "scope": "INTERIM_FAILED_INSTALL_HTTP_SIMULATION",
+      "sha256": "76c52e6809d361878957ba6b1e88da80b7d80cb6523ce3db433c453b0ffd8fed",
+      "notes": "Cierre de GET y PATCH409 simulados exclusivamente: ambos borradores permanecen, botones deshabilitados. Detectó instrucción vacía de caso activo inaplicable, corregida después. No prueba concurrencia PostgreSQL."
+    }
+  ],
+  "final_images": [
+    {
+      "file": "tests/evidence/s6-install-verified-import-first-import-review-1440x900.png",
+      "sha256": "fb5a2773e73114de80d9c2ab16294123fe24bbcadcaab5c2b68955cdbf316d72",
+      "width": 1440,
+      "height": 2039,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Vista previa real final:360filas válidas y60estudiantes previstos; tres pasos legibles, confirmación inicialmente deshabilitada, sin desbordamiento horizontal global.",
+        "En móvil controles y casilla se ajustan al ancho; se distingue lo previsto de lo confirmado."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-import-first-import-review-768x1024.png",
+      "sha256": "9fb43324030e2f613647ad9aec5ad798f4c7fc4c3cca5cf5c970a6f71d2c04eb",
+      "width": 768,
+      "height": 2043,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Vista previa real final:360filas válidas y60estudiantes previstos; tres pasos legibles, confirmación inicialmente deshabilitada, sin desbordamiento horizontal global.",
+        "En móvil controles y casilla se ajustan al ancho; se distingue lo previsto de lo confirmado."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-import-first-import-review-390x844.png",
+      "sha256": "6fa9630625eb3935b445d20d5df424590ff44eebd3b2a5045ec8c56f6f7d0e9a",
+      "width": 390,
+      "height": 2630,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Vista previa real final:360filas válidas y60estudiantes previstos; tres pasos legibles, confirmación inicialmente deshabilitada, sin desbordamiento horizontal global.",
+        "En móvil controles y casilla se ajustan al ancho; se distingue lo previsto de lo confirmado."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-integrated-plan-form-1440x900.png",
+      "sha256": "fdb0cc41da847c5692147ac88a3d1762c5db85243b725a4279b8a83df926709b",
+      "width": 1440,
+      "height": 2716,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Formulario de planificación real del tutor: objetivo, fecha Lima y notas visibles; la instrucción distingue planificada de realizada y contextualiza seguimiento sintético.",
+        "Campos y acciones se ajustan al ancho; no desbordamiento horizontal global."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-integrated-real-version-conflict-1440x900.png",
+      "sha256": "85da6845836ba60a7acac910410597654db2e7e3174a73e31b6ac11b2cdbf5b3",
+      "width": 1440,
+      "height": 3848,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Conflicto409 real en PostgreSQL: motivo retenido, Guardar estado deshabilitado, revisión y casilla explícitas; actividades realizada/cancelada conservadas.",
+        "Se distinguen los estados por texto e icono, y el borrador se mantiene visible."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-integrated-plan-form-768x1024.png",
+      "sha256": "99a4d48ac279873c972a0dec56dca193c2604566fc107b837a89e1035837ac2d",
+      "width": 768,
+      "height": 2879,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Formulario de planificación real del tutor: objetivo, fecha Lima y notas visibles; la instrucción distingue planificada de realizada y contextualiza seguimiento sintético.",
+        "Campos y acciones se ajustan al ancho; no desbordamiento horizontal global."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-integrated-real-version-conflict-768x1024.png",
+      "sha256": "94c20a35b2288e0fc897a33c4d892ea4161d1ff3e0fc304b5dbd83e55f918e17",
+      "width": 768,
+      "height": 4032,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Conflicto409 real en PostgreSQL: motivo retenido, Guardar estado deshabilitado, revisión y casilla explícitas; actividades realizada/cancelada conservadas.",
+        "Se distinguen los estados por texto e icono, y el borrador se mantiene visible."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-integrated-plan-form-390x844.png",
+      "sha256": "745ec3d38e53db939c135b5a9a858c2c4c5c34c2d68c97199fbad92dddbe9caf",
+      "width": 390,
+      "height": 3883,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Formulario de planificación real del tutor: objetivo, fecha Lima y notas visibles; la instrucción distingue planificada de realizada y contextualiza seguimiento sintético.",
+        "Campos y acciones se ajustan al ancho; no desbordamiento horizontal global."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-integrated-real-version-conflict-390x844.png",
+      "sha256": "e326a855c476bea654a0908c6266f4ef99865cdd038f23aa45b389a40b173b7b",
+      "width": 390,
+      "height": 5434,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Conflicto409 real en PostgreSQL: motivo retenido, Guardar estado deshabilitado, revisión y casilla explícitas; actividades realizada/cancelada conservadas.",
+        "Se distinguen los estados por texto e icono, y el borrador se mantiene visible."
+      ],
+      "additional_reviews": [
+        {
+          "reviewer": "s6_docs",
+          "findings": [
+            "Conflicto real conserva borrador y revisión explícita en móvil."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-integrated-http-simulated-terminal-conflict-drafts-768x1024.png",
+      "sha256": "034bc375ac8e7e68e5beab31e3aace56ddfcfbd11d24ceeec79128bc8e845ac6",
+      "width": 768,
+      "height": 3599,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "SoloPATCH409 y cierreGET simulados: ambos borradores retenidos, escrituras deshabilitadas; texto vacío neutro corregido para caso cerrado.",
+        "Esta captura prueba interfaz y conservación de borradores; no acredita concurrencia PostgreSQL."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-integrated-case-completed-390x844.png",
+      "sha256": "d1606f7bc3a7e51e6c14151c46a04c08a7ca30a59d973cfbcc3b8cacf6feb98c",
+      "width": 390,
+      "height": 4122,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Caso cerrado real móvil: dos actividades con estados/fechas propios, motivo e historial visibles; formularios limpios omitidos y avisos terminales claros."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-integrated-tutor-student-history-long-390x844.png",
+      "sha256": "99ea786c6142fca5b7d666268877bda6853971ee8cedbd9c2eb046be09ea1b48",
+      "width": 390,
+      "height": 5637,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Historial móvil extenso: botón Ir al historial, eventos paginados y horas con contraste aumentado; texto envuelto sin desbordamiento global.",
+        "El fixture conserva14eventos al elegir20porpágina; la paginación y foco se comprobaron por Playwright."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-period-lock-real-period-locked-1440x900.png",
+      "sha256": "2540309183ccc1346d09e095aee37021a80e4881b8574607fd393037419c6e4a",
+      "width": 1440,
+      "height": 2396,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Periodo bloqueado realmente en DB: badgeBloqueado, aviso de escrituras bloqueadas y Actualizar alertas deshabilitado;51casos siguen visibles.",
+        "Filtros y paginación legibles; en móvil la tabla tiene desplazamiento interno anunciado, sin desbordamiento de página."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-period-lock-real-period-locked-768x1024.png",
+      "sha256": "5bedea49e57fabd5c61c951896cc38e24f8bdc485bda95d616655cc19483996b",
+      "width": 768,
+      "height": 2760,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Periodo bloqueado realmente en DB: badgeBloqueado, aviso de escrituras bloqueadas y Actualizar alertas deshabilitado;51casos siguen visibles.",
+        "Filtros y paginación legibles; en móvil la tabla tiene desplazamiento interno anunciado, sin desbordamiento de página."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-period-lock-real-period-locked-390x844.png",
+      "sha256": "5430fcb3ca4f2f4db5369b87a262530fa106969e62a400439fec9f715d7010c5",
+      "width": 390,
+      "height": 3239,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Periodo bloqueado realmente en DB: badgeBloqueado, aviso de escrituras bloqueadas y Actualizar alertas deshabilitado;51casos siguen visibles.",
+        "Filtros y paginación legibles; en móvil la tabla tiene desplazamiento interno anunciado, sin desbordamiento de página."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-integrated-tutor-student-history-long-1440x900.png",
+      "sha256": "8f71d53b63f1ed9b0e04471ace0e9d3514a187310054a8869460508eb6d56fc6",
+      "width": 1440,
+      "height": 4352,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Detalle e historial extensos con14eventos al elegir20porpágina; actividad realizada y cancelada diferenciadas por estado y fecha efectiva.",
+        "Acceso Ir al historial y paginación disponibles; espacio y líneas legibles en escritorio/tableta, sin desbordamiento global."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-integrated-tutor-student-history-long-768x1024.png",
+      "sha256": "1e7061854384477ccc517bfb9b93dd05e69c05a58fe285a6a8a695f3cc7bcc3f",
+      "width": 768,
+      "height": 4448,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "Detalle e historial extensos con14eventos al elegir20porpágina; actividad realizada y cancelada diferenciadas por estado y fecha efectiva.",
+        "Acceso Ir al historial y paginación disponibles; espacio y líneas legibles en escritorio/tableta, sin desbordamiento global."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-active-final-admin-case-1440x900.png",
+      "sha256": "f07c00bc2141cbdcfeeb6534a0e1708eca7e0d1c047562e302dbf7e1d9c6b0eb",
+      "width": 1440,
+      "height": 2748,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inspected": true,
+      "reviewer": "root",
+      "findings": [
+        "Caso cerrado activo con dos actividades: evidencia y fuentes diferenciadas; no formulario limpio de estado. Inspección directa declarada por root."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-active-final-tutor-student-history-long-390x844.png",
+      "sha256": "153bb597c56b89c06d3695ad69f0bcd9bf96a808560bff4dbdda38d0afe2857f",
+      "width": 390,
+      "height": 5637,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inspected": true,
+      "reviewer": "root",
+      "findings": [
+        "Historial móvil en columna, sin desbordamiento general; Ir al historial disponible y paginación legible al final. Inspección directa declarada por root."
+      ],
+      "additional_reviews": [
+        {
+          "reviewer": "s6_docs",
+          "findings": [
+            "Historial móvil y navegación revisados; paginación y datos sin evaluación tienen texto explícito."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-active-final-admin-reports-empty-768x1024.png",
+      "sha256": "3d7e9a459b1a49355230e42d606cc33ee5b41aebc376c5b0db9c6c844f7d4dd0",
+      "width": 768,
+      "height": 2490,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "inspected": true,
+      "reviewer": "root",
+      "findings": [
+        "Vacío de cero matrículas explicado; porcentajes con denominador0se muestran no estimables. Inspección directa declarada por root."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-active-final-admin-home-390x844.png",
+      "sha256": "41ceb4a7fa7dfefc18d7e9e14c72268a0cbd5f5d88312a72bf4f0234cf78a00f",
+      "width": 390,
+      "height": 3128,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inspected": true,
+      "reviewer": "s6_docs",
+      "findings": [
+        "Inicio móvil: origen sintético, denominadores y categorías de evaluación explícitos; navegación ajustada al ancho.",
+        "Inspección directa de view_image declarada por agente de documentación; sin certificación WCAG."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-active-final-admin-alerts-1440x900.png",
+      "sha256": "626a38146959bd6e17b8228824e413532f06d8d5212a88bf4229cca2dcd7ee1d",
+      "width": 1440,
+      "height": 2291,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inspected": true,
+      "reviewer": "s6_docs",
+      "findings": [
+        "Alertas escritorio: origen sintético, estado, severidad y fechas Lima visibles.",
+        "Inspección directa de view_image declarada por agente de documentación; sin certificación WCAG."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-integrated-done-form-768x1024.png",
+      "sha256": "1db5e0ce0ddfd2eedcdd23e32057b0f6cd7ff9ae12276f2a972c54e0d406fb73",
+      "width": 768,
+      "height": 3924,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "inspected": true,
+      "reviewer": "s6_docs",
+      "findings": [
+        "Formulario de actividad real: estado realizada exige fecha efectiva Lima; planificación y realización se distinguen.",
+        "Inspección directa de view_image declarada por agente de documentación; sin certificación WCAG."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-active-final-director-case-768x1024.png",
+      "sha256": "38eddb69ace67ac3df4c81c58e2c2f112e63b8e0a16cddcb26c774d7ee2ef675",
+      "width": 768,
+      "height": 2688,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "inspected": true,
+      "reviewer": "s6_docs",
+      "findings": [
+        "Directivo consulta fuente, actividades y fechas sin formularios de mutación.",
+        "Inspección directa de view_image declarada por agente de documentación; sin certificación WCAG."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-active-final-director-reports-1440x900.png",
+      "sha256": "a2eb0c39da4f464bec673a75a2f592fb0529a81fcb8dd34bf5a19801013ddb16",
+      "width": 1440,
+      "height": 4340,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inspected": true,
+      "reviewer": "s6_docs",
+      "findings": [
+        "Reporte directivo: denominadores y estados de evaluación visibles; no presenta eficacia escolar.",
+        "Inspección directa de view_image declarada por agente de documentación; sin certificación WCAG."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-restored-final-admin-home-1440x900.png",
+      "sha256": "977782e4b11a3633af939034257a75abb05c028d295b9cd1df2017eb81461164",
+      "width": 1440,
+      "height": 1696,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inspected": true,
+      "reviewer": "s6_docs",
+      "findings": [
+        "Inicio restaurado: origen sintético, denominadores y ausencia de evaluación diferenciados. Inspección PNG; la recuperación PG la prueban los runners.",
+        "Inspección directa de view_image declarada por agente de documentación; sin certificación WCAG."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-review-outage-real-postgresql-outage-1440x900.png",
+      "sha256": "90a0f4714fda4af1a7a6e3169653230529fdba8106485a67aa362d30df342944",
+      "width": 1440,
+      "height": 970,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "PostgreSQL realmente detenido: mensaje temporal sanitizado, referencia de soporte y reintento visible; sin filas ni éxito falso. Texto y filtros caben en los tres anchos.",
+        "Esta captura y su runner no usan mockHTTP para la caída; web/API permanecieron ejecutándose."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-review-outage-real-postgresql-outage-768x1024.png",
+      "sha256": "8a22b8e887cffe9a327c65996efc1b14b39090b2312c11b714782da1823f1f85",
+      "width": 768,
+      "height": 1065,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "PostgreSQL realmente detenido: mensaje temporal sanitizado, referencia de soporte y reintento visible; sin filas ni éxito falso. Texto y filtros caben en los tres anchos.",
+        "Esta captura y su runner no usan mockHTTP para la caída; web/API permanecieron ejecutándose."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-review-outage-real-postgresql-outage-390x844.png",
+      "sha256": "9c002c25a5b0370972920a1cd72ad439852ff62232f254c717066233e7b7cbe6",
+      "width": 390,
+      "height": 1394,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "PostgreSQL realmente detenido: mensaje temporal sanitizado, referencia de soporte y reintento visible; sin filas ni éxito falso. Texto y filtros caben en los tres anchos.",
+        "Esta captura y su runner no usan mockHTTP para la caída; web/API permanecieron ejecutándose."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-review-outage-real-postgresql-recovered-1440x900.png",
+      "sha256": "7dbe471926d6b39994f0cd331363ccdfab89239e19e17373d6dddbcc9e9931ad",
+      "width": 1440,
+      "height": 2232,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "PostgreSQL recuperado:60registros conservados y20filas visibles por página; estados de datos insuficientes mantienen Sin estimación.",
+        "Tabla con desplazamiento interno cuando corresponde, paginación visible y ningún desbordamiento global."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-review-outage-real-postgresql-recovered-768x1024.png",
+      "sha256": "115f861b7c77c9117c9fb1b923b802364ece4d94f4fc1d2c3cd7d9457ed00438",
+      "width": 768,
+      "height": 2900,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "PostgreSQL recuperado:60registros conservados y20filas visibles por página; estados de datos insuficientes mantienen Sin estimación.",
+        "Tabla con desplazamiento interno cuando corresponde, paginación visible y ningún desbordamiento global."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-install-verified-review-outage-real-postgresql-recovered-390x844.png",
+      "sha256": "d3ec8e5e5dea88cdb88a5215756c448ff5227e30c1883f11476dcdcb328deb42",
+      "width": 390,
+      "height": 3668,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inspected": true,
+      "reviewer": "s6_browser",
+      "findings": [
+        "PostgreSQL recuperado:60registros conservados y20filas visibles por página; estados de datos insuficientes mantienen Sin estimación.",
+        "Tabla con desplazamiento interno cuando corresponde, paginación visible y ningún desbordamiento global."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-restored-final-outage-real-postgresql-outage-390x844.png",
+      "sha256": "0279e7739555a7f4bc8a34e34049bd4f4e33eb5e8a3682314ac3ec0ecc3bc110",
+      "width": 390,
+      "height": 1394,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "inspected": true,
+      "reviewer": "root",
+      "findings": [
+        "Consulta con error legible y sanitizado; sin filas ni falso éxito. El botón reintenta exclusivamente la lectura. Inspección directa declarada por root."
+      ]
+    },
+    {
+      "file": "tests/evidence/s6-restored-final-outage-real-postgresql-recovered-1440x900.png",
+      "sha256": "2fb809e4b7e2b1ec0867a4b8b914a9c88682528e299457bdc0635140da06b3e6",
+      "width": 1440,
+      "height": 2232,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "inspected": true,
+      "reviewer": "root",
+      "findings": [
+        "Tras recuperar DB:60registros y paginación de nuevo; casos insuficientes conservan Sin estimación, sin desbordamiento general. Inspección directa declarada por root."
+      ]
+    }
+  ],
+  "final_reviewed_at": "2026-10-04T21:22:16.249683+00:00",
+  "final_runtime_web_image": "sha256:1578157e456ea957407ac4bb00488422e824f589b5c4f714daad68d962ee78ea",
+  "simulation_images_do_not_prove_database_failures": true
+}

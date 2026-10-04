@@ -1,0 +1,84 @@
+{
+  "status": "COMPROBADO",
+  "backup_id": "s6-20261004T210353Z-935633b0a52a",
+  "inventory_verified": true,
+  "members": 23,
+  "database": {
+    "alembic": [
+      "0004_followup"
+    ],
+    "counts": {
+      "academic_periods": 1,
+      "academic_snapshots": 360,
+      "alerts": 51,
+      "app_users": 4,
+      "audit_events": 316,
+      "enrollments": 60,
+      "followup_decisions": 55,
+      "grade_sections": 2,
+      "import_batches": 1,
+      "interventions": 2,
+      "model_versions": 1,
+      "predictions": 55,
+      "students": 60,
+      "synthetic_studies": 1,
+      "user_sessions": 69
+    },
+    "fingerprints": {
+      "academic_periods": "0e2d6bb049f2f3aa982d3bbae7a474d6",
+      "academic_snapshots": "57c3408cd313d144b5cc16afa45e8844",
+      "alerts": "1c14126aeb8b8979c737d1f880ea5f35",
+      "app_users": "f4a9576e9d16171b504d15c995da3911",
+      "audit_events": "f1b6e95c5f2f548a580bae0aca6fb288",
+      "enrollments": "fbbe081e3cd7f4499b1309c161711968",
+      "followup_decisions": "69df1391d4a6574e52b73d657d0e3615",
+      "grade_sections": "65774205a8d6989b0ea51b523d65df5e",
+      "import_batches": "e4924705f582f631d9826f82a1868a29",
+      "interventions": "f1c3d4e329852af1299b297b44c2444d",
+      "model_versions": "56d78e6ce6a56e74106ffc540b421995",
+      "predictions": "8926915c568dcb55c9d88fb32fb56f43",
+      "students": "8373560df5dd5ac896b3e9403e57585e",
+      "synthetic_studies": "8064ef60a33b83166c1d43b5f02b1e37",
+      "user_sessions": "90959558a3c0d73b3ec2054f8e2074fc"
+    },
+    "roles": [
+      {
+        "createdb": false,
+        "createrole": false,
+        "name": "riesgo_app",
+        "settings": [
+          "TimeZone=UTC"
+        ],
+        "superuser": false
+      },
+      {
+        "createdb": true,
+        "createrole": true,
+        "name": "riesgo_owner",
+        "settings": [
+          "TimeZone=UTC"
+        ],
+        "superuser": true
+      }
+    ],
+    "schema_md5": "df1f564d17ab3de17d24b23c10274613",
+    "tables": [
+      "academic_periods",
+      "academic_snapshots",
+      "alerts",
+      "app_users",
+      "audit_events",
+      "enrollments",
+      "followup_decisions",
+      "grade_sections",
+      "import_batches",
+      "interventions",
+      "model_versions",
+      "predictions",
+      "students",
+      "synthetic_studies",
+      "user_sessions"
+    ]
+  },
+  "dpapi_decrypted": true
+}

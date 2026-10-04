@@ -1,5 +1,7 @@
 # Manual — Estudio con datos sintéticos S3.1
 
+> Operación vigente S6: consultar [instalación Windows](Manual_Instalacion_Windows.md) y [uso final](Manual_Uso_Final.md). Los comandos históricos `infra/study.py` de este documento ahora requieren `--target` explícito y ADMIN o perfil privado. Alembic vigente: `0004_followup`. Este manual conserva el alcance y las evidencias de su iteración.
+
 SYNTHETIC identifica registros y resultados completamente generados. No son alumnos
 observados ni datos reales anonimizados. La comparación depende del mecanismo de
 generación; no acredita eficacia escolar, impacto, validación prospectiva o hipótesis

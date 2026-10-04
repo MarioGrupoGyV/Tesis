@@ -11,9 +11,44 @@ se conservan intactos. S2.1 reemplaza las instrucciones operativas de ese alcanc
 | S3.1 | Comprobado; Estado_Sprint_3_1.md y Matriz_verificacion_S3_1.md | Estudio SYNTHETIC nuevo verificado, comparación con reserva temporal, activación explícita técnica y recorrido API/DB; REAL bloqueado |
 | S4 | Implementado y comprobado; Estado_Sprint_4.md y Matriz_verificacion_S4.md | S3.1 comprobado. Acceso/Inicio/Estudiantes/Datos/Modelos con API real, rutas/roles/contexto, flujo importación/evaluación sintética y tres tamaños. Alertas/Reportes pendientes S5 |
 | S5 | Implementado; cierre y resultados en Estado_Sprint_5.md y Matriz_verificacion_S5.md | S4 conservado; seguimiento SYNTHETIC único/versionado, inferencia atómica, resumen y CSV con permisos servidor. REAL bloqueado |
-| S6 | Pendiente | S3–S5 integrados; recorrido completo, persistencia, restauración, documentación y evidencias verificables |
+| S6 | Comprobado como sistema local para simulación; Estado_Sprint_6.md y Matriz_Trazabilidad_Final.md | Instalación nueva/recorrido UI, respaldo DPAPI/restauración completa sin regeneración y revisión activa no destructiva; validación académica pendiente |
 
-## Aceptación S2.1
+## Aceptación S6
+
+**Comprobada**: A 11/11, B 5/5, C 4/4; backend 269, perfiles 16, recuperación 29,
+paquete real seis negativos. Estado S6 y matriz final documentan evidencia, hashes
+y límites. REAL y aceptación académica permanecen pendientes.
+
+1. ADR 009 previa y tres destinos explícitos: instalación nueva, restauración del
+   estado S5 sin generador y revisión activa no destructiva. Identidad comprobada
+   antes de escribir; sin fallback a BASE activo, colisiones o volúmenes compartidos.
+2. Instalación vacía con 15 tablas/head 0004, riesgo_app y secretos/volúmenes nuevos;
+   bootstrap/configuración explícitos y perfil ADMIN propio privado validado en
+   Windows, sin recrear accesos S2.2 o imponer política de fixtures.
+3. Generación/comparación/registro/activación técnica explícitos solo en aislamiento;
+   primer import y primera inferencia por UI real. Selección en desarrollo y firmas
+   reproducibles; reserva fuera de fit/selección, sin cambios metodológicos.
+4. Respaldo consistente custom PostgreSQL y todos los archivos privados, incluida
+   clave HMAC, más configuración mínima. Manifiesto de código/locks/imágenes,
+   roles/grants/Alembic, tamaños/hashes y todas las tablas. finally exacto de escritores.
+5. DPAPI de usuario nativa Windows comprobada y rechazo de alteración; validación de
+   paquetes propios/rutas/inventario/límites antes de restaurar. Temporales privados
+   limpios; errores/corrupción/ausencia/incompatibilidad/colisión comprobados sin activo.
+6. Restore aislado con pg_restore fatal, sin migración previa/stamp/regeneración;
+   coincidencia de las 15 tablas, sesiones/auditoría/Alembic y todos los archivos
+   antes de login. HMAC/modelo compatibles, API riesgo_app y copia conservada detenida.
+7. Cuatro roles en copia y activo, alcance/filtros/paginación/historial/reportes/CSV,
+   CSRF, idempotencia y caso cerrado preservados. Recorrido nuevo con actividades y
+   versiones; caída DB real exclusivamente aislada, 503 sanitizada y recuperación.
+8. Tres tamaños inspeccionados, teclado/foco/historial móvil y conflictos/borradores;
+   simulaciones HTTP diferenciadas de DB real. Sin certificación de accesibilidad.
+9. Backend completo, pruebas nuevas de perfiles/recuperación, contrato/tipos,
+   pip check/build host/imágenes/diff check y checker S6 de destinos/cobertura actual.
+   Índice/manuales/matriz/Estado con código/locks, comandos, fallos/omisiones y límites.
+10. Datos/credenciales/modelo/históricos preservados; REAL, eficacia escolar y
+    validación de tesis pendientes. Sin S7, commit/push o despliegue externo.
+
+## Aceptación S2.1 (registro previo)
 
 1. SHA inicial y cambios registrados; no descartar trabajo. Versiones/locks conservados.
 2. Respaldo privado de base/CSV restaurado en destino aislado antes de retirar el

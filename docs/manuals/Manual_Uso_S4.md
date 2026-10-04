@@ -1,5 +1,7 @@
 # Manual de uso — Seguimiento Escolar, S4
 
+> Operación vigente S6: consultar [instalación Windows](Manual_Instalacion_Windows.md) y [uso final](Manual_Uso_Final.md). Los comandos históricos `infra/study.py` de este documento ahora requieren `--target` explícito y ADMIN o perfil privado. Alembic vigente: `0004_followup`. Este manual conserva el alcance y las evidencias de su iteración.
+
 La aplicación permite consultar e importar información del **Estudio con datos
 sintéticos** y solicitar estimaciones de su modelo. Los registros y resultados
 no corresponden a estudiantes reales. El procesamiento REAL permanece bloqueado.

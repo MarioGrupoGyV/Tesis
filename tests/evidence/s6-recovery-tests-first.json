@@ -1,0 +1,163 @@
+{
+  "status": "FALLIDO",
+  "started_at": "2026-10-04T20:26:36.064269+00:00",
+  "finished_at": "2026-10-04T20:26:36.346768+00:00",
+  "runtime": {
+    "platform": "Windows",
+    "python": "3.12.0"
+  },
+  "command": "py -3.12 -X utf8 infra/test_s6_recovery.py --report tests\\evidence\\s6-recovery-tests-first.json",
+  "tests": 24,
+  "passed": 17,
+  "failures": 3,
+  "errors": 4,
+  "skipped": 0,
+  "cases": [
+    {
+      "test": "test_s6_recovery.ArchiveValidationTests.test_complete_inventory_validates_without_extraction",
+      "status": "COMPROBADO",
+      "scope": "REAL_PACKAGE_VALIDATOR_TEMPORARY_FIXTURES"
+    },
+    {
+      "test": "test_s6_recovery.ArchiveValidationTests.test_corrupt_hash_size_and_inventory_coverage_are_rejected",
+      "status": "COMPROBADO",
+      "scope": "REAL_PACKAGE_VALIDATOR_TEMPORARY_FIXTURES"
+    },
+    {
+      "test": "test_s6_recovery.ArchiveValidationTests.test_duplicate_member_and_unsafe_paths_are_rejected (name='volumes\\\\escape')",
+      "status": "FALLIDO",
+      "scope": "REAL_PACKAGE_VALIDATOR_TEMPORARY_FIXTURES"
+    },
+    {
+      "test": "test_s6_recovery.ArchiveValidationTests.test_missing_manifest_or_required_private_members",
+      "status": "COMPROBADO",
+      "scope": "REAL_PACKAGE_VALIDATOR_TEMPORARY_FIXTURES"
+    },
+    {
+      "test": "test_s6_recovery.ArchiveValidationTests.test_non_zip_and_truncated_zip_are_sanitized",
+      "status": "COMPROBADO",
+      "scope": "REAL_PACKAGE_VALIDATOR_TEMPORARY_FIXTURES"
+    },
+    {
+      "test": "test_s6_recovery.ArchiveValidationTests.test_size_and_member_limits_do_not_need_large_test_allocation",
+      "status": "COMPROBADO",
+      "scope": "REAL_PACKAGE_VALIDATOR_TEMPORARY_FIXTURES"
+    },
+    {
+      "test": "test_s6_recovery.ArchiveValidationTests.test_symlink_directory_and_special_types_are_rejected",
+      "status": "COMPROBADO",
+      "scope": "REAL_PACKAGE_VALIDATOR_TEMPORARY_FIXTURES"
+    },
+    {
+      "test": "test_s6_recovery.ArchiveValidationTests.test_unknown_member_and_database_coverage_are_rejected",
+      "status": "COMPROBADO",
+      "scope": "REAL_PACKAGE_VALIDATOR_TEMPORARY_FIXTURES"
+    },
+    {
+      "test": "test_s6_recovery.ArchiveValidationTests.test_versions_and_origins_are_rejected_before_restore",
+      "status": "COMPROBADO",
+      "scope": "REAL_PACKAGE_VALIDATOR_TEMPORARY_FIXTURES"
+    },
+    {
+      "test": "test_s6_recovery.ArchiveValidationTests.test_wrong_json_types_are_sanitized (expected='BACKUP_DATABASE_COVERAGE_INVALID')",
+      "status": "FALLIDO",
+      "scope": "REAL_PACKAGE_VALIDATOR_TEMPORARY_FIXTURES"
+    },
+    {
+      "test": "test_s6_recovery.ConsistentWindowTests.test_failure_resumes_exact_initial_writers_and_releases_transaction (running=('api', 'web'))",
+      "status": "FALLIDO",
+      "scope": "UNIT_LIFECYCLE_MOCKS_NO_DATABASE_PAUSE"
+    },
+    {
+      "test": "test_s6_recovery.ConsistentWindowTests.test_failure_resumes_exact_initial_writers_and_releases_transaction",
+      "status": "FALLIDO",
+      "scope": "UNIT_LIFECYCLE_MOCKS_NO_DATABASE_PAUSE"
+    },
+    {
+      "test": "test_s6_recovery.ConsistentWindowTests.test_invalid_exported_snapshot_and_timeout_resume_writers (code='BACKUP_SNAPSHOT_LOCK_FAILED')",
+      "status": "FALLIDO",
+      "scope": "UNIT_LIFECYCLE_MOCKS_NO_DATABASE_PAUSE"
+    },
+    {
+      "test": "test_s6_recovery.ConsistentWindowTests.test_invalid_exported_snapshot_and_timeout_resume_writers (code='CAPTURE_FAILURE')",
+      "status": "FALLIDO",
+      "scope": "UNIT_LIFECYCLE_MOCKS_NO_DATABASE_PAUSE"
+    },
+    {
+      "test": "test_s6_recovery.ConsistentWindowTests.test_invalid_exported_snapshot_and_timeout_resume_writers",
+      "status": "FALLIDO",
+      "scope": "UNIT_LIFECYCLE_MOCKS_NO_DATABASE_PAUSE"
+    },
+    {
+      "test": "test_s6_recovery.ConsistentWindowTests.test_partial_stop_failure_still_resumes_initial_writers",
+      "status": "COMPROBADO",
+      "scope": "UNIT_LIFECYCLE_MOCKS_NO_DATABASE_PAUSE"
+    },
+    {
+      "test": "test_s6_recovery.ConsistentWindowTests.test_writer_rejection_never_pauses_services",
+      "status": "COMPROBADO",
+      "scope": "UNIT_LIFECYCLE_MOCKS_NO_DATABASE_PAUSE"
+    },
+    {
+      "test": "test_s6_recovery.NativeWindowsRecoveryTests.test_native_dpapi_roundtrip_tamper_and_foreign_format",
+      "status": "COMPROBADO",
+      "scope": "NATIVE_WINDOWS_DPAPI_AND_PRIVATE_TEMPORARIES"
+    },
+    {
+      "test": "test_s6_recovery.NativeWindowsRecoveryTests.test_native_registered_package_verifies_and_external_unregistered_rejects",
+      "status": "COMPROBADO",
+      "scope": "NATIVE_WINDOWS_DPAPI_AND_PRIVATE_TEMPORARIES"
+    },
+    {
+      "test": "test_s6_recovery.NativeWindowsRecoveryTests.test_new_descriptor_refuses_existing_file_before_any_docker_write",
+      "status": "COMPROBADO",
+      "scope": "NATIVE_WINDOWS_DPAPI_AND_PRIVATE_TEMPORARIES"
+    },
+    {
+      "test": "test_s6_recovery.NativeWindowsRecoveryTests.test_tar_symlink_hardlink_traversal_duplicate_and_safe_member",
+      "status": "COMPROBADO",
+      "scope": "NATIVE_WINDOWS_DPAPI_AND_PRIVATE_TEMPORARIES"
+    },
+    {
+      "test": "test_s6_recovery.TargetGuardTests.test_destructive_and_active_database_stop_commands_refused",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_GUARDS_NO_DOCKER"
+    },
+    {
+      "test": "test_s6_recovery.TargetGuardTests.test_existing_project_and_volume_refuse_fresh_target",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_GUARDS_NO_DOCKER"
+    },
+    {
+      "test": "test_s6_recovery.TargetGuardTests.test_historical_active_volume_aliases_and_unknown_destination_rejected",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_GUARDS_NO_DOCKER"
+    },
+    {
+      "test": "test_s6_recovery.TargetGuardTests.test_port_origin_image_and_id_guards",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_GUARDS_NO_DOCKER"
+    },
+    {
+      "test": "test_s6_recovery.TargetGuardTests.test_unknown_volume_owner_refused_before_operation",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_GUARDS_NO_DOCKER"
+    },
+    {
+      "test": "test_s6_recovery.TargetGuardTests.test_valid_install_restore_and_active_descriptors",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_GUARDS_NO_DOCKER"
+    }
+  ],
+  "executed_code_sha256": {
+    "infra/runtime_target.py": "2aa6e884072eb3be4a814e2e557e9b448a5e7d8e75ae363c8f5b1fd2cc19219d",
+    "infra/backup_restore.py": "4930eb2644126172edb349eacfa61d565817634af6ef3e34dd94795afd1973e3",
+    "infra/windows_dpapi.py": "d65cf1bc1fe9569d052f599ca31dafb9733c09fdb286eb8d80e0a4f95381caed",
+    "infra/tests/test_s6_recovery.py": "378a8e88867b8e5ee68f1b3c9e08e8617093a9edd3f7e6c4b873f5f658c61429",
+    "infra/test_s6_recovery.py": "c09f3f42b0d2933026873d0f98a5c39184b2630534faff036672644518a01e5b"
+  },
+  "docker_or_active_database_mutated": false,
+  "native_windows": "Actual CryptProtectData/CryptUnprotectData and ACL; private temporary packages cleaned",
+  "mocks": "Target collisions/lifecycle simulate Docker and PostgreSQL; these do not prove integrated restoration",
+  "integrated_backup_restore": "Requires separate real S6 backup/restore evidence"
+}

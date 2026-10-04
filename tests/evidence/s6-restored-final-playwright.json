@@ -1,0 +1,54 @@
+{
+  "status": "passed",
+  "scope": "RESTORE",
+  "cases": [
+    {
+      "title": "S6 RESTORE ADMIN: contexto, historial, permisos y CSV efectivos",
+      "status": "passed",
+      "duration_ms": 30010,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    },
+    {
+      "title": "S6 RESTORE TUTOR: contexto, historial, permisos y CSV efectivos",
+      "status": "passed",
+      "duration_ms": 16236,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    },
+    {
+      "title": "S6 RESTORE DIRECTOR: contexto, historial, permisos y CSV efectivos",
+      "status": "passed",
+      "duration_ms": 32095,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    },
+    {
+      "title": "S6 RESTORE RESEARCHER: contexto, historial, permisos y CSV efectivos",
+      "status": "passed",
+      "duration_ms": 5906,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    }
+  ]
+}

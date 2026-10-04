@@ -1,0 +1,341 @@
+{
+  "status": "COMPROBADO",
+  "timestamp": "2026-10-04T21:07:49.845831+00:00",
+  "checks": [
+    {
+      "command": [
+        "git",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "git version 2.47.0.windows.1\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "Python 3.11.9\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "Docker version 29.7.2, build a7dcaa6\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "version"
+      ],
+      "exit_code": 0,
+      "stdout": "Docker Compose version v5.5.1\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "v24.14.1\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "npm.cmd",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "11.20.0\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "npm.cmd",
+        "run",
+        "generate:api",
+        "-w",
+        "frontend"
+      ],
+      "exit_code": 0,
+      "stdout": "\n> @riesgo-escolar/frontend@0.0.0 generate:api\n> openapi-typescript ../docs/planning/Contrato_API.yaml -o src/lib/api.generated.d.ts\n\n\u2728 openapi-typescript 7.13.0\n\ud83d\ude80 ../docs/planning/Contrato_API.yaml \u2192 src/lib/api.generated.d.ts [1.1s]\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "npm.cmd",
+        "run",
+        "typecheck",
+        "-w",
+        "frontend"
+      ],
+      "exit_code": 0,
+      "stdout": "\n> @riesgo-escolar/frontend@0.0.0 typecheck\n> tsc --noEmit\n\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "npm.cmd",
+        "run",
+        "build",
+        "-w",
+        "frontend"
+      ],
+      "exit_code": 0,
+      "stdout": "\n> @riesgo-escolar/frontend@0.0.0 build\n> tsc --noEmit && vite build\n\nvite v8.3.2 building client environment for production...\ntransforming...\n\u2713 87 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.57 kB \u2502 gzip:   0.34 kB\ndist/assets/index-Cciy1AiX.css   39.03 kB \u2502 gzip:   8.91 kB\ndist/assets/index-8QxjOeha.js   388.24 kB \u2502 gzip: 110.02 kB\n\n\u2713 built in 666ms\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "build",
+        "web"
+      ],
+      "exit_code": 0,
+      "stdout": "#1 [internal] load local bake definitions\n#1 reading from stdin 1.09kB 0.1s done\n#1 DONE 0.1s\n\n#2 [internal] load build definition from web.Dockerfile\n#2 transferring dockerfile: 483B 0.1s done\n#2 DONE 0.1s\n\n#3 [internal] load metadata for docker.io/library/node:24.14.1-bookworm-slim\n#3 DONE 0.0s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 246B 0.0s done\n#4 DONE 0.0s\n\n#5 [1/9] FROM docker.io/library/node:24.14.1-bookworm-slim\n#5 DONE 0.0s\n\n#6 [internal] load build context\n#6 transferring context: 130.77kB 0.1s done\n#6 DONE 0.1s\n\n#7 [6/9] RUN npm ci --ignore-scripts --no-audit --no-fund\n#7 CACHED\n\n#8 [3/9] WORKDIR /workspace\n#8 CACHED\n\n#9 [5/9] COPY frontend/package.json ./frontend/package.json\n#9 CACHED\n\n#10 [7/9] COPY frontend/ ./frontend/\n#10 CACHED\n\n#11 [8/9] RUN npm run build --workspace frontend\n#11 CACHED\n\n#12 [2/9] RUN npm install --global npm@11.20.0 --ignore-scripts --no-audit --no-fund\n#12 CACHED\n\n#13 [4/9] COPY package.json package-lock.json ./\n#13 CACHED\n\n#14 [9/9] RUN chown -R node:node /workspace\n#14 CACHED\n\n#15 exporting to image\n#15 exporting layers done\n#15 writing image sha256:1578157e456ea957407ac4bb00488422e824f589b5c4f714daad68d962ee78ea 0.1s done\n#15 naming to docker.io/library/riesgo-escolar-web\n#15 naming to docker.io/library/riesgo-escolar-web done\n#15 DONE 0.1s\n\n#16 resolving provenance for metadata file\n#16 DONE 0.0s\n",
+      "stderr": " Image riesgo-escolar-web Building \n Image riesgo-escolar-web Built \n"
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "exec",
+        "-T",
+        "api",
+        "python",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "stdout": "No broken requirements found.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "exec",
+        "-T",
+        "web",
+        "node",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "v24.14.1\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "exec",
+        "-T",
+        "web",
+        "npm",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "11.20.0\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "warning: in the working copy of 'AGENTS.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'backend/README.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'docs/planning/Conciliacion_SQL_API.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'docs/planning/Contrato_API.yaml', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'docs/planning/Inicio_Codex_y_skills.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'docs/planning/Plan_tesis_riesgo_escolar.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'docs/planning/Sprints_y_aceptacion.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'frontend/src/features/alerts/AlertDetailPage.tsx', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'frontend/src/features/alerts/FollowupForms.tsx', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'frontend/src/features/students/StudentDetailPage.tsx', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'frontend/src/features/students/features.css', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'frontend/src/lib/api.generated.d.ts', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'infra/README.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'infra/check_s0.py', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'infra/docker/test.Dockerfile', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'infra/sync_followup_contract.py', CRLF will be replaced by LF the next time Git touches it\n"
+    }
+  ],
+  "api_runtime": {
+    "python": "3.12.12",
+    "platform": "Linux",
+    "versions": {
+      "fastapi": "0.142.2",
+      "sqlalchemy": "2.0.54",
+      "alembic": "1.20.0",
+      "scikit-learn": "1.9.1",
+      "xgboost-cpu": "3.4.1",
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "psycopg": "3.3.6"
+    }
+  },
+  "host_orchestrator_python": "3.12.0 (py -3.12); PATH python command in collector was 3.11.9",
+  "images": {
+    "api": "sha256:a0a9d26b7f04b5a31a19296e6def49682425fc83d471bc569d5b17285bf1b81e",
+    "db": "sha256:567d5d704a3e5a4864393b623a0d50eb1b5a4ad134cdac7cf19555cb2d8ffe9e",
+    "web": "sha256:1578157e456ea957407ac4bb00488422e824f589b5c4f714daad68d962ee78ea"
+  },
+  "executed_code_sha256": {
+    "backend/app/__init__.py": "1bb664c59b3182bda21e40d1ca811deb1aaaa8801cfd9e80fc7f241cd77c2c23",
+    "backend/app/api/__init__.py": "ab555acc3c8fdb3718b600f6f9fb22a27e52bbb568598ce9fcf1587cd2c56b0b",
+    "backend/app/api/v1/__init__.py": "6bffc69b8a7f3dc2e7345deafe8c97a0a8ca773e004099f313f1e872fe57cce4",
+    "backend/app/api/v1/auth.py": "57e43e8b96b999c44ec0f3e3947a53edec1564e385bbbcc924dac859d87024ee",
+    "backend/app/api/v1/catalogs.py": "de5ba614eed2cd4b098bd7b9a2b86a7c99c78e821c3a96be45b20f7ee985a7b4",
+    "backend/app/api/v1/dependencies.py": "6d9e7e812aee54abcdd7f2342f4bc4586958856a7235670e08f2aecf6772d1a1",
+    "backend/app/api/v1/followup.py": "437b120e93652a37dbbae2661f993179b70125760432205711ba36752c3cf4a5",
+    "backend/app/api/v1/health.py": "fa0758f636c930d46120c7d99bf7b9930a65efd86fc940452233b268c65118e4",
+    "backend/app/api/v1/imports.py": "134964ae560afe00d1a0bdb83fecbf95eb22de5a631e72e755f9e9cf3bffdceb",
+    "backend/app/api/v1/ml.py": "ef4113844976cf07541ca6c4761f100a76684b71e701d02c54116ea5b67efcef",
+    "backend/app/api/v1/processing.py": "6db6a486884fc4febc60e2d86b0b0ff77cbfb09eb18bab9aa1b10d0e8be7c363",
+    "backend/app/api/v1/reports.py": "b4fdbe38ce9225c7812383950eab9b710ce170259f241475c2ff4c873cb89608",
+    "backend/app/api/v1/students.py": "16d760e35c1b4c4e8a3ea4cd9b7d5316ab80a1c76bb0d5060e37ef57a910f531",
+    "backend/app/bootstrap_admin.py": "38ae1f538fd951459773399c22927e9581b957d20638255a35435f5854628099",
+    "backend/app/configure_context.py": "5b4dd476d23927c7fbbbc22ddd5d76920df3e25367464ffc26b2c4c2a92ab43d",
+    "backend/app/core/__init__.py": "6239bdb765f34d1a2c78ebdedd5483b526bb2002b8ac951e273b22b77c21d782",
+    "backend/app/core/config.py": "f1405760c8cca1df1d67f1861b0a0d05996d7257a67bbc3f57fdf924141c2fa3",
+    "backend/app/core/database.py": "37ec93601af75bb60120fe9b4b688491d30b5a2d17063f91692c071dcb956887",
+    "backend/app/core/errors.py": "dede3998d7f8bb5786431b9b6dcca8ecc812b9622e5050d345def90647165617",
+    "backend/app/core/import_storage.py": "d8a907f53867db90474168a72183aff17788baf3884b43df83095a17705ea2bc",
+    "backend/app/core/rate_limit.py": "bb4080fc9fecfbc216fafe1a452bd546f8900091a152e68917597097396963a5",
+    "backend/app/core/security.py": "804f4a22f08ee5e76d7f2e9b5e4dab839cb4789fea1cf0ba4d4d7fd1de06d3d4",
+    "backend/app/core/study_storage.py": "16b5b83bf060f8b71d46e1047bb0e227c883adb0adc3959149a17c5c33b18050",
+    "backend/app/core/upload_limit.py": "9918842dae1db0457b1388ed693d210dfaaeea54bb30ddff54030f9437824f16",
+    "backend/app/main.py": "75e5ba423f4e9a20e79380b83a3d7a327ee63728bb6793b41bbdd942c5239262",
+    "backend/app/ml/__init__.py": "f8359b792ddaebe171c9705889d8a47604c2ce40516fb2852e2188369bd38dc7",
+    "backend/app/ml/artifacts.py": "3226998eb8fcfb521d9889adf1ea93342f5072bb8da1995966da05a300afbb80",
+    "backend/app/ml/cli.py": "e018a8ed123568051f94e1c30ea7c645e74b3189519bcd487182fb6fc9efd1eb",
+    "backend/app/ml/evaluate/__init__.py": "624d3b48d908c73931b34bc7b07a0769af14a658a5f2f4c087ef7b37af87575d",
+    "backend/app/ml/features/__init__.py": "82ae252e44fda2016e2ba87f010c94f1afa0b15748d49d0c47bb51de504a51f1",
+    "backend/app/ml/manifest.py": "dadae807de63e6f9d60021ae1afcfa8c003cb40b8769d315508731ba2f311998",
+    "backend/app/ml/predict/__init__.py": "f2d5ea53156f7a62cdd5973a45e2db41cf49a80ad556ba8f143ba4f3a3320158",
+    "backend/app/ml/synthetic-study-v1.json": "9eb64fd4c3cf7afedadbbe804068e636c7ebc20b00835f8c09af9d74c2d4536f",
+    "backend/app/ml/synthetic.py": "4c1c04739cabf18fb0750ac82713bdb1b9cb4f46f2a956f4240daea199a1a12a",
+    "backend/app/ml/train/__init__.py": "7dd10adb1072ed10ad7f561811b3e17d4c3269acabd0bf9ee89b94c9b257ded0",
+    "backend/app/models/__init__.py": "231db4e7193d026fbded0305292347a649df32dcf6319094092ad69d9e739a9f",
+    "backend/app/models/base.py": "e9adb87e1ac75897f867dc0926e9c27c627771ef6620c28bd8b0444730e4a923",
+    "backend/app/models/followup.py": "0ca0421ac960338b1c3de162904f7c457f603fb99420026682d2417bf4ad2460",
+    "backend/app/models/ml.py": "e2e5b63b68a0fc664430002dfe76583a84a7260b01b86721617a5ad75c906616",
+    "backend/app/models/s1.py": "286d4a359f0f500c2c5ef1f8d591a9a8452352094b069b09b573ffdc6bfea5b9",
+    "backend/app/models/s2.py": "a0c09d6b60a4ac9e877264d262e8fe907e022f789a898ad2a2cbeec3f7c31368",
+    "backend/app/models/synthetic.py": "a842bdabe92a238f50f7b839b8373e66270df386bf5b4a2d6d6e6034969dbd63",
+    "backend/app/repositories/__init__.py": "061ca4e54741676e7af44b9f6c67b73523d8c99683e26611a7adddcfe2fd9278",
+    "backend/app/repositories/followup.py": "6625d7fb49fffa684cda9914201ba659babb2009b89a5aadeadf86f525721e19",
+    "backend/app/repositories/imports.py": "f9a21cc8b7d7852de7128a3d2711717c046041acd430ee66c0701159b229c66b",
+    "backend/app/repositories/ml.py": "e9dcf375c864de339538148b0f9bd791f00b0bbdc3bda47a469b05348f8a9336",
+    "backend/app/repositories/reports.py": "d33e654861241373b63fb987b57090bc2fdb1aaab59bbd4797fc21c914f8203d",
+    "backend/app/repositories/s1.py": "1cb6eb6d11a26d081857586e81b974750a45bc8967a1385b49cc4c14f04d0c75",
+    "backend/app/repositories/students.py": "3340788059c2f24d97d9e0ebee3a98b8d34f5c97ae6ad1ff32678fe89de5e894",
+    "backend/app/schemas/__init__.py": "8e032020fa2f579cc302329decda8e564281f14b27f62c528a89b5de93586fa9",
+    "backend/app/schemas/ml.py": "60c5797114619b5ff26f3af7c4d81e33f4d4ad970de826b2bf8d1b63d2d06797",
+    "backend/app/schemas/processing.py": "2287cdc1b204da28038c2a585209d8d79da8cf4eeadc9d7d48310b12a5051307",
+    "backend/app/schemas/s1.py": "29bb951a858c73d5b737831f63992abbb273ba45660971466984eccd1df0bd44",
+    "backend/app/schemas/s2.py": "9a4b09ea00b800f142b5490f8dc2ff9edd67464d6f1cca297365ef56d4d1c07d",
+    "backend/app/schemas/s5.py": "e30cc69aaad1896fb9409651c2b54fc7aea5c3290758921a41fa470d92f2fe70",
+    "backend/app/services/__init__.py": "9c82181c6f8b93334f7a23f8848436f7410f9d0cc46b7ecd4b23bbbe9812bba7",
+    "backend/app/services/auth.py": "0f3e7db4f9b64e3dd3ee7df9c951197a3b952114aeee0c9579063f6d36977335",
+    "backend/app/services/catalogs.py": "0a4891a968dac38596cc8a232e736649503723f4a55ea091e77d5c47889eb9fa",
+    "backend/app/services/csv_validation.py": "2f0bfe10478679a60982b0e8f38098bb8e9bc3de9122ea25177fb6af144ac920",
+    "backend/app/services/followup.py": "94a30b9fa73642e52f1f4663c7e8ded7492bad1285d6b29a852ac2285502646c",
+    "backend/app/services/imports.py": "7108dcb2cc61e7e1c6e956172db086f72928e1038be25572c2f81e73fe8b22ec",
+    "backend/app/services/ml.py": "48a50f95414fa6474dea61937aea03b998adbdb3433e0b8c49a6842c9d3eb7c5",
+    "backend/app/services/processing_policy.py": "fb1ff6002d08c944936b61000dde1fa7044d065884abad42a3c18b8d50797c05",
+    "backend/app/services/reports.py": "53d479c77c42a959eab7acf3e429ff7116918c8a962172b0d7de22769b358ede",
+    "backend/app/services/students.py": "ff155086206c73374f0831ec1da0911cde820be09e8a66121cf42249b5a06bc1",
+    "backend/app/services/synthetic_study.py": "a40a0cca00b4758891d740132382e259206febfc62c0b453517b1b4795f5026a",
+    "backend/app/synthetic_cli.py": "c315f73647deec483908d1a215363317a2e8414d670621f4cfd388f209a109be",
+    "backend/requirements-dev.in": "491e6a264cce2ba9c87aa6b2738e917a52f82326d37eb94a36d6452c38933bb9",
+    "backend/requirements-dev.txt": "1c70f637ef20d0e5049f297b9bf55d87e67c578bd66e632569f3b240d7e81899",
+    "backend/requirements.in": "d10143a358ced58b046f7ad90ab7ec5e299ae6eb96b82cbed07e079c85076540",
+    "backend/requirements.txt": "a6ac22ca17fa0a53034a844066fdf37e28f1e334b10a35e1325cd990aaf113a3",
+    "docs/planning/Contrato_API.yaml": "d7664b3fc1d387e146e35529514dfe78adb524e17b323a7f85aa2cb6769d0b7c",
+    "frontend/package.json": "a6ebb5ed38ea95b211630aac096b56cee04157fa130bf547e5d9fd1f094c5bd2",
+    "frontend/src/app/App.tsx": "381e4039420cfb9d57fbb23de147938e0feb4f50d376a97701fb03ba8dd8c174",
+    "frontend/src/components/AppShell.tsx": "b9bc936fe9364e6a87adc5db6923cef5ea5113c2b01a949568a3c63310950ad5",
+    "frontend/src/components/ui.tsx": "83b66cddd4081eeef8de75987d2dd4456ff420242fcf85689049ba10b42ea70a",
+    "frontend/src/features/alerts/AlertDetailPage.tsx": "e52119e970e670cb5d098310bb42cf666a4900bc5bec3bb44812849d38ae39c2",
+    "frontend/src/features/alerts/AlertsPage.tsx": "ed2bf5428cefd7c3f7c0b8856553c53f0c533751b812b961be204eebf660e30b",
+    "frontend/src/features/alerts/FollowupCounts.tsx": "662af07580e5c7d4a67b5a0009deb5966a301d357b020482cdcc7ef60a43cdb0",
+    "frontend/src/features/alerts/FollowupForms.tsx": "d14ad2f01c04341b7af99d48a8d3352a2e1cfcf302adcddb9d46789d3e8aaf08",
+    "frontend/src/features/alerts/features.css": "cffc5a8ddd16287fb0f8c8d091537cd12d13ba7c7e87efc94b130adfbb047867",
+    "frontend/src/features/alerts/formState.tsx": "9a310e87de81412ac863b5623ac818a55d341fe10246085c2bd737dd9bec71d1",
+    "frontend/src/features/alerts/labels.tsx": "4ce296b4ecc756d7c8b2338100d8542237b2c9ab86968cb5934e9c2a61331e18",
+    "frontend/src/features/auth/LoginForm.tsx": "d83dd74deff81fc423a7c0285453e2da586d4686f184b4883ca6b43cd8ee8816",
+    "frontend/src/features/home/HomePage.tsx": "c0290dce0e24836f1fd1d6634e88c3ecfc01257d28c3fbf86ee706aec0269254",
+    "frontend/src/features/imports/ImportsPage.tsx": "b9df3499ab824d74a2e0144846b2acb4b99bc03e99cccd3086f52540df1e6d00",
+    "frontend/src/features/imports/imports.css": "d80bb48fb07c01e48e2c2bd3a98090a0fe436f85a6c63419dd5b3987b7a09530",
+    "frontend/src/features/models/EvaluationPanel.tsx": "a720bf6f0bd6132cf367aca26f38b1c06730c55092928dd53901d820b97860f6",
+    "frontend/src/features/models/ModelDetailPage.tsx": "47d1a7080ed39894dc6d4fcccfdf08c6a204c019082323a40bb1a6db162d69ee",
+    "frontend/src/features/models/ModelsPage.tsx": "a266bff5d7fad5343abd0d9dd408b8e6f68eab7cf99f82acb1017d1cde13139b",
+    "frontend/src/features/models/features.css": "4ca6d4d07d6b9f6430e236511a61e46b3368a64d5ad112ef74127bfc174c5680",
+    "frontend/src/features/reports/ReportSummaryView.tsx": "69c69a48c332fdad4f20ba528f7e46e5666ffc64a626a61470e24f0f85e46a4e",
+    "frontend/src/features/reports/ReportsPage.tsx": "dda389c630fa5f6dcecac2872d9e33c6fdb7623f9da540c3faa6d0c97960f0d9",
+    "frontend/src/features/reports/features.css": "5ed2654148835107fe361fd48f7f0fd4125682bd872c0c6cdfc1428dfa043c9c",
+    "frontend/src/features/students/StudentDetailPage.tsx": "eac79fb7e982334b99ef513a9bc851cfaa5116935b157bcdcccf5db37ee3ee2a",
+    "frontend/src/features/students/StudentsPage.tsx": "c04414cc921f4068798bee7f5900f817e88c43ca0aef30a77b2fec3d74bb95f6",
+    "frontend/src/features/students/features.css": "922d5a06158eea7825288e8ec5898a318a8eecd5a306cd6bf39de42aa41f1d10",
+    "frontend/src/lib/api.generated.d.ts": "26861e08fe3c5f52fdea6f0a6895ca699b2b332107b475b06e41294a8d6b5f31",
+    "frontend/src/lib/api.ts": "81e3f39ffee87d35158efe50b3a37f7f834b0b06655c36a6bf4a874bc3d15cf3",
+    "frontend/src/lib/format.ts": "aa8a941a0de058612acae112e3b043d4e5dc8fcd84b35e543fa24f6aebf2f3ad",
+    "frontend/src/lib/navigation.ts": "86933211351f140e3e98620da0a8f48bf9fe618d38ba01ad76ea51326318f33a",
+    "frontend/src/main.tsx": "c9ebc75ae8d91a7d4f1c53906b0bf45780c162a40bd2cee7e98bb91fb27308f4",
+    "frontend/src/styles.css": "15c46b933bf4e85f50d1a622357514f1c273c20db7326fb84fae24e12af4afa5",
+    "infra/backup_restore.py": "5613997957b8b647b0ac0e751b9e44f565a7a3d40e8360b08a8788958310a717",
+    "infra/operator_profiles.py": "74bd0c61d3a00f38c67f7c43def7756622edb7479b605ab25c738d88dbc195a1",
+    "infra/requirements-s0.in": "134430861da36ac5ff90da58b35395168db7fd94acc113f40b172d44088e22d2",
+    "infra/requirements-s0.txt": "aede94faca096063112df0b3e8a15a172ae97a75160c5bc18d76c6ae74b68c00",
+    "infra/runtime_target.py": "7b2dc3f38b8af26077eab3532ebe0be2a192075997e252f4fb73c4c53ebb51a2",
+    "infra/study.py": "ca96cd81d14277caf71b6292ca6bb45e3340f85f9a0462356912a19fa3f881e1",
+    "infra/windows_credentials.py": "bfd08415b4a98dbe7de07bc5416d7a1cd32488eb5a940bae4822ee1f1036ae22",
+    "infra/windows_dpapi.py": "d65cf1bc1fe9569d052f599ca31dafb9733c09fdb286eb8d80e0a4f95381caed",
+    "package-lock.json": "9b0880027ad75b06c5d8a56fa77cf1d23bf0196bb5cb6012a1d4a33e20990bb7",
+    "package.json": "4130b3f43e60b3e5371f4aab71e0168466b3598e2efa525d4fe1f96439a1492e",
+    "infra/review_s6.py": "28602c05f11252bbfd851d4a01ab85213120f4526ddd745b442c36cb563614c5",
+    "infra/test_s6_install.py": "9936f1ab7145889fe6aa0f8c8c7afb641a63abe83ceb1e0666884d930d7403b2",
+    "infra/test_s6_profiles_live.py": "59d192ff2452eab51816142d5b1b59c03778914f1fbdee9b9643b228016459f7",
+    "infra/test_s6_persistence.py": "82664008619e9e640e44eba8590710b94bf78d70be2430fbbb8b43730eb8666d",
+    "tests/e2e/s6.spec.ts": "33d17aac5e7275725affd9d9a530c0ed695ceefc95a4c142e957fd7972dc9ce6",
+    "tests/e2e/s6-reporter.ts": "b327844a86826c25d634961ee9349f84c20c2f3152d56e08278aab51604ce9ad",
+    "tests/e2e/review-reporter.ts": "9eeee9f0616126692ecf4dc11ce80a9fea3354a7471e22280a30f7f22a9595f3",
+    "playwright.config.ts": "1eeb61ec456da0ec9c89a43ca864846c92f5f7254815cd00940d11a78621b064",
+    "backend/app/core/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "backend/app/models/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "backend/app/repositories/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "backend/app/schemas/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "backend/app/services/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "backend/app/api/v1/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "backend/app/ml/evaluate/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "backend/app/ml/features/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "backend/app/ml/predict/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "backend/app/ml/train/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frontend/src/app/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frontend/src/components/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frontend/src/lib/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frontend/src/features/alerts/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frontend/src/features/auth/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frontend/src/features/dashboard/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frontend/src/features/imports/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frontend/src/features/models/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frontend/src/features/reports/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frontend/src/features/students/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "frontend_host_dist": {
+    "index-8QxjOeha.js": "90520f46092aa3ccb2d97b94b0721bb4b24b5a7126f276001ad5017b77800dd8",
+    "index-Cciy1AiX.css": "566bebf2a62e85bc93dea0ae99897ae2b0452e4c2c39ec962d43ff6d8d46127d"
+  },
+  "frontend_image_dist": {
+    "index-8QxjOeha.js": "90520f46092aa3ccb2d97b94b0721bb4b24b5a7126f276001ad5017b77800dd8",
+    "index-Cciy1AiX.css": "566bebf2a62e85bc93dea0ae99897ae2b0452e4c2c39ec962d43ff6d8d46127d"
+  },
+  "frontend_host_image_assets_identical": true,
+  "collector_incidents_corrected": [
+    "Distribution metadata uses xgboost-cpu, not xgboost.",
+    "Target.compose accepts capture_output; subprocess directly captured guarded read-only asset hashes. No application change.",
+    "Final checker also inventories preserved empty .gitkeep files; their hashes were added without application changes."
+  ],
+  "finished_at": "2026-10-04T21:12:19.689326+00:00",
+  "e2e_code_proof": "These frozen files executed in final A11/B5/C4 actual Playwright runs; persistence script executed against B and stopped it."
+}

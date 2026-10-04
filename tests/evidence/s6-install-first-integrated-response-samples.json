@@ -1,0 +1,106 @@
+[
+  {
+    "schema": "ProcessingStatus",
+    "body": {
+      "scope": "SYNTHETIC_STUDY",
+      "notice": "Estudio con datos sintéticos. No corresponde a estudiantes reales.",
+      "institutional_ready": false,
+      "synthetic_ready": true,
+      "operations": {
+        "compare": {
+          "available": false,
+          "reason": "ROLE_RESTRICTED"
+        },
+        "register": {
+          "available": false,
+          "reason": "ROLE_RESTRICTED"
+        },
+        "activate": {
+          "available": false,
+          "reason": "ROLE_RESTRICTED"
+        },
+        "predict": {
+          "available": false,
+          "reason": "ROLE_RESTRICTED"
+        },
+        "read_students": {
+          "available": false,
+          "reason": "ROLE_RESTRICTED"
+        },
+        "read_models": {
+          "available": false,
+          "reason": "ROLE_RESTRICTED"
+        },
+        "read_alerts": {
+          "available": false,
+          "reason": "ROLE_RESTRICTED"
+        },
+        "write_followup": {
+          "available": false,
+          "reason": "ROLE_RESTRICTED"
+        },
+        "sync_alerts": {
+          "available": false,
+          "reason": "ROLE_RESTRICTED"
+        },
+        "read_reports": {
+          "available": false,
+          "reason": "ROLE_RESTRICTED"
+        },
+        "export_reports": {
+          "available": false,
+          "reason": "ROLE_RESTRICTED"
+        },
+        "import": {
+          "available": false,
+          "reason": "ROLE_RESTRICTED"
+        }
+      }
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso al seguimiento.",
+      "details": [],
+      "request_id": "af836ceb-e114-4ccf-9ce0-9cda65b8dc28"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso al seguimiento.",
+      "details": [],
+      "request_id": "097d053a-e71e-4459-b108-5d870f85a908"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso al seguimiento.",
+      "details": [],
+      "request_id": "151bc293-6849-409b-b87e-c6500f01879c"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Tu rol no tiene acceso a este recurso.",
+      "details": [],
+      "request_id": "accdf4b0-5e88-489b-b0c2-b5967af73add"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "FORBIDDEN",
+      "message": "Solo el administrador puede consultar modelos o solicitar inferencia.",
+      "details": [],
+      "request_id": "413cdf24-a26f-4ecf-995a-4ecf0a26b613"
+    }
+  }
+]

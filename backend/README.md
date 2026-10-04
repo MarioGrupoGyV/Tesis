@@ -1,4 +1,12 @@
-# Backend de Seguimiento Escolar — S5
+# Backend de Seguimiento Escolar — S6
+
+S6 conserva negocio, ML, contrato 0.5.0 y migraciones 0001–0004. Añade targeting,
+instalación/recuperación y verificación fuera del backend. Estado y comandos finales:
+[Estado S6](../docs/planning/Estado_Sprint_6.md), [instalación](../docs/manuals/Manual_Instalacion_Windows.md)
+y [respaldo](../docs/manuals/Manual_Respaldo_Restauracion.md).
+La API siempre usa riesgo_app; owner solo migra/restaura o diagnostica Alembic sin
+conceder privilegios adicionales. Fixtures y cuentas temporales de instalación
+usan los servicios reales en destinos aislados; no se incorporan al arranque.
 
 Contrato público **0.5.0**: **27 operaciones en 26 paths**, bajo `/api/v1`.
 PostgreSQL contiene **15 tablas**. S5 añade seguimiento y reportes operativos del

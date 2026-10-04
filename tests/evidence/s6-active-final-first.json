@@ -1,0 +1,7 @@
+{
+  "status": "FALLIDO",
+  "code": "TARGET_RUNTIME_MOUNTS_INVALID",
+  "stage": "BEFORE_REVIEW_WRITES",
+  "cause_verified": "Compose image labels inherited by temporary private-storage containers during a parallel restore; guarded target rejected their different mounts. Explicit project/service/oneoff labels isolate storage helpers.",
+  "academic_writes": false
+}

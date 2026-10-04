@@ -2,6 +2,7 @@
 from pathlib import Path
 import hashlib
 import json
+import os
 import re
 import sys
 
@@ -214,6 +215,13 @@ def run():
                         "No build, migración, ML, UI ni persistencia"],
     }
     evidence_name = "s5-contracts.json" if sprint == "S5" else "s0-checks.json" if sprint == "S0" else "s4-contracts.json" if sprint == "S4" else "s3-1-contracts.json"
+    prefix = os.environ.get('CONTRACT_REPORT_PREFIX')
+    if prefix:
+        if not re.fullmatch(r's6[a-z0-9-]+', prefix):
+            raise ValueError('Prefijo contractual S6 inválido')
+        evidence_name = prefix + '-contracts.json'
+        if (ROOT / 'tests/evidence' / evidence_name).exists():
+            raise ValueError('La evidencia S6 ya existe')
     (ROOT / "tests/evidence" / evidence_name).write_text(
         json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )

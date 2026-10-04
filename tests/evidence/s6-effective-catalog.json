@@ -1,0 +1,3752 @@
+{
+  "status": "COMPROBADO",
+  "target": {
+    "kind": "RESTORE",
+    "project": "s6-restore-7c98afc40ad1",
+    "database": "s6_restore_7c98afc40ad1"
+  },
+  "catalog": {
+    "columns": [
+      {
+        "table_name": "academic_periods",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_periods",
+        "column_name": "code",
+        "ordinal_position": 2,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_periods",
+        "column_name": "school_year",
+        "ordinal_position": 3,
+        "data_type": "smallint",
+        "udt_name": "int2",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": 16,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "academic_periods",
+        "column_name": "start_date",
+        "ordinal_position": 4,
+        "data_type": "date",
+        "udt_name": "date",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_periods",
+        "column_name": "end_date",
+        "ordinal_position": 5,
+        "data_type": "date",
+        "udt_name": "date",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_periods",
+        "column_name": "data_origin",
+        "ordinal_position": 6,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_periods",
+        "column_name": "is_locked",
+        "ordinal_position": 7,
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "is_nullable": "NO",
+        "column_default": "false",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_periods",
+        "column_name": "created_at",
+        "ordinal_position": 8,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "enrollment_id",
+        "ordinal_position": 2,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "period_id",
+        "ordinal_position": 3,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "data_origin",
+        "ordinal_position": 4,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "import_batch_id",
+        "ordinal_position": 5,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "window_start",
+        "ordinal_position": 6,
+        "data_type": "date",
+        "udt_name": "date",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "cutoff_at",
+        "ordinal_position": 7,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "available_at",
+        "ordinal_position": 8,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "target_date",
+        "ordinal_position": 9,
+        "data_type": "date",
+        "udt_name": "date",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "revision",
+        "ordinal_position": 10,
+        "data_type": "integer",
+        "udt_name": "int4",
+        "is_nullable": "NO",
+        "column_default": "1",
+        "numeric_precision": 32,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "supersedes_id",
+        "ordinal_position": 11,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "average_grade",
+        "ordinal_position": 12,
+        "data_type": "numeric",
+        "udt_name": "numeric",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": 5,
+        "numeric_scale": 2
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "attendance_pct",
+        "ordinal_position": 13,
+        "data_type": "numeric",
+        "udt_name": "numeric",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": 5,
+        "numeric_scale": 2
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "activities_pct",
+        "ordinal_position": 14,
+        "data_type": "numeric",
+        "udt_name": "numeric",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": 5,
+        "numeric_scale": 2
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "participation_level",
+        "ordinal_position": 15,
+        "data_type": "smallint",
+        "udt_name": "int2",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": 16,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "behavior_incidents",
+        "ordinal_position": 16,
+        "data_type": "integer",
+        "udt_name": "int4",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": 32,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "age_years",
+        "ordinal_position": 17,
+        "data_type": "smallint",
+        "udt_name": "int2",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": 16,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "missing_fraction",
+        "ordinal_position": 18,
+        "data_type": "numeric",
+        "udt_name": "numeric",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": 5,
+        "numeric_scale": 4
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "schema_version",
+        "ordinal_position": 19,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": "'academic-v1'::text",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "source_row_number",
+        "ordinal_position": 20,
+        "data_type": "integer",
+        "udt_name": "int4",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": 32,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "row_sha256",
+        "ordinal_position": 21,
+        "data_type": "character",
+        "udt_name": "bpchar",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "academic_snapshots",
+        "column_name": "created_at",
+        "ordinal_position": 22,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "alerts",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "alerts",
+        "column_name": "enrollment_id",
+        "ordinal_position": 2,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "alerts",
+        "column_name": "prediction_id",
+        "ordinal_position": 3,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "alerts",
+        "column_name": "data_origin",
+        "ordinal_position": 4,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "alerts",
+        "column_name": "assigned_to",
+        "ordinal_position": 5,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "alerts",
+        "column_name": "severity",
+        "ordinal_position": 6,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "alerts",
+        "column_name": "status",
+        "ordinal_position": 7,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": "'OPEN'::text",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "alerts",
+        "column_name": "resolution_reason",
+        "ordinal_position": 8,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "alerts",
+        "column_name": "opened_at",
+        "ordinal_position": 9,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "alerts",
+        "column_name": "updated_at",
+        "ordinal_position": 10,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "alerts",
+        "column_name": "closed_at",
+        "ordinal_position": 11,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "alerts",
+        "column_name": "version",
+        "ordinal_position": 12,
+        "data_type": "integer",
+        "udt_name": "int4",
+        "is_nullable": "NO",
+        "column_default": "1",
+        "numeric_precision": 32,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "app_users",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "app_users",
+        "column_name": "email",
+        "ordinal_position": 2,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "app_users",
+        "column_name": "display_name",
+        "ordinal_position": 3,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "app_users",
+        "column_name": "password_hash",
+        "ordinal_position": 4,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "app_users",
+        "column_name": "role",
+        "ordinal_position": 5,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "app_users",
+        "column_name": "is_active",
+        "ordinal_position": 6,
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "is_nullable": "NO",
+        "column_default": "true",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "app_users",
+        "column_name": "created_at",
+        "ordinal_position": 7,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "audit_events",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "audit_events",
+        "column_name": "actor_id",
+        "ordinal_position": 2,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "audit_events",
+        "column_name": "entity_type",
+        "ordinal_position": 3,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "audit_events",
+        "column_name": "entity_id",
+        "ordinal_position": 4,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "audit_events",
+        "column_name": "action",
+        "ordinal_position": 5,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "audit_events",
+        "column_name": "request_id",
+        "ordinal_position": 6,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "audit_events",
+        "column_name": "recorded_at",
+        "ordinal_position": 7,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "audit_events",
+        "column_name": "payload",
+        "ordinal_position": 8,
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "is_nullable": "NO",
+        "column_default": "'{}'::jsonb",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "enrollments",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "enrollments",
+        "column_name": "student_id",
+        "ordinal_position": 2,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "enrollments",
+        "column_name": "period_id",
+        "ordinal_position": 3,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "enrollments",
+        "column_name": "section_id",
+        "ordinal_position": 4,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "enrollments",
+        "column_name": "data_origin",
+        "ordinal_position": 5,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "enrollments",
+        "column_name": "created_at",
+        "ordinal_position": 6,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "followup_decisions",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "followup_decisions",
+        "column_name": "prediction_id",
+        "ordinal_position": 2,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "followup_decisions",
+        "column_name": "enrollment_id",
+        "ordinal_position": 3,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "followup_decisions",
+        "column_name": "data_origin",
+        "ordinal_position": 4,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "followup_decisions",
+        "column_name": "study_id",
+        "ordinal_position": 5,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "followup_decisions",
+        "column_name": "alert_id",
+        "ordinal_position": 6,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "followup_decisions",
+        "column_name": "decision",
+        "ordinal_position": 7,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "followup_decisions",
+        "column_name": "policy_version",
+        "ordinal_position": 8,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "followup_decisions",
+        "column_name": "recorded_at",
+        "ordinal_position": 9,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "grade_sections",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "grade_sections",
+        "column_name": "code",
+        "ordinal_position": 2,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "grade_sections",
+        "column_name": "grade",
+        "ordinal_position": 3,
+        "data_type": "smallint",
+        "udt_name": "int2",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": 16,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "grade_sections",
+        "column_name": "school_year",
+        "ordinal_position": 4,
+        "data_type": "smallint",
+        "udt_name": "int2",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": 16,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "grade_sections",
+        "column_name": "tutor_id",
+        "ordinal_position": 5,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "period_id",
+        "ordinal_position": 2,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "data_origin",
+        "ordinal_position": 3,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "created_by",
+        "ordinal_position": 4,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "file_name",
+        "ordinal_position": 5,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "file_sha256",
+        "ordinal_position": 6,
+        "data_type": "character",
+        "udt_name": "bpchar",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "schema_version",
+        "ordinal_position": 7,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": "'academic-v1'::text",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "storage_key",
+        "ordinal_position": 8,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "status",
+        "ordinal_position": 9,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": "'PREVIEW'::text",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "total_rows",
+        "ordinal_position": 10,
+        "data_type": "integer",
+        "udt_name": "int4",
+        "is_nullable": "NO",
+        "column_default": "0",
+        "numeric_precision": 32,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "valid_rows",
+        "ordinal_position": 11,
+        "data_type": "integer",
+        "udt_name": "int4",
+        "is_nullable": "NO",
+        "column_default": "0",
+        "numeric_precision": 32,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "invalid_rows",
+        "ordinal_position": 12,
+        "data_type": "integer",
+        "udt_name": "int4",
+        "is_nullable": "NO",
+        "column_default": "0",
+        "numeric_precision": 32,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "planned_students",
+        "ordinal_position": 13,
+        "data_type": "integer",
+        "udt_name": "int4",
+        "is_nullable": "NO",
+        "column_default": "0",
+        "numeric_precision": 32,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "planned_enrollments",
+        "ordinal_position": 14,
+        "data_type": "integer",
+        "udt_name": "int4",
+        "is_nullable": "NO",
+        "column_default": "0",
+        "numeric_precision": 32,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "planned_snapshots",
+        "ordinal_position": 15,
+        "data_type": "integer",
+        "udt_name": "int4",
+        "is_nullable": "NO",
+        "column_default": "0",
+        "numeric_precision": 32,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "preview_version",
+        "ordinal_position": 16,
+        "data_type": "integer",
+        "udt_name": "int4",
+        "is_nullable": "NO",
+        "column_default": "1",
+        "numeric_precision": 32,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "preview_state",
+        "ordinal_position": 17,
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "is_nullable": "NO",
+        "column_default": "'[]'::jsonb",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "errors",
+        "ordinal_position": 18,
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "is_nullable": "NO",
+        "column_default": "'[]'::jsonb",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "committed_at",
+        "ordinal_position": 19,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "created_at",
+        "ordinal_position": 20,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "import_batches",
+        "column_name": "study_id",
+        "ordinal_position": 21,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "enrollment_id",
+        "ordinal_position": 2,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "alert_id",
+        "ordinal_position": 3,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "data_origin",
+        "ordinal_position": 4,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "created_by",
+        "ordinal_position": 5,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "kind",
+        "ordinal_position": 6,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "objective",
+        "ordinal_position": 7,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "status",
+        "ordinal_position": 8,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": "'PLANNED'::text",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "scheduled_at",
+        "ordinal_position": 9,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "performed_at",
+        "ordinal_position": 10,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "notes",
+        "ordinal_position": 11,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "version",
+        "ordinal_position": 12,
+        "data_type": "integer",
+        "udt_name": "int4",
+        "is_nullable": "NO",
+        "column_default": "1",
+        "numeric_precision": 32,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "created_at",
+        "ordinal_position": 13,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "updated_at",
+        "ordinal_position": 14,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "creation_key",
+        "ordinal_position": 15,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "interventions",
+        "column_name": "creation_payload_sha256",
+        "ordinal_position": 16,
+        "data_type": "character",
+        "udt_name": "bpchar",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "name",
+        "ordinal_position": 2,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "version",
+        "ordinal_position": 3,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "algorithm",
+        "ordinal_position": 4,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "data_origin",
+        "ordinal_position": 5,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "dataset_hash",
+        "ordinal_position": 6,
+        "data_type": "character",
+        "udt_name": "bpchar",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "artifact_sha256",
+        "ordinal_position": 7,
+        "data_type": "character",
+        "udt_name": "bpchar",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "artifact_key",
+        "ordinal_position": 8,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "feature_schema_version",
+        "ordinal_position": 9,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "reference_criterion_version",
+        "ordinal_position": 10,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "status",
+        "ordinal_position": 11,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "is_active",
+        "ordinal_position": 12,
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "is_nullable": "NO",
+        "column_default": "false",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "parameters",
+        "ordinal_position": 13,
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "metrics",
+        "ordinal_position": 14,
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "manifest",
+        "ordinal_position": 15,
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "created_by",
+        "ordinal_position": 16,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "created_at",
+        "ordinal_position": 17,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "model_versions",
+        "column_name": "study_id",
+        "ordinal_position": 18,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "predictions",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "predictions",
+        "column_name": "enrollment_id",
+        "ordinal_position": 2,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "predictions",
+        "column_name": "snapshot_id",
+        "ordinal_position": 3,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "predictions",
+        "column_name": "model_id",
+        "ordinal_position": 4,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "predictions",
+        "column_name": "data_origin",
+        "ordinal_position": 5,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "predictions",
+        "column_name": "risk_level",
+        "ordinal_position": 6,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "predictions",
+        "column_name": "probability_low",
+        "ordinal_position": 7,
+        "data_type": "numeric",
+        "udt_name": "numeric",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": 8,
+        "numeric_scale": 7
+      },
+      {
+        "table_name": "predictions",
+        "column_name": "probability_medium",
+        "ordinal_position": 8,
+        "data_type": "numeric",
+        "udt_name": "numeric",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": 8,
+        "numeric_scale": 7
+      },
+      {
+        "table_name": "predictions",
+        "column_name": "probability_high",
+        "ordinal_position": 9,
+        "data_type": "numeric",
+        "udt_name": "numeric",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": 8,
+        "numeric_scale": 7
+      },
+      {
+        "table_name": "predictions",
+        "column_name": "probabilities_calibrated",
+        "ordinal_position": 10,
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "is_nullable": "NO",
+        "column_default": "false",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "predictions",
+        "column_name": "predicted_at",
+        "ordinal_position": 11,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "students",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "students",
+        "column_name": "anon_code",
+        "ordinal_position": 2,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "students",
+        "column_name": "data_origin",
+        "ordinal_position": 3,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "students",
+        "column_name": "is_active",
+        "ordinal_position": 4,
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "is_nullable": "NO",
+        "column_default": "true",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "students",
+        "column_name": "eligible_for_processing",
+        "ordinal_position": 5,
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "is_nullable": "NO",
+        "column_default": "false",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "students",
+        "column_name": "consent_documented",
+        "ordinal_position": 6,
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "is_nullable": "NO",
+        "column_default": "false",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "students",
+        "column_name": "assent_documented",
+        "ordinal_position": 7,
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "is_nullable": "NO",
+        "column_default": "false",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "students",
+        "column_name": "created_at",
+        "ordinal_position": 8,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "period_id",
+        "ordinal_position": 2,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "data_origin",
+        "ordinal_position": 3,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "generator_version",
+        "ordinal_position": 4,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "seed",
+        "ordinal_position": 5,
+        "data_type": "bigint",
+        "udt_name": "int8",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": 64,
+        "numeric_scale": 0
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "config",
+        "ordinal_position": 6,
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "manifest",
+        "ordinal_position": 7,
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "csv_sha256",
+        "ordinal_position": 8,
+        "data_type": "character",
+        "udt_name": "bpchar",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "storage_key",
+        "ordinal_position": 9,
+        "data_type": "text",
+        "udt_name": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "payload_sha256",
+        "ordinal_position": 10,
+        "data_type": "character",
+        "udt_name": "bpchar",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "bindings",
+        "ordinal_position": 11,
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "is_nullable": "NO",
+        "column_default": "'[]'::jsonb",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "comparison",
+        "ordinal_position": 12,
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "created_by",
+        "ordinal_position": 13,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "synthetic_studies",
+        "column_name": "created_at",
+        "ordinal_position": 14,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "user_sessions",
+        "column_name": "id",
+        "ordinal_position": 1,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "user_sessions",
+        "column_name": "user_id",
+        "ordinal_position": 2,
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "user_sessions",
+        "column_name": "token_digest",
+        "ordinal_position": 3,
+        "data_type": "character",
+        "udt_name": "bpchar",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "user_sessions",
+        "column_name": "csrf_digest",
+        "ordinal_position": 4,
+        "data_type": "character",
+        "udt_name": "bpchar",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "user_sessions",
+        "column_name": "expires_at",
+        "ordinal_position": 5,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "user_sessions",
+        "column_name": "revoked_at",
+        "ordinal_position": 6,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "YES",
+        "column_default": null,
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "user_sessions",
+        "column_name": "created_at",
+        "ordinal_position": 7,
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "numeric_precision": null,
+        "numeric_scale": null
+      }
+    ],
+    "constraints": [
+      {
+        "table_name": "risk_school.academic_periods",
+        "name": "academic_periods_check",
+        "definition": "CHECK ((end_date > start_date))"
+      },
+      {
+        "table_name": "risk_school.academic_periods",
+        "name": "academic_periods_code_data_origin_key",
+        "definition": "UNIQUE (code, data_origin)"
+      },
+      {
+        "table_name": "risk_school.academic_periods",
+        "name": "academic_periods_data_origin_check",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['DEMO'::text, 'REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.academic_periods",
+        "name": "academic_periods_id_data_origin_key",
+        "definition": "UNIQUE (id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.academic_periods",
+        "name": "academic_periods_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.academic_periods",
+        "name": "academic_periods_school_year_check",
+        "definition": "CHECK (((school_year >= 2000) AND (school_year <= 2100)))"
+      },
+      {
+        "table_name": "risk_school.academic_periods",
+        "name": "processing_origin",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_activities_pct_check",
+        "definition": "CHECK (((activities_pct >= (0)::numeric) AND (activities_pct <= (100)::numeric)))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_age_years_check",
+        "definition": "CHECK (((age_years >= 5) AND (age_years <= 25)))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_attendance_pct_check",
+        "definition": "CHECK (((attendance_pct >= (0)::numeric) AND (attendance_pct <= (100)::numeric)))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_average_grade_check",
+        "definition": "CHECK (((average_grade >= (0)::numeric) AND (average_grade <= (20)::numeric)))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_behavior_incidents_check",
+        "definition": "CHECK ((behavior_incidents >= 0))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_check",
+        "definition": "CHECK (((supersedes_id IS NULL) OR (supersedes_id <> id)))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_check1",
+        "definition": "CHECK ((available_at <= cutoff_at))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_check2",
+        "definition": "CHECK ((window_start <= ((cutoff_at AT TIME ZONE 'America/Lima'::text))::date))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_check3",
+        "definition": "CHECK ((target_date > ((cutoff_at AT TIME ZONE 'America/Lima'::text))::date))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_data_origin_check",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['DEMO'::text, 'REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_enrollment_id_cutoff_at_revision_key",
+        "definition": "UNIQUE (enrollment_id, cutoff_at, revision)"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_enrollment_id_period_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (enrollment_id, period_id, data_origin) REFERENCES risk_school.enrollments(id, period_id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_id_enrollment_id_cutoff_at_data_origin_key",
+        "definition": "UNIQUE (id, enrollment_id, cutoff_at, data_origin)"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_id_enrollment_id_data_origin_key",
+        "definition": "UNIQUE (id, enrollment_id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_import_batch_id_period_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (import_batch_id, period_id, data_origin) REFERENCES risk_school.import_batches(id, period_id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_missing_fraction_check",
+        "definition": "CHECK (((missing_fraction >= (0)::numeric) AND (missing_fraction <= (1)::numeric)))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_participation_level_check",
+        "definition": "CHECK (((participation_level >= 1) AND (participation_level <= 3)))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_revision_check",
+        "definition": "CHECK ((revision >= 1))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_row_sha256_check",
+        "definition": "CHECK ((row_sha256 ~ '^[0-9a-f]{64}$'::text))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_source_row_number_check",
+        "definition": "CHECK ((source_row_number >= 2))"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "academic_snapshots_supersedes_id_enrollment_id_cutoff_at_d_fkey",
+        "definition": "FOREIGN KEY (supersedes_id, enrollment_id, cutoff_at, data_origin) REFERENCES risk_school.academic_snapshots(id, enrollment_id, cutoff_at, data_origin)"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "processing_origin",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "alerts_assigned_to_fkey",
+        "definition": "FOREIGN KEY (assigned_to) REFERENCES risk_school.app_users(id)"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "alerts_check",
+        "definition": "CHECK ((((status = ANY (ARRAY['OPEN'::text, 'IN_REVIEW'::text])) AND (closed_at IS NULL)) OR ((status = ANY (ARRAY['RESOLVED'::text, 'DISMISSED'::text])) AND (closed_at IS NOT NULL) AND (length(btrim(resolution_reason)) > 0) AND (resolution_reason IS NOT NULL))))"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "alerts_data_origin_check",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['DEMO'::text, 'REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "alerts_id_enrollment_id_data_origin_key",
+        "definition": "UNIQUE (id, enrollment_id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "alerts_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "alerts_prediction_id_enrollment_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (prediction_id, enrollment_id, data_origin) REFERENCES risk_school.predictions(id, enrollment_id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "alerts_resolution_reason_check",
+        "definition": "CHECK ((length(resolution_reason) <= 1000))"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "alerts_severity_check",
+        "definition": "CHECK ((severity = ANY (ARRAY['MEDIUM'::text, 'HIGH'::text])))"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "alerts_status_check",
+        "definition": "CHECK ((status = ANY (ARRAY['OPEN'::text, 'IN_REVIEW'::text, 'RESOLVED'::text, 'DISMISSED'::text])))"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "alerts_version_check",
+        "definition": "CHECK ((version >= 1))"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "processing_origin",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.app_users",
+        "name": "app_users_email_check",
+        "definition": "CHECK ((email = lower(email)))"
+      },
+      {
+        "table_name": "risk_school.app_users",
+        "name": "app_users_email_key",
+        "definition": "UNIQUE (email)"
+      },
+      {
+        "table_name": "risk_school.app_users",
+        "name": "app_users_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.app_users",
+        "name": "app_users_role_check",
+        "definition": "CHECK ((role = ANY (ARRAY['ADMIN'::text, 'TUTOR'::text, 'DIRECTOR'::text, 'RESEARCHER'::text])))"
+      },
+      {
+        "table_name": "risk_school.audit_events",
+        "name": "audit_events_actor_id_fkey",
+        "definition": "FOREIGN KEY (actor_id) REFERENCES risk_school.app_users(id)"
+      },
+      {
+        "table_name": "risk_school.audit_events",
+        "name": "audit_events_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.enrollments",
+        "name": "enrollments_data_origin_check",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['DEMO'::text, 'REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.enrollments",
+        "name": "enrollments_id_data_origin_key",
+        "definition": "UNIQUE (id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.enrollments",
+        "name": "enrollments_id_period_id_data_origin_key",
+        "definition": "UNIQUE (id, period_id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.enrollments",
+        "name": "enrollments_period_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (period_id, data_origin) REFERENCES risk_school.academic_periods(id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.enrollments",
+        "name": "enrollments_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.enrollments",
+        "name": "enrollments_section_id_fkey",
+        "definition": "FOREIGN KEY (section_id) REFERENCES risk_school.grade_sections(id) ON DELETE RESTRICT"
+      },
+      {
+        "table_name": "risk_school.enrollments",
+        "name": "enrollments_student_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (student_id, data_origin) REFERENCES risk_school.students(id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.enrollments",
+        "name": "enrollments_student_id_period_id_key",
+        "definition": "UNIQUE (student_id, period_id)"
+      },
+      {
+        "table_name": "risk_school.enrollments",
+        "name": "processing_origin",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.followup_decisions",
+        "name": "followup_decisions_alert_id_enrollment_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (alert_id, enrollment_id, data_origin) REFERENCES risk_school.alerts(id, enrollment_id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.followup_decisions",
+        "name": "followup_decisions_check",
+        "definition": "CHECK ((((decision = 'NO_ALERT'::text) AND (alert_id IS NULL)) OR ((decision <> 'NO_ALERT'::text) AND (alert_id IS NOT NULL))))"
+      },
+      {
+        "table_name": "risk_school.followup_decisions",
+        "name": "followup_decisions_data_origin_check",
+        "definition": "CHECK ((data_origin = 'SYNTHETIC'::text))"
+      },
+      {
+        "table_name": "risk_school.followup_decisions",
+        "name": "followup_decisions_decision_check",
+        "definition": "CHECK ((decision = ANY (ARRAY['CREATED'::text, 'UPDATED'::text, 'RETAINED_LOW'::text, 'NO_ALERT'::text])))"
+      },
+      {
+        "table_name": "risk_school.followup_decisions",
+        "name": "followup_decisions_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.followup_decisions",
+        "name": "followup_decisions_policy_version_check",
+        "definition": "CHECK ((policy_version = 'followup-policy-v1'::text))"
+      },
+      {
+        "table_name": "risk_school.followup_decisions",
+        "name": "followup_decisions_prediction_id_enrollment_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (prediction_id, enrollment_id, data_origin) REFERENCES risk_school.predictions(id, enrollment_id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.followup_decisions",
+        "name": "followup_decisions_prediction_id_key",
+        "definition": "UNIQUE (prediction_id)"
+      },
+      {
+        "table_name": "risk_school.followup_decisions",
+        "name": "followup_decisions_study_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (study_id, data_origin) REFERENCES risk_school.synthetic_studies(id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.grade_sections",
+        "name": "grade_sections_grade_check",
+        "definition": "CHECK (((grade >= 1) AND (grade <= 5)))"
+      },
+      {
+        "table_name": "risk_school.grade_sections",
+        "name": "grade_sections_grade_code_school_year_key",
+        "definition": "UNIQUE (grade, code, school_year)"
+      },
+      {
+        "table_name": "risk_school.grade_sections",
+        "name": "grade_sections_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.grade_sections",
+        "name": "grade_sections_school_year_check",
+        "definition": "CHECK (((school_year >= 2000) AND (school_year <= 2100)))"
+      },
+      {
+        "table_name": "risk_school.grade_sections",
+        "name": "grade_sections_tutor_id_fkey",
+        "definition": "FOREIGN KEY (tutor_id) REFERENCES risk_school.app_users(id) ON DELETE RESTRICT"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_check",
+        "definition": "CHECK (((valid_rows + invalid_rows) = total_rows))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_check1",
+        "definition": "CHECK (((planned_students <= valid_rows) AND (planned_enrollments <= valid_rows) AND (planned_snapshots <= valid_rows)))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_check2",
+        "definition": "CHECK (((status <> 'COMMITTED'::text) OR ((invalid_rows = 0) AND (committed_at IS NOT NULL))))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_created_by_fkey",
+        "definition": "FOREIGN KEY (created_by) REFERENCES risk_school.app_users(id)"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_data_origin_check",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['DEMO'::text, 'REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_file_sha256_check",
+        "definition": "CHECK ((file_sha256 ~ '^[0-9a-f]{64}$'::text))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_id_period_id_data_origin_key",
+        "definition": "UNIQUE (id, period_id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_invalid_rows_check",
+        "definition": "CHECK ((invalid_rows >= 0))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_period_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (period_id, data_origin) REFERENCES risk_school.academic_periods(id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_period_id_file_sha256_key",
+        "definition": "UNIQUE (period_id, file_sha256)"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_planned_enrollments_check",
+        "definition": "CHECK ((planned_enrollments >= 0))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_planned_snapshots_check",
+        "definition": "CHECK ((planned_snapshots >= 0))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_planned_students_check",
+        "definition": "CHECK ((planned_students >= 0))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_preview_state_check",
+        "definition": "CHECK ((jsonb_typeof(preview_state) = 'array'::text))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_preview_version_check",
+        "definition": "CHECK ((preview_version >= 1))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_status_check",
+        "definition": "CHECK ((status = ANY (ARRAY['PREVIEW'::text, 'READY'::text, 'COMMITTED'::text, 'FAILED'::text])))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_study_origin_fk",
+        "definition": "FOREIGN KEY (study_id, data_origin) REFERENCES risk_school.synthetic_studies(id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_synthetic_provenance",
+        "definition": "CHECK (((data_origin = 'SYNTHETIC'::text) = (study_id IS NOT NULL)))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_total_rows_check",
+        "definition": "CHECK ((total_rows >= 0))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_total_rows_check1",
+        "definition": "CHECK ((total_rows <= 10000))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_batches_valid_rows_check",
+        "definition": "CHECK ((valid_rows >= 0))"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "import_registered_csv_fk",
+        "definition": "FOREIGN KEY (study_id, period_id, data_origin, file_sha256) REFERENCES risk_school.synthetic_studies(id, period_id, data_origin, csv_sha256)"
+      },
+      {
+        "table_name": "risk_school.import_batches",
+        "name": "processing_origin",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "intervention_creation_digest",
+        "definition": "CHECK ((((creation_key IS NULL) AND (creation_payload_sha256 IS NULL)) OR ((creation_key IS NOT NULL) AND (creation_payload_sha256 ~ '^[0-9a-f]{64}$'::text))))"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "interventions_alert_id_enrollment_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (alert_id, enrollment_id, data_origin) REFERENCES risk_school.alerts(id, enrollment_id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "interventions_check",
+        "definition": "CHECK ((((status = 'DONE'::text) AND (performed_at IS NOT NULL)) OR ((status <> 'DONE'::text) AND (performed_at IS NULL))))"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "interventions_created_by_fkey",
+        "definition": "FOREIGN KEY (created_by) REFERENCES risk_school.app_users(id)"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "interventions_data_origin_check",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['DEMO'::text, 'REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "interventions_enrollment_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (enrollment_id, data_origin) REFERENCES risk_school.enrollments(id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "interventions_kind_check",
+        "definition": "CHECK ((kind = ANY (ARRAY['TUTORING'::text, 'REINFORCEMENT'::text, 'FAMILY_MEETING'::text, 'OTHER'::text])))"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "interventions_notes_check",
+        "definition": "CHECK ((length(notes) <= 2000))"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "interventions_objective_check",
+        "definition": "CHECK (((length(btrim(objective)) >= 1) AND (length(btrim(objective)) <= 1000)))"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "interventions_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "interventions_status_check",
+        "definition": "CHECK ((status = ANY (ARRAY['PLANNED'::text, 'DONE'::text, 'CANCELLED'::text])))"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "interventions_version_check",
+        "definition": "CHECK ((version >= 1))"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "processing_origin",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "model_versions_algorithm_check",
+        "definition": "CHECK ((algorithm = ANY (ARRAY['DUMMY'::text, 'RANDOM_FOREST'::text, 'SVM'::text, 'XGBOOST'::text])))"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "model_versions_artifact_sha256_check",
+        "definition": "CHECK ((artifact_sha256 ~ '^[0-9a-f]{64}$'::text))"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "model_versions_check",
+        "definition": "CHECK (((NOT is_active) OR (status = 'APPROVED'::text)))"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "model_versions_created_by_fkey",
+        "definition": "FOREIGN KEY (created_by) REFERENCES risk_school.app_users(id)"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "model_versions_data_origin_check",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['DEMO'::text, 'REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "model_versions_dataset_hash_check",
+        "definition": "CHECK ((dataset_hash ~ '^[0-9a-f]{64}$'::text))"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "model_versions_id_data_origin_key",
+        "definition": "UNIQUE (id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "model_versions_name_version_data_origin_key",
+        "definition": "UNIQUE (name, version, data_origin)"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "model_versions_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "model_versions_status_check",
+        "definition": "CHECK ((status = ANY (ARRAY['DRAFT'::text, 'EVALUATED'::text, 'APPROVED'::text, 'RETIRED'::text])))"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "model_versions_study_origin_fk",
+        "definition": "FOREIGN KEY (study_id, data_origin) REFERENCES risk_school.synthetic_studies(id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "model_versions_synthetic_provenance",
+        "definition": "CHECK (((data_origin = 'SYNTHETIC'::text) = (study_id IS NOT NULL)))"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "processing_origin",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.model_versions",
+        "name": "synthetic_only_active_model",
+        "definition": "CHECK (((NOT is_active) OR COALESCE(((data_origin = 'SYNTHETIC'::text) AND (status = 'APPROVED'::text) AND (study_id IS NOT NULL) AND ((manifest ->> 'scope'::text) = 'SYNTHETIC_STUDY'::text) AND ((manifest ->> 'data_origin'::text) = 'SYNTHETIC'::text) AND ((manifest ->> 'study_id'::text) = (study_id)::text) AND ((manifest ->> 'approval_kind'::text) = 'TECHNICAL_SIMULATION'::text)), false))) NOT VALID"
+      },
+      {
+        "table_name": "risk_school.predictions",
+        "name": "predictions_check",
+        "definition": "CHECK ((((probability_low IS NULL) AND (probability_medium IS NULL) AND (probability_high IS NULL)) OR ((probability_low IS NOT NULL) AND (probability_medium IS NOT NULL) AND (probability_high IS NOT NULL) AND ((probability_low >= (0)::numeric) AND (probability_low <= (1)::numeric)) AND ((probability_medium >= (0)::numeric) AND (probability_medium <= (1)::numeric)) AND ((probability_high >= (0)::numeric) AND (probability_high <= (1)::numeric)) AND (abs((((probability_low + probability_medium) + probability_high) - (1)::numeric)) <= 0.00001))))"
+      },
+      {
+        "table_name": "risk_school.predictions",
+        "name": "predictions_check1",
+        "definition": "CHECK (((NOT probabilities_calibrated) OR (probability_low IS NOT NULL)))"
+      },
+      {
+        "table_name": "risk_school.predictions",
+        "name": "predictions_data_origin_check",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['DEMO'::text, 'REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.predictions",
+        "name": "predictions_id_enrollment_id_data_origin_key",
+        "definition": "UNIQUE (id, enrollment_id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.predictions",
+        "name": "predictions_model_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (model_id, data_origin) REFERENCES risk_school.model_versions(id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.predictions",
+        "name": "predictions_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.predictions",
+        "name": "predictions_risk_level_check",
+        "definition": "CHECK ((risk_level = ANY (ARRAY['LOW'::text, 'MEDIUM'::text, 'HIGH'::text])))"
+      },
+      {
+        "table_name": "risk_school.predictions",
+        "name": "predictions_snapshot_id_enrollment_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (snapshot_id, enrollment_id, data_origin) REFERENCES risk_school.academic_snapshots(id, enrollment_id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.predictions",
+        "name": "predictions_snapshot_id_model_id_key",
+        "definition": "UNIQUE (snapshot_id, model_id)"
+      },
+      {
+        "table_name": "risk_school.predictions",
+        "name": "processing_origin",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.students",
+        "name": "processing_origin",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.students",
+        "name": "students_anon_code_check",
+        "definition": "CHECK (((length(anon_code) >= 3) AND (length(anon_code) <= 40)))"
+      },
+      {
+        "table_name": "risk_school.students",
+        "name": "students_anon_code_key",
+        "definition": "UNIQUE (anon_code)"
+      },
+      {
+        "table_name": "risk_school.students",
+        "name": "students_data_origin_check",
+        "definition": "CHECK ((data_origin = ANY (ARRAY['DEMO'::text, 'REAL'::text, 'SYNTHETIC'::text])))"
+      },
+      {
+        "table_name": "risk_school.students",
+        "name": "students_eligibility_check",
+        "definition": "CHECK (((data_origin = ANY (ARRAY['DEMO'::text, 'SYNTHETIC'::text])) OR (NOT eligible_for_processing) OR (consent_documented AND assent_documented)))"
+      },
+      {
+        "table_name": "risk_school.students",
+        "name": "students_id_data_origin_key",
+        "definition": "UNIQUE (id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.students",
+        "name": "students_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_bindings_check",
+        "definition": "CHECK ((jsonb_typeof(bindings) = 'array'::text))"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_comparison_check",
+        "definition": "CHECK (((comparison IS NULL) OR (jsonb_typeof(comparison) = 'object'::text)))"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_created_by_fkey",
+        "definition": "FOREIGN KEY (created_by) REFERENCES risk_school.app_users(id)"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_csv_sha256_check",
+        "definition": "CHECK ((csv_sha256 ~ '^[0-9a-f]{64}$'::text))"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_data_origin_check",
+        "definition": "CHECK ((data_origin = 'SYNTHETIC'::text))"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_generator_version_check",
+        "definition": "CHECK ((generator_version = 'synthetic-generator-v1'::text))"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_id_data_origin_key",
+        "definition": "UNIQUE (id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_id_period_id_data_origin_csv_sha256_key",
+        "definition": "UNIQUE (id, period_id, data_origin, csv_sha256)"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_payload_sha256_check",
+        "definition": "CHECK ((payload_sha256 ~ '^[0-9a-f]{64}$'::text))"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_period_id_data_origin_fkey",
+        "definition": "FOREIGN KEY (period_id, data_origin) REFERENCES risk_school.academic_periods(id, data_origin)"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_period_id_key",
+        "definition": "UNIQUE (period_id)"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_seed_check",
+        "definition": "CHECK (((seed >= 0) AND (seed < '4294967296'::bigint)))"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_storage_key_check",
+        "definition": "CHECK ((storage_key ~ '^[0-9a-f]{32}\\.json$'::text))"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "synthetic_studies_storage_key_key",
+        "definition": "UNIQUE (storage_key)"
+      },
+      {
+        "table_name": "risk_school.user_sessions",
+        "name": "user_sessions_check",
+        "definition": "CHECK ((expires_at > created_at))"
+      },
+      {
+        "table_name": "risk_school.user_sessions",
+        "name": "user_sessions_csrf_digest_check",
+        "definition": "CHECK ((csrf_digest ~ '^[0-9a-f]{64}$'::text))"
+      },
+      {
+        "table_name": "risk_school.user_sessions",
+        "name": "user_sessions_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "risk_school.user_sessions",
+        "name": "user_sessions_token_digest_check",
+        "definition": "CHECK ((token_digest ~ '^[0-9a-f]{64}$'::text))"
+      },
+      {
+        "table_name": "risk_school.user_sessions",
+        "name": "user_sessions_token_digest_key",
+        "definition": "UNIQUE (token_digest)"
+      },
+      {
+        "table_name": "risk_school.user_sessions",
+        "name": "user_sessions_user_id_fkey",
+        "definition": "FOREIGN KEY (user_id) REFERENCES risk_school.app_users(id) ON DELETE RESTRICT"
+      }
+    ],
+    "indexes": [
+      {
+        "tablename": "academic_periods",
+        "indexname": "academic_periods_code_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX academic_periods_code_data_origin_key ON risk_school.academic_periods USING btree (code, data_origin)"
+      },
+      {
+        "tablename": "academic_periods",
+        "indexname": "academic_periods_id_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX academic_periods_id_data_origin_key ON risk_school.academic_periods USING btree (id, data_origin)"
+      },
+      {
+        "tablename": "academic_periods",
+        "indexname": "academic_periods_pkey",
+        "indexdef": "CREATE UNIQUE INDEX academic_periods_pkey ON risk_school.academic_periods USING btree (id)"
+      },
+      {
+        "tablename": "academic_snapshots",
+        "indexname": "academic_snapshots_enrollment_id_cutoff_at_revision_key",
+        "indexdef": "CREATE UNIQUE INDEX academic_snapshots_enrollment_id_cutoff_at_revision_key ON risk_school.academic_snapshots USING btree (enrollment_id, cutoff_at, revision)"
+      },
+      {
+        "tablename": "academic_snapshots",
+        "indexname": "academic_snapshots_id_enrollment_id_cutoff_at_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX academic_snapshots_id_enrollment_id_cutoff_at_data_origin_key ON risk_school.academic_snapshots USING btree (id, enrollment_id, cutoff_at, data_origin)"
+      },
+      {
+        "tablename": "academic_snapshots",
+        "indexname": "academic_snapshots_id_enrollment_id_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX academic_snapshots_id_enrollment_id_data_origin_key ON risk_school.academic_snapshots USING btree (id, enrollment_id, data_origin)"
+      },
+      {
+        "tablename": "academic_snapshots",
+        "indexname": "academic_snapshots_pkey",
+        "indexdef": "CREATE UNIQUE INDEX academic_snapshots_pkey ON risk_school.academic_snapshots USING btree (id)"
+      },
+      {
+        "tablename": "academic_snapshots",
+        "indexname": "ix_snapshots_enrollment_cutoff",
+        "indexdef": "CREATE INDEX ix_snapshots_enrollment_cutoff ON risk_school.academic_snapshots USING btree (enrollment_id, cutoff_at DESC, revision DESC)"
+      },
+      {
+        "tablename": "alerts",
+        "indexname": "alerts_id_enrollment_id_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX alerts_id_enrollment_id_data_origin_key ON risk_school.alerts USING btree (id, enrollment_id, data_origin)"
+      },
+      {
+        "tablename": "alerts",
+        "indexname": "alerts_pkey",
+        "indexdef": "CREATE UNIQUE INDEX alerts_pkey ON risk_school.alerts USING btree (id)"
+      },
+      {
+        "tablename": "alerts",
+        "indexname": "ix_alerts_status_severity",
+        "indexdef": "CREATE INDEX ix_alerts_status_severity ON risk_school.alerts USING btree (status, severity, opened_at)"
+      },
+      {
+        "tablename": "alerts",
+        "indexname": "ux_active_alert_enrollment",
+        "indexdef": "CREATE UNIQUE INDEX ux_active_alert_enrollment ON risk_school.alerts USING btree (enrollment_id) WHERE (status = ANY (ARRAY['OPEN'::text, 'IN_REVIEW'::text]))"
+      },
+      {
+        "tablename": "app_users",
+        "indexname": "app_users_email_key",
+        "indexdef": "CREATE UNIQUE INDEX app_users_email_key ON risk_school.app_users USING btree (email)"
+      },
+      {
+        "tablename": "app_users",
+        "indexname": "app_users_pkey",
+        "indexdef": "CREATE UNIQUE INDEX app_users_pkey ON risk_school.app_users USING btree (id)"
+      },
+      {
+        "tablename": "audit_events",
+        "indexname": "audit_events_pkey",
+        "indexdef": "CREATE UNIQUE INDEX audit_events_pkey ON risk_school.audit_events USING btree (id)"
+      },
+      {
+        "tablename": "audit_events",
+        "indexname": "ix_audit_entity_time",
+        "indexdef": "CREATE INDEX ix_audit_entity_time ON risk_school.audit_events USING btree (entity_type, entity_id, recorded_at)"
+      },
+      {
+        "tablename": "enrollments",
+        "indexname": "enrollments_id_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX enrollments_id_data_origin_key ON risk_school.enrollments USING btree (id, data_origin)"
+      },
+      {
+        "tablename": "enrollments",
+        "indexname": "enrollments_id_period_id_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX enrollments_id_period_id_data_origin_key ON risk_school.enrollments USING btree (id, period_id, data_origin)"
+      },
+      {
+        "tablename": "enrollments",
+        "indexname": "enrollments_pkey",
+        "indexdef": "CREATE UNIQUE INDEX enrollments_pkey ON risk_school.enrollments USING btree (id)"
+      },
+      {
+        "tablename": "enrollments",
+        "indexname": "enrollments_student_id_period_id_key",
+        "indexdef": "CREATE UNIQUE INDEX enrollments_student_id_period_id_key ON risk_school.enrollments USING btree (student_id, period_id)"
+      },
+      {
+        "tablename": "enrollments",
+        "indexname": "ix_enrollments_period_section",
+        "indexdef": "CREATE INDEX ix_enrollments_period_section ON risk_school.enrollments USING btree (period_id, section_id)"
+      },
+      {
+        "tablename": "followup_decisions",
+        "indexname": "followup_decisions_pkey",
+        "indexdef": "CREATE UNIQUE INDEX followup_decisions_pkey ON risk_school.followup_decisions USING btree (id)"
+      },
+      {
+        "tablename": "followup_decisions",
+        "indexname": "followup_decisions_prediction_id_key",
+        "indexdef": "CREATE UNIQUE INDEX followup_decisions_prediction_id_key ON risk_school.followup_decisions USING btree (prediction_id)"
+      },
+      {
+        "tablename": "followup_decisions",
+        "indexname": "ix_followup_decisions_alert",
+        "indexdef": "CREATE INDEX ix_followup_decisions_alert ON risk_school.followup_decisions USING btree (alert_id, recorded_at)"
+      },
+      {
+        "tablename": "grade_sections",
+        "indexname": "grade_sections_grade_code_school_year_key",
+        "indexdef": "CREATE UNIQUE INDEX grade_sections_grade_code_school_year_key ON risk_school.grade_sections USING btree (grade, code, school_year)"
+      },
+      {
+        "tablename": "grade_sections",
+        "indexname": "grade_sections_pkey",
+        "indexdef": "CREATE UNIQUE INDEX grade_sections_pkey ON risk_school.grade_sections USING btree (id)"
+      },
+      {
+        "tablename": "grade_sections",
+        "indexname": "ix_sections_tutor",
+        "indexdef": "CREATE INDEX ix_sections_tutor ON risk_school.grade_sections USING btree (tutor_id)"
+      },
+      {
+        "tablename": "import_batches",
+        "indexname": "import_batches_id_period_id_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX import_batches_id_period_id_data_origin_key ON risk_school.import_batches USING btree (id, period_id, data_origin)"
+      },
+      {
+        "tablename": "import_batches",
+        "indexname": "import_batches_period_id_file_sha256_key",
+        "indexdef": "CREATE UNIQUE INDEX import_batches_period_id_file_sha256_key ON risk_school.import_batches USING btree (period_id, file_sha256)"
+      },
+      {
+        "tablename": "import_batches",
+        "indexname": "import_batches_pkey",
+        "indexdef": "CREATE UNIQUE INDEX import_batches_pkey ON risk_school.import_batches USING btree (id)"
+      },
+      {
+        "tablename": "interventions",
+        "indexname": "interventions_pkey",
+        "indexdef": "CREATE UNIQUE INDEX interventions_pkey ON risk_school.interventions USING btree (id)"
+      },
+      {
+        "tablename": "interventions",
+        "indexname": "ix_interventions_enrollment",
+        "indexdef": "CREATE INDEX ix_interventions_enrollment ON risk_school.interventions USING btree (enrollment_id, scheduled_at)"
+      },
+      {
+        "tablename": "interventions",
+        "indexname": "ux_intervention_actor_creation_key",
+        "indexdef": "CREATE UNIQUE INDEX ux_intervention_actor_creation_key ON risk_school.interventions USING btree (created_by, creation_key) WHERE (creation_key IS NOT NULL)"
+      },
+      {
+        "tablename": "model_versions",
+        "indexname": "model_versions_id_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX model_versions_id_data_origin_key ON risk_school.model_versions USING btree (id, data_origin)"
+      },
+      {
+        "tablename": "model_versions",
+        "indexname": "model_versions_name_version_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX model_versions_name_version_data_origin_key ON risk_school.model_versions USING btree (name, version, data_origin)"
+      },
+      {
+        "tablename": "model_versions",
+        "indexname": "model_versions_pkey",
+        "indexdef": "CREATE UNIQUE INDEX model_versions_pkey ON risk_school.model_versions USING btree (id)"
+      },
+      {
+        "tablename": "model_versions",
+        "indexname": "ux_active_model_origin",
+        "indexdef": "CREATE UNIQUE INDEX ux_active_model_origin ON risk_school.model_versions USING btree (data_origin) WHERE is_active"
+      },
+      {
+        "tablename": "predictions",
+        "indexname": "predictions_id_enrollment_id_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX predictions_id_enrollment_id_data_origin_key ON risk_school.predictions USING btree (id, enrollment_id, data_origin)"
+      },
+      {
+        "tablename": "predictions",
+        "indexname": "predictions_pkey",
+        "indexdef": "CREATE UNIQUE INDEX predictions_pkey ON risk_school.predictions USING btree (id)"
+      },
+      {
+        "tablename": "predictions",
+        "indexname": "predictions_snapshot_id_model_id_key",
+        "indexdef": "CREATE UNIQUE INDEX predictions_snapshot_id_model_id_key ON risk_school.predictions USING btree (snapshot_id, model_id)"
+      },
+      {
+        "tablename": "students",
+        "indexname": "students_anon_code_key",
+        "indexdef": "CREATE UNIQUE INDEX students_anon_code_key ON risk_school.students USING btree (anon_code)"
+      },
+      {
+        "tablename": "students",
+        "indexname": "students_id_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX students_id_data_origin_key ON risk_school.students USING btree (id, data_origin)"
+      },
+      {
+        "tablename": "students",
+        "indexname": "students_pkey",
+        "indexdef": "CREATE UNIQUE INDEX students_pkey ON risk_school.students USING btree (id)"
+      },
+      {
+        "tablename": "synthetic_studies",
+        "indexname": "synthetic_studies_id_data_origin_key",
+        "indexdef": "CREATE UNIQUE INDEX synthetic_studies_id_data_origin_key ON risk_school.synthetic_studies USING btree (id, data_origin)"
+      },
+      {
+        "tablename": "synthetic_studies",
+        "indexname": "synthetic_studies_id_period_id_data_origin_csv_sha256_key",
+        "indexdef": "CREATE UNIQUE INDEX synthetic_studies_id_period_id_data_origin_csv_sha256_key ON risk_school.synthetic_studies USING btree (id, period_id, data_origin, csv_sha256)"
+      },
+      {
+        "tablename": "synthetic_studies",
+        "indexname": "synthetic_studies_period_id_key",
+        "indexdef": "CREATE UNIQUE INDEX synthetic_studies_period_id_key ON risk_school.synthetic_studies USING btree (period_id)"
+      },
+      {
+        "tablename": "synthetic_studies",
+        "indexname": "synthetic_studies_pkey",
+        "indexdef": "CREATE UNIQUE INDEX synthetic_studies_pkey ON risk_school.synthetic_studies USING btree (id)"
+      },
+      {
+        "tablename": "synthetic_studies",
+        "indexname": "synthetic_studies_storage_key_key",
+        "indexdef": "CREATE UNIQUE INDEX synthetic_studies_storage_key_key ON risk_school.synthetic_studies USING btree (storage_key)"
+      },
+      {
+        "tablename": "user_sessions",
+        "indexname": "ix_sessions_user_expires",
+        "indexdef": "CREATE INDEX ix_sessions_user_expires ON risk_school.user_sessions USING btree (user_id, expires_at)"
+      },
+      {
+        "tablename": "user_sessions",
+        "indexname": "user_sessions_pkey",
+        "indexdef": "CREATE UNIQUE INDEX user_sessions_pkey ON risk_school.user_sessions USING btree (id)"
+      },
+      {
+        "tablename": "user_sessions",
+        "indexname": "user_sessions_token_digest_key",
+        "indexdef": "CREATE UNIQUE INDEX user_sessions_token_digest_key ON risk_school.user_sessions USING btree (token_digest)"
+      }
+    ],
+    "triggers": [
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "snapshot_period_guard",
+        "definition": "CREATE TRIGGER snapshot_period_guard BEFORE INSERT ON risk_school.academic_snapshots FOR EACH ROW EXECUTE FUNCTION risk_school.check_snapshot_period()"
+      },
+      {
+        "table_name": "risk_school.academic_snapshots",
+        "name": "snapshots_immutable",
+        "definition": "CREATE TRIGGER snapshots_immutable BEFORE DELETE OR UPDATE ON risk_school.academic_snapshots FOR EACH ROW EXECUTE FUNCTION risk_school.deny_evidence_mutation()"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "alert_change_guard",
+        "definition": "CREATE TRIGGER alert_change_guard BEFORE INSERT OR UPDATE ON risk_school.alerts FOR EACH ROW EXECUTE FUNCTION risk_school.check_followup_change()"
+      },
+      {
+        "table_name": "risk_school.alerts",
+        "name": "alerts_no_delete",
+        "definition": "CREATE TRIGGER alerts_no_delete BEFORE DELETE ON risk_school.alerts FOR EACH ROW EXECUTE FUNCTION risk_school.deny_evidence_mutation()"
+      },
+      {
+        "table_name": "risk_school.audit_events",
+        "name": "audit_immutable",
+        "definition": "CREATE TRIGGER audit_immutable BEFORE DELETE OR UPDATE ON risk_school.audit_events FOR EACH ROW EXECUTE FUNCTION risk_school.deny_evidence_mutation()"
+      },
+      {
+        "table_name": "risk_school.followup_decisions",
+        "name": "decision_provenance_guard",
+        "definition": "CREATE TRIGGER decision_provenance_guard BEFORE INSERT ON risk_school.followup_decisions FOR EACH ROW EXECUTE FUNCTION risk_school.check_followup_decision()"
+      },
+      {
+        "table_name": "risk_school.followup_decisions",
+        "name": "decisions_immutable",
+        "definition": "CREATE TRIGGER decisions_immutable BEFORE DELETE OR UPDATE ON risk_school.followup_decisions FOR EACH ROW EXECUTE FUNCTION risk_school.deny_evidence_mutation()"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "intervention_change_guard",
+        "definition": "CREATE TRIGGER intervention_change_guard BEFORE INSERT OR UPDATE ON risk_school.interventions FOR EACH ROW EXECUTE FUNCTION risk_school.check_followup_change()"
+      },
+      {
+        "table_name": "risk_school.interventions",
+        "name": "interventions_no_delete",
+        "definition": "CREATE TRIGGER interventions_no_delete BEFORE DELETE ON risk_school.interventions FOR EACH ROW EXECUTE FUNCTION risk_school.deny_evidence_mutation()"
+      },
+      {
+        "table_name": "risk_school.predictions",
+        "name": "prediction_study_guard",
+        "definition": "CREATE TRIGGER prediction_study_guard BEFORE INSERT ON risk_school.predictions FOR EACH ROW EXECUTE FUNCTION risk_school.check_prediction_study()"
+      },
+      {
+        "table_name": "risk_school.predictions",
+        "name": "predictions_immutable",
+        "definition": "CREATE TRIGGER predictions_immutable BEFORE DELETE OR UPDATE ON risk_school.predictions FOR EACH ROW EXECUTE FUNCTION risk_school.deny_evidence_mutation()"
+      },
+      {
+        "table_name": "risk_school.synthetic_studies",
+        "name": "study_evidence_guard",
+        "definition": "CREATE TRIGGER study_evidence_guard BEFORE DELETE OR UPDATE ON risk_school.synthetic_studies FOR EACH ROW EXECUTE FUNCTION risk_school.check_study_evidence()"
+      }
+    ],
+    "grants": [
+      {
+        "table_name": "academic_periods",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "academic_periods",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "academic_periods",
+        "grantee": "riesgo_app",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "academic_periods",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "academic_periods",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "academic_periods",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "academic_periods",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "academic_periods",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "academic_periods",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "academic_periods",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "academic_snapshots",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "academic_snapshots",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "academic_snapshots",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "academic_snapshots",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "academic_snapshots",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "academic_snapshots",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "academic_snapshots",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "academic_snapshots",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "academic_snapshots",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "alerts",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "alerts",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "alerts",
+        "grantee": "riesgo_app",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "alerts",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "alerts",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "alerts",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "alerts",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "alerts",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "alerts",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "alerts",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "app_users",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "app_users",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "app_users",
+        "grantee": "riesgo_app",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "app_users",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "app_users",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "app_users",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "app_users",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "app_users",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "app_users",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "app_users",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "audit_events",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "audit_events",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "audit_events",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "audit_events",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "audit_events",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "audit_events",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "audit_events",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "audit_events",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "audit_events",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "enrollments",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "enrollments",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "enrollments",
+        "grantee": "riesgo_app",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "enrollments",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "enrollments",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "enrollments",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "enrollments",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "enrollments",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "enrollments",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "enrollments",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "followup_decisions",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "followup_decisions",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "followup_decisions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "followup_decisions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "followup_decisions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "followup_decisions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "followup_decisions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "followup_decisions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "followup_decisions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "grade_sections",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "grade_sections",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "grade_sections",
+        "grantee": "riesgo_app",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "grade_sections",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "grade_sections",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "grade_sections",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "grade_sections",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "grade_sections",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "grade_sections",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "grade_sections",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "import_batches",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "import_batches",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "import_batches",
+        "grantee": "riesgo_app",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "import_batches",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "import_batches",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "import_batches",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "import_batches",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "import_batches",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "import_batches",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "import_batches",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "interventions",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "interventions",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "interventions",
+        "grantee": "riesgo_app",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "interventions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "interventions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "interventions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "interventions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "interventions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "interventions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "interventions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "model_versions",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "model_versions",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "model_versions",
+        "grantee": "riesgo_app",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "model_versions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "model_versions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "model_versions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "model_versions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "model_versions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "model_versions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "model_versions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "predictions",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "predictions",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "predictions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "predictions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "predictions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "predictions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "predictions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "predictions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "predictions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "students",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "students",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "students",
+        "grantee": "riesgo_app",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "students",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "students",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "students",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "students",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "students",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "students",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "students",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "synthetic_studies",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "synthetic_studies",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "synthetic_studies",
+        "grantee": "riesgo_app",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "synthetic_studies",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "synthetic_studies",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "synthetic_studies",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "synthetic_studies",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "synthetic_studies",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "synthetic_studies",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "synthetic_studies",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "user_sessions",
+        "grantee": "riesgo_app",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "user_sessions",
+        "grantee": "riesgo_app",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "user_sessions",
+        "grantee": "riesgo_app",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "table_name": "user_sessions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "DELETE"
+      },
+      {
+        "table_name": "user_sessions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "INSERT"
+      },
+      {
+        "table_name": "user_sessions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "table_name": "user_sessions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "SELECT"
+      },
+      {
+        "table_name": "user_sessions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "table_name": "user_sessions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "table_name": "user_sessions",
+        "grantee": "riesgo_owner",
+        "privilege_type": "UPDATE"
+      }
+    ]
+  }
+}

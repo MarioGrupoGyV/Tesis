@@ -1,0 +1,17 @@
+{
+  "status": "COMPROBADO",
+  "backup_id": "s6-20261004T211105Z-f9190fd4851f",
+  "cases": {
+    "native_dpapi_corruption": "DPAPI_INTEGRITY_OR_IDENTITY_FAILED",
+    "missing_original_hmac_key": "BACKUP_INVENTORY_INCOMPLETE",
+    "incompatible_real_manifest": "BACKUP_VERSION_INCOMPATIBLE",
+    "altered_real_dump": "BACKUP_FILE_INTEGRITY_FAILED",
+    "unregistered_external_copy": "BACKUP_NOT_REGISTERED_OWN_PACKAGE",
+    "existing_destination_collision": "TARGET_DESCRIPTOR_EXISTS"
+  },
+  "native_windows_dpapi": true,
+  "derived_from_actual_backup": true,
+  "original_backup_unchanged": true,
+  "original_cipher_sha256": "8cafb0836a0f2a1f39fa39884f01a25394a5dde8f8a8568dfd72a90d969ee11a",
+  "docker_or_active_writes": false
+}

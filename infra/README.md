@@ -1,4 +1,18 @@
-# Infraestructura Windows / Docker Desktop — S5
+# Infraestructura Windows / Docker Desktop — S6
+
+Guía actual: [instalación](../docs/manuals/Manual_Instalacion_Windows.md),
+[recuperación](../docs/manuals/Manual_Respaldo_Restauracion.md) y
+[Estado S6](../docs/planning/Estado_Sprint_6.md). Las recetas S5 que siguen
+conservan contexto previo; los runners S6 exigen descriptor explícito y prefijo nuevo.
+runtime_target.py verifica identidad/volúmenes/puertos/imágenes; operator_profiles.py
+registra acceso ADMIN propio privado sin crear usuarios. study.py requiere --target
+y lee solo ADMIN o el perfil elegido. backup_restore.py protege un paquete completo
+con DPAPI Windows; restore-check crea una copia nueva y nunca sustituye el activo.
+review_s6.py revisa copia/activo sin mutar seguimiento; test_s6_install.py prepara
+cuentas en memoria y el primer recorrido UI solo en una instalación vacía.
+test_s6_recovery.py/test_s6_profiles.py distinguen validaciones, mocks y API Windows
+nativa; test_s6_backup_negative.py deriva negativas del respaldo real sin escribir DB.
+No ejecutar history/archive_s2.py ni check_runtime sobre el entorno poblado.
 
 El operador usa PowerShell y Docker Desktop. Los Dockerfiles y `db/init-app-role.sh`
 son componentes Linux internos de Docker; no se exige Bash, WSL ni Make en Windows.

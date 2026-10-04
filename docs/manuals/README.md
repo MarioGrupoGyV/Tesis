@@ -1,20 +1,23 @@
-# Operación desde PowerShell
+# Manuales de Seguimiento Escolar
 
-El [README raíz](../../README.md) contiene preparación, arranque, migración,
-reinicio, parada, pruebas y primer administrador.
+Guía vigente para simulación local; REAL y validación institucional pendientes.
+[Estado S6](../planning/Estado_Sprint_6.md) distingue instalación/restauración/activo.
+[README raíz](../../README.md) contiene inicio rápido.
 
-`py -3.12 infra/manage.py bootstrap-admin` solicita correo, nombre y contraseña
-sin eco. No hay credenciales predeterminadas ni archivo de cuentas.
-`py -3.12 infra/manage.py configure` permite crear contexto con valores ingresados
-por un administrador autenticado; no habilita procesamiento institucional.
+| Necesidad | Documento |
+| --- | --- |
+| Instalación nueva, bootstrap y perfil | [Instalación Windows](Manual_Instalacion_Windows.md) |
+| Tareas por rol, estudiantes/casos/CSV | [Uso final](Manual_Uso_Final.md) |
+| Recuperación completa sin regenerar | [Respaldo/restauración](Manual_Respaldo_Restauracion.md) |
+| Componentes y flujos | [Arquitectura](Arquitectura_Final.md) |
+| 15 tablas y controles | [Diccionario DB](Diccionario_Base_Datos.md) |
+| 27 operaciones y permisos | [Mapa API](Mapa_Endpoints.md) |
+| Requisito a ejecución/evidencia | [Matriz final](Matriz_Trazabilidad_Final.md) |
+| Presentación reproducible | [Guion](Guion_Presentacion_Tecnica.md) |
+| Software, simulación e investigación | [Alcance/límites](Alcance_y_Limitaciones.md) |
 
-S3.1 permite el [Estudio con datos sintéticos](Manual_Estudio_Sintetico.md): generación
-ADMIN explícita, importación del CSV exacto registrado, comparación, registro y
-activación técnica para simulación local. Sus registros no corresponden a estudiantes
-reales. Conserva las cuatro cuentas S2.2 y sus credenciales Windows; no repetir bootstrap.
-
-La importación, entrenamiento y activación REAL siguen bloqueados. El generador
-registrado es la única procedencia admitida para este estudio; el cliente no puede
-habilitarla con un campo de origen. El [manual ML S3](ML_S3.md) describe el núcleo
-reutilizado; history/Importacion_S2.md se conserva exclusivamente como historia.
-S4–S6 pendientes.
+Referencias conservadas: [ML S3](ML_S3.md), [estudio S3.1](Manual_Estudio_Sintetico.md),
+[uso S4](Manual_Uso_S4.md) y [seguimiento S5](Manual_Seguimiento_Reportes_S5.md).
+Sus comandos antiguos de launcher requieren ahora `--target` explícito.
+Los cierres históricos no sustituyen S6 ni ordenan regenerar cuentas/estudio.
+No publicar backups, secretos, modelos o CSV privados.

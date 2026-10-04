@@ -1,4 +1,15 @@
-# Conciliación vigente — 0.4.0 / S3.1
+# Conciliación vigente — 0.5.0 / S6
+
+La referencia operativa es OpenAPI 0.5.0: 27 operaciones, 26 paths y 15 tablas tras
+0004_followup. S5 añadió seguimiento transaccional, decisiones por predicción,
+versiones y digest original de actividades, resumen y CSV con alcance servidor.
+S6 conserva ese contrato y estructura. Corrige únicamente la descripción antigua
+de predictions/run que decía que no creaba alertas; desde S5 incorpora seguimiento
+en la misma transacción. Los tipos se regeneran sin cambiar entradas/salidas.
+El [mapa final](../manuals/Mapa_Endpoints.md), [diccionario](../manuals/Diccionario_Base_Datos.md)
+y [ADR 009](../adr/009-integracion-recuperacion-s6.md) identifican el estado actual.
+
+## Registro de conciliación S3.1 conservado
 
 Nueva decisión ADR 006; los cierres S2.1/S2.2/S3 conservan sus hechos anteriores.
 19 operaciones reales: S1/S2/S3 más GET /processing/status. Origen público REAL o

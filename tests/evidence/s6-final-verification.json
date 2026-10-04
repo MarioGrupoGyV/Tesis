@@ -1,0 +1,6183 @@
+{
+  "status": "COMPROBADO",
+  "initial_sha": "2029343f3540f7911cd07f6161c5e241f5696626",
+  "final_head": "2029343f3540f7911cd07f6161c5e241f5696626",
+  "checked_at": "2026-10-04T21:31:44.192137+00:00",
+  "code_tree_sha256": "a7db726f18ca203a24823bd19375529f01a8dd37793044f766d3be6ebd0a7a73",
+  "executed_code_sha256": {
+    "infra/runtime_target.py": "7b2dc3f38b8af26077eab3532ebe0be2a192075997e252f4fb73c4c53ebb51a2",
+    "infra/backup_restore.py": "5613997957b8b647b0ac0e751b9e44f565a7a3d40e8360b08a8788958310a717",
+    "infra/windows_dpapi.py": "d65cf1bc1fe9569d052f599ca31dafb9733c09fdb286eb8d80e0a4f95381caed",
+    "infra/operator_profiles.py": "74bd0c61d3a00f38c67f7c43def7756622edb7479b605ab25c738d88dbc195a1",
+    "infra/windows_credentials.py": "bfd08415b4a98dbe7de07bc5416d7a1cd32488eb5a940bae4822ee1f1036ae22",
+    "infra/study.py": "ca96cd81d14277caf71b6292ca6bb45e3340f85f9a0462356912a19fa3f881e1",
+    "infra/review_s6.py": "28602c05f11252bbfd851d4a01ab85213120f4526ddd745b442c36cb563614c5",
+    "infra/test_s6_install.py": "9936f1ab7145889fe6aa0f8c8c7afb641a63abe83ceb1e0666884d930d7403b2",
+    "infra/test_s6_profiles_live.py": "59d192ff2452eab51816142d5b1b59c03778914f1fbdee9b9643b228016459f7",
+    "infra/test_s6_persistence.py": "82664008619e9e640e44eba8590710b94bf78d70be2430fbbb8b43730eb8666d",
+    "tests/e2e/s6.spec.ts": "33d17aac5e7275725affd9d9a530c0ed695ceefc95a4c142e957fd7972dc9ce6",
+    "tests/e2e/s6-reporter.ts": "b327844a86826c25d634961ee9349f84c20c2f3152d56e08278aab51604ce9ad",
+    "tests/e2e/review-reporter.ts": "9eeee9f0616126692ecf4dc11ce80a9fea3354a7471e22280a30f7f22a9595f3",
+    "playwright.config.ts": "1eeb61ec456da0ec9c89a43ca864846c92f5f7254815cd00940d11a78621b064",
+    "infra/check_s6.py": "aa3e5e75f143506a66f3049b7656168a6ca196d11b8d86494c7486033e5ea90d"
+  },
+  "locks": {
+    "backend/requirements-dev.txt": "1c70f637ef20d0e5049f297b9bf55d87e67c578bd66e632569f3b240d7e81899",
+    "backend/requirements.txt": "a6ac22ca17fa0a53034a844066fdf37e28f1e334b10a35e1325cd990aaf113a3",
+    "infra/requirements-s0.txt": "aede94faca096063112df0b3e8a15a172ae97a75160c5bc18d76c6ae74b68c00",
+    "package-lock.json": "9b0880027ad75b06c5d8a56fa77cf1d23bf0196bb5cb6012a1d4a33e20990bb7"
+  },
+  "targets": {
+    "active": {
+      "version": 1,
+      "target_id": "3dc2d491-8daf-4088-9f2a-8f22f919b804",
+      "kind": "ACTIVE",
+      "project": "riesgo-escolar",
+      "database": "riesgo_escolar",
+      "ports": {
+        "web": 15173,
+        "api": 18000,
+        "db": 55432
+      },
+      "web_url": "http://localhost:15173",
+      "api_url": "http://localhost:18000",
+      "volumes": {
+        "db_data": "riesgo-escolar_db_data",
+        "import_data": "riesgo-escolar_import_data",
+        "ml_data": "riesgo-escolar_ml_data"
+      },
+      "images": {
+        "api": "sha256:a0a9d26b7f04b5a31a19296e6def49682425fc83d471bc569d5b17285bf1b81e",
+        "db": "sha256:567d5d704a3e5a4864393b623a0d50eb1b5a4ad134cdac7cf19555cb2d8ffe9e",
+        "web": "sha256:1578157e456ea957407ac4bb00488422e824f589b5c4f714daad68d962ee78ea"
+      },
+      "compose_file": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\compose.yaml",
+      "compose_sha256": "06e6110a8063d2e6129a1262a5117c72dba52a447b7301a988bdf35913d4f05f",
+      "secrets_dir": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\.local\\runtime-secrets"
+    },
+    "install": {
+      "version": 1,
+      "target_id": "fda2762d-417d-44d5-b20c-bb4a770a09f9",
+      "kind": "INSTALL",
+      "project": "s6-install-041bbf87a38b",
+      "database": "s6_install_041bbf87a38b",
+      "ports": {
+        "web": 15273,
+        "api": 18100,
+        "db": 55462
+      },
+      "web_url": "http://localhost:15273",
+      "api_url": "http://localhost:18100",
+      "volumes": {
+        "db_data": "s6-install-041bbf87a38b_db_data",
+        "import_data": "s6-install-041bbf87a38b_import_data",
+        "ml_data": "s6-install-041bbf87a38b_ml_data"
+      },
+      "images": {
+        "api": "sha256:a0a9d26b7f04b5a31a19296e6def49682425fc83d471bc569d5b17285bf1b81e",
+        "web": "sha256:1578157e456ea957407ac4bb00488422e824f589b5c4f714daad68d962ee78ea",
+        "db": "sha256:567d5d704a3e5a4864393b623a0d50eb1b5a4ad134cdac7cf19555cb2d8ffe9e"
+      },
+      "compose_file": "C:\\Users\\mario\\AppData\\Local\\SeguimientoEscolar\\S6\\s6-install-041bbf87a38b-compose.json",
+      "compose_sha256": "0fc6ccf5899363b3e969fad4d66edb27066b000d4146d5c99b7d8061cd73ad04",
+      "secrets_dir": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\.local\\s6-runtime\\s6-install-041bbf87a38b",
+      "created_at": "2026-10-04T20:58:34.954908+00:00"
+    },
+    "restore": {
+      "version": 1,
+      "target_id": "6a479a8b-6393-458f-8bec-d44ce7c2078f",
+      "kind": "RESTORE",
+      "project": "s6-restore-a3a22654c1a2",
+      "database": "s6_restore_a3a22654c1a2",
+      "ports": {
+        "web": 15274,
+        "api": 18101,
+        "db": 55463
+      },
+      "web_url": "http://localhost:15274",
+      "api_url": "http://localhost:18101",
+      "volumes": {
+        "db_data": "s6-restore-a3a22654c1a2_db_data",
+        "import_data": "s6-restore-a3a22654c1a2_import_data",
+        "ml_data": "s6-restore-a3a22654c1a2_ml_data"
+      },
+      "images": {
+        "api": "sha256:a0a9d26b7f04b5a31a19296e6def49682425fc83d471bc569d5b17285bf1b81e",
+        "db": "sha256:567d5d704a3e5a4864393b623a0d50eb1b5a4ad134cdac7cf19555cb2d8ffe9e",
+        "web": "sha256:1578157e456ea957407ac4bb00488422e824f589b5c4f714daad68d962ee78ea"
+      },
+      "compose_file": "C:\\Users\\mario\\AppData\\Local\\SeguimientoEscolar\\S6\\s6-restore-a3a22654c1a2-compose.json",
+      "compose_sha256": "570060a93f79678638ae41cc96d157440d63a9669ed8689145954ac92e51877b",
+      "secrets_dir": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\.local\\s6-runtime\\s6-restore-a3a22654c1a2",
+      "created_at": "2026-10-04T21:12:48.782568+00:00"
+    }
+  },
+  "backend_tests": 269,
+  "profiles_native_tests": 16,
+  "recovery_tests": 29,
+  "validated_contract_responses": 202,
+  "api_operations": 27,
+  "backup": {
+    "id": "s6-20261004T211105Z-f9190fd4851f",
+    "file": "s6-20261004T211105Z-f9190fd4851f.sebackup",
+    "cipher_sha256": "8cafb0836a0f2a1f39fa39884f01a25394a5dde8f8a8568dfd72a90d969ee11a",
+    "private_file_count": 17,
+    "native_dpapi_verified": true
+  },
+  "counts_active": {
+    "academic_periods": 1,
+    "academic_snapshots": 360,
+    "alerts": 51,
+    "app_users": 4,
+    "audit_events": 327,
+    "enrollments": 60,
+    "followup_decisions": 55,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 2,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 73
+  },
+  "actual_active_and_stopped_restore_files_verified": true,
+  "copy_databases": "Before-login restoration fingerprints, protected real API/UI reviews and exact persistence; copies stay stopped during this checker.",
+  "checks": [
+    {
+      "check": "DESTINATIONS_DISTINCT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DESTINATION_KIND_active",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "THREE_GUARDED_CONTAINERS_active",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "THREE_VOLUME_PROJECT_LABELS_active",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "ACTIVE_HEALTHY",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DESTINATION_KIND_install",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "THREE_GUARDED_CONTAINERS_install",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "THREE_VOLUME_PROJECT_LABELS_install",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "THREE_VOLUME_TARGET_OWNER_LABELS_install",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "COPY_STOPPED_AND_IDENTIFIABLE_install",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DESTINATION_KIND_restore",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "THREE_GUARDED_CONTAINERS_restore",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "THREE_VOLUME_PROJECT_LABELS_restore",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "THREE_VOLUME_TARGET_OWNER_LABELS_restore",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "COPY_STOPPED_AND_IDENTIFIABLE_restore",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "CONTRACT_0_5_0_27",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "ACTUAL_API_MATCHES_CONTRACT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "ACTUAL_15_TABLES_HEAD_0004",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "ACTIVE_OLD_BUSINESS_UNCHANGED",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "ACTIVE_S5_COUNTS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "APP_ROLE_NOT_OWNER_OR_SUPERUSER",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "ALL_PRIOR_SESSIONS_AUDIT_ROWS_PRESERVED",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "ONE_CLOSED_CASE_TWO_ACTIVITIES_REAL_NOT_LOADED",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-backup-final-code.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DPAPI_OWN_BACKUP_INTEGRITY",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "BACKUP_EXPLICIT_ACTIVE_ORIGIN",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "BACKUP_CONSISTENT_WINDOW",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "BACKUP_ALL_PRIVATE_FILES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "ACTUAL_ACTIVE_PRIVATE_FILES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "ACTUAL_STOPPED_RESTORE_PRIVATE_FILES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "ACTUAL_INSTALL_PRIVATE_FILES_EXIST",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-backup-final-code-integrity.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "NATIVE_VERIFICATION_SAME_BACKUP",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-restore-final-code.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "RESTORE_DESTINATION_EQUALS_EXPLICIT_TARGET",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "BEFORE_LOGIN_ALL_TABLES_SCHEMA_FILES_IDENTICAL",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "RESTORED_HMAC_AND_MODEL_WITHOUT_GENERATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-backup-negative-final.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "SIX_REAL_BACKUP_NEGATIVES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FULL_BACKEND_269_NO_FAILURE_SKIP",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "BACKEND_MEANINGFUL_COVERAGE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-backend-final-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "BACKEND_REAL_LINUX_POSTGRES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-recovery-tests-final-code.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-recovery-tests-final-code.json_NATIVE_ALL_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-recovery-tests-final-code.json_COVERAGE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-recovery-tests-final-code.json_CURRENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "RECOVERY_NATIVE_WINDOWS_ACTUAL_AND_STORAGE_COMMAND",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-profiles-native.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-profiles-native.json_NATIVE_ALL_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-profiles-native.json_COVERAGE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-profiles-native.json_CURRENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "TWO_ACTUAL_NATIVE_CREDENTIAL_MANAGER_CASES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-install-verified-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "INSTALL_TARGET_MATCH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "INSTALL_TRUE_EMPTY_NO_COPY",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "INSTALL_EXPLICIT_REPRODUCIBLE_UI_FLOW",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "INSTALL_FIRST_INFERENCE_NOT_PRECREATED",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "OWN_ADMIN_REAL_NATIVE_PROFILE_AND_REJECTIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PROFILE_LIVE_CODE_CURRENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-import_BROWSER_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-import_NO_SIMULATED_HTTP",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-import_LOGIN_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-import_LOGIN_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_BROWSER_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_FOUR_ROLES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_LOGIN_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_LOGIN_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_LOGIN_FOUR_ROLES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-period-lock_BROWSER_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-period-lock_NO_SIMULATED_HTTP",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-period-lock_LOGIN_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-period-lock_LOGIN_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-install-verified-review-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_REVIEW_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_ALL_TABLES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_BUSINESS_COUNTS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_CONSERVATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_NO_MUTATIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_ACCESS_DELTAS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_BROWSER_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_FOUR_ROLES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_NO_SIMULATED_HTTP",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_LOGIN_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_LOGIN_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_LOGIN_FOUR_ROLES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-restored-final-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_REVIEW_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_ALL_TABLES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_BUSINESS_COUNTS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_CONSERVATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_NO_MUTATIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_ACCESS_DELTAS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_BROWSER_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_FOUR_ROLES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_NO_SIMULATED_HTTP",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_LOGIN_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_LOGIN_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_LOGIN_FOUR_ROLES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-active-final-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_REVIEW_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_ALL_TABLES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_BUSINESS_COUNTS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_CONSERVATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_NO_MUTATIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_ACCESS_DELTAS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_BROWSER_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_FOUR_ROLES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_NO_SIMULATED_HTTP",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_LOGIN_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_LOGIN_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_LOGIN_FOUR_ROLES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-install-verified-review-outage-infrastructure-failure.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_REAL_OUTAGE_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_REAL_POSTGRES_STOP_RECOVERY",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review-outage_BROWSER_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review-outage_NO_SIMULATED_HTTP",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review-outage_LOGIN_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review-outage_LOGIN_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review-outage_RESPONSES_PRESENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review-outage_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review-outage_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review-outage_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_ACTUAL_503_TYPES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-restored-final-outage-infrastructure-failure.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_REAL_OUTAGE_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_REAL_POSTGRES_STOP_RECOVERY",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final-outage_BROWSER_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final-outage_NO_SIMULATED_HTTP",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final-outage_LOGIN_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final-outage_LOGIN_PASS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final-outage_RESPONSES_PRESENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final-outage_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final-outage_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final-outage_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_ACTUAL_503_TYPES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "ACTIVE_NO_INFRASTRUCTURE_FAILURE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final_RESPONSES_PRESENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-ml_RESPONSES_PRESENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-ml_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-ml_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-ml_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-ml_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-ml_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-followup_RESPONSES_PRESENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-followup_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-followup_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-followup_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-followup_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-followup_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-followup_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-followup_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-followup_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-followup_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-backend-final-followup_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-import_RESPONSES_PRESENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-import_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-import_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-import_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-import_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-import_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-import_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-import_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_RESPONSES_PRESENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-integrated_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-period-lock_RESPONSES_PRESENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-period-lock_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-period-lock_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-period-lock_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_RESPONSES_PRESENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-install-verified-review-admin-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_ADMIN_CSV_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_ADMIN_CSV_COMPLETE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-install-verified-review-tutor-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_TUTOR_CSV_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_TUTOR_CSV_COMPLETE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-install-verified-review-director-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_DIRECTOR_CSV_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_DIRECTOR_CSV_COMPLETE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_ACTUAL_REUSED_INFERENCE_SYNC",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-install-verified-review_S5_CLOSED_ACTIVITY_COUNTS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_RESPONSES_PRESENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-restored-final-admin-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_ADMIN_CSV_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_ADMIN_CSV_COMPLETE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-restored-final-tutor-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_TUTOR_CSV_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_TUTOR_CSV_COMPLETE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-restored-final-director-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_DIRECTOR_CSV_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_DIRECTOR_CSV_COMPLETE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_ACTUAL_REUSED_INFERENCE_SYNC",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-restored-final_S5_CLOSED_ACTIVITY_COUNTS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_RESPONSES_PRESENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_KNOWN_SCHEMA",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-active-final-admin-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_ADMIN_CSV_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_ADMIN_CSV_COMPLETE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-active-final-tutor-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_TUTOR_CSV_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_TUTOR_CSV_COMPLETE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-active-final-director-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_DIRECTOR_CSV_DESTINATION",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_DIRECTOR_CSV_COMPLETE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_ACTUAL_REUSED_INFERENCE_SYNC",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "s6-active-final_S5_CLOSED_ACTIVITY_COUNTS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "CURRENT_CONTRACT_COVERAGE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-restored-final-persistence.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "RESTORE_ALL_15_TABLES_FILES_PERSISTENCE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "HEAD_NO_S6_COMMIT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "BACKUP_LOCKS_CURRENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/__init__.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/artifacts.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/cli.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/evaluate/.gitkeep",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/evaluate/__init__.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/features/.gitkeep",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/features/__init__.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/manifest.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/predict/.gitkeep",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/predict/__init__.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/synthetic-study-v1.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/synthetic.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/train/.gitkeep",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/app/ml/train/__init__.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/migrations/env.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/migrations/script.py.mako",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/migrations/versions/.gitkeep",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/migrations/versions/0001_demo_schema.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/migrations/versions/0001_demo_schema.sql",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/migrations/versions/0002_institutional_boundary.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/migrations/versions/0003_synthetic_study.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/migrations/versions/0004_followup.py",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/requirements-dev.in",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/requirements-dev.txt",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/requirements.in",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_backend/requirements.txt",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/adr/001-arquitectura.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/adr/002-base-ejecutable-s1.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/adr/003-importacion-s2.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/adr/004-transicion-windows.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/adr/005-infraestructura-ml-s3.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/adr/006-estudio-sintetico-s3-1.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/adr/007-interfaz-s4.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/adr/008-seguimiento-reportes-s5.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Estado_Sprint_0.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Estado_Sprint_1.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Estado_Sprint_2.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Estado_Sprint_2_1.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Estado_Sprint_2_2.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Estado_Sprint_3.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Estado_Sprint_3_1.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Estado_Sprint_4.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Estado_Sprint_5.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Matriz_verificacion_S2_2.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Matriz_verificacion_S3_1.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Matriz_verificacion_S4.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_docs/planning/Matriz_verificacion_S5.md",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_frontend/package.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_infra/requirements-s0.in",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_infra/requirements-s0.txt",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_package-lock.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_package.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/.gitkeep",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s0-archivos.txt",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s0-checks.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s0-entorno.txt",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-contracts.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-database.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-private-config-check.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-pytest.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-runtime.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-seed.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-ui-checks.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-ui-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-ui-login-390x844-full.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-ui-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-ui-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-ui-tutor-1440x900-full.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-ui-tutor-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-ui-tutor-390x844-full.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-ui-tutor-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-ui-tutor-768x1024-full.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s1-ui-tutor-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-backend-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-backend-first-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-backend-first.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-backend.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-backup.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-browser-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-changes.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-contracts.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-empty-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-empty-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-empty-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-1-runtime.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-accounts-idempotency.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-accounts-repeat.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-accounts.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-admin-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-admin-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-admin-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-director-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-director-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-director-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-admin-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-admin-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-admin-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-director-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-director-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-director-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-researcher-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-tutor-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-tutor-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-first-tutor-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-researcher-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-researcher-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-researcher-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-tutor-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-tutor-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-active-tutor-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-backend-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-backend.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-browser-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-contracts.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-endpoints.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-admin-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-admin-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-admin-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-director-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-director-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-director-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-researcher-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-researcher-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-researcher-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-tutor-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-tutor-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-isolated-tutor-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-persistence.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-2-review.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-baseline-s1-linux-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-baseline-s1-linux.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-contracts.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-expanded-linux-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-expanded-linux.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-first-linux-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-first-linux.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-pytest-linux-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-pytest-linux.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-runtime.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s2-s1-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-admin-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-admin-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-admin-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-director-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-director-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-director-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-endpoints.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-first-endpoints.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-researcher-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-researcher-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-researcher-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-tutor-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-tutor-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-active-tutor-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-backend-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-backend-first-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-backend-first-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-backend-first.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-backend-lock-probe-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-backend-lock-probe.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-backend-second-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-backend-second.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-backend.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-browser-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-changed-files.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-comparison.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-contracts.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-admin-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-admin-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-admin-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-director-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-director-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-director-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-researcher-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-researcher-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-researcher-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-tutor-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-tutor-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-isolated-tutor-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-ml-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-ml-summary.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-persistence.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-review.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-1-storage-diagnostic.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-admin-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-admin-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-admin-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-director-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-director-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-director-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-endpoints.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-researcher-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-researcher-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-researcher-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-tutor-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-tutor-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-active-tutor-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-backend-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-backend-first-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-backend-first-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-backend-first.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-backend.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-browser-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-contracts.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-admin-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-admin-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-admin-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-director-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-director-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-director-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-researcher-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-researcher-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-researcher-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-tutor-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-tutor-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-isolated-tutor-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-ml-first.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-ml-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-ml-summary.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-persistence.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s3-review.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-admin-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-admin-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-admin-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-admin-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-admin-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-admin-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-data-reused-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-data-reused-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-data-reused-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-director-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-director-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-director-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-http-simulated-503.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-http-simulated-processing-503-import.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-http-simulated-processing-503-model.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-http-simulated-response-body-loss.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-model-detail-evaluated-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-model-detail-evaluated-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-model-detail-evaluated-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-models-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-models-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-models-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-researcher-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-researcher-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-researcher-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-student-detail-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-student-detail-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-student-detail-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-students-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-students-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-students-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-tutor-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-tutor-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-complete-tutor-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-data-reused-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-data-reused-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-data-reused-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-director-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-director-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-director-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-http-simulated-processing-503-import.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-http-simulated-processing-503-model.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-model-detail-evaluated-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-model-detail-evaluated-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-model-detail-evaluated-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-models-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-models-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-models-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-researcher-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-researcher-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-researcher-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-student-detail-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-student-detail-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-student-detail-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-students-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-students-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-students-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-tutor-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-tutor-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-active-tutor-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-backend-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-backend.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-browser-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-build.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-changed-files.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-check-incidents.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-admin-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-admin-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-admin-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-data-reused-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-data-reused-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-data-reused-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-director-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-director-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-director-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-first-import-committed-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-first-import-committed-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-first-import-committed-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-first-import-review-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-first-import-review-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-first-import-review-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-first-models-empty-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-first-models-empty-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-first-models-empty-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-http-simulated-preview-stale-409.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-http-simulated-processing-503-import.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-http-simulated-processing-503-model.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-import-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-model-detail-evaluated-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-model-detail-evaluated-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-model-detail-evaluated-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-models-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-models-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-models-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-researcher-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-researcher-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-researcher-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-revision-pending.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-student-detail-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-student-detail-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-student-detail-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-students-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-students-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-students-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-tutor-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-tutor-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-isolated-tutor-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-clock-final-test-incident.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-browser-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-admin-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-admin-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-admin-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-data-reused-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-data-reused-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-data-reused-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-director-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-director-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-director-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-first-import-committed-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-first-import-committed-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-first-import-committed-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-first-import-review-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-first-import-review-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-first-import-review-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-first-models-empty-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-first-models-empty-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-first-models-empty-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-http-simulated-503.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-http-simulated-preview-stale-409.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-http-simulated-processing-503-import.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-http-simulated-processing-503-model.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-http-simulated-response-body-loss.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-import-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-model-detail-evaluated-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-model-detail-evaluated-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-model-detail-evaluated-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-models-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-models-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-models-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-researcher-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-researcher-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-researcher-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-revision-pending.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-student-detail-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-student-detail-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-student-detail-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-students-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-students-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-students-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-tutor-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-tutor-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-complete-isolated-tutor-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-contracts.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-coordinator-visual-review.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-csv-export.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-browser-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-admin-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-admin-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-admin-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-data-reused-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-data-reused-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-data-reused-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-director-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-director-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-director-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-first-import-committed-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-first-import-committed-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-first-import-committed-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-first-import-review-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-first-import-review-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-first-import-review-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-first-models-empty-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-first-models-empty-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-first-models-empty-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-http-simulated-503.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-http-simulated-preview-stale-409.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-http-simulated-processing-503-import.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-http-simulated-processing-503-model.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-http-simulated-response-body-loss.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-import-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-model-detail-evaluated-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-model-detail-evaluated-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-model-detail-evaluated-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-models-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-models-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-models-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-researcher-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-researcher-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-researcher-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-revision-pending.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-student-detail-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-student-detail-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-student-detail-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-students-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-students-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-students-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-tutor-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-tutor-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-final-isolated-tutor-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-browser-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-admin-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-admin-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-admin-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-data-reused-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-data-reused-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-data-reused-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-director-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-director-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-director-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-first-import-committed-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-first-import-committed-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-first-import-committed-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-first-import-review-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-first-import-review-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-first-import-review-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-http-simulated-503.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-import-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-model-detail-evaluated-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-model-detail-evaluated-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-model-detail-evaluated-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-models-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-models-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-models-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-researcher-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-researcher-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-researcher-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-revision-pending.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-student-detail-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-student-detail-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-student-detail-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-students-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-students-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-students-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-tutor-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-tutor-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-first-isolated-tutor-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-admin-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-admin-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-admin-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-data-reused-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-data-reused-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-data-reused-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-director-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-director-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-director-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-first-import-committed-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-first-import-committed-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-first-import-committed-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-first-import-review-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-first-import-review-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-first-import-review-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-first-models-empty-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-first-models-empty-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-first-models-empty-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-http-simulated-503.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-http-simulated-preview-stale-409.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-http-simulated-processing-503-import.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-http-simulated-processing-503-model.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-import-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-invalid-login.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-login-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-login-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-login-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-model-detail-evaluated-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-model-detail-evaluated-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-model-detail-evaluated-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-models-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-models-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-models-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-researcher-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-researcher-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-researcher-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-revision-pending.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-student-detail-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-student-detail-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-student-detail-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-students-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-students-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-students-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-tutor-home-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-tutor-home-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-isolated-tutor-home-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-ml-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-ml-summary.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-persistence.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-review.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-s3-1-dependency.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-static-collection.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s4-visual-review.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-complete-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-complete-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-complete-researcher-restricted-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-complete-researcher-restricted-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-complete-researcher-restricted-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-complete-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-admin-alerts-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-admin-alerts-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-admin-alerts-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-admin-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-admin-home-followup-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-admin-home-followup-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-admin-home-followup-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-admin-reports-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-admin-reports-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-admin-reports-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-director-case-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-director-case-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-director-case-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-director-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-director-home-followup-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-director-home-followup-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-director-home-followup-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-director-reports-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-director-reports-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-director-reports-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-researcher-restricted-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-researcher-restricted-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-researcher-restricted-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-case-completed-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-case-completed-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-case-completed-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-done-form-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-done-form-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-done-form-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-foreign-safe404-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-foreign-safe404-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-foreign-safe404-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-home-followup-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-home-followup-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-home-followup-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-plan-form-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-plan-form-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-plan-form-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-real-version-conflict-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-real-version-conflict-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-real-version-conflict-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-reports-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-reports-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-reports-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-student-followup-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-student-followup-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-final-tutor-student-followup-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-active-state-counts.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-complete-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-complete-followup-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-complete-ml-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-complete-ml-summary.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-complete-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-complete.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-final-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-final-followup-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-final-ml-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-final-ml-summary.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-final-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-final.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-first-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-first-followup-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-first-ml-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-first-ml-summary.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-first-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend-first.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-backend.xml",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-build.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-changed-files.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-check-incidents.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-admin-alerts-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-admin-alerts-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-admin-alerts-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-admin-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-admin-reports-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-admin-reports-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-admin-reports-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-director-case-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-director-case-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-director-case-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-director-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-director-reports-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-director-reports-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-director-reports-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-admin-alerts-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-admin-alerts-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-admin-alerts-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-admin-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-admin-home-followup-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-admin-home-followup-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-admin-home-followup-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-admin-reports-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-admin-reports-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-admin-reports-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-director-case-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-director-case-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-director-case-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-director-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-director-home-followup-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-director-home-followup-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-director-home-followup-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-director-reports-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-director-reports-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-director-reports-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-first-import-committed-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-first-import-committed-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-first-import-committed-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-first-import-review-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-first-import-review-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-first-import-review-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-first-models-empty-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-first-models-empty-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-first-models-empty-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-first-ui-inference-followup-created-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-first-ui-inference-followup-created-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-first-ui-inference-followup-created-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-http-simulated-preview-stale-409.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-import-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-late-admin-response-discarded-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-late-admin-response-discarded-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-late-admin-response-discarded-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-researcher-restricted-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-researcher-restricted-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-researcher-restricted-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-simulated-body-loss-reused-creation-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-simulated-body-loss-reused-creation-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-simulated-body-loss-reused-creation-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-simulated-csv503-no-download-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-simulated-csv503-no-download-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-simulated-csv503-no-download-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-case-completed-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-case-completed-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-case-completed-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-done-form-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-done-form-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-done-form-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-foreign-safe404-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-foreign-safe404-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-foreign-safe404-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-home-followup-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-home-followup-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-home-followup-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-plan-form-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-plan-form-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-plan-form-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-real-version-conflict-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-real-version-conflict-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-real-version-conflict-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-reports-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-reports-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-reports-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-student-followup-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-student-followup-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-final-tutor-student-followup-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-first-import-committed-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-first-import-committed-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-first-import-committed-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-first-import-review-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-first-import-review-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-first-import-review-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-first-models-empty-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-first-models-empty-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-first-models-empty-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-first-ui-inference-followup-created-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-first-ui-inference-followup-created-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-first-ui-inference-followup-created-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-http-simulated-preview-stale-409.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-import-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-late-admin-response-discarded-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-late-admin-response-discarded-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-late-admin-response-discarded-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-researcher-restricted-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-researcher-restricted-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-researcher-restricted-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-simulated-body-loss-reused-creation-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-simulated-body-loss-reused-creation-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-simulated-body-loss-reused-creation-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-simulated-csv503-no-download-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-simulated-csv503-no-download-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-simulated-csv503-no-download-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-tutor-case-completed-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-tutor-case-completed-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-tutor-case-completed-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-tutor-done-form-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-tutor-done-form-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-tutor-done-form-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-tutor-plan-form-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-tutor-plan-form-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-tutor-plan-form-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-tutor-real-version-conflict-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-tutor-real-version-conflict-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-complete-tutor-real-version-conflict-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-contracts.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-admin-alerts-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-admin-alerts-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-admin-alerts-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-admin-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-admin-reports-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-admin-reports-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-admin-reports-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-director-case-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-director-case-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-director-case-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-director-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-director-reports-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-director-reports-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-director-reports-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-environment.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-first-import-committed-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-first-import-committed-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-first-import-committed-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-first-import-review-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-first-import-review-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-first-import-review-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-first-models-empty-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-first-models-empty-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-first-models-empty-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-http-simulated-preview-stale-409.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-import-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-late-admin-response-discarded-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-late-admin-response-discarded-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-late-admin-response-discarded-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-playwright.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-researcher-restricted-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-researcher-restricted-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-researcher-restricted-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-simulated-body-loss-reused-creation-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-simulated-body-loss-reused-creation-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-simulated-body-loss-reused-creation-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-simulated-csv503-no-download-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-simulated-csv503-no-download-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-simulated-csv503-no-download-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-case-completed-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-case-completed-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-case-completed-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-csv.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-done-form-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-done-form-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-done-form-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-plan-form-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-plan-form-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-plan-form-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-real-version-conflict-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-real-version-conflict-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-real-version-conflict-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-reports-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-reports-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-reports-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-student-followup-1440x900.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-student-followup-390x844.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-first-tutor-student-followup-768x1024.png",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-followup-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-ml-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-ml-summary.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-persistence.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-response-samples.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-response-sources.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-review.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-s4-dependency.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-source-checks.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-ui-final-visual-review.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-ui-first-visual-review.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "PRESERVE_tests/evidence/s5-upgrade-active.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-build-checks.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_BUILD_EXECUTED_CODE_COVERAGE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_BUILD_EXECUTED_CODE_CURRENT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_BUILD_IMAGES_MATCH_TARGETS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_BUILD_ALL_COMMANDS_SUCCESS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_BUILD_COMMAND_COVERAGE",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_BUILD_HOST_IMAGE_DISTRIBUTION_EQUAL",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "ACTUAL_ACTIVE_PIP_CHECK",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REPORT_SUCCESS_s6-browser-visual-review.json",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "VISUAL_ACTUAL_INSPECTIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "FINAL_VISUAL_PREFIX_AND_HASH",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "REAL_PNG_DIMENSIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "VISUAL_THREE_REQUESTED_VIEWPORTS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "VISUAL_CRITICAL_STATES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "HISTORICAL_DEMO_STOPPED",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "HISTORICAL_BACKUP_INTACT",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_CONTENT_Manual_Instalacion_Windows",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Instalacion_Windows",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Instalacion_Windows",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Instalacion_Windows",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Instalacion_Windows",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Instalacion_Windows",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Instalacion_Windows",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_CONTENT_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Uso_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_CONTENT_Manual_Respaldo_Restauracion",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Respaldo_Restauracion",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Manual_Respaldo_Restauracion",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_CONTENT_Diccionario_Base_Datos",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Diccionario_Base_Datos",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Diccionario_Base_Datos",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Diccionario_Base_Datos",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Diccionario_Base_Datos",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Diccionario_Base_Datos",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Diccionario_Base_Datos",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Diccionario_Base_Datos",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Diccionario_Base_Datos",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Diccionario_Base_Datos",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Diccionario_Base_Datos",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_CONTENT_Mapa_Endpoints",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Mapa_Endpoints",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Mapa_Endpoints",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Mapa_Endpoints",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Mapa_Endpoints",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Mapa_Endpoints",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_CONTENT_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_CONTENT_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_CONTENT_Guion_Presentacion_Tecnica",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Guion_Presentacion_Tecnica",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Guion_Presentacion_Tecnica",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Guion_Presentacion_Tecnica",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Guion_Presentacion_Tecnica",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Guion_Presentacion_Tecnica",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Guion_Presentacion_Tecnica",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Guion_Presentacion_Tecnica",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Guion_Presentacion_Tecnica",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Guion_Presentacion_Tecnica",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Guion_Presentacion_Tecnica",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Guion_Presentacion_Tecnica",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_CONTENT_Alcance_y_Limitaciones",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Alcance_y_Limitaciones",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Alcance_y_Limitaciones",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Alcance_y_Limitaciones",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Alcance_y_Limitaciones",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Alcance_y_Limitaciones",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Alcance_y_Limitaciones",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Alcance_y_Limitaciones",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_CONTENT_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_CONTENT_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_README",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_CONTENT_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_LINK_Estado_Sprint_6",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DICTIONARY_ALL_EFFECTIVE_TABLES",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "MANUAL_27_IMPLEMENTED_OPERATIONS",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_MEANING_Manual_Instalacion_Windows",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_MEANING_Manual_Respaldo_Restauracion",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_MEANING_Arquitectura_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_MEANING_Matriz_Trazabilidad_Final",
+      "status": "COMPROBADO"
+    },
+    {
+      "check": "DOCUMENT_MEANING_Alcance_y_Limitaciones",
+      "status": "COMPROBADO"
+    }
+  ],
+  "evidence_sha256": {
+    "s6-initial-database.json": "9ffd157181d3b8f1255ef7656717a09e87fc1df2241fcfb78612f69fac2a390a",
+    "s6-initial-files.json": "6eaa29aeff0bb1e5577ce43fd30ced038232b3c81a864d9447a9556ec15f971f",
+    "s6-backup-final-code.json": "1a70b3426701efd4bd7d5c99164955a060db53a011f76da5d5395b14ce8b9efd",
+    "s6-backup-final-code-integrity.json": "8f376e3e73cc0abda89c2ac1742b565c8f6f173c003e76644c42f4ffc323485f",
+    "s6-restore-final-code.json": "0a6743f3fb6f04599adb2bde0dbb1b7134d6e502a6051c348e23664822a3b6ba",
+    "s6-backup-negative-final.json": "5a9c0f0289a131fa45ff427de28370ae4447d62f892423b0bc8d02f18c638288",
+    "s6-backend-final-environment.json": "3c3326d2bcebc812d4087a52ca498caf7b4c8258827c5342ffb3110fb9dd79d7",
+    "s6-recovery-tests-final-code.json": "33a5476bf1f8742f71e191f50f9d5b0c0477620726d830bd813f263142f077e8",
+    "s6-profiles-native.json": "6ce0556b35c1c75cfcac67230fc77e02e725692b710d018477a8d359e69a12c2",
+    "s6-install-verified-environment.json": "4b0a0f67fc3bc0582a9abec7cdb2bbdba301d92b0c462ef7e6103c24f8ad0adb",
+    "s6-install-verified-import-playwright.json": "c0c179157fc7163cc0831227fbe9debe520224566a1c6b11213e0563d9e5f515",
+    "s6-install-verified-import-login-statuses.json": "cb12d09478e8a9a67cbb823705b773c998333ec666a4587c4639c5a085ca0bbe",
+    "s6-install-verified-integrated-playwright.json": "6d8967ea5c28f64ca6102b63081770918dbae0fc98fee2076ca1c70f0a9efe72",
+    "s6-install-verified-integrated-login-statuses.json": "5e9e8489dcbcbbd05259cc01b39856596a515369eaa290df273898caa19c21fb",
+    "s6-install-verified-period-lock-playwright.json": "78abb86df8d526d0b7adb937115504022b78cdf9d0810d029946864a459b2fc5",
+    "s6-install-verified-period-lock-login-statuses.json": "cb12d09478e8a9a67cbb823705b773c998333ec666a4587c4639c5a085ca0bbe",
+    "s6-install-verified-review-environment.json": "df029e4533e2d0f5f3d421564a839d8e91fb8ff71fca03e0df39c971e1269c3e",
+    "s6-install-verified-review-playwright.json": "901af05673e098793cba0159429099273ddaef53cca5dbdba5faf74a3b9400fb",
+    "s6-install-verified-review-login-statuses.json": "5e9e8489dcbcbbd05259cc01b39856596a515369eaa290df273898caa19c21fb",
+    "s6-restored-final-environment.json": "ac415b6704bf9eda8d827ddd76383540fd831e0801f30ff3292e23d6a26263b0",
+    "s6-restored-final-playwright.json": "88f9051395eda861e90c500b06bca41a6544746547bf0e255fca3e3b6a84b7f5",
+    "s6-restored-final-login-statuses.json": "28e5b10dec3e9590e3a94eccc1f1398dacf8f040a0f23ac55c37368b00bb200d",
+    "s6-active-final-environment.json": "2733f7808ba1a5cbd7cdc65c43a5f4916602daeb573723e19e4f908efcfd5b05",
+    "s6-active-final-playwright.json": "ef9610bd2081b86f5841c472fdcd4288c77da0578894dd99634b458b1cd55351",
+    "s6-active-final-login-statuses.json": "e9d7a83bfd0febdbbae8e60cbb2205d9884d8bd9c507d1eff3352aa6c28c8df7",
+    "s6-install-verified-review-outage-infrastructure-failure.json": "176a6f57974c16f759071912514615491cd6c080970893a3be78af5b7966b825",
+    "s6-install-verified-review-outage-playwright.json": "c1a9dae8b63d461a27a7c8fb2b9cb67be505692c15556c01a753384536950ba1",
+    "s6-install-verified-review-outage-login-statuses.json": "cb12d09478e8a9a67cbb823705b773c998333ec666a4587c4639c5a085ca0bbe",
+    "s6-install-verified-review-outage-response-samples.json": "678e817f44b16ddf1abf82731e499bf4f4b4c6f74b96dee196981eb5b680033b",
+    "s6-restored-final-outage-infrastructure-failure.json": "90153d98cbcbb2f9e5c386116bf20def36ae4c3255ee9426edce6f4da6f4c72a",
+    "s6-restored-final-outage-playwright.json": "69dbfecc49bcbaaa2442e8db51aa50bfe35528a4ec353230b9791b59d7b47829",
+    "s6-restored-final-outage-login-statuses.json": "7c0bdcac7941f15b80dcb3a9c8df24d67df6345455950b2e831c26e3ad784e75",
+    "s6-restored-final-outage-response-samples.json": "0dc9aee67ea16eeb04403496d6606e912c2a942d7d468476ceb685fca2082784",
+    "s6-backend-final-response-samples.json": "41c4c1c7ecf64ae24e666b87536a844a694886c4f4b731901d9dbdf22fd5845b",
+    "s6-backend-final-ml-response-samples.json": "54c869323dcdc1f57b836909de31ada0984fd0a56de3b6f266fd435705190c03",
+    "s6-backend-final-followup-response-samples.json": "e02c8796f614d2c819d1b192d2344da51ef86cef243161970f7bcb8bae1e0781",
+    "s6-install-verified-import-response-samples.json": "e944b0585b9b87ce3a97daafdaab2abf86e3650986f76beefc3e292f83957ac1",
+    "s6-install-verified-integrated-response-samples.json": "b0632725d5f9d3825c111c531f39e4f04351f8bf58027ddb8b55d079528e0d2e",
+    "s6-install-verified-period-lock-response-samples.json": "8ef9bbc39c3003ff2b548d586d89cf53c8accfbb62d2675f7dd95bcf5028ef47",
+    "s6-install-verified-review-response-samples.json": "2e0347d3aa9a2854c86d3744bd3a2b9391fc499cad48ffd5a4e9b2db8c976000",
+    "s6-install-verified-review-admin-csv.json": "8041a681621318c652677ea1086ca4c0884c5a70aa056ff428948925f508cb98",
+    "s6-install-verified-review-tutor-csv.json": "913d9cbabc41a6faca451757598c21dbd7ccee0d2a5f4132068fa0f3da30efff",
+    "s6-install-verified-review-director-csv.json": "7b4f226cdeab2405ae5cf85be59287a61c7d87cf3287d5aac3b06e7436094536",
+    "s6-restored-final-response-samples.json": "87027a59ce08c1f9e8681c9dbafb36ddaced4961c6e3e4428b0f79a5d2d94887",
+    "s6-restored-final-admin-csv.json": "3a6e81ed25403a92b1e6d603998e82337468883fe61f92d631b256443421ba74",
+    "s6-restored-final-tutor-csv.json": "bee4fc7a0aa8fd7c69a121bd3b230aae455023af641564ccaae2d1a5f7dedf06",
+    "s6-restored-final-director-csv.json": "590f78c26c7d576ad2dff3ae13a0c59ee6f0b57cbb8d00c2da2536bc4e1b776b",
+    "s6-active-final-response-samples.json": "8af1ccf54b81cc2e654b9957e542e8d4884e2be311e5482709a7a301f16f98e4",
+    "s6-active-final-admin-csv.json": "ff98feff0fbbbe674d025e0dd0184ffe0753856d5710d170343074341329ce66",
+    "s6-active-final-tutor-csv.json": "9872625f03abd6765aa5226a1e76a1512929ea5014579224df3d065917e15ab5",
+    "s6-active-final-director-csv.json": "ce5c73d765c2eeba6463eeaf896d37be4b2eda0f8d2e0b5ccd98ff456f154959",
+    "s6-restored-final-persistence.json": "1059826c5a8ddecc4334e9767f69ddd3691c90d6a4d4415faec683c8926a1d46",
+    "s6-build-checks.json": "b7ec2f78159ebd7e0f12283268b571c78bfa3d61d872cf0556c76a99b5fd2693",
+    "s6-browser-visual-review.json": "8a66dff0b20f08a48ce9ca46985bd6d6ea99acaa7edc89202a082adefabf4f11",
+    "s2-1-backup.json": "1af6c11c7871a098f0cd6dc7839f0ae1607575330c0a27134fa706dce62443f6"
+  },
+  "limits": [
+    "Simulación local SYNTHETIC, REAL bloqueado",
+    "Sin eficacia escolar, hipótesis ni aceptación académica",
+    "Sin certificado de accesibilidad o auditoría integral de seguridad",
+    "Sin commit, push o despliegue externo"
+  ]
+}

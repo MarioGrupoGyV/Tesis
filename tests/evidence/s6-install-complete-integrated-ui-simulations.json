@@ -1,0 +1,38 @@
+{
+  "target": {
+    "kind": "INSTALL",
+    "project": "s6-install-e01f4cf130d0",
+    "database": "s6_install_e01f4cf130d0",
+    "target_id": "2f653e05-9068-488d-89b9-2cf1293ae5d1",
+    "web_url": "http://localhost:15273",
+    "api_url": "http://localhost:18100",
+    "ports": {
+      "web": 15273,
+      "api": 18100,
+      "db": 55462
+    },
+    "volumes": {
+      "db_data": "s6-install-e01f4cf130d0_db_data",
+      "import_data": "s6-install-e01f4cf130d0_import_data",
+      "ml_data": "s6-install-e01f4cf130d0_ml_data"
+    },
+    "images": {
+      "api": "sha256:a0a9d26b7f04b5a31a19296e6def49682425fc83d471bc569d5b17285bf1b81e",
+      "web": "sha256:d66700635d3ae18fdc432197a53fca9baa185c2ec237d43573110e27e05daf6a",
+      "db": "sha256:567d5d704a3e5a4864393b623a0d50eb1b5a4ad134cdac7cf19555cb2d8ffe9e"
+    }
+  },
+  "cases": [
+    {
+      "case": "response_body_loss",
+      "scope": "POST real 200 reutilizado; únicamente cuerpo truncado",
+      "result": "Sin éxito aparente ni reintento automático"
+    },
+    {
+      "case": "terminal_conflict",
+      "scope": "PATCH409 y cierre del GET simulados; sin cambios DB",
+      "result": "Ambos borradores conservados y escrituras deshabilitadas"
+    }
+  ],
+  "proves_database_outage": false
+}

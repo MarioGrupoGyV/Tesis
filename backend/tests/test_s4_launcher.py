@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 import pytest
 
@@ -91,8 +92,11 @@ def test_export_requires_existing_directory_and_rejects_symlinks(tmp_path):
 
 
 def test_export_cli_stdout_is_sanitized(tmp_path,export_payload,monkeypatch,capsys):
-    monkeypatch.setattr(study,'credentials',lambda:{'ADMIN':{'email':'fixture','password':'private-password'}})
-    code=study.main(['export-csv','--admin-credential','ADMIN','--study-id','study-fixture',
+    target=SimpleNamespace(assert_identity=lambda:None)
+    monkeypatch.setitem(sys.modules,'runtime_target',SimpleNamespace(Target=SimpleNamespace(load=lambda path:target)))
+    monkeypatch.setattr(study,'admin_account',lambda target,**kwargs:{'email':'fixture','password':'private-password'})
+    code=study.main(['export-csv','--target',str(tmp_path/'explicit-target.json'),
+        '--admin-credential','ADMIN','--study-id','study-fixture',
         '--output',str(tmp_path/'input.csv')])
     stdout=capsys.readouterr().out
     assert code==0 and json.loads(stdout)['bytes_written']>0

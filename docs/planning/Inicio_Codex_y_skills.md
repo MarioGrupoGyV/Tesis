@@ -1,4 +1,15 @@
-# Inicio de trabajo — alcance vigente S5
+# Inicio de trabajo — alcance vigente S6
+
+S6: leer ADR 009, Estado_Sprint_6 y matriz/manuales finales además de las fuentes
+previas. Conserva contrato 0.5.0/27 operaciones, head 0004/15 tablas, locks, cuatro
+cuentas, credenciales Windows, modelo/estudio activos y evidencia histórica. No
+regenerar/reentrenar el activo ni habilitar REAL. Herramientas S6 con --target explícito;
+instalación, restauración y revisión activa son tres comprobaciones diferentes.
+Paquetes DPAPI privados fuera del checkout; restauración solo con DB/volúmenes nuevos.
+No usar runners/checkers históricos para acreditar el estado actual o checker vacío.
+El launcher exige ahora --target y perfil/admin explícito. Sin S7, commit/push o externo.
+
+## Orientación previa conservada
 
 Leer AGENTS.md, README, Estado_Sprint_5.md, Manual_Seguimiento_Reportes_S5.md, ADR 008, matriz S5 y Estado_Sprint_4.md, Manual_Uso_S4.md, ADR 007 y Estado_Sprint_3_1.md y cierres S3/S2.2/S2.1, ADR 004/005/006,
 Manual_Estudio_Sintetico.md, Plan_tesis_riesgo_escolar.md, Sprints_y_aceptacion.md,

@@ -1,0 +1,54 @@
+{
+  "status": "COMPROBADO",
+  "role": "ADMIN",
+  "rows": 60,
+  "headers": [
+    "origen",
+    "alcance",
+    "periodo",
+    "generado_en_utc",
+    "codigo_sintetico",
+    "grado",
+    "seccion",
+    "ultimo_corte_utc",
+    "estado_evaluacion",
+    "riesgo_actual",
+    "caso_activo",
+    "estado_caso_activo",
+    "casos_abiertos",
+    "casos_en_revision",
+    "casos_concluidos",
+    "casos_descartados",
+    "actividades_planificadas",
+    "actividades_realizadas",
+    "actividades_canceladas"
+  ],
+  "sha256": "b60d954fe98969363abedcd3dcf0d89d2418c2c14c0ccd666fc5d6962526e934",
+  "utf8_bom": true,
+  "complete_filtered_scope": true,
+  "no_free_notes": true,
+  "actual_browser_download_response": true,
+  "target": {
+    "kind": "INSTALL",
+    "project": "s6-install-e01f4cf130d0",
+    "database": "s6_install_e01f4cf130d0",
+    "target_id": "2f653e05-9068-488d-89b9-2cf1293ae5d1",
+    "web_url": "http://localhost:15273",
+    "api_url": "http://localhost:18100",
+    "ports": {
+      "web": 15273,
+      "api": 18100,
+      "db": 55462
+    },
+    "volumes": {
+      "db_data": "s6-install-e01f4cf130d0_db_data",
+      "import_data": "s6-install-e01f4cf130d0_import_data",
+      "ml_data": "s6-install-e01f4cf130d0_ml_data"
+    },
+    "images": {
+      "api": "sha256:a0a9d26b7f04b5a31a19296e6def49682425fc83d471bc569d5b17285bf1b81e",
+      "web": "sha256:d66700635d3ae18fdc432197a53fca9baa185c2ec237d43573110e27e05daf6a",
+      "db": "sha256:567d5d704a3e5a4864393b623a0d50eb1b5a4ad134cdac7cf19555cb2d8ffe9e"
+    }
+  }
+}

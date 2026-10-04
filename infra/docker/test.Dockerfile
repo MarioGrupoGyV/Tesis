@@ -6,6 +6,7 @@ RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/requirements-d
 COPY backend/ ./backend/
 COPY infra/run_backend_tests.py ./infra/run_backend_tests.py
 COPY infra/study.py infra/review_accounts.py infra/windows_credentials.py infra/review_endpoints.py infra/runtime_snapshot.py ./infra/
+COPY infra/operator_profiles.py infra/runtime_target.py ./infra/
 RUN useradd --create-home --uid 10001 tester
 USER tester
 CMD ["python", "infra/run_backend_tests.py"]

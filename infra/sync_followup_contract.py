@@ -110,6 +110,7 @@ def main():
     for tag in ('followup','reports'):
         if not any(t['name']==tag for t in contract['tags']): contract['tags'].append({'name':tag})
     previous=contract['paths']['/predictions/run']['post']['description'].split(' S5: predicciones, followup-policy-v1',1)[0]
+    previous=previous.replace('No usa etiquetas de reserva ni crea alertas.', 'No usa etiquetas de reserva.')
     contract['paths']['/predictions/run']['post']['description']=previous+' S5: predicciones, followup-policy-v1 y auditoría se confirman juntos. followup refleja solo predicciones seleccionadas que siguen actuales; las históricas se cuentan ignored_stale. Reutilizar predicciones puede crear seguimiento inicial. No commit previo a la sincronización.'
     contract['paths']['/predictions/run']['post']['x-stage']='S5'
     count=sum(m in ('get','post','patch','put','delete') for ops in contract['paths'].values() for m in ops)

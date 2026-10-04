@@ -1,0 +1,105 @@
+{
+  "status": "COMPROBADO",
+  "tested_at": "2026-10-04T20:17:29.775515+00:00",
+  "runtime": {
+    "platform": "Windows",
+    "python": "3.12.0"
+  },
+  "command": "py -3.12 -X utf8 -m unittest discover -s infra/tests -p test_s6_profiles.py -v",
+  "tests": 16,
+  "passed": 16,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "cases": [
+    {
+      "test": "test_s6_profiles.NativeCredentialManagerTests.test_native_concurrent_registration_does_not_overwrite",
+      "status": "COMPROBADO",
+      "scope": "NATIVE_WINDOWS_CREDENTIAL_MANAGER"
+    },
+    {
+      "test": "test_s6_profiles.NativeCredentialManagerTests.test_native_roundtrip_collision_cleanup_and_s22_conservation",
+      "status": "COMPROBADO",
+      "scope": "NATIVE_WINDOWS_CREDENTIAL_MANAGER"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_binding_changes_for_every_identity_field",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_exactly_one_explicit_access_is_required",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_existing_profile_preserved_without_another_login",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_failed_logout_prevents_store",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_invalid_inactive_and_non_admin_profiles_never_store",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_legacy_access_reads_only_admin_and_accepts_real_policy",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_missing_legacy_entry_fails_without_review_account_dependency",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_operator_namespace_cannot_address_s22_or_traversal",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_profile_is_bound_to_target_before_private_command",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_profile_missing_is_sanitized",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_registration_authenticates_and_logs_out_before_store",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_registration_cli_refuses_non_interactive_secret_input",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_study_cli_requires_target_and_exclusive_access",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    },
+    {
+      "test": "test_s6_profiles.ProfileGuardsTests.test_study_private_command_requires_target",
+      "status": "COMPROBADO",
+      "scope": "UNIT_TARGET_AUTH_GUARDS"
+    }
+  ],
+  "executed_code_sha256": {
+    "infra/operator_profiles.py": "74bd0c61d3a00f38c67f7c43def7756622edb7479b605ab25c738d88dbc195a1",
+    "infra/study.py": "ca96cd81d14277caf71b6292ca6bb45e3340f85f9a0462356912a19fa3f881e1",
+    "infra/windows_credentials.py": "bfd08415b4a98dbe7de07bc5416d7a1cd32488eb5a940bae4822ee1f1036ae22",
+    "infra/tests/test_s6_profiles.py": "606dd3d066aa908e2d05ddc28d08aff9b732ef865b17849045a6cd318a752177"
+  },
+  "temporary_entries": "Unique s6-native UUID names; created and removed by this process",
+  "s22_credentials": "Conservation checked in memory; no passwords exported",
+  "live_http": "PENDING_SEPARATE_INSTALL_TARGET_TEST"
+}
