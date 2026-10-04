@@ -1,9 +1,9 @@
-name: riesgo-escolar-s2-tests
+name: riesgo-escolar-tests
 services:
   dbtest:
     image: postgres:17.6-bookworm
     environment:
-      POSTGRES_DB: riesgo_escolar_demo_s2_test
+      POSTGRES_DB: riesgo_escolar_test
       POSTGRES_USER: riesgo_owner
       POSTGRES_PASSWORD_FILE: /run/secrets/owner_password
       APP_DB_PASSWORD_FILE: /run/secrets/app_password
@@ -14,7 +14,7 @@ services:
       - test_db_data:/var/lib/postgresql/data
       - ./db/init-app-role.sh:/docker-entrypoint-initdb.d/10-app-role.sh:ro
     healthcheck:
-      test: [CMD-SHELL, "pg_isready -U riesgo_owner -d riesgo_escolar_demo_s2_test"]
+      test: [CMD-SHELL, "pg_isready -U riesgo_owner -d riesgo_escolar_test"]
       interval: 2s
       timeout: 3s
       retries: 30
@@ -27,18 +27,18 @@ services:
         condition: service_healthy
     secrets: [owner_url, app_url]
     environment:
-      TEST_REPORT_NAME: "${TEST_REPORT_NAME:-s2-pytest-linux}"
+      TEST_REPORT_NAME: "${TEST_REPORT_NAME:-s2-1-backend}"
       IMPORT_STORAGE_DIR: /tmp/s2-imports
     volumes:
       - ../tests/evidence:/evidence
 secrets:
   owner_password:
-    file: ../.local/secrets/owner-password
+    file: ../.local/runtime-secrets/owner-password
   app_password:
-    file: ../.local/secrets/app-password
+    file: ../.local/runtime-secrets/app-password
   owner_url:
-    file: ../.local/secrets/owner-database-url
+    file: ../.local/runtime-secrets/owner-database-url
   app_url:
-    file: ../.local/secrets/app-database-url
+    file: ../.local/runtime-secrets/app-database-url
 volumes:
   test_db_data:

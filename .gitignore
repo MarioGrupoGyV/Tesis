@@ -24,7 +24,6 @@ storage/
 artifacts/
 backups/
 *.csv
-!tests/fixtures/synthetic/*.csv
 *.xlsx
 *.xls
 *.parquet

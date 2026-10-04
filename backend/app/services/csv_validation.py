@@ -1,4 +1,4 @@
-"""CSV sintético estricto; no infiere valores ni acepta información futura al corte."""
+"""CSV estricto; no infiere valores ni acepta información futura al corte."""
 import csv
 from dataclasses import dataclass
 from datetime import UTC, date, datetime

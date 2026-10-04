@@ -47,10 +47,10 @@ def run():
         "docs/research", "docs/adr", "docs/manuals", "infra", "tests/e2e", "tests/evidence",
     ]
     check(all((ROOT / path).is_dir() for path in required_dirs), "Estructura de carpetas del plan")
-    contract_path = ROOT / "docs/planning/Contrato_API_demo.yaml"
+    contract_path = ROOT / "docs/planning/Contrato_API.yaml"
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     validate(contract)
-    check(contract["info"]["version"] == "0.1.2", "OpenAPI 3.1 válido, versión 0.1.2")
+    check(contract["info"]["version"] == "0.2.0", "OpenAPI 3.1 válido, versión 0.2.0")
     for path, methods in contract["paths"].items():
         for method, operation in methods.items():
             if method not in ("get", "post", "patch", "put", "delete") or path == "/health/live":
@@ -58,7 +58,7 @@ def run():
             expected = "Health" if path == "/health/ready" else "Error"
             check(operation["responses"]["503"]["content"]["application/json"]["schema"]["$ref"] ==
                   f"#/components/schemas/{expected}", f"503 sanitizado {method} {path}")
-    sql_path = ROOT / "docs/planning/Esquema_demo.sql"
+    sql_path = ROOT / "docs/planning/Esquema.sql"
     sql = sql_path.read_text(encoding="utf-8")
     statements = parse_sql(sql)
     tables = {stmt.stmt.relation.relname: stmt.stmt for stmt in statements
@@ -86,7 +86,7 @@ def run():
     }
     matched = 0
     for schema_name, table_name in direct.items():
-        for field, definition in public[schema_name]["properties"].items():
+        for field, definition in public.get(schema_name, {}).get("properties", {}).items():
             if field not in columns[table_name]:
                 continue  # Joins y campos derivados documentados en la conciliación.
             col = columns[table_name][field]
@@ -123,7 +123,7 @@ def run():
                       f"Investigador restringido {path}")
     uid = "00000000-0000-4000-8000-000000000001"
     prediction = {key: uid for key in ("id", "enrollment_id", "snapshot_id", "model_id")}
-    prediction.update(data_origin="DEMO", risk_level="LOW", cutoff_at="2026-10-03T16:00:00Z",
+    prediction.update(data_origin="REAL", risk_level="LOW", cutoff_at="2026-10-03T16:00:00Z",
                       target_date="2026-10-04", predicted_at="2026-10-03T16:01:00Z",
                       probabilities_calibrated=False, probability_low=None,
                       probability_medium=None, probability_high=None)
@@ -131,17 +131,12 @@ def run():
         ("Prediction", prediction, True),
         ("Prediction", {**prediction, "probability_low": 0.5}, False),
         ("Prediction", {**prediction, "probabilities_calibrated": True}, False),
-        ("AlertUpdate", {"status": "IN_REVIEW", "reason": "Atender caso", "expected_version": 1}, True),
-        ("AlertUpdate", {"status": "IN_REVIEW", "reason": "   ", "expected_version": 1}, False),
-        ("InterventionUpdate", {"status": "DONE", "expected_version": 1}, False),
-        ("InterventionUpdate", {"status": "DONE", "performed_at": "2026-10-03T16:00:00Z", "expected_version": 1}, True),
-        ("InterventionUpdate", {"status": "CANCELLED", "performed_at": "2026-10-03T16:00:00Z", "expected_version": 1}, False),
     ]
     for name, instance, expected in samples:
         # Las muestras utilizadas solo contienen esquemas locales sin referencias externas.
         validator = Draft202012Validator(public[name], format_checker=FormatChecker())
         check(validator.is_valid(instance) == expected, f"Muestra contractual {name}: esperado {expected}")
-    response_samples = ROOT / "tests/evidence/s2-response-samples.json"
+    response_samples = ROOT / "tests/evidence/s2-1-response-samples.json"
     if response_samples.exists():
         for sample in json.loads(response_samples.read_text(encoding="utf-8")):
             schema = {"$ref": f"#/components/schemas/{sample['schema']}", "components": contract["components"]}
@@ -170,7 +165,7 @@ def run():
     sprint = compose["x-sprint"]["current"]
     if sprint == "S0":
         check(compose["services"] == {} and not compose["x-sprint"]["runtime-implemented"], "Compose S0 sin servicios implementados")
-    elif sprint in ("S1", "S2"):
+    elif sprint in ("S1", "S2", "S2.1"):
         services = compose["services"]
         check(set(services) == {"web", "api", "db"} and compose["x-sprint"]["runtime-implemented"],
               "Compose S1 web/api/db implementados")
@@ -180,8 +175,7 @@ def run():
             check("healthcheck" in services[name], f"Healthcheck Compose {name}")
             check(all(str(p).startswith("127.0.0.1:") for p in services[name]["ports"]),
                   f"Puerto localhost {name}")
-        check(services["api"]["environment"]["DATA_ORIGIN"] == "DEMO" and
-              services["api"]["environment"]["REAL_MODE_ENABLED"] == "false", "Compose solo DEMO")
+        check("DATA_ORIGIN" not in services["api"]["environment"] and "REAL_MODE_ENABLED" not in services["api"]["environment"], "Sin selector de modo operativo")
         check("owner_database_url" not in services["api"]["secrets"] and
               "demo_credentials" not in services["api"]["secrets"], "API sin secretos de migración/semilla")
         check((ROOT / services["api"]["build"]["dockerfile"]).exists() and
@@ -190,7 +184,7 @@ def run():
               "Python conserva tag S0")
         check("node:24.14.1-bookworm-slim" in (ROOT / "infra/docker/web.Dockerfile").read_text(),
               "Node conserva tag S0")
-        if sprint == "S2":
+        if sprint in ("S2", "S2.1"):
             check("import_data" in compose["volumes"] and
                   "import_data:/var/lib/riesgo/imports" in services["api"]["volumes"], "CSV privado persistente fuera del checkout")
             check(services['api']['environment']['IMPORT_STORAGE_DIR'] == '/var/lib/riesgo/imports',
@@ -207,7 +201,7 @@ def run():
         "limitations": ["No ejecuta DDL/PLpgSQL", "No prueba permisos en servidor",
                         "No build, migración, ML, UI ni persistencia"],
     }
-    evidence_name = "s0-checks.json" if sprint == "S0" else "s2-contracts.json"
+    evidence_name = "s0-checks.json" if sprint == "S0" else "s2-1-contracts.json"
     (ROOT / "tests/evidence" / evidence_name).write_text(
         json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )

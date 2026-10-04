@@ -1,0 +1,23 @@
+{
+  "initial_sha": "2310d0034529cf79c4461de7e7e5fe2be457650c",
+  "head": "2310d0034529cf79c4461de7e7e5fe2be457650c",
+  "new_commit": false,
+  "host": "Windows",
+  "powershell": "7.6.5",
+  "host_launcher_python": "3.12.0",
+  "backend_runtime": "Linux container / Python 3.12.12",
+  "postgresql": "17.6",
+  "node": "24.14.1",
+  "npm": "11.20.0",
+  "docker": "29.7.2",
+  "compose": "5.5.1",
+  "preserved_hashes": {
+    "package-lock.json": "9b0880027ad75b06c5d8a56fa77cf1d23bf0196bb5cb6012a1d4a33e20990bb7",
+    "backend/requirements.txt": "f73c0470c6afc406f3402d17e5673df6ae8bed71bc4e6ffbc3f31a04aebe35b3",
+    "backend/requirements-dev.txt": "a144682074def4144beb5c77e9245dbd04da1707157e063885916800b5d2f581",
+    "infra/requirements-s0.txt": "aede94faca096063112df0b3e8a15a172ae97a75160c5bc18d76c6ae74b68c00",
+    "backend/migrations/versions/0001_demo_schema.py": "40780385f8ce2de813d0260aa43cba9cc0e433a276470c012c0caeb178b50fd1",
+    "backend/migrations/versions/0001_demo_schema.sql": "ec77deab687cc187e8a801c43fc46780b51344018f075dfbf719442e69969202"
+  },
+  "private_files_excluded": true
+}

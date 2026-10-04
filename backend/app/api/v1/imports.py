@@ -19,6 +19,7 @@ async def preview(request: Request, response: Response, context: AuthenticatedSe
     service.require_admin(context.user)
     settings = request.app.state.settings
     check_csrf(context, csrf_token, settings)
+    service.require_processing_protocol()
     try:
         async with request.form(max_files=1, max_fields=1, max_part_size=MAX_BYTES) as form:
             if set(form) != {'file', 'period_id'} or any(len(form.getlist(k)) != 1 for k in form):

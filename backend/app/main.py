@@ -28,8 +28,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         database.engine.dispose()
 
     application = FastAPI(
-        title="Seguimiento Escolar DEMO — S2",
-        version="0.1.2",
+        title="Seguimiento Escolar",
+        version="0.2.0",
         lifespan=lifespan,
         docs_url=None,
         redoc_url=None,

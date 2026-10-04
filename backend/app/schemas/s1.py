@@ -40,7 +40,7 @@ class Period(ContractModel):
     school_year: int = Field(ge=2000, le=2100)
     start_date: date
     end_date: date
-    data_origin: Literal["DEMO", "REAL"]
+    data_origin: Literal["REAL"]
     is_locked: bool
 
 

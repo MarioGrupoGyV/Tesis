@@ -1,1 +1,1 @@
-"""Backend de Seguimiento Escolar, limitado a la fase DEMO."""
+"""Backend de Seguimiento Escolar."""

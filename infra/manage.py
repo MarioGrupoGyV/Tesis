@@ -1,4 +1,4 @@
-"""Arranque S1/S2; conserva volúmenes y nunca siembra al reiniciar."""
+"""Operación Windows/PowerShell con Docker; conserva volúmenes."""
 import argparse
 from pathlib import Path
 import subprocess
@@ -12,11 +12,11 @@ def docker(*args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Preparación y ejecución de S1/S2 DEMO')
-    parser.add_argument('command', choices=['prepare', 'up', 'migrate', 'seed-demo', 'restart', 'down'])
+    parser = argparse.ArgumentParser(description='Preparación y operación de Seguimiento Escolar')
+    parser.add_argument('command', choices=['prepare', 'up', 'migrate', 'bootstrap-admin', 'configure', 'restart', 'down'])
     args = parser.parse_args()
     if args.command in ('prepare', 'up'):
-        subprocess.run([sys.executable, str(ROOT / 'infra/prepare_demo.py')], check=True)
+        subprocess.run([sys.executable, str(ROOT / 'infra/prepare.py')], check=True)
     if args.command == 'up':
         docker('compose', 'build', 'api', 'web')
         docker('compose', 'up', '-d', '--wait', 'db')
@@ -24,9 +24,10 @@ def main():
         docker('compose', 'up', '-d', '--wait', 'api', 'web')
     elif args.command == 'migrate':
         migrate()
-    elif args.command == 'seed-demo':
-        docker('compose', '-f', 'compose.yaml', '-f', 'infra/compose.seed.yaml',
-               'run', '--rm', '--no-deps', 'api', 'python', '-m', 'app.seed_demo')
+    elif args.command == 'bootstrap-admin':
+        docker('compose', 'exec', 'api', 'python', '-m', 'app.bootstrap_admin')
+    elif args.command == 'configure':
+        docker('compose', 'exec', 'api', 'python', '-m', 'app.configure_context')
     elif args.command == 'restart':
         docker('compose', 'restart', 'db', 'api', 'web')
     elif args.command == 'down':

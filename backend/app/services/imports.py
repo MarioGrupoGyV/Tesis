@@ -7,6 +7,7 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
 from app.core.errors import AppError
+from app.services.processing_policy import require_processing_protocol
 from app.core.import_storage import ImportStorage
 from app.models.s1 import AuditEvent
 from app.models.s2 import EnrollmentRecord, ImportBatchRecord, SnapshotRecord, StudentRecord
@@ -20,11 +21,11 @@ def require_admin(user):
         raise AppError(403, "FORBIDDEN", "Solo el administrador puede consultar o confirmar importaciones.")
 
 
-def demo_period(period):
+def institutional_period(period):
     if period is None:
         raise AppError(404, "PERIOD_NOT_FOUND", "El periodo solicitado no existe.")
-    if period.data_origin != "DEMO":
-        raise AppError(422, "REAL_MODE_NOT_READY", "El procesamiento REAL aún no está habilitado.")
+    if period.data_origin != "REAL":
+        raise AppError(422, "ORIGIN_NOT_SUPPORTED", "El origen del recurso no corresponde al entorno institucional.")
 
 
 def writable(period):
@@ -51,11 +52,11 @@ def observed_plan(db, period, parsed):
         tutor = tutors.get(section.tutor_id) if section else None
         if section and section.tutor_id and (tutor is None or tutor.role != "TUTOR" or not tutor.is_active):
             errors.append(issue(source, "section", "Corrige la asignación: el responsable de sección debe ser un tutor activo.", "INVALID_TUTOR"))
-        if student and student.data_origin != "DEMO":
-            raise AppError(422, "REAL_MODE_NOT_READY", "El código pertenece a un origen no habilitado. Usa códigos de demostración.",
-                           details=[{"row": source, "field": "student_code", "message": "Usa un código sintético distinto de los registros REAL."}])
+        if student and student.data_origin != "REAL":
+            raise AppError(422, "ORIGIN_NOT_SUPPORTED", "El código pertenece a un origen no habilitado. No se transforma el origen de registros existentes.",
+                           details=[{"row": source, "field": "student_code", "message": "Conserva la trazabilidad del origen; no reutilices registros históricos."}])
         if student and not student.is_active:
-            errors.append(issue(source, "student_code", "Usa un estudiante sintético activo.", "STUDENT_INACTIVE"))
+            errors.append(issue(source, "student_code", "Usa un estudiante activo.", "STUDENT_INACTIVE"))
         if enrollment and section and enrollment.section_id != section.id:
             errors.append(issue(source, "section", "Conserva la sección de la matrícula existente; una importación no traslada estudiantes.", "ENROLLMENT_SECTION_CONFLICT"))
         observed.append({
@@ -86,13 +87,14 @@ def observed_plan(db, period, parsed):
 def audit(db, user, batch, request_id, action, **counts):
     db.add(AuditEvent(actor_id=user.id, entity_type="import_batch", entity_id=batch.id,
                       action=action, request_id=request_id,
-                      payload={"data_origin": "DEMO", "preview_version": batch.preview_version, **counts}))
+                      payload={"data_origin": "REAL", "preview_version": batch.preview_version, **counts}))
 
 
 def preview(db, user, settings, period_id, content, filename, request_id):
     require_admin(user)
+    require_processing_protocol()
     period = repository.locked_period(db, period_id)
-    demo_period(period)
+    institutional_period(period)
     file_hash = hashlib.sha256(content).hexdigest()
     batch = repository.locked_batch(db, period_id, file_hash)
     if batch and batch.status == "COMMITTED":
@@ -107,9 +109,9 @@ def preview(db, user, settings, period_id, content, filename, request_id):
         if created:
             batch_id = uuid4()
             name = re.sub(r"[^A-Za-z0-9_.-]", "_", (filename or "importacion.csv").replace("\\", "/").split("/")[-1])[:120]
-            batch = ImportBatchRecord(id=batch_id, period_id=period.id, data_origin="DEMO", created_by=user.id,
+            batch = ImportBatchRecord(id=batch_id, period_id=period.id, data_origin="REAL", created_by=user.id,
                                       file_name=name or "importacion.csv", file_sha256=file_hash, storage_key=batch_id.hex + ".csv",
-                                      schema_version="demo-v1", preview_version=1)
+                                      schema_version="academic-v1", preview_version=1)
             storage.write(batch.storage_key, content)
             new_key = batch.storage_key
             db.add(batch)
@@ -138,8 +140,8 @@ def get_batch(db, user, batch_id):
     batch = db.get(ImportBatchRecord, batch_id)
     if batch is None:
         raise AppError(404, "IMPORT_NOT_FOUND", "El lote solicitado no existe.")
-    if batch.data_origin != "DEMO":
-        raise AppError(422, "REAL_MODE_NOT_READY", "El procesamiento REAL aún no está habilitado.")
+    if batch.data_origin != "REAL":
+        raise AppError(422, "ORIGIN_NOT_SUPPORTED", "El origen del recurso no corresponde al entorno institucional.")
     return batch
 
 
@@ -151,14 +153,14 @@ def committed_result(db, batch, reused):
 def insert_snapshots(db, batch, rows, observed):
     from uuid import UUID
     by_code = {state['student_code']: state for state in observed}
-    students = {code: StudentRecord(anon_code=code, data_origin='DEMO')
+    students = {code: StudentRecord(anon_code=code, data_origin='REAL')
                 for code, state in by_code.items() if state['student_id'] is None}
     db.add_all(list(students.values()))
     db.flush()
     student_ids = {code: UUID(state['student_id']) if state['student_id'] else students[code].id
                    for code, state in by_code.items()}
     enrollments = {code: EnrollmentRecord(student_id=student_ids[code], period_id=batch.period_id,
-                    section_id=UUID(state['section_id']), data_origin='DEMO')
+                    section_id=UUID(state['section_id']), data_origin='REAL')
                    for code, state in by_code.items() if state['enrollment_id'] is None}
     db.add_all(list(enrollments.values()))
     db.flush()
@@ -168,7 +170,7 @@ def insert_snapshots(db, batch, rows, observed):
     for row, state in zip(rows, observed, strict=True):
         code = row["student_code"]
         if state["create_snapshot"]:
-            record = SnapshotRecord(enrollment_id=enrollment_ids[code], period_id=batch.period_id, data_origin="DEMO",
+            record = SnapshotRecord(enrollment_id=enrollment_ids[code], period_id=batch.period_id, data_origin="REAL",
                 import_batch_id=batch.id, revision=(state["predecessor_revision"] or 0) + 1,
                 supersedes_id=UUID(state["predecessor_id"]) if state["predecessor_id"] else None,
                 **{k: row[k] for k in (*FEATURES, "window_start", "cutoff_at", "available_at", "target_date",
@@ -179,9 +181,11 @@ def insert_snapshots(db, batch, rows, observed):
 
 
 def commit(db, user, settings, batch_id, expected_version, request_id):
+    require_admin(user)
+    require_processing_protocol()
     initial = get_batch(db, user, batch_id)
     period = repository.locked_period(db, initial.period_id)
-    demo_period(period)
+    institutional_period(period)
     batch = repository.locked_batch(db, period.id, initial.file_sha256)
     if batch.status == "COMMITTED":
         return committed_result(db, batch, True)
@@ -195,7 +199,7 @@ def commit(db, user, settings, batch_id, expected_version, request_id):
         parsed = parse_csv(content, period)
         observed, errors, counts = observed_plan(db, period, parsed)
     except AppError as exc:
-        if exc.code == "REAL_MODE_NOT_READY":
+        if exc.code == "ORIGIN_NOT_SUPPORTED":
             raise
         raise stale() from None
     if errors or observed != batch.preview_state or any(getattr(batch, key) != value for key, value in counts.items()):

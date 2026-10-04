@@ -1,0 +1,1666 @@
+openapi: 3.1.0
+info:
+  title: Contrato de Seguimiento Escolar
+  version: 0.2.0
+  description: 'S2.1: Windows con Docker. Sin datos precargados. Contexto institucional legible; importacion
+    bloqueada hasta implementar el protocolo autorizado. Solo rutas implementadas S1/S2.'
+servers:
+- url: /api/v1
+  description: Preferir proxy de mismo origen para cookies y CSRF
+security:
+- sessionCookie: []
+tags:
+- name: health
+- name: auth
+- name: catalogs
+- name: students
+- name: imports
+paths:
+  /health/live:
+    get:
+      operationId: live
+      summary: Disponibilidad del proceso
+      tags:
+      - health
+      x-stage: S2.1
+      x-roles: []
+      description: No revelar configuración ni secretos.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+      security: []
+  /health/ready:
+    get:
+      operationId: ready
+      summary: Disponibilidad de base de datos
+      tags:
+      - health
+      x-stage: S2.1
+      x-roles: []
+      description: 200 si la base está disponible; 503 en caso contrario.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '503':
+          description: Base de datos no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+      security: []
+  /auth/login:
+    post:
+      operationId: login
+      summary: Iniciar sesión
+      tags:
+      - auth
+      x-stage: S2.1
+      x-roles: []
+      description: Comprobar Origin, limitar intentos y validar credenciales. Usar cookie de sesión; sin
+        registro público.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResult'
+          headers:
+            Set-Cookie:
+              description: sesión HttpOnly; SameSite=Lax; Path=/; Secure en HTTPS. La cookie no se devuelve
+                en JSON.
+              schema:
+                type: string
+        '422':
+          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
+            de importacion; sin escrituras escolares.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Límite de intentos excedido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Origen de solicitud no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de integridad o concurrencia; resolver el estado y reintentar.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+  /auth/me:
+    get:
+      operationId: me
+      summary: Consultar usuario actual
+      tags:
+      - auth
+      x-stage: S2.1
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      - RESEARCHER
+      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
+            de importacion; sin escrituras escolares.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/csrf:
+    get:
+      operationId: csrf
+      summary: Obtener CSRF ligado a la sesión (HMAC determinista)
+      tags:
+      - auth
+      x-stage: S2.1
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      - RESEARCHER
+      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Csrf'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
+            de importacion; sin escrituras escolares.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/logout:
+    post:
+      operationId: logout
+      summary: Revocar sesión
+      tags:
+      - auth
+      x-stage: S2.1
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      - RESEARCHER
+      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+      responses:
+        '204':
+          description: Sesión revocada; borrar cookie
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
+            de importacion; sin escrituras escolares.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Token CSRF ligado a la sesión; validarlo en servidor.
+  /periods:
+    get:
+      operationId: periods
+      summary: Listar periodos configurados; lista vacia antes de configuracion
+      tags:
+      - catalogs
+      x-stage: S2.1
+      x-roles: &id001
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Period'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
+            de importacion; sin escrituras escolares.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /sections:
+    get:
+      operationId: sections
+      summary: Listar secciones autorizadas del año del periodo
+      tags:
+      - catalogs
+      x-stage: S2.1
+      x-roles: *id001
+      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Section'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
+            de importacion; sin escrituras escolares.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - &id002
+        name: period_id
+        in: query
+        required: true
+        schema: &id003
+          type: string
+          format: uuid
+  /students:
+    get:
+      operationId: students
+      summary: Listar estudiantes autorizados
+      tags:
+      - students
+      x-stage: S2.1
+      x-roles: *id001
+      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentPage'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
+            de importacion; sin escrituras escolares.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - *id002
+      - name: section_id
+        in: query
+        required: false
+        schema: *id003
+      - &id004
+        name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - &id005
+        name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 40
+      - name: risk_level
+        in: query
+        required: false
+        schema: &id010
+          type: string
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - anon_code
+          - risk_desc
+          - updated_desc
+  /students/{id}:
+    get:
+      operationId: studentDetail
+      summary: Consultar seguimiento del estudiante
+      tags:
+      - students
+      x-stage: S2.1
+      x-roles: *id001
+      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentDetail'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
+            de importacion; sin escrituras escolares.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+      - *id002
+  /students/{id}/timeline:
+    get:
+      operationId: studentTimeline
+      summary: Consultar historial
+      tags:
+      - students
+      x-stage: S2.1
+      x-roles: *id001
+      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimelineEventPage'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
+            de importacion; sin escrituras escolares.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+      - *id002
+      - *id004
+      - *id005
+  /imports/preview:
+    post:
+      operationId: previewImport
+      summary: Validar CSV y crear vista previa
+      tags:
+      - imports
+      x-stage: S2.1
+      x-roles:
+      - ADMIN
+      description: 'Bloqueado con 422 INSTITUTIONAL_PROCESSING_NOT_READY hasta implementar procedencia
+        autorizada, escala, periodo, ventanas, fechas y calidad. Exige sesion ADMIN y CSRF. No persiste
+        archivos ni registros escolares. Motor preservado: UTF-8, 5 MiB, 10000 filas, transaccion, idempotencia,
+        revision inmutable y expected_preview_version.'
+      responses:
+        '201': &id006
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportBatch'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
+            de importacion; sin escrituras escolares.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200': *id006
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Token CSRF ligado a la sesión; validarlo en servidor.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                period_id: *id003
+              required:
+              - file
+              - period_id
+              additionalProperties: false
+  /imports/{id}:
+    get:
+      operationId: importDetail
+      summary: Consultar lote y errores
+      tags:
+      - imports
+      x-stage: S2.1
+      x-roles:
+      - ADMIN
+      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportBatch'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
+            de importacion; sin escrituras escolares.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+  /imports/{id}/commit:
+    post:
+      operationId: commitImport
+      summary: Confirmar lote sin errores
+      tags:
+      - imports
+      x-stage: S2.1
+      x-roles:
+      - ADMIN
+      description: 'Bloqueado con 422 INSTITUTIONAL_PROCESSING_NOT_READY hasta implementar procedencia
+        autorizada, escala, periodo, ventanas, fechas y calidad. Exige sesion ADMIN y CSRF. No persiste
+        archivos ni registros escolares. Motor preservado: UTF-8, 5 MiB, 10000 filas, transaccion, idempotencia,
+        revision inmutable y expected_preview_version.'
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportCommit'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
+            de importacion; sin escrituras escolares.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
+            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca
+            503.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno inesperado sanitizado; no se exponen detalles de base.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Token CSRF ligado a la sesión; validarlo en servidor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expected_preview_version:
+                  type: integer
+                  minimum: 1
+              required:
+              - expected_preview_version
+              additionalProperties: false
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: session
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type:
+                - string
+                - 'null'
+              row:
+                type:
+                - integer
+                - 'null'
+              message:
+                type: string
+            required:
+            - message
+            additionalProperties: false
+        request_id: *id003
+      required:
+      - code
+      - message
+      - details
+      - request_id
+      additionalProperties: false
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - ok
+          - unavailable
+      required:
+      - status
+      additionalProperties: false
+    User:
+      type: object
+      properties:
+        id: *id003
+        display_name:
+          type: string
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - TUTOR
+          - DIRECTOR
+          - RESEARCHER
+      required:
+      - id
+      - display_name
+      - role
+      additionalProperties: false
+    LoginInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - email
+      - password
+      additionalProperties: false
+    LoginResult:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        csrf_token:
+          type: string
+        expires_at: &id009
+          type: string
+          format: date-time
+          description: RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
+      required:
+      - user
+      - csrf_token
+      - expires_at
+      additionalProperties: false
+    Csrf:
+      type: object
+      properties:
+        csrf_token:
+          type: string
+      required:
+      - csrf_token
+      additionalProperties: false
+    Period:
+      type: object
+      properties:
+        id: *id003
+        code:
+          type: string
+        school_year:
+          type: integer
+          minimum: 2000
+          maximum: 2100
+        start_date: &id007
+          type: string
+          format: date
+        end_date: *id007
+        data_origin: &id008
+          type: string
+          enum:
+          - REAL
+        is_locked:
+          type: boolean
+      required:
+      - id
+      - code
+      - start_date
+      - end_date
+      - data_origin
+      - is_locked
+      - school_year
+      additionalProperties: false
+    Section:
+      type: object
+      properties:
+        id: *id003
+        code:
+          type: string
+        grade:
+          type: integer
+          minimum: 1
+          maximum: 5
+        school_year:
+          type: integer
+          minimum: 2000
+          maximum: 2100
+        tutor_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      required:
+      - id
+      - code
+      - grade
+      - school_year
+      - tutor_id
+      additionalProperties: false
+    Snapshot:
+      type: object
+      properties:
+        id: *id003
+        enrollment_id: *id003
+        period_id: *id003
+        data_origin: *id008
+        window_start: *id007
+        cutoff_at: *id009
+        available_at: *id009
+        target_date: *id007
+        revision:
+          type: integer
+          minimum: 1
+        supersedes_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: Revisión anterior del mismo corte y matrícula; null en la primera.
+        average_grade:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 20
+        attendance_pct:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 100
+        activities_pct:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 100
+        participation_level:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          maximum: 3
+        behavior_incidents:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+        age_years:
+          type:
+          - integer
+          - 'null'
+          minimum: 5
+          maximum: 25
+        missing_fraction:
+          type: number
+          minimum: 0
+          maximum: 1
+      required:
+      - id
+      - enrollment_id
+      - period_id
+      - data_origin
+      - window_start
+      - cutoff_at
+      - available_at
+      - target_date
+      - revision
+      - missing_fraction
+      - supersedes_id
+      - average_grade
+      - attendance_pct
+      - activities_pct
+      - participation_level
+      - behavior_incidents
+      - age_years
+      additionalProperties: false
+    Prediction:
+      type: object
+      properties:
+        id: *id003
+        enrollment_id: *id003
+        snapshot_id: *id003
+        model_id: *id003
+        data_origin: *id008
+        risk_level: *id010
+        cutoff_at: *id009
+        target_date: *id007
+        predicted_at: *id009
+        probability_low:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 1
+        probability_medium:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 1
+        probability_high:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 1
+        probabilities_calibrated:
+          type: boolean
+      required:
+      - id
+      - enrollment_id
+      - snapshot_id
+      - model_id
+      - data_origin
+      - risk_level
+      - cutoff_at
+      - target_date
+      - predicted_at
+      - probabilities_calibrated
+      - probability_low
+      - probability_medium
+      - probability_high
+      additionalProperties: false
+      description: Probabilidades todas null o todas presentes; suma 1 con tolerancia 0.00001. Validar
+        suma en servidor. calibrated true exige valores presentes.
+      allOf:
+      - oneOf:
+        - properties:
+            probability_low:
+              type: 'null'
+            probability_medium:
+              type: 'null'
+            probability_high:
+              type: 'null'
+        - properties:
+            probability_low:
+              type: number
+            probability_medium:
+              type: number
+            probability_high:
+              type: number
+      - if:
+          properties:
+            probabilities_calibrated:
+              const: true
+        then:
+          properties:
+            probability_low:
+              type: number
+    Student:
+      type: object
+      properties:
+        id: *id003
+        anon_code:
+          type: string
+          minLength: 3
+          maxLength: 40
+        enrollment_id: *id003
+        period_id: *id003
+        section_id: *id003
+        section_code:
+          type: string
+        grade:
+          type: integer
+          minimum: 1
+          maximum: 5
+        data_origin: *id008
+        average_grade:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 20
+        attendance_pct:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 100
+        latest_cutoff_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        risk_level:
+          type:
+          - string
+          - 'null'
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+          - null
+        evaluation_status:
+          type: string
+          enum:
+          - EVALUATED
+          - NOT_EVALUATED
+          - INSUFFICIENT_DATA
+        active_alert_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      required:
+      - id
+      - anon_code
+      - enrollment_id
+      - period_id
+      - section_id
+      - section_code
+      - grade
+      - data_origin
+      - evaluation_status
+      - average_grade
+      - attendance_pct
+      - latest_cutoff_at
+      - risk_level
+      - active_alert_id
+      additionalProperties: false
+    StudentDetail:
+      type: object
+      properties:
+        student:
+          $ref: '#/components/schemas/Student'
+        latest_snapshot:
+          anyOf:
+          - $ref: '#/components/schemas/Snapshot'
+          - type: 'null'
+        latest_prediction:
+          anyOf:
+          - $ref: '#/components/schemas/Prediction'
+          - type: 'null'
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alert'
+        interventions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Intervention'
+      required:
+      - student
+      - latest_snapshot
+      - latest_prediction
+      - alerts
+      - interventions
+      additionalProperties: false
+    TimelineEvent:
+      type: object
+      properties:
+        id: *id003
+        event_type:
+          type: string
+          enum:
+          - SNAPSHOT
+          - PREDICTION
+          - ALERT
+          - INTERVENTION
+        occurred_at: *id009
+        summary:
+          type: string
+        entity_id: *id003
+      required:
+      - id
+      - event_type
+      - occurred_at
+      - summary
+      - entity_id
+      additionalProperties: false
+    ImportError:
+      type: object
+      properties:
+        row:
+          type: integer
+          minimum: 1
+        column:
+          type: string
+        code:
+          type: string
+        message:
+          type: string
+      required:
+      - row
+      - column
+      - code
+      - message
+      additionalProperties: false
+    ImportBatch:
+      type: object
+      properties:
+        id: *id003
+        period_id: *id003
+        data_origin: *id008
+        file_name:
+          type: string
+        file_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        schema_version:
+          type: string
+        status:
+          type: string
+          enum:
+          - PREVIEW
+          - READY
+          - COMMITTED
+          - FAILED
+        total_rows:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        valid_rows:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        invalid_rows:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        planned_students:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        planned_enrollments:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        planned_snapshots:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        preview_version:
+          type: integer
+          minimum: 1
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportError'
+        created_at: *id009
+        committed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      required:
+      - id
+      - period_id
+      - data_origin
+      - file_name
+      - file_sha256
+      - schema_version
+      - status
+      - total_rows
+      - valid_rows
+      - invalid_rows
+      - errors
+      - created_at
+      - planned_students
+      - planned_enrollments
+      - planned_snapshots
+      - committed_at
+      - preview_version
+      additionalProperties: false
+    ImportCommit:
+      type: object
+      properties:
+        batch_id: *id003
+        status:
+          type: string
+          enum:
+          - COMMITTED
+        created_snapshots:
+          type: integer
+          minimum: 0
+        reused_result:
+          type: boolean
+      required:
+      - batch_id
+      - status
+      - created_snapshots
+      - reused_result
+      additionalProperties: false
+    Alert:
+      type: object
+      properties:
+        id: *id003
+        enrollment_id: *id003
+        student_id: *id003
+        anon_code:
+          type: string
+        prediction_id: *id003
+        data_origin: *id008
+        severity:
+          type: string
+          enum:
+          - MEDIUM
+          - HIGH
+        status:
+          type: string
+          enum:
+          - OPEN
+          - IN_REVIEW
+          - RESOLVED
+          - DISMISSED
+        assigned_to:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        resolution_reason:
+          type:
+          - string
+          - 'null'
+          maxLength: 1000
+        opened_at: *id009
+        updated_at: *id009
+        closed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - id
+      - enrollment_id
+      - student_id
+      - anon_code
+      - prediction_id
+      - data_origin
+      - severity
+      - status
+      - opened_at
+      - updated_at
+      - version
+      - assigned_to
+      - resolution_reason
+      - closed_at
+      additionalProperties: false
+    Intervention:
+      type: object
+      properties:
+        id: *id003
+        enrollment_id: *id003
+        alert_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        data_origin: *id008
+        kind:
+          type: string
+          enum:
+          - TUTORING
+          - REINFORCEMENT
+          - FAMILY_MEETING
+          - OTHER
+        objective:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        status:
+          type: string
+          enum:
+          - PLANNED
+          - DONE
+          - CANCELLED
+        scheduled_at: *id009
+        performed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        notes:
+          type:
+          - string
+          - 'null'
+          maxLength: 2000
+        version:
+          type: integer
+          minimum: 1
+        created_at: *id009
+        updated_at: *id009
+      required:
+      - id
+      - enrollment_id
+      - data_origin
+      - kind
+      - objective
+      - status
+      - scheduled_at
+      - version
+      - created_at
+      - updated_at
+      - alert_id
+      - performed_at
+      - notes
+      additionalProperties: false
+    StudentPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Student'
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        page_size:
+          type: integer
+          minimum: 1
+          maximum: 100
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      additionalProperties: false
+    TimelineEventPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimelineEvent'
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        page_size:
+          type: integer
+          minimum: 1
+          maximum: 100
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      additionalProperties: false
+x-current-sprint: S2.1

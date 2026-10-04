@@ -1,3 +1,5 @@
+> Cierre histórico: no es una guía de arranque vigente. Consultar [Estado S2.1](Estado_Sprint_2_1.md). Los resultados originales se conservan.
+
 # Estado del Sprint 2 — Importación y estudiantes DEMO
 
 Fecha de cierre: 3 de octubre de 2026 (America/Lima; evidencias UTC del 4 de octubre).

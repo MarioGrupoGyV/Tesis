@@ -1,0 +1,8 @@
+{
+  "status": "COMPROBADO",
+  "database": "riesgo_escolar_test_browser_8fa0645c51b9",
+  "data_scope": "isolated_test_only",
+  "bootstrap_repeated_rejected": true,
+  "account_survives_restart": true,
+  "active_environment_untouched": true
+}

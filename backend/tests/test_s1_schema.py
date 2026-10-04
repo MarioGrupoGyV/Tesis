@@ -64,9 +64,9 @@ def test_grade_and_code_uniqueness_allows_1a_and_2a(db, context):
 
 def test_database_checks_year_grade_and_period_order(db):
     for year in (1999, 2101):
-        assert_sqlstate(db, "INSERT INTO risk_school.academic_periods (code,school_year,start_date,end_date,data_origin) VALUES (:code,:year,'2026-01-01','2026-12-31','DEMO')", {"code": "synthetic-" + uuid4().hex, "year": year}, "23514")
+        assert_sqlstate(db, "INSERT INTO risk_school.academic_periods (code,school_year,start_date,end_date,data_origin) VALUES (:code,:year,'2026-01-01','2026-12-31','REAL')", {"code": "synthetic-" + uuid4().hex, "year": year}, "23514")
     assert_sqlstate(db, "INSERT INTO risk_school.grade_sections (code,grade,school_year) VALUES ('synthetic',6,2026)", {}, "23514")
-    assert_sqlstate(db, "INSERT INTO risk_school.academic_periods (code,school_year,start_date,end_date,data_origin) VALUES (:code,2026,'2026-12-31','2026-01-01','DEMO')", {"code": "synthetic-" + uuid4().hex}, "23514")
+    assert_sqlstate(db, "INSERT INTO risk_school.academic_periods (code,school_year,start_date,end_date,data_origin) VALUES (:code,2026,'2026-12-31','2026-01-01','REAL')", {"code": "synthetic-" + uuid4().hex}, "23514")
 
 
 def test_immutable_evidence_triggers_are_installed(db):
@@ -74,8 +74,15 @@ def test_immutable_evidence_triggers_are_installed(db):
     assert {"snapshots_immutable", "predictions_immutable", "audit_immutable", "snapshot_period_guard", "alert_change_guard", "intervention_change_guard"} <= triggers
 
 
+def test_institutional_migration_validated_without_relabeling(db):
+    assert db.scalar(text("SELECT count(*) FROM pg_constraint WHERE conname='institutional_origin' AND convalidated")) == 9
+    assert_sqlstate(db, "INSERT INTO risk_school.academic_periods(code,school_year,start_date,end_date,data_origin) VALUES (:code,2026,'2026-01-01','2026-12-31','DEMO')", {'code':uuid4().hex}, '23514')
+    assert db.scalar(text("SELECT count(*) FROM pg_constraint WHERE conname='model_activation_pending'")) == 1
+
+
 @pytest.mark.parametrize("mutation", ("UPDATE risk_school.audit_events SET action='changed' WHERE id=:id", "DELETE FROM risk_school.audit_events WHERE id=:id"))
 def test_audit_cannot_be_overwritten_even_by_migration_owner(db, context, mutation):
+    db.execute(text("RESET ROLE"))
     values = {"id": uuid4(), "actor_id": context["accounts"]["ADMIN"]["id"], "request_id": uuid4()}
     db.execute(text("INSERT INTO risk_school.audit_events (id,actor_id,entity_type,action,request_id) VALUES (:id,:actor_id,'S1_FIXTURE','SYNTHETIC_TEST',:request_id)"), values)
     assert_sqlstate(db, mutation, values, "55000")

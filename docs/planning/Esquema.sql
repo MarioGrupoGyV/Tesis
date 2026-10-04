@@ -1,10 +1,5 @@
--- Diseño PostgreSQL 17 para la primera demo del sistema de riesgo escolar.
--- Convertir este diseño en una migración Alembic antes de implementar.
--- Este archivo crea objetos en un esquema nuevo. No elimina datos ni crea usuarios.
--- Fase vigente: DEMO. Las seis tablas de investigación se añaden posteriormente.
--- Las escalas 0..20 y 1..3 se usan en datos sintéticos; confirmar escala real antes del piloto.
--- Revisión S0 0.1.1: ver docs/adr/001-arquitectura.md y Conciliacion_SQL_API.md.
-
+-- Diseno efectivo S2.1. Solo referencia; aplicar Alembic 0001 y 0002.
+-- Origen institucional no habilita procesamiento. Escalas pendientes de protocolo.
 BEGIN;
 CREATE SCHEMA risk_school;
 SET LOCAL search_path TO risk_school, public;
@@ -37,7 +32,7 @@ CREATE TABLE academic_periods (
   school_year smallint NOT NULL CHECK (school_year BETWEEN 2000 AND 2100),
   start_date date NOT NULL,
   end_date date NOT NULL,
-  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL')),
+  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
   is_locked boolean NOT NULL DEFAULT false,
   created_at timestamptz NOT NULL DEFAULT now(),
   CHECK (end_date > start_date),
@@ -58,14 +53,14 @@ CREATE INDEX ix_sections_tutor ON grade_sections(tutor_id);
 CREATE TABLE students (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   anon_code text NOT NULL UNIQUE CHECK (length(anon_code) BETWEEN 3 AND 40),
-  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL')),
+  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
   is_active boolean NOT NULL DEFAULT true,
   eligible_for_processing boolean NOT NULL DEFAULT false,
   consent_documented boolean NOT NULL DEFAULT false,
   assent_documented boolean NOT NULL DEFAULT false,
   created_at timestamptz NOT NULL DEFAULT now(),
   UNIQUE (id, data_origin),
-  CHECK (data_origin = 'DEMO' OR NOT eligible_for_processing
+  CHECK (NOT eligible_for_processing
          OR (consent_documented AND assent_documented))
 );
 
@@ -74,7 +69,7 @@ CREATE TABLE enrollments (
   student_id uuid NOT NULL,
   period_id uuid NOT NULL,
   section_id uuid NOT NULL REFERENCES grade_sections(id) ON DELETE RESTRICT,
-  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL')),
+  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
   created_at timestamptz NOT NULL DEFAULT now(),
   FOREIGN KEY (student_id, data_origin) REFERENCES students(id, data_origin),
   FOREIGN KEY (period_id, data_origin) REFERENCES academic_periods(id, data_origin),
@@ -87,11 +82,11 @@ CREATE INDEX ix_enrollments_period_section ON enrollments(period_id, section_id)
 CREATE TABLE import_batches (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   period_id uuid NOT NULL,
-  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL')),
+  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
   created_by uuid NOT NULL REFERENCES app_users(id),
   file_name text NOT NULL,
   file_sha256 char(64) NOT NULL CHECK (file_sha256 ~ '^[0-9a-f]{64}$'),
-  schema_version text NOT NULL DEFAULT 'demo-v1',
+  schema_version text NOT NULL DEFAULT 'academic-v1',
   storage_key text NOT NULL,
   status text NOT NULL DEFAULT 'PREVIEW' CHECK (status IN ('PREVIEW','READY','COMMITTED','FAILED')),
   total_rows integer NOT NULL DEFAULT 0 CHECK (total_rows >= 0),
@@ -119,7 +114,7 @@ CREATE TABLE academic_snapshots (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   enrollment_id uuid NOT NULL,
   period_id uuid NOT NULL,
-  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL')),
+  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
   import_batch_id uuid NOT NULL,
   window_start date NOT NULL,
   cutoff_at timestamptz NOT NULL,
@@ -134,7 +129,7 @@ CREATE TABLE academic_snapshots (
   behavior_incidents integer CHECK (behavior_incidents >= 0),
   age_years smallint CHECK (age_years BETWEEN 5 AND 25),
   missing_fraction numeric(5,4) NOT NULL CHECK (missing_fraction BETWEEN 0 AND 1),
-  schema_version text NOT NULL DEFAULT 'demo-v1',
+  schema_version text NOT NULL DEFAULT 'academic-v1',
   source_row_number integer NOT NULL CHECK (source_row_number >= 2),
   row_sha256 char(64) NOT NULL CHECK (row_sha256 ~ '^[0-9a-f]{64}$'),
   created_at timestamptz NOT NULL DEFAULT now(),
@@ -159,7 +154,7 @@ CREATE TABLE model_versions (
   name text NOT NULL,
   version text NOT NULL,
   algorithm text NOT NULL CHECK (algorithm IN ('DUMMY','RANDOM_FOREST','SVM','XGBOOST')),
-  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL')),
+  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
   dataset_hash char(64) NOT NULL CHECK (dataset_hash ~ '^[0-9a-f]{64}$'),
   artifact_sha256 char(64) NOT NULL CHECK (artifact_sha256 ~ '^[0-9a-f]{64}$'),
   artifact_key text NOT NULL,
@@ -176,7 +171,7 @@ CREATE TABLE model_versions (
   UNIQUE (id, data_origin),
   CHECK (NOT is_active OR status = 'APPROVED'),
   -- Guard de esta fase. Retirar solo en una migración que habilite el protocolo REAL.
-  CONSTRAINT demo_only_active_model CHECK (NOT is_active OR data_origin = 'DEMO')
+  CONSTRAINT model_activation_pending CHECK (NOT is_active)
 );
 CREATE UNIQUE INDEX ux_active_model_origin ON model_versions(data_origin) WHERE is_active;
 
@@ -185,7 +180,7 @@ CREATE TABLE predictions (
   enrollment_id uuid NOT NULL,
   snapshot_id uuid NOT NULL,
   model_id uuid NOT NULL,
-  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL')),
+  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
   risk_level text NOT NULL CHECK (risk_level IN ('LOW','MEDIUM','HIGH')),
   probability_low numeric(8,7),
   probability_medium numeric(8,7),
@@ -212,7 +207,7 @@ CREATE TABLE alerts (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   enrollment_id uuid NOT NULL,
   prediction_id uuid NOT NULL,
-  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL')),
+  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
   assigned_to uuid REFERENCES app_users(id),
   severity text NOT NULL CHECK (severity IN ('MEDIUM','HIGH')),
   status text NOT NULL DEFAULT 'OPEN' CHECK (status IN ('OPEN','IN_REVIEW','RESOLVED','DISMISSED')),
@@ -237,7 +232,7 @@ CREATE TABLE interventions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   enrollment_id uuid NOT NULL,
   alert_id uuid,
-  data_origin text NOT NULL CHECK (data_origin IN ('DEMO','REAL')),
+  data_origin text NOT NULL CHECK (data_origin = 'REAL'),
   created_by uuid NOT NULL REFERENCES app_users(id),
   kind text NOT NULL CHECK (kind IN ('TUTORING','REINFORCEMENT','FAMILY_MEETING','OTHER')),
   objective text NOT NULL CHECK (length(btrim(objective)) BETWEEN 1 AND 1000),

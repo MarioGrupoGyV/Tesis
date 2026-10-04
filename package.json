@@ -2,7 +2,7 @@
   "name": "tesis-riesgo-escolar",
   "version": "0.0.0",
   "private": true,
-  "description": "Sprint 0: preparación de Seguimiento Escolar DEMO con datos sintéticos",
+  "description": "Seguimiento Escolar: aplicación interna con procesamiento institucional sujeto a protocolo",
   "workspaces": ["frontend"],
   "engines": {"node": ">=24.14.1 <25", "npm": ">=11.20.0 <12"},
   "packageManager": "npm@11.20.0",

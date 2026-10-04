@@ -82,7 +82,7 @@ def login(
                 entity_id=previous[0].id,
                 action="SESSION_REPLACED",
                 request_id=request_id,
-                payload={"data_origin": "DEMO"},
+                payload={"scope": "ACCOUNT_ACCESS"},
             ))
     raw_token = new_session_token()
     csrf_token = csrf_token_for_session(raw_token, settings.csrf_key)
@@ -101,7 +101,7 @@ def login(
         entity_id=session.id,
         action="SESSION_CREATED",
         request_id=request_id,
-        payload={"data_origin": "DEMO"},
+        payload={"scope": "ACCOUNT_ACCESS"},
     ))
     db.commit()
     return SessionContext(session=session, user=user, raw_token=raw_token)
@@ -121,6 +121,6 @@ def logout(db: Session, context: SessionContext, event_request_id: UUID) -> None
         entity_id=context.session.id,
         action="SESSION_REVOKED",
         request_id=event_request_id,
-        payload={"data_origin": "DEMO"},
+        payload={"scope": "ACCOUNT_ACCESS"},
     ))
     db.commit()

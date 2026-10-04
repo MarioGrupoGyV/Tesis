@@ -6,4 +6,4 @@ services:
     secrets: [owner_database_url]
 secrets:
   owner_database_url:
-    file: "${S1_SECRETS_DIR:-./.local/secrets}/owner-database-url"
+    file: "${APP_SECRETS_DIR:-./.local/runtime-secrets}/owner-database-url"

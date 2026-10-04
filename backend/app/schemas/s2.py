@@ -7,7 +7,7 @@ from pydantic import Field, PlainSerializer, StrictInt
 from app.schemas.s1 import ContractModel
 
 Number = Annotated[Decimal, PlainSerializer(float, return_type=float, when_used="json")]
-Origin = Literal["DEMO", "REAL"]
+Origin = Literal["REAL"]
 Risk = Literal["LOW", "MEDIUM", "HIGH"]
 
 

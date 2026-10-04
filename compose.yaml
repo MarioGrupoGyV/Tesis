@@ -1,10 +1,10 @@
-# S1 DEMO. La semilla es explícita; reiniciar no modifica datos.
-name: riesgo-escolar-demo
+# Windows + Docker Desktop. Sin cuentas ni registros escolares precargados.
+name: riesgo-escolar
 services:
   db:
     image: postgres:17.6-bookworm
     environment:
-      POSTGRES_DB: riesgo_escolar_demo
+      POSTGRES_DB: riesgo_escolar
       POSTGRES_USER: riesgo_owner
       POSTGRES_PASSWORD_FILE: /run/secrets/owner_password
       APP_DB_PASSWORD_FILE: /run/secrets/app_password
@@ -17,7 +17,7 @@ services:
     ports:
       - "127.0.0.1:${DB_PORT:-55432}:5432"
     healthcheck:
-      test: [CMD-SHELL, "pg_isready -U riesgo_owner -d riesgo_escolar_demo"]
+      test: [CMD-SHELL, "pg_isready -U riesgo_owner -d riesgo_escolar"]
       interval: 3s
       timeout: 3s
       retries: 20
@@ -30,8 +30,6 @@ services:
       DATABASE_URL_FILE: /run/secrets/app_database_url
       CSRF_SECRET_FILE: /run/secrets/csrf_secret
       APP_ENV: development
-      DATA_ORIGIN: DEMO
-      REAL_MODE_ENABLED: "false"
       ALLOWED_ORIGINS: "${ALLOWED_ORIGINS:-http://localhost:15173,http://127.0.0.1:15173}"
       SESSION_COOKIE_SECURE: "${SESSION_COOKIE_SECURE:-false}"
       TZ: UTC
@@ -73,17 +71,15 @@ volumes:
   import_data:
 secrets:
   owner_password:
-    file: "${S1_SECRETS_DIR:-./.local/secrets}/owner-password"
+    file: "${APP_SECRETS_DIR:-./.local/runtime-secrets}/owner-password"
   app_password:
-    file: "${S1_SECRETS_DIR:-./.local/secrets}/app-password"
+    file: "${APP_SECRETS_DIR:-./.local/runtime-secrets}/app-password"
   app_database_url:
-    file: "${S1_SECRETS_DIR:-./.local/secrets}/app-database-url"
+    file: "${APP_SECRETS_DIR:-./.local/runtime-secrets}/app-database-url"
   csrf_secret:
-    file: "${S1_SECRETS_DIR:-./.local/secrets}/csrf-secret"
-  demo_credentials:
-    file: "${S1_SECRETS_DIR:-./.local/secrets}/demo-credentials.json"
+    file: "${APP_SECRETS_DIR:-./.local/runtime-secrets}/csrf-secret"
 x-sprint:
-  current: S2
+  current: S2.1
   runtime-implemented: true
   implemented-scope: [health, auth, periods, sections, imports, students]
   planned-services: [web, api, db]

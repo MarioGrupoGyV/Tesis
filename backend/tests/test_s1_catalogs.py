@@ -17,7 +17,7 @@ def test_admin_and_director_read_demo_year_catalog(client, login, context, role)
     rows = periods.json()
     assert str(context["periods"]["demo"]["id"]) in {row["id"] for row in rows}
     assert str(context["periods"]["other_year"]["id"]) in {row["id"] for row in rows}
-    assert all(row["data_origin"] == "DEMO" for row in rows)
+    assert all(row["data_origin"] == "REAL" for row in rows)
     for row in rows:
         assert set(row) == {"id", "code", "school_year", "start_date", "end_date", "data_origin", "is_locked"}
         UUID(row["id"])
@@ -41,7 +41,7 @@ def test_tutor_only_assigned_sections_and_years_even_with_browser_role(client, l
     login("TUTOR")
     periods = client.get(f"{API}/periods", headers={"X-Role": "ADMIN"}, params={"role": "ADMIN"})
     assert periods.status_code == 200
-    assert all(row["school_year"] == 2026 and row["data_origin"] == "DEMO" for row in periods.json())
+    assert all(row["school_year"] == 2026 and row["data_origin"] == "REAL" for row in periods.json())
     sections = client.get(f"{API}/sections", params={"period_id": str(context["periods"]["demo"]["id"]), "role": "ADMIN"}, headers={"X-Role": "ADMIN"})
     assert sections.status_code == 200
     assert {row["id"] for row in sections.json()} == {str(context["sections"][0]["id"])}
@@ -68,10 +68,10 @@ def test_researcher_has_own_session_but_no_operational_catalog(client, login, co
 
 
 @pytest.mark.parametrize("role", ("ADMIN", "DIRECTOR", "TUTOR"))
-def test_real_period_is_blocked(client, login, context, role):
+def test_institutional_context_can_be_read_without_processing(client, login, context, role):
     login(role)
     response = client.get(f"{API}/sections", params={"period_id": str(context["periods"]["real"]["id"])})
-    assert_error(response, 422, "REAL_MODE_NOT_READY")
+    assert response.status_code == 200
 
 
 @pytest.mark.parametrize("period_id", (None, "not-a-uuid"))

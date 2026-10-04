@@ -1,0 +1,43 @@
+{
+  "status": "COMPROBADO",
+  "initial_sha": "2310d0034529cf79c4461de7e7e5fe2be457650c",
+  "backup_private_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\.local\\backups\\20261004T033452Z",
+  "previous_database": "riesgo_escolar_demo",
+  "volumes": [
+    {
+      "name": "riesgo-escolar-demo_db_data",
+      "destination": "/var/lib/postgresql/data"
+    },
+    {
+      "name": "riesgo-escolar-demo_import_data",
+      "destination": "/var/lib/riesgo/imports"
+    }
+  ],
+  "restoration_container": "riesgo-restore-20261004t033452z",
+  "tables_identical": 13,
+  "counts": {
+    "academic_periods": 1,
+    "academic_snapshots": 3,
+    "alerts": 0,
+    "app_users": 3,
+    "audit_events": 37,
+    "enrollments": 2,
+    "grade_sections": 2,
+    "import_batches": 3,
+    "interventions": 0,
+    "model_versions": 0,
+    "predictions": 0,
+    "students": 2,
+    "user_sessions": 13
+  },
+  "origins": {
+    "academic_periods": "DEMO|1",
+    "students": "DEMO|2",
+    "model_versions": ""
+  },
+  "csv_restored_identical": true,
+  "hashes": {
+    "database.dump": "c911418740a3996cd34adabc16179b5a75b16ca6659150bbe03cb9d3e9e482b8",
+    "imports.tar": "8fbe8a3622e313fa1621d97cbe80bf9ff6f6f71ac70aea6c23172ff7865f5f57"
+  }
+}

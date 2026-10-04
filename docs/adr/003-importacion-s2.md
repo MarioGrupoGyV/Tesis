@@ -1,3 +1,5 @@
+> Registro histórico. El alcance operativo queda sustituido por [ADR 004](004-transicion-windows.md); se conservan aquí las decisiones y hechos de su iteración.
+
 # ADR 003 — Importación y consultas académicas DEMO
 
 Estado: aceptado para S2, 3 de octubre de 2026 (America/Lima).

@@ -30,7 +30,7 @@ def write_contract_samples():
     yield
     directory = Path('/evidence') if Path('/evidence').exists() else Path('tests/evidence')
     directory.mkdir(parents=True, exist_ok=True)
-    (directory / 's2-response-samples.json').write_text(json.dumps(SAMPLES, indent=2) + '\n', encoding='utf-8')
+    (directory / 's2-1-response-samples.json').write_text(json.dumps(SAMPLES, indent=2) + '\n', encoding='utf-8')
 
 
 def sample(schema, body):
@@ -39,6 +39,8 @@ def sample(schema, body):
 
 @pytest.fixture
 def env(owner_engine, database_urls, synthetic_password, synthetic_password_hash, tmp_path, monkeypatch):
+    from app.services import imports as import_service
+    monkeypatch.setattr(import_service, 'require_processing_protocol', lambda: None)
     with owner_engine.begin() as connection:
         context = create_context(connection, synthetic_password, synthetic_password_hash)
     monkeypatch.setenv('DATABASE_URL', database_urls[0])
@@ -251,7 +253,7 @@ def test_locked_period_and_real_rejected(env):
     assert commit(env, batch).json()['code'] == 'PERIOD_LOCKED'
     assert preview(env).json()['code'] == 'PERIOD_LOCKED'
     real = preview(env, period=env.context['periods']['real']['id'])
-    assert real.status_code == 422 and real.json()['code'] == 'REAL_MODE_NOT_READY'
+    assert real.status_code in (200, 201)
 
 
 def test_csrf_and_import_roles(env):
@@ -272,7 +274,7 @@ def test_mid_commit_failure_rolls_back_every_academic_row_and_audit(env, monkeyp
     original = imports.audit
     def invalid_audit(db, user, batch, request_id, action, **extra):
         db.add(AuditEvent(actor_id=uuid4(), entity_type='import_batch', entity_id=batch.id,
-                         action=action, request_id=request_id, payload={'data_origin': 'DEMO'}))
+                         action=action, request_id=request_id, payload={'data_origin': 'REAL'}))
     monkeypatch.setattr(imports, 'audit', invalid_audit)
     failed = commit(env, batch)
     assert failed.status_code == 409 and failed.json()['code'] == 'INTEGRITY_CONFLICT'
@@ -408,7 +410,7 @@ def test_students_list_detail_timeline_permissions_and_pagination(env):
         assert env.client.get(API + '/students' + suffix, params={'period_id': period}).status_code == 403
 
 
-def test_real_resources_are_blocked_after_scope(env):
+def test_institutional_reads_and_processing_boundary(env, monkeypatch):
     real_period = env.context['periods']['real']['id']
     student_id, enrollment_id = uuid4(), uuid4()
     with env.owner.begin() as conn:
@@ -417,9 +419,11 @@ def test_real_resources_are_blocked_after_scope(env):
             {'id': enrollment_id, 'student': student_id, 'period': real_period, 'section': env.context['sections'][0]['id']})
     for suffix in ['', f'/{student_id}', f'/{student_id}/timeline']:
         response = env.client.get(API + '/students' + suffix, params={'period_id': str(real_period)})
-        assert response.status_code == 422 and response.json()['code'] == 'REAL_MODE_NOT_READY'
+        assert response.status_code == 200
+    from app.services.processing_policy import require_processing_protocol
+    monkeypatch.setattr('app.services.imports.require_processing_protocol', require_processing_protocol)
     response = preview(env)
-    assert response.status_code == 422 and response.json()['code'] == 'REAL_MODE_NOT_READY'
+    assert response.status_code == 422 and response.json()['code'] == 'INSTITUTIONAL_PROCESSING_NOT_READY'
     assert not env.directory.exists()
 
 
@@ -432,16 +436,16 @@ def test_old_prediction_is_not_current_after_new_cut_and_timeline_keeps_history(
         old = conn.execute(text('SELECT id,enrollment_id FROM risk_school.academic_snapshots WHERE import_batch_id=:id'), {'id': first['id']}).mappings().one()
         conn.execute(text("""INSERT INTO risk_school.model_versions(id,name,version,algorithm,data_origin,dataset_hash,
             artifact_sha256,artifact_key,feature_schema_version,reference_criterion_version,status,is_active,parameters,metrics,manifest)
-            VALUES (:id,:name,'fixture','DUMMY','DEMO',:hash,:hash,'fixture-only','demo-v1','fixture','APPROVED',true,'{}','{}','{}')"""),
+            VALUES (:id,:name,'fixture','DUMMY','REAL',:hash,:hash,'fixture-only','demo-v1','fixture','APPROVED',false,'{}','{}','{}')"""),
             {'id': model_id, 'name': env.prefix, 'hash': '0' * 64})
         conn.execute(text("""INSERT INTO risk_school.predictions(id,enrollment_id,snapshot_id,model_id,data_origin,risk_level)
-            VALUES (:id,:enrollment,:snapshot,:model,'DEMO','HIGH')"""),
+            VALUES (:id,:enrollment,:snapshot,:model,'REAL','HIGH')"""),
             {'id': prediction_id, 'enrollment': old['enrollment_id'], 'snapshot': old['id'], 'model': model_id})
     student = env.client.get(API + '/students', params={'period_id': first['period_id']}).json()['items'][0]
-    assert student['evaluation_status'] == 'EVALUATED' and student['risk_level'] == 'HIGH'
+    assert student['evaluation_status'] == 'NOT_EVALUATED' and student['risk_level'] is None
     current = env.client.get(API + f"/students/{student['id']}", params={'period_id': first['period_id']}).json()
     sample('StudentDetail', current)
-    assert current['latest_prediction']['id'] == str(prediction_id)
+    assert current['latest_prediction'] is None
     new = assert_preview(preview(env, [row(env, cutoff_at='2026-05-03T12:00:00-05:00', target_date='2026-05-04')]))
     assert commit(env, new).status_code == 200
     detail = env.client.get(API + f"/students/{student['id']}", params={'period_id': first['period_id']}).json()

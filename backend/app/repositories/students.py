@@ -30,7 +30,7 @@ SORTS = {
 
 
 def list_students(db, user, period_id, section_id, search, risk_level, sort, page, page_size):
-    clauses, params = ["e.period_id=:period", "e.data_origin='DEMO'"], {"period": period_id}
+    clauses, params = ["e.period_id=:period", "e.data_origin='REAL'"], {"period": period_id}
     if user.role == "TUTOR":
         clauses.append("g.tutor_id=:user")
         params['user'] = user.id

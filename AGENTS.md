@@ -1,20 +1,22 @@
 # Desarrollo del sistema de riesgo escolar
 
-Estas instrucciones se deben colocar en la raíz del repositorio de la tesis. Describen la implementación prevista. La fase vigente es DEMO con datos sintéticos y un presupuesto de un día. No existe una autorización implícita para cargar datos de menores ni cambiar la metodología académica.
+Estas instrucciones se deben colocar en la raíz del repositorio de la tesis. Describen la implementación prevista. La fase vigente es S2.1: Windows/PowerShell con Docker Desktop, aplicación vacía y procesamiento institucional bloqueado. No existe una autorización implícita para cargar datos de menores ni cambiar la metodología académica.
+
+El usuario opera exclusivamente desde PowerShell en Windows. Docker conserva imágenes Linux internas; no exigir WSL, Bash ni Make. Versiones y locks fijados se conservan. El primer administrador se crea explícitamente por CLI con entrada secreta, nunca por archivo de cuentas. Los documentos y evidencias históricos S0/S1/S2 no son instrucciones operativas.
 
 ## Fuentes del proyecto
 
-Antes de implementar, incorporar en `docs/planning/` el plan, `Contrato_API_demo.yaml`, `Esquema_demo.sql` y `Inicio_Codex_y_skills.md`. Guardar el documento académico y sus referencias en un destino de acceso adecuado; no incorporar archivos con datos identificables al repositorio.
+Antes de implementar, incorporar en `docs/planning/` el plan, `Contrato_API.yaml`, `Esquema.sql` y `Inicio_Codex_y_skills.md`. Guardar el documento académico y sus referencias en un destino de acceso adecuado; no incorporar archivos con datos identificables al repositorio.
 
 Prioridad: instrucciones del usuario, requisitos académicos vigentes y contratos de la iteración actual. Ante un conflicto, registrar la decisión y corregir los documentos afectados. No copiar resultados ni poblaciones de una tesis de referencia.
 
 ## Alcance vigente
 
-- Implementar login, permisos, CSV con vista previa y confirmación, estudiantes, tablero, predicción demo, alertas, intervenciones y exportación CSV.
+- Implementar login, permisos, CSV con vista previa y confirmación, estudiantes, tablero, módulo predictivo del proyecto, alertas, intervenciones y exportación CSV.
 - Usar React TypeScript Vite Tailwind y FastAPI SQLAlchemy Alembic PostgreSQL. Fijar versiones compatibles en la primera iteración.
-- Entrenar localmente DummyClassifier y Random Forest para demostrar funcionamiento. SVM y XGBoost con datos institucionales pertenecen a la siguiente fase.
-- Mantener una marca DEMO visible. Todo reporte y manifiesto debe declarar origen sintético.
-- Bloquear solicitudes de procesamiento REAL con `REAL_MODE_NOT_READY` hasta habilitar el protocolo en una iteración posterior.
+- S3 desarrollará pipeline e inferencia; baseline DummyClassifier, Random Forest, SVM y XGBoost según plan académico. Entrenamiento/evaluación requieren dataset autorizado, etiquetas verificables y protocolo. Sin generador de alumnos ni escuela ficticia.
+- No crear semillas, cuentas predeterminadas ni registros escolares fabricados en el entorno activo. Los fixtures fabricados solo existen en bases aisladas de prueba; no son evidencia institucional.
+- Bloquear importación institucional con `INSTITUTIONAL_PROCESSING_NOT_READY` hasta documentar e implementar procedencia, escala, periodo, ventanas, fechas y calidad. Ninguna variable habilita ese protocolo. Contexto vacío sí puede leerse.
 - No añadir pagos, chats, portales de familias, integraciones ni gestión completa de matrículas administrativas.
 
 ## Reglas de implementación
@@ -41,7 +43,7 @@ Prioridad: instrucciones del usuario, requisitos académicos vigentes y contrato
 
 ## Persistencia e integridad
 
-- No mezclar datos DEMO y REAL en matrículas, cortes, modelos ni predicciones.
+- Conservar trazabilidad institucional y coherencia de origen entre entidades. Nunca convertir registros sintéticos históricos en institucionales mediante etiquetas. Mantener el entorno anterior detenido y respaldado.
 - Los cortes corregidos crean nuevas revisiones. Cortes, predicciones y auditoría no se sobrescriben.
 - La misma combinación corte modelo reutiliza la predicción. El mismo CSV y periodo reutiliza el lote.
 - Permitir una sola alerta activa por matrícula. Una nueva evaluación actualiza un caso existente.
@@ -72,7 +74,7 @@ Prioridad: instrucciones del usuario, requisitos académicos vigentes y contrato
 
 Ejecutar las pruebas pertinentes y reportar: resultado, archivos cambiados, comandos y evidencia, incidencias pendientes y siguiente dependencia. Distinguir comprobado, fallido y no ejecutado. No afirmar prueba visual, base creada, modelo validado ni recorrido completo sin evidencia.
 
-El cierre de la demo requiere build, migración en base limpia, pruebas de permisos e integridad, recorrido Playwright importar evaluar atender exportar y comprobación de persistencia después de reiniciar. Si un entorno impide una comprobación, reportarlo sin reemplazarla por una afirmación de éxito.
+El cierre integrado futuro requiere build, migración en base limpia, pruebas de permisos e integridad, recorrido Playwright importar evaluar atender exportar y comprobación de persistencia después de reiniciar. Si un entorno impide una comprobación, reportarlo sin reemplazarla por una afirmación de éxito.
 
 ## Trabajo entre agentes
 

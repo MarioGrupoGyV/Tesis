@@ -1,0 +1,28 @@
+{
+  "status": "COMPROBADO",
+  "active_project": "riesgo-escolar",
+  "database": "riesgo_escolar",
+  "volumes": [
+    "riesgo-escolar_db_data",
+    "riesgo-escolar_import_data"
+  ],
+  "restart_preserved": true,
+  "counts": {
+    "academic_periods": 0,
+    "academic_snapshots": 0,
+    "alerts": 0,
+    "app_users": 0,
+    "audit_events": 0,
+    "enrollments": 0,
+    "grade_sections": 0,
+    "import_batches": 0,
+    "interventions": 0,
+    "model_versions": 0,
+    "predictions": 0,
+    "students": 0,
+    "user_sessions": 0
+  },
+  "database_role": "riesgo_app",
+  "private_csv_count": 0,
+  "volume_marker_preserved": true
+}

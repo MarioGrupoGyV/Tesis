@@ -73,7 +73,7 @@ export interface paths {
         };
         /**
          * Consultar usuario actual
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
          */
         get: operations["me"];
         put?: never;
@@ -93,7 +93,7 @@ export interface paths {
         };
         /**
          * Obtener CSRF ligado a la sesión (HMAC determinista)
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
          */
         get: operations["csrf"];
         put?: never;
@@ -115,7 +115,7 @@ export interface paths {
         put?: never;
         /**
          * Revocar sesión
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
          */
         post: operations["logout"];
         delete?: never;
@@ -132,8 +132,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Listar periodos demo
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+         * Listar periodos configurados; lista vacia antes de configuracion
+         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
          */
         get: operations["periods"];
         put?: never;
@@ -153,7 +153,7 @@ export interface paths {
         };
         /**
          * Listar secciones autorizadas del año del periodo
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
          */
         get: operations["sections"];
         put?: never;
@@ -173,7 +173,7 @@ export interface paths {
         };
         /**
          * Listar estudiantes autorizados
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase. Orden por defecto anon_code, con desempate estable por id. updated_desc usa fecha del ultimo corte. Riesgo solo de la prediccion del ultimo corte y modelo activo aprobado; si no existe, NOT_EVALUATED y risk_level null. search busca codigo literal sin interpretar comodines.
+         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
          */
         get: operations["students"];
         put?: never;
@@ -193,7 +193,7 @@ export interface paths {
         };
         /**
          * Consultar seguimiento del estudiante
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
          */
         get: operations["studentDetail"];
         put?: never;
@@ -213,7 +213,7 @@ export interface paths {
         };
         /**
          * Consultar historial
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase. Orden occurred_at descendente, id descendente y tipo como desempate. SNAPSHOT usa created_at de la evidencia; summary no incluye filas CSV ni payload de auditoria.
+         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
          */
         get: operations["studentTimeline"];
         put?: never;
@@ -235,7 +235,7 @@ export interface paths {
         put?: never;
         /**
          * Validar CSV y crear vista previa
-         * @description Máximo 5 MiB y 10000 filas. UTF-8. Cabeceras del manual. CSV confirmado no admite etiquetas ni riesgo predicho. La API bloquea REAL. El hash y periodo reutilizan un lote previo. Puede devolver 200 si el lote ya existe. S2: cabeceras exactas y en orden; UTF-8 con BOM opcional, coma como delimitador y vacio como null. Codigos sinteticos ASCII (3..40 letras/numeros/guion/guion bajo); seccion exacta del anio del periodo. Fechas RFC 3339 con zona y hasta seis decimales de segundo; decimales con punto, sin exponentes, maximo dos decimales. Filas invalidas producen lote FAILED no confirmable; errores de archivo/estructura/tamanio producen 422 Error. Refrescar lote no confirmado incrementa preview_version; COMMITTED reutiliza el resultado incluso con periodo bloqueado. El archivo se guarda en volumen privado con identificador interno.
+         * @description Bloqueado con 422 INSTITUTIONAL_PROCESSING_NOT_READY hasta implementar procedencia autorizada, escala, periodo, ventanas, fechas y calidad. Exige sesion ADMIN y CSRF. No persiste archivos ni registros escolares. Motor preservado: UTF-8, 5 MiB, 10000 filas, transaccion, idempotencia, revision inmutable y expected_preview_version.
          */
         post: operations["previewImport"];
         delete?: never;
@@ -253,7 +253,7 @@ export interface paths {
         };
         /**
          * Consultar lote y errores
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
          */
         get: operations["importDetail"];
         put?: never;
@@ -275,273 +275,9 @@ export interface paths {
         put?: never;
         /**
          * Confirmar lote sin errores
-         * @description Revalidar conteos planned_* y revisiones; ante cambios desde la vista previa devolver 409 IMPORT_PREVIEW_STALE y exigir nueva revisión. Una transacción para filas y auditoría. Repetir devuelve resultado previo. No confirmable si hay errores o periodo bloqueado.
+         * @description Bloqueado con 422 INSTITUTIONAL_PROCESSING_NOT_READY hasta implementar procedencia autorizada, escala, periodo, ventanas, fechas y calidad. Exige sesion ADMIN y CSRF. No persiste archivos ni registros escolares. Motor preservado: UTF-8, 5 MiB, 10000 filas, transaccion, idempotencia, revision inmutable y expected_preview_version.
          */
         post: operations["commitImport"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/predictions/run": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Evaluar últimos cortes de un periodo
-         * @description Operación síncrona y acotada para 60 estudiantes de demo. Modelo activo DEMO. Elegir último cutoff <= as_of y revisión mayor. No usar cortes sin datos suficientes. Persistir y auditar; reutilizar snapshot model existente. Si no hay modelo, devolver 409 MODEL_NOT_AVAILABLE.
-         */
-        post: operations["runPredictions"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/predictions/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Consultar predicción y trazabilidad
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
-         */
-        get: operations["predictionDetail"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/dashboard": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Consultar indicadores autorizados
-         * @description Últimos cortes y predicciones compatibles por matrícula. Solo EVALUATED si la predicción corresponde al último corte y modelo activo; tras un corte nuevo, mostrar NOT_EVALUATED y riesgo actual null hasta reevaluar. Conservar riesgo anterior en timeline. evaluated + not_evaluated = enrolled. risk_distribution suma evaluated. active_alerts cuenta casos activos, que pueden permanecer aunque baje el riesgo.
-         */
-        get: operations["dashboard"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/models": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Listar modelos registrados
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
-         */
-        get: operations["models"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/models/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Consultar métricas de una versión
-         * @description Solo modelos DEMO registrados por el proceso interno; algoritmos DUMMY y RANDOM_FOREST en esta fase. No revelar artifact_key ni rutas internas. Métricas sintéticas siempre marcadas SYNTHETIC_DEVELOPMENT.
-         */
-        get: operations["modelDetail"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/models/{id}/activate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Activar modelo de demostración
-         * @description Solo algoritmos DUMMY o RANDOM_FOREST y estado APPROVED DEMO y feature schema compatible. Desactivar versión anterior y activar esta en transacción. Prohibido activar REAL en esta fase.
-         */
-        post: operations["activateModel"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/alerts": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Listar alertas autorizadas
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
-         */
-        get: operations["alerts"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/alerts/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Atender resolver o descartar alerta
-         * @description Responsable asignado automáticamente al tutor activo de la sección al crear el caso; null y aviso si no existe. Sin reasignación manual en demo. Recurso dentro del alcance del tutor. Exigir expected_version, incrementar versión y auditar. OPEN a IN_REVIEW RESOLVED DISMISSED; IN_REVIEW a RESOLVED DISMISSED. Estados cerrados no se reabren; un episodio posterior crea otro caso. Motivo obligatorio.
-         */
-        patch: operations["updateAlert"];
-        trace?: never;
-    };
-    "/interventions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Listar intervenciones autorizadas
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
-         */
-        get: operations["interventions"];
-        put?: never;
-        /**
-         * Planificar intervención
-         * @description Crear PLANNED; verificar que alerta y matrícula corresponden. Rol y sección en servidor. Auditoría en la misma transacción.
-         */
-        post: operations["createIntervention"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/interventions/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Realizar o cancelar intervención
-         * @description Solo desde PLANNED. DONE exige performed_at no futuro y CANCELLED exige performed_at null. expected_version atómico; conflicto 409. Anotar usuario y fecha.
-         */
-        patch: operations["updateIntervention"];
-        trace?: never;
-    };
-    "/reports/summary": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Consultar resumen del periodo
-         * @description Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
-         */
-        get: operations["reportSummary"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/reports/students.csv": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Exportar seguimiento autorizado
-         * @description UTF-8. Columnas: anon_code,period_code,section_code,cutoff_at,data_origin,average_grade,attendance_pct,risk_level,evaluation_status,active_alerts,performed_interventions. No nombres. Incluir DEMO en cada fila y proteger frente a fórmulas CSV. Registrar descarga en auditoría.
-         */
-        get: operations["exportStudents"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/audit-events": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Consultar bitácora administrativa
-         * @description Resumen sanitizado. No exponer tokens contraseñas paths internos ni filas originales completas.
-         */
-        get: operations["auditEvents"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -601,7 +337,7 @@ export interface components {
             /** Format: date */
             end_date: string;
             /** @enum {string} */
-            data_origin: "DEMO" | "REAL";
+            data_origin: "REAL";
             is_locked: boolean;
         };
         Section: {
@@ -621,7 +357,7 @@ export interface components {
             /** Format: uuid */
             period_id: string;
             /** @enum {string} */
-            data_origin: "DEMO" | "REAL";
+            data_origin: "REAL";
             /** Format: date */
             window_start: string;
             /**
@@ -661,7 +397,7 @@ export interface components {
             /** Format: uuid */
             model_id: string;
             /** @enum {string} */
-            data_origin: "DEMO" | "REAL";
+            data_origin: "REAL";
             /** @enum {string} */
             risk_level: "LOW" | "MEDIUM" | "HIGH";
             /**
@@ -702,7 +438,7 @@ export interface components {
             section_code: string;
             grade: number;
             /** @enum {string} */
-            data_origin: "DEMO" | "REAL";
+            data_origin: "REAL";
             average_grade: number | null;
             attendance_pct: number | null;
             /** Format: date-time */
@@ -747,7 +483,7 @@ export interface components {
             /** Format: uuid */
             period_id: string;
             /** @enum {string} */
-            data_origin: "DEMO" | "REAL";
+            data_origin: "REAL";
             file_name: string;
             file_sha256: string;
             schema_version: string;
@@ -777,108 +513,6 @@ export interface components {
             created_snapshots: number;
             reused_result: boolean;
         };
-        PredictionRunInput: {
-            /** Format: uuid */
-            period_id: string;
-            /**
-             * Format: date-time
-             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
-             */
-            as_of: string;
-        };
-        PredictionItemResult: {
-            /** Format: uuid */
-            enrollment_id: string;
-            /** @enum {string} */
-            status: "CREATED" | "REUSED" | "INSUFFICIENT_DATA" | "NO_SNAPSHOT";
-            /** Format: uuid */
-            prediction_id?: string | null;
-            message?: string | null;
-        };
-        PredictionRunResult: {
-            /** Format: uuid */
-            period_id: string;
-            /** Format: uuid */
-            model_id: string;
-            /** @enum {string} */
-            data_origin: "DEMO";
-            /**
-             * Format: date-time
-             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
-             */
-            as_of: string;
-            created_count: number;
-            reused_count: number;
-            skipped_count: number;
-            items: components["schemas"]["PredictionItemResult"][];
-        };
-        Dashboard: {
-            /** Format: uuid */
-            period_id: string;
-            /** Format: uuid */
-            section_id?: string | null;
-            /** @enum {string} */
-            data_origin: "DEMO" | "REAL";
-            /**
-             * Format: date-time
-             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
-             */
-            updated_at: string;
-            enrolled_students: number;
-            students_with_snapshot: number;
-            evaluated_students: number;
-            not_evaluated_students: number;
-            active_alerts: number;
-            risk_distribution: {
-                LOW: number;
-                MEDIUM: number;
-                HIGH: number;
-            };
-        };
-        ClassMetric: {
-            /** @enum {string} */
-            label: "LOW" | "MEDIUM" | "HIGH";
-            precision: number;
-            recall: number;
-            f1: number;
-            support: number;
-        };
-        Metrics: {
-            f1_macro: number;
-            precision_macro: number;
-            recall_macro: number;
-            accuracy_global: number;
-            by_class: components["schemas"]["ClassMetric"][];
-            confusion_matrix: number[][];
-            n_students: number;
-            n_observations: number;
-            validation_method: string;
-            /** @enum {string} */
-            purpose: "SYNTHETIC_DEVELOPMENT" | "MODEL_DEVELOPMENT" | "PROSPECTIVE_EVALUATION";
-        };
-        Model: {
-            /** Format: uuid */
-            id: string;
-            name: string;
-            version: string;
-            /** @enum {string} */
-            algorithm: "DUMMY" | "RANDOM_FOREST" | "SVM" | "XGBOOST";
-            /** @enum {string} */
-            data_origin: "DEMO" | "REAL";
-            feature_schema_version: string;
-            reference_criterion_version: string;
-            /** @enum {string} */
-            status: "DRAFT" | "EVALUATED" | "APPROVED" | "RETIRED";
-            is_active: boolean;
-            dataset_hash: string;
-            /** @description null si DRAFT todavía no evaluado; nunca inventar métricas. */
-            metrics: components["schemas"]["Metrics"] | null;
-            /**
-             * Format: date-time
-             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
-             */
-            created_at: string;
-        };
         Alert: {
             /** Format: uuid */
             id: string;
@@ -890,7 +524,7 @@ export interface components {
             /** Format: uuid */
             prediction_id: string;
             /** @enum {string} */
-            data_origin: "DEMO" | "REAL";
+            data_origin: "REAL";
             /** @enum {string} */
             severity: "MEDIUM" | "HIGH";
             /** @enum {string} */
@@ -912,13 +546,6 @@ export interface components {
             closed_at: string | null;
             version: number;
         };
-        AlertUpdate: {
-            /** @enum {string} */
-            status: "IN_REVIEW" | "RESOLVED" | "DISMISSED";
-            /** @description Recortar espacios exteriores y validar longitud 1..1000 después. */
-            reason: string;
-            expected_version: number;
-        };
         Intervention: {
             /** Format: uuid */
             id: string;
@@ -927,7 +554,7 @@ export interface components {
             /** Format: uuid */
             alert_id: string | null;
             /** @enum {string} */
-            data_origin: "DEMO" | "REAL";
+            data_origin: "REAL";
             /** @enum {string} */
             kind: "TUTORING" | "REINFORCEMENT" | "FAMILY_MEETING" | "OTHER";
             objective: string;
@@ -953,60 +580,6 @@ export interface components {
              */
             updated_at: string;
         };
-        InterventionCreate: {
-            /** Format: uuid */
-            enrollment_id: string;
-            /** Format: uuid */
-            alert_id?: string | null;
-            /** @enum {string} */
-            kind: "TUTORING" | "REINFORCEMENT" | "FAMILY_MEETING" | "OTHER";
-            /** @description Recortar espacios exteriores y validar longitud 1..1000 después. */
-            objective: string;
-            /**
-             * Format: date-time
-             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
-             */
-            scheduled_at: string;
-            notes?: string | null;
-        };
-        InterventionUpdate: {
-            /** @enum {string} */
-            status: "DONE" | "CANCELLED";
-            /** Format: date-time */
-            performed_at?: string | null;
-            notes?: string | null;
-            expected_version: number;
-        } & unknown;
-        ReportSummary: {
-            dashboard: components["schemas"]["Dashboard"];
-            performed_interventions: number;
-            planned_interventions: number;
-            scope_description: string;
-            /**
-             * Format: date-time
-             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
-             */
-            generated_at: string;
-            notice: string;
-        };
-        AuditEvent: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            actor_id?: string | null;
-            entity_type: string;
-            /** Format: uuid */
-            entity_id?: string | null;
-            action: string;
-            /** Format: uuid */
-            request_id: string;
-            /**
-             * Format: date-time
-             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
-             */
-            recorded_at: string;
-            summary: string;
-        };
         StudentPage: {
             items: components["schemas"]["Student"][];
             total: number;
@@ -1015,24 +588,6 @@ export interface components {
         };
         TimelineEventPage: {
             items: components["schemas"]["TimelineEvent"][];
-            total: number;
-            page: number;
-            page_size: number;
-        };
-        AlertPage: {
-            items: components["schemas"]["Alert"][];
-            total: number;
-            page: number;
-            page_size: number;
-        };
-        InterventionPage: {
-            items: components["schemas"]["Intervention"][];
-            total: number;
-            page: number;
-            page_size: number;
-        };
-        AuditEventPage: {
-            items: components["schemas"]["AuditEvent"][];
             total: number;
             page: number;
             page_size: number;
@@ -1146,7 +701,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
+            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -1238,7 +793,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
+            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -1321,7 +876,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
+            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -1405,7 +960,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
+            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -1488,7 +1043,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
+            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -1573,7 +1128,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
+            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -1664,7 +1219,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
+            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -1751,7 +1306,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
+            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -1840,7 +1395,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
+            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -1944,7 +1499,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
+            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2029,7 +1584,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
+            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2123,1236 +1678,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    runPredictions: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Token CSRF ligado a la sesión; validarlo en servidor. */
-                "X-CSRF-Token": string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PredictionRunInput"];
-            };
-        };
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PredictionRunResult"];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    predictionDetail: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Prediction"];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    dashboard: {
-        parameters: {
-            query: {
-                period_id: string;
-                section_id?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Dashboard"];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    models: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Model"][];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    modelDetail: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Model"];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    activateModel: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Token CSRF ligado a la sesión; validarlo en servidor. */
-                "X-CSRF-Token": string;
-            };
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Model"];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    alerts: {
-        parameters: {
-            query: {
-                period_id: string;
-                section_id?: string;
-                page?: number;
-                page_size?: number;
-                status?: "OPEN" | "IN_REVIEW" | "RESOLVED" | "DISMISSED";
-                severity?: "MEDIUM" | "HIGH";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AlertPage"];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    updateAlert: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Token CSRF ligado a la sesión; validarlo en servidor. */
-                "X-CSRF-Token": string;
-            };
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AlertUpdate"];
-            };
-        };
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Alert"];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    interventions: {
-        parameters: {
-            query: {
-                period_id: string;
-                page?: number;
-                page_size?: number;
-                enrollment_id?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InterventionPage"];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    createIntervention: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Token CSRF ligado a la sesión; validarlo en servidor. */
-                "X-CSRF-Token": string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["InterventionCreate"];
-            };
-        };
-        responses: {
-            /** @description Operación completada */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Intervention"];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    updateIntervention: {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Token CSRF ligado a la sesión; validarlo en servidor. */
-                "X-CSRF-Token": string;
-            };
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["InterventionUpdate"];
-            };
-        };
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Intervention"];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    reportSummary: {
-        parameters: {
-            query: {
-                period_id: string;
-                section_id?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ReportSummary"];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    exportStudents: {
-        parameters: {
-            query: {
-                period_id: string;
-                section_id?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/csv": string;
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    auditEvents: {
-        parameters: {
-            query?: {
-                page?: number;
-                page_size?: number;
-                entity_type?: string;
-                entity_id?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Operación completada */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AuditEventPage"];
-                };
-            };
-            /** @description Sesión inválida */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rol, alcance o CSRF no permitido */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Recurso no encontrado */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Datos inválidos; REAL_MODE_NOT_READY en fase demo */
+            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
             422: {
                 headers: {
                     [name: string]: unknown;

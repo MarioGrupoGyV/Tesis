@@ -23,8 +23,8 @@ def period_by_id(db: Session, period_id: UUID) -> AcademicPeriod | None:
     return db.get(AcademicPeriod, period_id)
 
 
-def demo_periods(db: Session, tutor_id: UUID | None = None) -> list[AcademicPeriod]:
-    query = select(AcademicPeriod).where(AcademicPeriod.data_origin == "DEMO")
+def institutional_periods(db: Session, tutor_id: UUID | None = None) -> list[AcademicPeriod]:
+    query = select(AcademicPeriod).where(AcademicPeriod.data_origin == "REAL")
     if tutor_id is not None:
         query = query.where(
             exists(select(GradeSection.id).where(

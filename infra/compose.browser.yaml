@@ -1,0 +1,37 @@
+name: riesgo-escolar-browser-tests
+services:
+  apitest:
+    image: riesgo-escolar-api
+    environment:
+      DATABASE_URL_FILE: /run/secrets/app_url
+      CSRF_SECRET_FILE: /run/secrets/csrf
+      ALLOWED_ORIGINS: http://localhost:15174,http://127.0.0.1:15174
+      APP_ENV: test
+      IMPORT_STORAGE_DIR: /var/lib/riesgo/imports
+    secrets: [app_url, csrf]
+    volumes:
+      - browser_imports:/var/lib/riesgo/imports
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/ready')"]
+      interval: 2s
+      retries: 20
+  webtest:
+    image: riesgo-escolar-web
+    environment:
+      API_PROXY_TARGET: http://apitest:8000
+    depends_on:
+      apitest:
+        condition: service_healthy
+    ports:
+      - 127.0.0.1:15174:5173
+secrets:
+  app_url:
+    file: ../.local/browser-test/app-url
+  csrf:
+    file: ../.local/browser-test/csrf
+volumes:
+  browser_imports:
+networks:
+  default:
+    external: true
+    name: riesgo-escolar-tests_default

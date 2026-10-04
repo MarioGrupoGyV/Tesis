@@ -1,3 +1,5 @@
+> Cierre histórico: no es una guía de arranque vigente. Consultar [Estado S2.1](Estado_Sprint_2_1.md). Los resultados originales se conservan.
+
 # Cierre del Sprint 0
 
 Fecha: **3 de octubre de 2026 (America/Lima)**. Estado: **COMPLETADO**.

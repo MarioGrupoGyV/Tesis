@@ -1,138 +1,120 @@
-# Seguimiento Escolar — tesis de riesgo escolar
+# Seguimiento Escolar
 
-**S2: importación CSV, estudiantes e historial académico DEMO. S3–S6 pendientes.**
+**S2.1: Windows con PowerShell y Docker Desktop.** Sin cuentas ni registros escolares precargados.
+La importación institucional permanece bloqueada. No es una habilitación de producción
+ni una evaluación de la tesis. S3–S6 no están implementados.
 
-Compose ejecuta web, API y PostgreSQL. Se conserva S1 y se añaden seis operaciones
-API de vista previa/confirmación CSV y consulta de estudiantes/historial. La semilla
-solo crea cuentas y contexto; los estudiantes se crean al confirmar CSV sintéticos.
-La interfaz de importación/estudiantes se completará en S4; ML corresponde a S3.
-No cargar datos reales ni presentar la demo como un resultado académico.
+## Preparación y operación
 
-## Documentación
+El anfitrión es Windows. Docker Desktop ejecuta contenedores Linux internamente;
+no necesitas instalar una distribución, abrir WSL, usar Bash ni instalar GNU Make.
+Se conservan Python 3.12.12, PostgreSQL 17.6, Node 24.14.1 y npm 11.20.0 de las imágenes.
+El launcher local `py -3.12` orquesta Docker; las pruebas backend no son ejecución nativa Windows.
 
-- [Instrucciones](AGENTS.md) y [plan](docs/planning/Plan_tesis_riesgo_escolar.md).
-- [Arquitectura y versiones S0](docs/adr/001-arquitectura.md) y [decisiones S1](docs/adr/002-base-ejecutable-s1.md).
-- [Conciliación SQL/API](docs/planning/Conciliacion_SQL_API.md), [API 0.1.2](docs/planning/Contrato_API_demo.yaml) y [SQL de diseño](docs/planning/Esquema_demo.sql).
-- [Criterios S1–S6](docs/planning/Sprints_y_aceptacion.md), [cierre S0](docs/planning/Estado_Sprint_0.md) y [resultados S1](docs/planning/Estado_Sprint_1.md).
-- [Resultados S2](docs/planning/Estado_Sprint_2.md), [decisiones S2](docs/adr/003-importacion-s2.md) y [manual PowerShell](docs/manuals/Importacion_S2.md).
-
-## Requisitos
-
-Docker y Compose con contenedores Linux; Python 3.12 para los comandos de preparación.
-En este Windows funcionan Docker 29.7.2, Compose 5.5.1 y `py -3.12` (3.12.0).
-La API usa Python **3.12.12** en Docker, la base PostgreSQL **17.6**, y web Node
-**24.14.1** / npm **11.20.0**. Los locks de S0 se conservan.
-
-Para desarrollar y comprobar el frontend también se necesita Node 24.14.1 y npm
-11.20.0 locales. Git 2.47.0 está disponible. Make es opcional y no está instalado.
-`python` global usa 3.11.9: utilizar el launcher explícito para crear los entornos.
-
-## Arranque en PowerShell
-
-Desde la raíz, con Docker Desktop iniciado y acceso a los registros de imágenes y
-dependencias en el primer arranque:
+Desde la raíz en PowerShell:
 
 ```powershell
-py -3.12 infra/s1.py up
-py -3.12 infra/s1.py seed-demo
+py -3.12 infra/manage.py prepare
+py -3.12 infra/manage.py up
 docker compose ps
 ```
 
-`up` prepara secretos aleatorios si no existen, construye las imágenes, inicia la
-base, aplica Alembic y espera la salud de API y web. `seed-demo` es explícito e
-idempotente. Reiniciar no ejecuta la semilla.
+`prepare` genera únicamente cinco secretos de infraestructura en `.local/runtime-secrets`,
+fuera de Git. No crea usuarios ni contexto. `up` construye, migra con propietario en
+un contenedor temporal y arranca web/api/db. La API utiliza exclusivamente riesgo_app.
 
-Abrir **http://localhost:15173**. Las cuentas son administrador, tutor y directivo;
-sus correos y contraseñas de demostración están en `.local/secrets/demo-credentials.json`.
-Consultar ese archivo local para ingresar. No publicarlo ni incorporarlo a Git.
-No hay contraseña fija, registro público ni contraseña de producción.
+Abrir http://localhost:15173. Puertos 15173/18000/55432 ligados a 127.0.0.1.
+El proyecto es `riesgo-escolar`; base `riesgo_escolar`; volúmenes
+`riesgo-escolar_db_data` y `riesgo-escolar_import_data`. CSV privado en
+`/var/lib/riesgo/imports`, fuera del checkout y sin URL pública.
 
-Puertos del host: web **15173**, API **18000**, PostgreSQL **55432**, todos ligados a
-127.0.0.1 para esta demo. La web llama `/api/v1` por proxy de mismo origen.
-`.env.example` contiene opciones públicas, sin secretos; puede copiarse a `.env`.
-Al cambiar puertos, actualizar también `ALLOWED_ORIGINS`. Para los scripts de
-pruebas, proporcionar `DB_PORT`, `S1_BASE_URL` y `DEMO_CREDENTIALS_FILE` como variables
-de entorno si se usan valores distintos de los documentados.
-La preparación automática usa `.local/secrets`; una ubicación alternativa de Compose
-requiere disponer allí de los mismos seis archivos privados.
+## Primer administrador
+
+En tu terminal PowerShell interactiva:
 
 ```powershell
-py -3.12 infra/s1.py migrate
-py -3.12 infra/s1.py restart
-py -3.12 infra/s1.py down
-py -3.12 infra/s1.py up
+py -3.12 infra/manage.py bootstrap-admin
 ```
 
-`down` conserva `riesgo-escolar-demo_db_data` y `riesgo-escolar-demo_import_data`.
-Los CSV se guardan en el segundo volumen, fuera del checkout y sin descarga pública.
-Conservar también los archivos de
-secretos para mantener el acceso a esos datos. Las credenciales existentes no se
-reemplazan; una configuración incompleta requiere revisión.
-La migración se aplica con una credencial de propietario en un contenedor temporal;
-la API normal usa un rol sin DDL ni borrado de evidencias.
+Introduce tu correo, nombre y una contraseña de al menos 12 caracteres, dos veces.
+La contraseña no se muestra, no se escribe en archivos y no se pasa por argumentos.
+No existen valores predeterminados. La cuenta y auditoría se guardan juntas.
+Repetir el comando rechaza la creación si ya existe un administrador, incluso inactivo;
+no restablece contraseñas. No hay registro público.
 
-## Comprobaciones
+El entorno entregado sigue sin cuentas: el operador debe introducir sus datos.
+Las pruebas de acceso usan cuentas efímeras únicamente en PostgreSQL aislado.
 
-Los resultados y límites vigentes están en [Estado S2](docs/planning/Estado_Sprint_2.md).
-La suite completa se ejecuta en Linux/Python 3.12.12 y PostgreSQL aislado, sin usar
-la base operativa. Los locks se instalan sin regenerarlos:
+Para crear posteriormente un usuario autorizado, periodo o sección:
 
 ```powershell
+py -3.12 infra/manage.py configure
+```
+
+Se autentica un administrador y el operador elige `usuario`, `periodo` o `seccion`.
+Todos los valores proceden del operador; no se inventan calendarios ni tutores.
+Se rechazan duplicados y se audita en la misma transacción. Crear contexto no autoriza
+importación. Las escalas y requisitos institucionales deben acordarse antes de habilitarla.
+
+```powershell
+py -3.12 infra/manage.py migrate
+py -3.12 infra/manage.py restart
+py -3.12 infra/manage.py down
+py -3.12 infra/manage.py up
+```
+
+`down` conserva ambos volúmenes. Conservar también los secretos. No usar `down -v`.
+No hay semillas en el arranque o reinicio. Los scripts internos de PostgreSQL y las
+rutas Linux pertenecen a Docker, no son instrucciones para la consola del usuario.
+
+## Comprobaciones desde PowerShell
+
+```powershell
+docker compose -f infra/compose.test.yaml build tester
+docker compose -f infra/compose.test.yaml run --rm tester
+py -3.12 infra/test_browser.py
 py -3.12 -m venv .venv-s0
 .\.venv-s0\Scripts\python.exe -m pip install --require-hashes -r infra/requirements-s0.txt
 .\.venv-s0\Scripts\python.exe infra/check_s0.py
-py -3.12 -m venv .venv-s1
-.\.venv-s1\Scripts\python.exe -m pip install --require-hashes -r backend/requirements-dev.txt
-.\.venv-s1\Scripts\python.exe -m pip check
-docker compose -f infra/compose.test.yaml build tester
-docker compose -f infra/compose.test.yaml run --rm tester
 npm ci --ignore-scripts --no-audit --no-fund
 npm run generate:api --workspace frontend
 npm run build --workspace frontend
-npx playwright install chromium
-$env:DEMO_CREDENTIALS_FILE = (Resolve-Path .local/secrets/demo-credentials.json).Path
-$env:E2E_REPORT_FILE = 'tests/evidence/s2-s1-playwright.json'
-npx playwright test
-.\.venv-s1\Scripts\python.exe infra/smoke_s2.py
+git diff --check
 ```
 
-`check_s0.py` conserva las validaciones y comprueba OpenAPI 0.1.2, respuestas reales
-sanitizadas y Compose S2. El proyecto de pruebas crea una base nueva por ejecución
-con nombre `riesgo_escolar_demo_s2_test_<id>`, sin puertos del host ni acceso a la
-base operativa. Incluye las 57 pruebas S1 y las de S2; las pruebas concurrentes
-usan conexiones independientes como `riesgo_app`. Se conservan las bases de prueba.
+Las pruebas backend usan una base nueva `riesgo_escolar_test_<id>` en otro proyecto
+Compose sin puerto de base publicado. Conservan sesiones, atomicidad, concurrencia,
+revisiones, fechas, permisos e idempotencia. La política bloqueada se sustituye
+**solo mediante monkeypatch de pytest** para comprobar el motor; no existe interruptor
+operativo. Las filas fabricadas son fixtures aislados, no datos institucionales.
 
-`smoke_s2.py` importa las muestras sintéticas en la demo: deja dos estudiantes,
-dos matrículas, tres cortes (incluida una revisión) y tres lotes. Después detiene
-y recrea servicios sin borrar volúmenes y compara las 13 tablas y los archivos
-privados. Ejecutarlo sin otros recorridos en curso. Las credenciales no se imprimen.
-`infra/test_s1.py` conserva la regresión local limitada a los archivos de pruebas S1;
-no ejecuta los nuevos casos que confirman datos en la base de prueba.
+El runner de navegador necesita Chromium de Playwright instalado (`npx playwright
+install chromium` si falta), usa puerto 15174 y otra base nueva. No guarda la contraseña
+de prueba en archivos y no toca la aplicación activa. Comprueba teclado, acceso,
+contexto vacío y revocación en escritorio, tablet y móvil.
 
-En Codex, Docker y algunas herramientas nativas requieren ejecutar fuera de la
-restricción de consola; ese permiso se usó para las comprobaciones registradas.
-GNU Make ofrece `up`, `migrate`, `seed-demo`, `restart`, `down`, `test`, `test-s1` y `check-s0`
-como equivalentes, indicando `PYTHON` del entorno adecuado. `train-demo`, `demo` y
-`backup` siguen pendientes de sus sprints.
+`py -3.12 infra/check_runtime.py` comprueba únicamente una aplicación todavía vacía,
+recrea contenedores y conserva un marcador de infraestructura en el volumen. Rechaza
+ejecutarse si ya hay registros; no borra ni inventa datos para que pase.
 
-## Estructura y límites
+## Contrato, conservación y límites
 
-```text
-frontend/src/{app,components,lib,features/{auth,dashboard,students,imports,alerts,reports,models}}
-backend/app/{api/v1,core,models,schemas,repositories,services,ml/{features,train,evaluate,predict}}
-backend/{migrations/versions,tests}
-docs/{planning,research,adr,manuals}
-infra/{docker,db}
-tests/{e2e,evidence}
-```
+Contrato vigente [OpenAPI 0.2.0](docs/planning/Contrato_API.yaml), con solo rutas
+implementadas. [Esquema](docs/planning/Esquema.sql) es referencia; aplicar Alembic,
+nunca ejecutar manualmente ese SQL. La migración 0001 y su snapshot permanecen intactos;
+0002 añade restricciones institucionales sin transformar registros anteriores.
 
-Los originales y las evidencias S0/S1 se conservan. El contrato vigente es 0.1.2;
-los tipos frontend se generan desde él. Alembic conserva la migración de las 13 tablas;
-S2 no necesita cambios de esquema ni permisos nuevos. El ORM representa nueve
-entidades; predicciones y seguimiento solo tienen proyecciones de lectura de su
-historial, sin operaciones de ML o seguimiento. No usar autogeneración sobre el ORM parcial.
+POST de importación exige ADMIN/CSRF y devuelve 422
+`INSTITUTIONAL_PROCESSING_NOT_READY`, sin guardar archivos ni filas académicas.
+Contexto vacío es consultable. Se conservan 409 de integridad y 503 Error sanitizado;
+health/ready mantiene Health. Sin modelo válido no existe riesgo calculado.
 
-La sesión usa cookie HttpOnly/SameSite y digests en servidor; CSRF permanece en
-memoria del navegador. La demo local HTTP usa `Secure=false`; HTTPS exige
-`SESSION_COOKIE_SECURE=true` y orígenes explícitos. REAL permanece bloqueado y no
-se habilita cambiando una variable. No hay datos de menores ni modelo entrenado.
+El entorno anterior permanece detenido, con sus volúmenes y secretos conservados.
+Su respaldo privado restaurado es historia, no un modo de la aplicación:
+[Estado S2.1](docs/planning/Estado_Sprint_2_1.md) registra ubicación y comprobación.
+Los cierres S0/S1/S2 conservan hechos históricos; no deben usarse como guía operativa.
+
+Véanse [ADR de transición](docs/adr/004-transicion-windows.md),
+[criterios](docs/planning/Sprints_y_aceptacion.md) y [plan](docs/planning/Plan_tesis_riesgo_escolar.md).
+No se realizaron push ni despliegues externos. HTTPS, protocolo de datos y validación
+institucional permanecen pendientes; la demo anterior se retiró del producto.

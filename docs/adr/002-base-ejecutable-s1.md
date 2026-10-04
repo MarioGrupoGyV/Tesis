@@ -1,3 +1,5 @@
+> Registro histórico. El alcance operativo queda sustituido por [ADR 004](004-transicion-windows.md); se conservan aquí las decisiones y hechos de su iteración.
+
 # ADR 002 — Base ejecutable DEMO y seguridad de S1
 
 Fecha: 3 de octubre de 2026 (America/Lima). Estado: aceptado para S1.

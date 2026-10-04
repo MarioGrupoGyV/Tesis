@@ -1,6 +1,0 @@
-# Las credenciales demo no se montan en la API de ejecución normal.
-services:
-  api:
-    environment:
-      DEMO_CREDENTIALS_FILE: /run/secrets/demo_credentials
-    secrets: [demo_credentials]

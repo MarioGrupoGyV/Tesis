@@ -1,4 +1,4 @@
-"""Límite de intentos acotado y seguro frente a concurrencia para una API DEMO."""
+"""Límite de intentos acotado y seguro frente a concurrencia para la API."""
 
 import math
 import time

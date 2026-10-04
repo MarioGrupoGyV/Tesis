@@ -13,8 +13,6 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=None, extra="ignore", hide_input_in_errors=True)
 
     app_env: Literal["development", "test"] = "development"
-    data_origin: Literal["DEMO"] = "DEMO"
-    real_mode_enabled: bool = False
     database_url: SecretStr | None = None
     database_url_file: Path | None = None
     csrf_secret: SecretStr | None = None
@@ -28,14 +26,12 @@ class Settings(BaseSettings):
     import_storage_dir: Path | None = None
 
     @model_validator(mode="after")
-    def validate_demo_configuration(self) -> "Settings":
+    def validate_configuration(self) -> "Settings":
         if self.import_storage_dir is not None:
             code_root = Path(__file__).resolve().parents[2]
             checkout = code_root.parent if code_root.name == "backend" else code_root
             if not self.import_storage_dir.is_absolute() or self.import_storage_dir.resolve().is_relative_to(checkout):
                 raise ValueError("IMPORT_STORAGE_DIR debe ser absoluto y estar fuera del checkout")
-        if self.real_mode_enabled:
-            raise ValueError("REAL_MODE_NOT_READY: esta fase solo permite datos DEMO")
         if self.database_url_file is not None:
             self.database_url = SecretStr(self.database_url_file.read_text(encoding="utf-8").strip())
         if self.csrf_secret_file is not None:

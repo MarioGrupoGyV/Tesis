@@ -5,7 +5,7 @@ from app.models.s2 import EnrollmentRecord, SnapshotRecord, StudentRecord
 from app.repositories import students as repository
 from app.schemas import s2
 from app.services.catalogs import require_catalog_role
-from app.services.imports import demo_period
+from app.services.imports import institutional_period
 
 
 def authorize_period(db, user, period_id, section_id=None):
@@ -22,7 +22,7 @@ def authorize_period(db, user, period_id, section_id=None):
             raise AppError(404, "SECTION_NOT_FOUND", "La sección no está disponible en este periodo.")
         if user.role == "TUTOR" and section.tutor_id != user.id:
             raise AppError(403, "FORBIDDEN", "No tienes acceso a esta sección.")
-    demo_period(period)
+    institutional_period(period)
     return period
 
 
@@ -38,9 +38,9 @@ def authorize_student(db, user, student_id, period_id):
     student, enrollment, section, period = found
     if user.role == "TUTOR" and section.tutor_id != user.id:
         raise AppError(403, "FORBIDDEN", "No tienes acceso a este estudiante.")
-    demo_period(period)
-    if student.data_origin != "DEMO" or enrollment.data_origin != "DEMO":
-        raise AppError(422, "REAL_MODE_NOT_READY", "El procesamiento REAL aún no está habilitado.")
+    institutional_period(period)
+    if student.data_origin != "REAL" or enrollment.data_origin != "REAL":
+        raise AppError(422, "ORIGIN_NOT_SUPPORTED", "Origen no admitido en este entorno.")
     return enrollment
 
 

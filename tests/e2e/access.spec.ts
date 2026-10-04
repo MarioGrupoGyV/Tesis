@@ -1,0 +1,51 @@
+import { expect, test } from '@playwright/test';
+const email = process.env.E2E_EMAIL;
+const password = process.env.E2E_PASSWORD;
+if (!email || !password || !process.env.E2E_BASE_URL?.endsWith(':15174')) throw new Error('Ejecuta py -3.12 infra/test_browser.py; requiere base aislada.');
+for (const [width, height] of [[1440,900],[768,1024],[390,844]]) {
+  test(`Acceso por teclado y contexto vacío ${width}x${height}`, async ({ page, context }) => {
+    await page.setViewportSize({width,height});
+    await page.goto('/');
+    await expect(page.getByRole('heading',{name:'Iniciar sesión'})).toBeVisible();
+    await expect(page.getByText(/DEMO|demostración|datos sintéticos/)).toHaveCount(0);
+    await page.screenshot({path:`tests/evidence/s2-1-login-${width}x${height}.png`,fullPage:true});
+    await page.getByLabel('Correo electrónico').focus();
+    await page.keyboard.type(email!);
+    await page.keyboard.press('Tab');
+    await expect(page.getByLabel('Contraseña',{exact:true})).toBeFocused();
+    await page.keyboard.type(password!);
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('button',{name:'Iniciar sesión',exact:true})).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.getByText('Sesión activa',{exact:true})).toBeVisible();
+    await expect(page.getByText('No hay periodos configurados para tu cuenta.')).toBeVisible();
+    await expect(page.getByText('No hay secciones disponibles. Primero debe configurarse un periodo.')).toBeVisible();
+    expect(await (await page.request.get('/api/v1/periods')).json()).toEqual([]);
+    expect(await page.evaluate(()=>[localStorage.length,sessionStorage.length])).toEqual([0,0]);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    const cookie=(await context.cookies()).find(c=>c.name==='session')!;
+    expect(cookie.httpOnly).toBe(true);
+    expect(cookie.sameSite).toBe('Lax');
+    const csrf=await (await page.request.get('/api/v1/auth/csrf')).json();
+    expect((await page.request.post('/api/v1/imports/preview')).status()).toBe(403);
+    const blocked=await page.request.post('/api/v1/imports/preview',{headers:{'X-CSRF-Token':csrf.csrf_token}});
+    expect(blocked.status()).toBe(422);
+    expect((await blocked.json()).code).toBe('INSTITUTIONAL_PROCESSING_NOT_READY');
+    await page.reload();
+    await expect(page.getByText('No hay periodos configurados para tu cuenta.')).toBeVisible();
+    await page.screenshot({path:`tests/evidence/s2-1-empty-${width}x${height}.png`,fullPage:true});
+    await page.getByRole('button',{name:'Cerrar sesión'}).focus();
+    await page.keyboard.press('Enter');
+    await expect(page.getByText('Sesión cerrada correctamente.')).toBeVisible();
+    await context.addCookies([cookie]);
+    expect((await page.request.get('/api/v1/auth/me')).status()).toBe(401);
+  });
+}
+test('Credenciales inválidas no autorizan contexto',async({page})=>{
+  await page.goto('/');
+  await page.getByLabel('Correo electrónico').fill(email!);
+  await page.getByLabel('Contraseña',{exact:true}).fill('invalid-test-password');
+  await page.getByRole('button',{name:'Iniciar sesión',exact:true}).click();
+  await expect(page.getByRole('alert')).toBeVisible();
+  expect((await page.request.get('/api/v1/periods')).status()).toBe(401);
+});

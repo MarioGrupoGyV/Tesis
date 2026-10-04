@@ -1,13 +1,13 @@
-# Manuales
+# Operación desde PowerShell
 
-El README raíz documenta el arranque comprobado de S1, cuentas privadas de
-demostración, pruebas y conservación del volumen. Estado_Sprint_1.md registra
-los resultados y límites del acceso y contexto autorizados.
+El [README raíz](../../README.md) contiene preparación, arranque, migración,
+reinicio, parada, pruebas y primer administrador.
 
-El manual del recorrido importar/evaluar/atender/exportar y los respaldos se
-elaborarán en S6 sobre funcionalidades verificadas. No están implementados en S1.
+`py -3.12 infra/manage.py bootstrap-admin` solicita correo, nombre y contraseña
+sin eco. No hay credenciales predeterminadas ni archivo de cuentas.
+`py -3.12 infra/manage.py configure` permite crear contexto con valores ingresados
+por un administrador autenticado; no habilita procesamiento.
 
-## Manual API S2
-
-[Importación por PowerShell 7](Importacion_S2.md): elegir CSV sintético, revisar,
-confirmar y consultar estudiantes/historial. Las pantallas se completarán en S4.
+La importación institucional sigue bloqueada. No ejecutar recorridos de carga con
+CSV inventados en la aplicación activa. El manual anterior se conserva en
+history/Importacion_S2.md exclusivamente como historia.

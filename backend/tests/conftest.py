@@ -51,6 +51,7 @@ def db(owner_engine):
     """Each test and all its HTTP requests share one rollback-only outer transaction."""
     with owner_engine.connect() as connection:
         transaction = connection.begin()
+        connection.execute(text("SET LOCAL ROLE riesgo_app"))
         yield connection
         transaction.rollback()
 
@@ -78,7 +79,7 @@ def create_context(db, synthetic_password, synthetic_password_hash):
         db.execute(text("INSERT INTO risk_school.app_users (id,email,display_name,password_hash,role) VALUES (:id,:email,:display_name,:password_hash,:role)"), {**account, "password_hash": synthetic_password_hash})
         accounts[role] = account
     periods = {}
-    for key, year, origin in (("demo", 2026, "DEMO"), ("other_year", 2027, "DEMO"), ("real", 2026, "REAL")):
+    for key, year, origin in (("demo", 2026, "REAL"), ("other_year", 2027, "REAL"), ("real", 2026, "REAL")):
         period = {"id": uuid4(), "code": f"S1-{key}-{uuid4().hex[:12]}", "school_year": year, "data_origin": origin}
         db.execute(text("INSERT INTO risk_school.academic_periods (id,code,school_year,start_date,end_date,data_origin) VALUES (:id,:code,:school_year,:start_date,:end_date,:data_origin)"), {**period, "start_date": date(year, 1, 1), "end_date": date(year, 12, 31)})
         periods[key] = period

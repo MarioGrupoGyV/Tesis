@@ -61,13 +61,13 @@ export function App() {
     <div className="app-shell">
       <header className="site-header">
         <a className="brand" href="/" aria-label="Seguimiento Escolar, Inicio"><span className="brand-mark" aria-hidden="true">SE</span><span>Seguimiento<br /><strong>Escolar</strong></span></a>
-        <div className="header-actions"><span className="demo-badge"><span aria-hidden="true">●</span> DEMO · datos sintéticos</span>{user && <button type="button" className="button secondary" disabled={loggingOut} onClick={() => void logout()}>{loggingOut ? 'Cerrando…' : 'Cerrar sesión'}</button>}</div>
+        <div className="header-actions">{user && <button type="button" className="button secondary" disabled={loggingOut} onClick={() => void logout()}>{loggingOut ? 'Cerrando…' : 'Cerrar sesión'}</button>}</div>
       </header>
       {checking ? <main className="status-page"><p className="eyebrow">ACCESO SEGURO</p><h1>Comprobando tu sesión…</h1><p className="muted" role="status">Un momento, estamos conectando con el sistema.</p></main>
         : startupError ? <main className="status-page"><h1>No pudimos comprobar tu sesión</h1><p className="notice error" role="alert">{startupError}</p><button type="button" className="button primary" onClick={() => void restore()}>Volver a intentar</button></main>
-          : user ? <main className="workspace"><div className="page-heading"><p className="eyebrow">INICIO</p><h1>Bienvenido, {user.display_name}</h1><p className="muted">Consulta el contexto autorizado para tu cuenta de demostración.</p></div>{sessionError && <p className="notice error" role="alert">{sessionError}</p>}<div className="account-strip"><span className="account-icon" aria-hidden="true">✓</span><div><strong>Sesión activa</strong><p>{roleLabels[user.role]} · Cuenta de demostración</p></div></div><Catalogs user={user} onExpired={sessionExpired} /></main>
+          : user ? <main className="workspace"><div className="page-heading"><p className="eyebrow">INICIO</p><h1>Bienvenido, {user.display_name}</h1><p className="muted">Consulta el contexto autorizado para tu cuenta.</p></div>{sessionError && <p className="notice error" role="alert">{sessionError}</p>}<div className="account-strip"><span className="account-icon" aria-hidden="true">✓</span><div><strong>Sesión activa</strong><p>{roleLabels[user.role]}</p></div></div><Catalogs user={user} onExpired={sessionExpired} /></main>
             : <LoginForm notice={notice} onLogin={(current) => { setUser(current); setNotice(''); }} />}
-      <footer className="site-footer"><span>Seguimiento Escolar</span><span>Demostración con datos sintéticos · America/Lima</span></footer>
+      <footer className="site-footer"><span>Seguimiento Escolar</span><span>America/Lima</span></footer>
     </div>
   );
 }
@@ -121,16 +121,16 @@ function Catalogs({ user, onExpired }: { user: User; onExpired: () => void }) {
         <p className="eyebrow">CONTEXTO ACADÉMICO</p><h2 id="period-title">Periodo de consulta</h2>
         {loadingPeriods ? <p className="loading-copy" role="status">Cargando periodos autorizados…</p>
           : periodError ? <div><p className="notice error" role="alert">{periodError}</p><button type="button" className="button secondary" onClick={() => setPeriodReload((value) => value + 1)}>Volver a intentar</button></div>
-            : periods.length === 0 ? <p className="empty-copy" role="status">No hay periodos disponibles para tu cuenta.</p>
-              : <><label htmlFor="period">Selecciona un periodo</label><select id="period" value={periodId} onChange={(event) => setPeriodId(event.target.value)}>{periods.map((period) => <option key={period.id} value={period.id}>{period.code} · {period.school_year}</option>)}</select>{selectedPeriod && <dl className="period-details"><div><dt>Año escolar</dt><dd>{selectedPeriod.school_year}</dd></div><div><dt>Fechas</dt><dd>{dateLabel(selectedPeriod.start_date)} — {dateLabel(selectedPeriod.end_date)}</dd></div><div><dt>Estado</dt><dd><span className={`state-badge ${selectedPeriod.is_locked ? 'locked' : 'open'}`}>{selectedPeriod.is_locked ? '🔒 Bloqueado' : '✓ Abierto'}</span></dd></div><div><dt>Origen</dt><dd>{selectedPeriod.data_origin === 'DEMO' ? 'DEMO · sintético' : selectedPeriod.data_origin}</dd></div></dl>}</>}
+            : periods.length === 0 ? <p className="empty-copy" role="status">No hay periodos configurados para tu cuenta.</p>
+              : <><label htmlFor="period">Selecciona un periodo</label><select id="period" value={periodId} onChange={(event) => setPeriodId(event.target.value)}>{periods.map((period) => <option key={period.id} value={period.id}>{period.code} · {period.school_year}</option>)}</select>{selectedPeriod && <dl className="period-details"><div><dt>Año escolar</dt><dd>{selectedPeriod.school_year}</dd></div><div><dt>Fechas</dt><dd>{dateLabel(selectedPeriod.start_date)} — {dateLabel(selectedPeriod.end_date)}</dd></div><div><dt>Estado</dt><dd><span className={`state-badge ${selectedPeriod.is_locked ? 'locked' : 'open'}`}>{selectedPeriod.is_locked ? '🔒 Bloqueado' : '✓ Abierto'}</span></dd></div><div><dt>Origen</dt><dd>Información institucional</dd></div></dl>}</>}
       </section>
       <section className="panel sections-card" aria-labelledby="sections-title" aria-busy={loadingSections || loadingPeriods}>
         <div className="section-heading"><div><p className="eyebrow">ALCANCE DE TU CUENTA</p><h2 id="sections-title">Secciones autorizadas</h2></div>{!loadingSections && !loadingPeriods && !sectionError && !periodError && periodId && <span className="count-badge" aria-label={`${sections.length} secciones autorizadas`}>{sections.length}</span>}</div>
         <p className="muted section-description">{user.role === 'TUTOR' ? 'Se muestran las secciones asignadas a tu cuenta.' : 'Se muestran las secciones que puedes consultar en el periodo elegido.'}</p>
         {loadingPeriods || loadingSections ? <p className="loading-copy" role="status">Cargando contexto autorizado…</p>
-          : !periodId || periodError ? <p className="empty-copy">Selecciona un periodo disponible para consultar sus secciones.</p>
+          : !periodId || periodError ? <p className="empty-copy">No hay secciones disponibles. Primero debe configurarse un periodo.</p>
             : sectionError ? <div><p className="notice error" role="alert">{sectionError}</p><button type="button" className="button secondary" onClick={() => setSectionReload((value) => value + 1)}>Volver a intentar</button></div>
-              : sections.length === 0 ? <p className="empty-copy" role="status">No tienes secciones autorizadas en este periodo.</p>
+              : sections.length === 0 ? <p className="empty-copy" role="status">No hay secciones asignadas en este periodo.</p>
                 : <><div className="table-container"><table><caption className="sr-only">Secciones autorizadas para {selectedPeriod?.code}</caption><thead><tr><th scope="col">Sección</th><th scope="col">Grado</th><th scope="col">Año escolar</th></tr></thead><tbody>{sections.map((section) => <tr key={section.id}><td><span className="section-symbol" aria-hidden="true">▦</span><strong>{section.code}</strong></td><td>{section.grade}.º</td><td>{section.school_year}</td></tr>)}</tbody></table></div><p className="result-note" role="status">✓ Contexto autorizado cargado.</p></>}
       </section>
     </div>

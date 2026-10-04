@@ -3,7 +3,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_DISABLE_PIP_VERSION_CHECK=1
 WORKDIR /app
 COPY backend/requirements.txt /tmp/requirements.txt
 RUN python -m pip install --no-cache-dir --require-hashes -r /tmp/requirements.txt
-COPY backend/ /app/
+COPY backend/app/ /app/app/
+COPY backend/migrations/ /app/migrations/
+COPY backend/alembic.ini /app/alembic.ini
 RUN useradd --create-home --uid 10001 app
 RUN mkdir -p /var/lib/riesgo/imports && chown app:app /var/lib/riesgo/imports && chmod 700 /var/lib/riesgo/imports
 USER app
