@@ -1,0 +1,2630 @@
+openapi: 3.1.0
+info:
+  title: Contrato demo de Seguimiento Escolar
+  version: 0.1.0
+  description: Contrato de diseño para implementar la primera demo. No representa un servidor existente. Procesamiento
+    REAL bloqueado. Escalas sintéticas 0..20 y participación 1..3. API de investigación prevista en etapa posterior.
+servers:
+- url: /api/v1
+  description: Preferir proxy de mismo origen para cookies y CSRF
+security:
+- sessionCookie: []
+tags:
+- name: health
+- name: auth
+- name: catalogs
+- name: students
+- name: imports
+- name: predictions
+- name: dashboard
+- name: models
+- name: alerts
+- name: interventions
+- name: reports
+- name: audit
+paths:
+  /health/live:
+    get:
+      operationId: live
+      summary: Disponibilidad del proceso
+      tags:
+      - health
+      x-stage: DAY_1_DEMO
+      x-roles: []
+      description: No revelar configuración ni secretos.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+      security: []
+  /health/ready:
+    get:
+      operationId: ready
+      summary: Disponibilidad de base de datos
+      tags:
+      - health
+      x-stage: DAY_1_DEMO
+      x-roles: []
+      description: 200 si la base está disponible; 503 en caso contrario.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '503':
+          description: Base de datos no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+      security: []
+  /auth/login:
+    post:
+      operationId: login
+      summary: Iniciar sesión
+      tags:
+      - auth
+      x-stage: DAY_1_DEMO
+      x-roles: []
+      description: Comprobar Origin, limitar intentos y validar credenciales. Usar cookie de sesión; sin registro
+        público.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResult'
+          headers:
+            Set-Cookie:
+              description: sesión HttpOnly; SameSite=Lax; Path=/; Secure en HTTPS. La cookie no se devuelve
+                en JSON.
+              schema:
+                type: string
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Límite de intentos excedido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Origen de solicitud no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+  /auth/me:
+    get:
+      operationId: me
+      summary: Consultar usuario actual
+      tags:
+      - auth
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      - RESEARCHER
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/csrf:
+    get:
+      operationId: csrf
+      summary: Obtener CSRF ligado a la sesión
+      tags:
+      - auth
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      - RESEARCHER
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Csrf'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/logout:
+    post:
+      operationId: logout
+      summary: Revocar sesión
+      tags:
+      - auth
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      - RESEARCHER
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '204':
+          description: Sesión revocada; borrar cookie
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Token CSRF ligado a la sesión; validarlo en servidor.
+  /periods:
+    get:
+      operationId: periods
+      summary: Listar periodos demo
+      tags:
+      - catalogs
+      x-stage: DAY_1_DEMO
+      x-roles: &id001
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Period'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /sections:
+    get:
+      operationId: sections
+      summary: Listar secciones autorizadas
+      tags:
+      - catalogs
+      x-stage: DAY_1_DEMO
+      x-roles: *id001
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Section'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - &id002
+        name: period_id
+        in: query
+        required: true
+        schema: &id003
+          type: string
+          format: uuid
+  /students:
+    get:
+      operationId: students
+      summary: Listar estudiantes autorizados
+      tags:
+      - students
+      x-stage: DAY_1_DEMO
+      x-roles: *id001
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentPage'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - *id002
+      - &id007
+        name: section_id
+        in: query
+        required: false
+        schema: *id003
+      - &id004
+        name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - &id005
+        name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 40
+      - name: risk_level
+        in: query
+        required: false
+        schema: &id011
+          type: string
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - anon_code
+          - risk_desc
+          - updated_desc
+  /students/{id}:
+    get:
+      operationId: studentDetail
+      summary: Consultar seguimiento del estudiante
+      tags:
+      - students
+      x-stage: DAY_1_DEMO
+      x-roles: *id001
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentDetail'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+      - *id002
+  /students/{id}/timeline:
+    get:
+      operationId: studentTimeline
+      summary: Consultar historial
+      tags:
+      - students
+      x-stage: DAY_1_DEMO
+      x-roles: *id001
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimelineEventPage'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+      - *id002
+      - *id004
+      - *id005
+  /imports/preview:
+    post:
+      operationId: previewImport
+      summary: Validar CSV y crear vista previa
+      tags:
+      - imports
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      description: Máximo 5 MiB y 10000 filas. UTF-8. Cabeceras del manual. CSV confirmado no admite etiquetas
+        ni riesgo predicho. La API bloquea REAL. El hash y periodo reutilizan un lote previo. Puede devolver
+        200 si el lote ya existe.
+      responses:
+        '201': &id006
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportBatch'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200': *id006
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Token CSRF ligado a la sesión; validarlo en servidor.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                period_id: *id003
+              required:
+              - file
+              - period_id
+              additionalProperties: false
+  /imports/{id}:
+    get:
+      operationId: importDetail
+      summary: Consultar lote y errores
+      tags:
+      - imports
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportBatch'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+  /imports/{id}/commit:
+    post:
+      operationId: commitImport
+      summary: Confirmar lote sin errores
+      tags:
+      - imports
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      description: Una transacción para filas y auditoría. Repetir devuelve resultado previo. No confirmable
+        si hay errores o periodo bloqueado.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportCommit'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Token CSRF ligado a la sesión; validarlo en servidor.
+  /predictions/run:
+    post:
+      operationId: runPredictions
+      summary: Evaluar últimos cortes de un periodo
+      tags:
+      - predictions
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      description: Operación síncrona y acotada para 60 estudiantes de demo. Modelo activo DEMO. Elegir último
+        cutoff <= as_of y revisión mayor. No usar cortes sin datos suficientes. Persistir y auditar; reutilizar
+        snapshot model existente. Si no hay modelo, devolver 409 MODEL_NOT_AVAILABLE.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionRunResult'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Token CSRF ligado a la sesión; validarlo en servidor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PredictionRunInput'
+  /predictions/{id}:
+    get:
+      operationId: predictionDetail
+      summary: Consultar predicción y trazabilidad
+      tags:
+      - predictions
+      x-stage: DAY_1_DEMO
+      x-roles: *id001
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prediction'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+  /dashboard:
+    get:
+      operationId: dashboard
+      summary: Consultar indicadores autorizados
+      tags:
+      - dashboard
+      x-stage: DAY_1_DEMO
+      x-roles: *id001
+      description: Últimos cortes y predicciones compatibles por matrícula. Solo EVALUATED si la predicción
+        corresponde al último corte y modelo activo; tras un corte nuevo, mostrar NOT_EVALUATED y riesgo actual
+        null hasta reevaluar. Conservar riesgo anterior en timeline. evaluated + not_evaluated = enrolled.
+        risk_distribution suma evaluated. active_alerts cuenta casos activos, que pueden permanecer aunque
+        baje el riesgo.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - *id002
+      - *id007
+  /models:
+    get:
+      operationId: models
+      summary: Listar modelos registrados
+      tags:
+      - models
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      - DIRECTOR
+      - RESEARCHER
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Model'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /models/{id}:
+    get:
+      operationId: modelDetail
+      summary: Consultar métricas de una versión
+      tags:
+      - models
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      - DIRECTOR
+      - RESEARCHER
+      description: No revelar artifact_key ni rutas internas. Métricas sintéticas siempre marcadas SYNTHETIC_DEVELOPMENT.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+  /models/{id}/activate:
+    post:
+      operationId: activateModel
+      summary: Activar modelo de demostración
+      tags:
+      - models
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      description: Solo APPROVED DEMO y feature schema compatible. Desactivar versión anterior y activar esta
+        en transacción. Prohibido activar REAL en esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Token CSRF ligado a la sesión; validarlo en servidor.
+  /alerts:
+    get:
+      operationId: alerts
+      summary: Listar alertas autorizadas
+      tags:
+      - alerts
+      x-stage: DAY_1_DEMO
+      x-roles: *id001
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertPage'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - *id002
+      - *id007
+      - *id004
+      - *id005
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - OPEN
+          - IN_REVIEW
+          - RESOLVED
+          - DISMISSED
+      - name: severity
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - MEDIUM
+          - HIGH
+  /alerts/{id}:
+    patch:
+      operationId: updateAlert
+      summary: Atender resolver o descartar alerta
+      tags:
+      - alerts
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      - TUTOR
+      description: Recurso dentro del alcance del tutor. Exigir expected_version, incrementar versión y auditar.
+        OPEN a IN_REVIEW RESOLVED DISMISSED; IN_REVIEW a RESOLVED DISMISSED. Estados cerrados no se reabren;
+        un episodio posterior crea otro caso. Motivo obligatorio.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alert'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Token CSRF ligado a la sesión; validarlo en servidor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertUpdate'
+  /interventions:
+    get:
+      operationId: interventions
+      summary: Listar intervenciones autorizadas
+      tags:
+      - interventions
+      x-stage: DAY_1_DEMO
+      x-roles: *id001
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterventionPage'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - *id002
+      - *id004
+      - *id005
+      - name: enrollment_id
+        in: query
+        required: false
+        schema: *id003
+    post:
+      operationId: createIntervention
+      summary: Planificar intervención
+      tags:
+      - interventions
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      - TUTOR
+      description: Crear PLANNED; verificar que alerta y matrícula corresponden. Rol y sección en servidor.
+        Auditoría en la misma transacción.
+      responses:
+        '201':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Intervention'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Token CSRF ligado a la sesión; validarlo en servidor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterventionCreate'
+  /interventions/{id}:
+    patch:
+      operationId: updateIntervention
+      summary: Realizar o cancelar intervención
+      tags:
+      - interventions
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      - TUTOR
+      description: Solo desde PLANNED. DONE exige performed_at no futuro y CANCELLED exige performed_at null.
+        expected_version atómico; conflicto 409. Anotar usuario y fecha.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Intervention'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id003
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Token CSRF ligado a la sesión; validarlo en servidor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterventionUpdate'
+  /reports/summary:
+    get:
+      operationId: reportSummary
+      summary: Consultar resumen del periodo
+      tags:
+      - reports
+      x-stage: DAY_1_DEMO
+      x-roles: *id001
+      description: Aplicar permisos de recurso y bloquear origen REAL durante esta fase.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportSummary'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - *id002
+      - *id007
+  /reports/students.csv:
+    get:
+      operationId: exportStudents
+      summary: Exportar seguimiento autorizado
+      tags:
+      - reports
+      x-stage: DAY_1_DEMO
+      x-roles: *id001
+      description: 'UTF-8. Columnas: anon_code,period_code,section_code,cutoff_at,data_origin,average_grade,attendance_pct,risk_level,evaluation_status,active_alerts,performed_interventions.
+        No nombres. Incluir DEMO en cada fila y proteger frente a fórmulas CSV. Registrar descarga en auditoría.'
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            text/csv:
+              schema:
+                type: string
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - *id002
+      - *id007
+  /audit-events:
+    get:
+      operationId: auditEvents
+      summary: Consultar bitácora administrativa
+      tags:
+      - audit
+      x-stage: DAY_1_DEMO
+      x-roles:
+      - ADMIN
+      description: Resumen sanitizado. No exponer tokens contraseñas paths internos ni filas originales completas.
+      responses:
+        '200':
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEventPage'
+        '401':
+          description: Sesión inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, alcance o CSRF no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Datos inválidos; REAL_MODE_NOT_READY en fase demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - *id004
+      - *id005
+      - name: entity_type
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: entity_id
+        in: query
+        required: false
+        schema: *id003
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: session
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type:
+                - string
+                - 'null'
+              row:
+                type:
+                - integer
+                - 'null'
+              message:
+                type: string
+            required:
+            - message
+            additionalProperties: false
+        request_id: *id003
+      required:
+      - code
+      - message
+      - details
+      - request_id
+      additionalProperties: false
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - ok
+          - unavailable
+      required:
+      - status
+      additionalProperties: false
+    User:
+      type: object
+      properties:
+        id: *id003
+        display_name:
+          type: string
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - TUTOR
+          - DIRECTOR
+          - RESEARCHER
+      required:
+      - id
+      - display_name
+      - role
+      additionalProperties: false
+    LoginInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - email
+      - password
+      additionalProperties: false
+    LoginResult:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        csrf_token:
+          type: string
+        expires_at: &id010
+          type: string
+          format: date-time
+      required:
+      - user
+      - csrf_token
+      - expires_at
+      additionalProperties: false
+    Csrf:
+      type: object
+      properties:
+        csrf_token:
+          type: string
+      required:
+      - csrf_token
+      additionalProperties: false
+    Period:
+      type: object
+      properties:
+        id: *id003
+        code:
+          type: string
+        start_date: &id008
+          type: string
+          format: date
+        end_date: *id008
+        data_origin: &id009
+          type: string
+          enum:
+          - DEMO
+          - REAL
+        is_locked:
+          type: boolean
+      required:
+      - id
+      - code
+      - start_date
+      - end_date
+      - data_origin
+      - is_locked
+      additionalProperties: false
+    Section:
+      type: object
+      properties:
+        id: *id003
+        code:
+          type: string
+        grade:
+          type: integer
+          minimum: 1
+          maximum: 5
+        school_year:
+          type: integer
+        tutor_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      required:
+      - id
+      - code
+      - grade
+      - school_year
+      additionalProperties: false
+    Snapshot:
+      type: object
+      properties:
+        id: *id003
+        enrollment_id: *id003
+        period_id: *id003
+        data_origin: *id009
+        window_start: *id008
+        cutoff_at: *id010
+        available_at: *id010
+        target_date: *id008
+        revision:
+          type: integer
+          minimum: 1
+        average_grade:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 20
+        attendance_pct:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 100
+        activities_pct:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 100
+        participation_level:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          maximum: 3
+        behavior_incidents:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+        age_years:
+          type:
+          - integer
+          - 'null'
+          minimum: 5
+          maximum: 25
+        missing_fraction:
+          type: number
+          minimum: 0
+          maximum: 1
+      required:
+      - id
+      - enrollment_id
+      - period_id
+      - data_origin
+      - window_start
+      - cutoff_at
+      - available_at
+      - target_date
+      - revision
+      - missing_fraction
+      additionalProperties: false
+    Prediction:
+      type: object
+      properties:
+        id: *id003
+        enrollment_id: *id003
+        snapshot_id: *id003
+        model_id: *id003
+        data_origin: *id009
+        risk_level: *id011
+        cutoff_at: *id010
+        target_date: *id008
+        predicted_at: *id010
+        probability_low:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 1
+        probability_medium:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 1
+        probability_high:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 1
+        probabilities_calibrated:
+          type: boolean
+      required:
+      - id
+      - enrollment_id
+      - snapshot_id
+      - model_id
+      - data_origin
+      - risk_level
+      - cutoff_at
+      - target_date
+      - predicted_at
+      - probabilities_calibrated
+      additionalProperties: false
+    Student:
+      type: object
+      properties:
+        id: *id003
+        anon_code:
+          type: string
+        enrollment_id: *id003
+        period_id: *id003
+        section_id: *id003
+        section_code:
+          type: string
+        grade:
+          type: integer
+        data_origin: *id009
+        average_grade:
+          type:
+          - number
+          - 'null'
+        attendance_pct:
+          type:
+          - number
+          - 'null'
+        latest_cutoff_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        risk_level:
+          type:
+          - string
+          - 'null'
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+          - null
+        evaluation_status:
+          type: string
+          enum:
+          - EVALUATED
+          - NOT_EVALUATED
+          - INSUFFICIENT_DATA
+        active_alert_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      required:
+      - id
+      - anon_code
+      - enrollment_id
+      - period_id
+      - section_id
+      - section_code
+      - grade
+      - data_origin
+      - evaluation_status
+      additionalProperties: false
+    StudentDetail:
+      type: object
+      properties:
+        student:
+          $ref: '#/components/schemas/Student'
+        latest_snapshot:
+          anyOf:
+          - $ref: '#/components/schemas/Snapshot'
+          - type: 'null'
+        latest_prediction:
+          anyOf:
+          - $ref: '#/components/schemas/Prediction'
+          - type: 'null'
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alert'
+        interventions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Intervention'
+      required:
+      - student
+      - latest_snapshot
+      - latest_prediction
+      - alerts
+      - interventions
+      additionalProperties: false
+    TimelineEvent:
+      type: object
+      properties:
+        id: *id003
+        event_type:
+          type: string
+          enum:
+          - SNAPSHOT
+          - PREDICTION
+          - ALERT
+          - INTERVENTION
+        occurred_at: *id010
+        summary:
+          type: string
+        entity_id: *id003
+      required:
+      - id
+      - event_type
+      - occurred_at
+      - summary
+      - entity_id
+      additionalProperties: false
+    ImportError:
+      type: object
+      properties:
+        row:
+          type: integer
+          minimum: 1
+        column:
+          type: string
+        code:
+          type: string
+        message:
+          type: string
+      required:
+      - row
+      - column
+      - code
+      - message
+      additionalProperties: false
+    ImportBatch:
+      type: object
+      properties:
+        id: *id003
+        period_id: *id003
+        data_origin: *id009
+        file_name:
+          type: string
+        file_sha256:
+          type: string
+        schema_version:
+          type: string
+        status:
+          type: string
+          enum:
+          - PREVIEW
+          - READY
+          - COMMITTED
+          - FAILED
+        total_rows:
+          type: integer
+          minimum: 0
+        valid_rows:
+          type: integer
+          minimum: 0
+        invalid_rows:
+          type: integer
+          minimum: 0
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportError'
+        created_at: *id010
+        committed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      required:
+      - id
+      - period_id
+      - data_origin
+      - file_name
+      - file_sha256
+      - schema_version
+      - status
+      - total_rows
+      - valid_rows
+      - invalid_rows
+      - errors
+      - created_at
+      additionalProperties: false
+    ImportCommit:
+      type: object
+      properties:
+        batch_id: *id003
+        status:
+          type: string
+          enum:
+          - COMMITTED
+        created_snapshots:
+          type: integer
+          minimum: 0
+        reused_result:
+          type: boolean
+      required:
+      - batch_id
+      - status
+      - created_snapshots
+      - reused_result
+      additionalProperties: false
+    PredictionRunInput:
+      type: object
+      properties:
+        period_id: *id003
+        as_of: *id010
+      required:
+      - period_id
+      - as_of
+      additionalProperties: false
+    PredictionItemResult:
+      type: object
+      properties:
+        enrollment_id: *id003
+        status:
+          type: string
+          enum:
+          - CREATED
+          - REUSED
+          - INSUFFICIENT_DATA
+          - NO_SNAPSHOT
+        prediction_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        message:
+          type:
+          - string
+          - 'null'
+      required:
+      - enrollment_id
+      - status
+      additionalProperties: false
+    PredictionRunResult:
+      type: object
+      properties:
+        period_id: *id003
+        model_id: *id003
+        data_origin:
+          type: string
+          enum:
+          - DEMO
+        as_of: *id010
+        created_count:
+          type: integer
+          minimum: 0
+        reused_count:
+          type: integer
+          minimum: 0
+        skipped_count:
+          type: integer
+          minimum: 0
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PredictionItemResult'
+      required:
+      - period_id
+      - model_id
+      - data_origin
+      - as_of
+      - created_count
+      - reused_count
+      - skipped_count
+      - items
+      additionalProperties: false
+    Dashboard:
+      type: object
+      properties:
+        period_id: *id003
+        section_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        data_origin: *id009
+        updated_at: *id010
+        enrolled_students:
+          type: integer
+          minimum: 0
+        students_with_snapshot:
+          type: integer
+          minimum: 0
+        evaluated_students:
+          type: integer
+          minimum: 0
+        not_evaluated_students:
+          type: integer
+          minimum: 0
+        active_alerts:
+          type: integer
+          minimum: 0
+        risk_distribution:
+          type: object
+          properties:
+            LOW:
+              type: integer
+              minimum: 0
+            MEDIUM:
+              type: integer
+              minimum: 0
+            HIGH:
+              type: integer
+              minimum: 0
+          required:
+          - LOW
+          - MEDIUM
+          - HIGH
+          additionalProperties: false
+      required:
+      - period_id
+      - data_origin
+      - updated_at
+      - enrolled_students
+      - students_with_snapshot
+      - evaluated_students
+      - not_evaluated_students
+      - active_alerts
+      - risk_distribution
+      additionalProperties: false
+    ClassMetric:
+      type: object
+      properties:
+        label: *id011
+        precision:
+          type: number
+          minimum: 0
+          maximum: 1
+        recall:
+          type: number
+          minimum: 0
+          maximum: 1
+        f1:
+          type: number
+          minimum: 0
+          maximum: 1
+        support:
+          type: integer
+          minimum: 0
+      required:
+      - label
+      - precision
+      - recall
+      - f1
+      - support
+      additionalProperties: false
+    Metrics:
+      type: object
+      properties:
+        f1_macro:
+          type: number
+          minimum: 0
+          maximum: 1
+        precision_macro:
+          type: number
+          minimum: 0
+          maximum: 1
+        recall_macro:
+          type: number
+          minimum: 0
+          maximum: 1
+        accuracy_global:
+          type: number
+          minimum: 0
+          maximum: 1
+        by_class:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClassMetric'
+        confusion_matrix:
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+              minimum: 0
+        n_students:
+          type: integer
+          minimum: 1
+        n_observations:
+          type: integer
+          minimum: 1
+        validation_method:
+          type: string
+        purpose:
+          type: string
+          enum:
+          - SYNTHETIC_DEVELOPMENT
+          - MODEL_DEVELOPMENT
+          - PROSPECTIVE_EVALUATION
+      required:
+      - f1_macro
+      - precision_macro
+      - recall_macro
+      - accuracy_global
+      - by_class
+      - confusion_matrix
+      - n_students
+      - n_observations
+      - validation_method
+      - purpose
+      additionalProperties: false
+    Model:
+      type: object
+      properties:
+        id: *id003
+        name:
+          type: string
+        version:
+          type: string
+        algorithm:
+          type: string
+          enum:
+          - DUMMY
+          - RANDOM_FOREST
+          - SVM
+          - XGBOOST
+        data_origin: *id009
+        feature_schema_version:
+          type: string
+        reference_criterion_version:
+          type: string
+        status:
+          type: string
+          enum:
+          - DRAFT
+          - EVALUATED
+          - APPROVED
+          - RETIRED
+        is_active:
+          type: boolean
+        dataset_hash:
+          type: string
+        metrics:
+          $ref: '#/components/schemas/Metrics'
+        created_at: *id010
+      required:
+      - id
+      - name
+      - version
+      - algorithm
+      - data_origin
+      - feature_schema_version
+      - reference_criterion_version
+      - status
+      - is_active
+      - dataset_hash
+      - metrics
+      - created_at
+      additionalProperties: false
+    Alert:
+      type: object
+      properties:
+        id: *id003
+        enrollment_id: *id003
+        student_id: *id003
+        anon_code:
+          type: string
+        prediction_id: *id003
+        data_origin: *id009
+        severity:
+          type: string
+          enum:
+          - MEDIUM
+          - HIGH
+        status:
+          type: string
+          enum:
+          - OPEN
+          - IN_REVIEW
+          - RESOLVED
+          - DISMISSED
+        assigned_to:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        resolution_reason:
+          type:
+          - string
+          - 'null'
+        opened_at: *id010
+        updated_at: *id010
+        closed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - id
+      - enrollment_id
+      - student_id
+      - anon_code
+      - prediction_id
+      - data_origin
+      - severity
+      - status
+      - opened_at
+      - updated_at
+      - version
+      additionalProperties: false
+    AlertUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - IN_REVIEW
+          - RESOLVED
+          - DISMISSED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        expected_version:
+          type: integer
+          minimum: 1
+      required:
+      - status
+      - reason
+      - expected_version
+      additionalProperties: false
+    Intervention:
+      type: object
+      properties:
+        id: *id003
+        enrollment_id: *id003
+        alert_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        data_origin: *id009
+        kind:
+          type: string
+          enum:
+          - TUTORING
+          - REINFORCEMENT
+          - FAMILY_MEETING
+          - OTHER
+        objective:
+          type: string
+        status:
+          type: string
+          enum:
+          - PLANNED
+          - DONE
+          - CANCELLED
+        scheduled_at: *id010
+        performed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        notes:
+          type:
+          - string
+          - 'null'
+        version:
+          type: integer
+          minimum: 1
+        created_at: *id010
+        updated_at: *id010
+      required:
+      - id
+      - enrollment_id
+      - data_origin
+      - kind
+      - objective
+      - status
+      - scheduled_at
+      - version
+      - created_at
+      - updated_at
+      additionalProperties: false
+    InterventionCreate:
+      type: object
+      properties:
+        enrollment_id: *id003
+        alert_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        kind:
+          type: string
+          enum:
+          - TUTORING
+          - REINFORCEMENT
+          - FAMILY_MEETING
+          - OTHER
+        objective:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        scheduled_at: *id010
+        notes:
+          type:
+          - string
+          - 'null'
+          maxLength: 2000
+      required:
+      - enrollment_id
+      - kind
+      - objective
+      - scheduled_at
+      additionalProperties: false
+    InterventionUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - DONE
+          - CANCELLED
+        performed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        notes:
+          type:
+          - string
+          - 'null'
+          maxLength: 2000
+        expected_version:
+          type: integer
+          minimum: 1
+      required:
+      - status
+      - expected_version
+      additionalProperties: false
+    ReportSummary:
+      type: object
+      properties:
+        dashboard:
+          $ref: '#/components/schemas/Dashboard'
+        performed_interventions:
+          type: integer
+          minimum: 0
+        planned_interventions:
+          type: integer
+          minimum: 0
+        scope_description:
+          type: string
+        generated_at: *id010
+        notice:
+          type: string
+      required:
+      - dashboard
+      - performed_interventions
+      - planned_interventions
+      - scope_description
+      - generated_at
+      - notice
+      additionalProperties: false
+    AuditEvent:
+      type: object
+      properties:
+        id: *id003
+        actor_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        entity_type:
+          type: string
+        entity_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        action:
+          type: string
+        request_id: *id003
+        recorded_at: *id010
+        summary:
+          type: string
+      required:
+      - id
+      - entity_type
+      - action
+      - request_id
+      - recorded_at
+      - summary
+      additionalProperties: false
+    StudentPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Student'
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        page_size:
+          type: integer
+          minimum: 1
+          maximum: 100
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      additionalProperties: false
+    TimelineEventPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimelineEvent'
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        page_size:
+          type: integer
+          minimum: 1
+          maximum: 100
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      additionalProperties: false
+    AlertPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alert'
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        page_size:
+          type: integer
+          minimum: 1
+          maximum: 100
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      additionalProperties: false
+    InterventionPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Intervention'
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        page_size:
+          type: integer
+          minimum: 1
+          maximum: 100
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      additionalProperties: false
+    AuditEventPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEvent'
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        page_size:
+          type: integer
+          minimum: 1
+          maximum: 100
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      additionalProperties: false
