@@ -1,0 +1,8 @@
+{
+  "status": "COMPROBADO",
+  "command": "npx.cmd --no-install playwright test --list",
+  "check": "TypeScript/Playwright test collection only",
+  "browser_executed": false,
+  "real_api_verified": false,
+  "note": "The collection command used fabricated launcher environment values and did not sign in or contact the application."
+}

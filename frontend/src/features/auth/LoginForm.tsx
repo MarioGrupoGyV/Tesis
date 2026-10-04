@@ -31,6 +31,7 @@ export function LoginForm({ onLogin, notice }: { onLogin: (user: User) => void; 
         <p className="eyebrow">UN PUNTO DE PARTIDA</p>
         <h1 id="intro-title">Seguimiento escolar,<br />con un contexto claro.</h1>
         <p className="intro-copy">Accede con tu cuenta para consultar el periodo y las secciones asignadas a tu perfil.</p>
+        <p className="notice synthetic-login">Estudio con datos sintéticos. No corresponde a estudiantes reales.</p>
         <div className="intro-note">
           <span className="note-icon" aria-hidden="true">◎</span>
           <div><strong>Acceso autorizado</strong><p>El procesamiento institucional requiere un protocolo autorizado. Las decisiones pedagógicas corresponden a las personas.</p></div>

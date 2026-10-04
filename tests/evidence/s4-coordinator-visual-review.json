@@ -1,0 +1,40 @@
+{
+  "status": "COMPROBADO",
+  "method": "Inspección directa de cada PNG mediante view_image por el coordinador; no inferida de la existencia del archivo.",
+  "inspected_files": [
+    "s4-complete-isolated-model-detail-evaluated-1440x900.png",
+    "s4-complete-isolated-data-reused-768x1024.png",
+    "s4-complete-isolated-model-detail-evaluated-390x844.png",
+    "s4-active-complete-model-detail-evaluated-1440x900.png",
+    "s4-active-complete-data-reused-390x844.png",
+    "s4-active-complete-admin-home-768x1024.png"
+  ],
+  "viewports": [
+    [
+      1440,
+      900
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "findings": [
+    "Modelo detalle administrativo legible: campos públicos y evaluación separadas, aviso de simulación, sin métricas privadas/porcentajes de certeza ni activación/entrenamiento.",
+    "Datos reutilizado en tablet/móvil: tres pasos, selector español y CSV registrado, cantidades de lote, reutilización con cero registros nuevos y acción al listado; no control extra de confirmación.",
+    "Resultado aislado real: 60 cortes,1 nueva,54 reutilizadas,5 abstenciones; exclusivamente fixture de revisión de prueba.",
+    "Resultado activo real:60 cortes,0 nuevas,55 reutilizadas,5 abstenciones; conserva el estudio S3.1.",
+    "Inicio activo tablet: periodo2025,2secciones autorizadas deAPI,orientación sinKPIfabricado; foco visibleh1,módulosS5pendientes.",
+    "Sin desbordamiento global/solapamientos en las capturas inspeccionadas; tablas scroll interno en la revisión independiente."
+  ],
+  "blocking_findings": [],
+  "limits": [
+    "Capturas fullPage tienen altura superior al viewport; no simulación de hardware táctil.",
+    "Inspección de layout, no auditoría WCAG completa/lectores de pantalla.",
+    "Las capturas complementan informes API/DB y tests; no acreditan evaluación institucional."
+  ]
+}

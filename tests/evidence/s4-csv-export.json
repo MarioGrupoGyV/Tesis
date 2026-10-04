@@ -1,0 +1,13 @@
+{
+  "study_id": "e3a2d28b-2f23-56ae-878c-1a8f4a257e7e",
+  "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+  "file_name": "estudio-sintetico-s4.csv",
+  "csv_sha256": "79fedc114a952631977bbd46cabe5c5a76faeef7e7293e709d5a1a11c9b31374",
+  "bytes_written": 48010,
+  "status": "COMPROBADO",
+  "registered_hash_identical": true,
+  "repeat_rejected": "CSV_OUTPUT_EXISTS",
+  "existing_file_unchanged": true,
+  "output_outside_git": true,
+  "temporary_file_removed": true
+}

@@ -1,6 +1,6 @@
 # Plan vigente del sistema de riesgo escolar
 
-Revisión S3.1 por instrucción expresa del usuario; ADR 006 autoriza un estudio nuevo SYNTHETIC. La planificación anterior se
+Revisión S4 por instrucción expresa del usuario; ADR 006 autoriza un estudio nuevo SYNTHETIC. La planificación anterior se
 conserva en history/Plan_tesis_riesgo_escolar_S2.md y no ordena el trabajo actual.
 
 ## Producto y entorno
@@ -52,12 +52,12 @@ clases, soporte, particiones y métricas. Las probabilidades exigen calibración
 importancia global no explica causalmente un caso individual. Sin dataset/modelo válido,
 informar Modelo no disponible o Datos insuficientes. No fabricar riesgos ni métricas.
 
-## S4–S6 — pendientes
+## S4 — interfaz conectada; S5/S6 pendientes
 
-S4 completará las pantallas con estados de carga/vacío/error/éxito y accesibilidad.
+S4 conecta acceso, Inicio, Estudiantes/lista/detalle/historial, Datos/importación y consulta ADMIN de Modelos/evaluación sintética. Estados de carga/vacío/error/bloqueo/éxito, teclado, tres tamaños y rutas estables. ADR 007 y manual de uso delimitan el trabajo.
 S5 implementará seguimiento versionado, alertas únicas y exportaciones autorizadas.
 S6 integrará el recorrido y evidencias, sin atribuir validación académica a pruebas
-de software. No se implementan en S3.1.
+de software. S4 no implementa seguimiento, exportaciones de Reportes ni métricas de tablero S5/S6.
 
 Persisten UTC/America-Lima, revisiones inmutables, auditoría transaccional, permisos
 por sección, CSRF, límites de CSV y paginación, idempotencia y bloqueo de periodos.

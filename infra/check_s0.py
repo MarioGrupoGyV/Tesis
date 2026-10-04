@@ -165,7 +165,7 @@ def run():
     sprint = compose["x-sprint"]["current"]
     if sprint == "S0":
         check(compose["services"] == {} and not compose["x-sprint"]["runtime-implemented"], "Compose S0 sin servicios implementados")
-    elif sprint in ("S1", "S2", "S2.1", "S3", "S3.1"):
+    elif sprint in ("S1", "S2", "S2.1", "S3", "S3.1", "S4"):
         services = compose["services"]
         check(set(services) == {"web", "api", "db"} and compose["x-sprint"]["runtime-implemented"],
               "Compose S1 web/api/db implementados")
@@ -184,12 +184,12 @@ def run():
               "Python conserva tag S0")
         check("node:24.14.1-bookworm-slim" in (ROOT / "infra/docker/web.Dockerfile").read_text(),
               "Node conserva tag S0")
-        if sprint in ("S2", "S2.1", "S3", "S3.1"):
+        if sprint in ("S2", "S2.1", "S3", "S3.1", "S4"):
             check("import_data" in compose["volumes"] and
                   "import_data:/var/lib/riesgo/imports" in services["api"]["volumes"], "CSV privado persistente fuera del checkout")
             check(services['api']['environment']['IMPORT_STORAGE_DIR'] == '/var/lib/riesgo/imports',
                   "Ruta de importación interna, no derivada del nombre del cliente")
-        if sprint in ('S3','S3.1'):
+        if sprint in ('S3','S3.1','S4'):
             check('ml_data:/var/lib/riesgo/ml' in services['api']['volumes'] and
                   services['api']['environment']['ML_STORAGE_DIR'] == '/var/lib/riesgo/ml',
                   'Almacenamiento ML privado persistente')
@@ -207,7 +207,7 @@ def run():
         "limitations": ["No ejecuta DDL/PLpgSQL", "No prueba permisos en servidor",
                         "No build, migración, ML, UI ni persistencia"],
     }
-    evidence_name = "s0-checks.json" if sprint == "S0" else "s3-1-contracts.json"
+    evidence_name = "s0-checks.json" if sprint == "S0" else "s4-contracts.json" if sprint == "S4" else "s3-1-contracts.json"
     (ROOT / "tests/evidence" / evidence_name).write_text(
         json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )

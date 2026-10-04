@@ -9,7 +9,7 @@ se conservan intactos. S2.1 reemplaza las instrucciones operativas de ese alcanc
 | S2.2 | Comprobado; Estado_Sprint_2_2.md y Matriz_verificacion_S2_2.md | Cuatro cuentas locales explícitas con credenciales privadas Windows; revisión de 14 rutas y UI por rol/tamaño; persistencia con usuarios y regresión aislada; sin registros escolares ni habilitación institucional |
 | S3 | Infraestructura implementada; Estado_Sprint_3.md | S2.2 preservado; núcleo ML y persistencia comprobados aisladamente. Entrenamiento/evaluación/activación institucional pendientes de datos, etiquetas, protocolo y migración |
 | S3.1 | Comprobado; Estado_Sprint_3_1.md y Matriz_verificacion_S3_1.md | Estudio SYNTHETIC nuevo verificado, comparación con reserva temporal, activación explícita técnica y recorrido API/DB; REAL bloqueado |
-| S4 | Pendiente | S2.1/S3 para flujos iniciales; S5 para integración completa. Pantallas reales, estados útiles, teclado y tres tamaños |
+| S4 | Implementado y comprobado; Estado_Sprint_4.md y Matriz_verificacion_S4.md | S3.1 comprobado. Acceso/Inicio/Estudiantes/Datos/Modelos con API real, rutas/roles/contexto, flujo importación/evaluación sintética y tres tamaños. Alertas/Reportes pendientes S5 |
 | S5 | Pendiente | Predicción válida, sesiones, matrículas y protocolo; alertas únicas, seguimiento versionado, auditoría y exportaciones autorizadas |
 | S6 | Pendiente | S3–S5 integrados; recorrido completo, persistencia, restauración, documentación y evidencias verificables |
 
@@ -75,3 +75,16 @@ como historia; las obligaciones de crear/entrenar/mostrar una demo quedan sustit
 8. Recorrido API/DB generado→importado→comparado→registrado→activado→inferido→consultado; repetición y permisos comprobados.
 9. Regresión backend/contrato/build/navegador/persistencia; cuentas/secretos/volúmenes conservados, evidencia sanitizada y fallos/omisiones registrados.
 10. Sin REAL, hipótesis validada, S4–S6, commit/push/despliegue externo.
+
+### Aceptación S4
+
+1. ADR previa; conservación de S3.1, cuentas/secretos, ML, migraciones, locks y volúmenes.
+2. AppShell y rutas estables: recarga, atrás/adelante, 404 y acceso directo por rol; RESEARCHER sin llamadas escolares.
+3. Contexto autorizado por API; cambio de periodo reinicia sección/filtros/página; vacío y errores útiles.
+4. ProcessingStatus tipado y política efectiva: escrituras deshabilitadas ante fallo/bloqueo; REAL prohibido.
+5. Lista/detalle/historial con filtros/paginación servidor; null, revisiones pendientes, riesgo con texto/icono/color y fechas Lima.
+6. Datos en tres pasos, CSV exacto, GET lote, consentimiento de acción, expected_preview_version, CSRF, READY/COMMITTED, 409 y respuestas inciertas.
+7. Exportación local ADMIN del CSV registrado: hash idéntico, destino fuera de Git y creación exclusiva; sin contenido/base64/secretos publicados.
+8. Modelos públicos/evaluación sintética ADMIN: as_of actual o Lima explícito, created/reused/abstenciones; sin botones de entrenamiento/activación, métricas inventadas o probabilidades no calibradas.
+9. Cancelación y limpieza por sesión/contexto, errores sanitizados y accesibilidad; navegador activo/aislado con API/PostgreSQL reales, primera importación aislada y repetición activa sin duplicados.
+10. Typecheck/build, contrato/tipos, regresión backend, persistencia e inspección de capturas 1440×900, 768×1024 y 390×844; evidencias s4, fallos/omisiones explícitos. S5/S6 y validación institucional fuera de alcance.

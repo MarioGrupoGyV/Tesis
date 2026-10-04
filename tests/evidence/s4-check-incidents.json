@@ -1,0 +1,34 @@
+{
+  "status": "RESUELTAS",
+  "incidents": [
+    {
+      "command": "py -3.12 -m pytest backend/tests/test_s4_launcher.py -q",
+      "result": "No module named pytest",
+      "executed_tests": 0,
+      "resolution": "No se instaló ni ejecutó pytest nativo; las 16 pruebas están incluidas en las 233 de Docker Linux/Python 3.12.12."
+    },
+    {
+      "command": "docker compose build web",
+      "result": "TS2339: created_students/created_enrollments no publicados por ImportCommit",
+      "resolution": "Mensaje corregido para usar solo created_snapshots; build y typecheck final código 0."
+    },
+    {
+      "command": "generación inicial del reporte build con docker inspect bajo sandbox",
+      "result": "permission denied en pipe Docker Desktop",
+      "resolution": "Comprobación ejecutada posteriormente con acceso autorizado; no cambio de datos."
+    },
+    {
+      "command": "REVIEW_REPORT_PREFIX=s4-active; infra/review_browser.py",
+      "result": "ADMIN falló en repetición POST route.fetch con422 esperado200; otros cuatro casos aprobados. CSV/modelo/registros/cuentas preservados.",
+      "error_code_recorded": false,
+      "cause": "No se conservó cuerpo Error; reloj/latencia es hipótesis, no diagnóstico confirmado.",
+      "resolution": "Se conserva evidencia fallida s4-active. Se registra diagnóstico sanitizado en interceptados y modoactual usa HTTP Date API+tiempo monótono; repetición final con relojhost adelantado, sin modificar guard temporal."
+    },
+    {
+      "command": "BROWSER_REPORT_PREFIX=s4-clock-final; infra/test_browser.py",
+      "result": "ADMIN falló al exigir alerta antes de recibir el POST de la rama de cuerpo truncado; otros cuatro casos aprobados.",
+      "resolution": "Esperar respuesta HTTP y validar 200 antes de verificar estado UI. Suite s4-complete aprobada; informe e incidente previos conservados."
+    }
+  ],
+  "browser_or_backend_suite_failures": 2
+}

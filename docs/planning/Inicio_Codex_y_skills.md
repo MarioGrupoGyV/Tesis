@@ -1,6 +1,6 @@
-# Inicio de trabajo — alcance vigente S3.1
+# Inicio de trabajo — alcance vigente S4
 
-Leer AGENTS.md, README, Estado_Sprint_3_1.md y cierres S3/S2.2/S2.1, ADR 004/005/006,
+Leer AGENTS.md, README, Estado_Sprint_4.md, Manual_Uso_S4.md, ADR 007 y Estado_Sprint_3_1.md y cierres S3/S2.2/S2.1, ADR 004/005/006,
 Manual_Estudio_Sintetico.md, Plan_tesis_riesgo_escolar.md, Sprints_y_aceptacion.md,
 Contrato_API.yaml y Esquema.sql antes de modificar.
 Los cierres S0/S1/S2 y documentos en history son evidencia histórica, no instrucciones.
@@ -32,7 +32,7 @@ No recrear cuentas S2.2 ni sus credenciales Windows. ML usa volumen privado sepa
 manifiestos v2 SYNTHETIC_STUDY/SYNTHETIC y compatibilidad con v1 ISOLATED_TEST/REAL de
 las pruebas S3. Una firma/hash no aprueba un modelo institucional. 0003 sustituye
 las restricciones de activación por aprobación técnica exclusivamente SYNTHETIC;
-REAL sigue prohibido. Consultar los manuales ML y del estudio. S4–S6 requieren nuevo encargo.
+REAL sigue prohibido. Consultar los manuales ML y del estudio. S4 conecta acceso, Inicio, Estudiantes, Datos y Modelos. S5/S6 requieren nuevo encargo. No modificar ML/migraciones/criterios ni regenerar/reentrenar el estudio activo para diseñar pantallas.
 
 Elegir skills por necesidad real, no por palabras clave. Ninguna skill autoriza
 cambiar metodología, enviar mensajes a terceros ni cargar datos personales.
@@ -40,3 +40,5 @@ Cierre: comandos PowerShell, host y runtime reales, comprobado/fallido/no ejecut
 evidencias, archivos y dependencia siguiente. No fabricar pruebas visuales o métricas.
 
 Consultar también Estado_Sprint_3_1.md y contrato 0.4.0; no reescribir los cierres ni migraciones históricos.
+
+S4 conserva API 0.4.0 y locks; TanStack Query, rutas estables, contexto y caché por actor. ProcessingStatus fallido deshabilita escrituras; no inferir preparación desde health. Evidencias nuevas prefijo s4, historial inmutable.

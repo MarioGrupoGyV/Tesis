@@ -8,9 +8,11 @@ services:
       ALLOWED_ORIGINS: http://localhost:15174,http://127.0.0.1:15174
       APP_ENV: test
       IMPORT_STORAGE_DIR: /var/lib/riesgo/imports
+      ML_STORAGE_DIR: /var/lib/riesgo/ml
     secrets: [app_url, csrf]
     volumes:
       - browser_imports:/var/lib/riesgo/imports
+      - browser_ml:/var/lib/riesgo/ml
     healthcheck:
       test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/ready')"]
       interval: 2s
@@ -31,6 +33,7 @@ secrets:
     file: ../.local/browser-test/csrf
 volumes:
   browser_imports:
+  browser_ml:
 networks:
   default:
     external: true

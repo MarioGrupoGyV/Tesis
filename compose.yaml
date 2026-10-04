@@ -82,7 +82,7 @@ secrets:
   csrf_secret:
     file: "${APP_SECRETS_DIR:-./.local/runtime-secrets}/csrf-secret"
 x-sprint:
-  current: S3.1
+  current: S4
   runtime-implemented: true
   implemented-scope: [health, auth, periods, sections, imports, students, models, predictions]
   planned-services: [web, api, db]

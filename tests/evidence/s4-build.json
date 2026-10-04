@@ -1,0 +1,30 @@
+{
+  "status": "COMPROBADO",
+  "contract_version": "0.4.0",
+  "generated_types_unchanged": true,
+  "checks": [
+    {
+      "command": "npm run generate:api --workspace frontend",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run typecheck --workspace frontend",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run build --workspace frontend",
+      "exit_code": 0
+    },
+    {
+      "command": "docker compose build web",
+      "exit_code": 0
+    }
+  ],
+  "modules": 77,
+  "node_docker": "24.14.1",
+  "npm_docker": "11.20.0",
+  "new_dependencies": false,
+  "package_lock_sha256": "9b0880027ad75b06c5d8a56fa77cf1d23bf0196bb5cb6012a1d4a33e20990bb7",
+  "web_image": "sha256:e6f4acda6dc41e8eea3e93fc4a76b625a23264d053c80115475047fe577b35d2",
+  "evaluar_now_clock": "HTTP Date same-origin + performance elapsed; no host fallback"
+}

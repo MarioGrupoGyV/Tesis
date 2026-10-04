@@ -1,0 +1,101 @@
+{
+  "status": "COMPROBADO",
+  "reviewer": "Agente de frontend S4",
+  "method": "Inspección visual directa de los PNG de la interfaz real mediante view_image; revisión independiente de código de sesión, contexto y errores.",
+  "scope": "ISOLATED_AND_ACTIVE_REAL_UI_SCREENSHOTS",
+  "source_report": "s4-final-isolated-playwright.json",
+  "supplemental_source_report": "s4-clock-final-isolated-playwright.json",
+  "supplemental_source_functional_status": "FALLIDO_CONSERVADO; estas tres capturas acreditan solo inspección visual del panel actualizado, no aprobación del recorrido funcional.",
+  "final_panel_source_report": "s4-complete-isolated-playwright.json",
+  "final_panel_source_functional_status": "PASSED; los tres tamaños del panel actualizado fueron inspeccionados de nuevo en la ejecución corregida.",
+  "active_source_report": "s4-active-complete-playwright.json",
+  "active_source_functional_status": "PASSED; Inicio, lista y detalle se inspeccionaron en los tres tamaños del entorno activo preservado.",
+  "full_page_captures": true,
+  "viewports": [
+    {"width": 1440, "height": 900},
+    {"width": 768, "height": 1024},
+    {"width": 390, "height": 844}
+  ],
+  "inspected_files": [
+    "s4-final-isolated-login-1440x900.png",
+    "s4-final-isolated-login-768x1024.png",
+    "s4-final-isolated-login-390x844.png",
+    "s4-final-isolated-admin-home-1440x900.png",
+    "s4-final-isolated-admin-home-768x1024.png",
+    "s4-final-isolated-admin-home-390x844.png",
+    "s4-final-isolated-students-1440x900.png",
+    "s4-final-isolated-students-768x1024.png",
+    "s4-final-isolated-students-390x844.png",
+    "s4-final-isolated-student-detail-1440x900.png",
+    "s4-final-isolated-student-detail-768x1024.png",
+    "s4-final-isolated-student-detail-390x844.png",
+    "s4-final-isolated-models-1440x900.png",
+    "s4-final-isolated-models-768x1024.png",
+    "s4-final-isolated-models-390x844.png",
+    "s4-final-isolated-tutor-home-390x844.png",
+    "s4-final-isolated-researcher-home-768x1024.png",
+    "s4-clock-final-isolated-models-1440x900.png",
+    "s4-clock-final-isolated-models-768x1024.png",
+    "s4-clock-final-isolated-models-390x844.png",
+    "s4-complete-isolated-models-1440x900.png",
+    "s4-complete-isolated-models-768x1024.png",
+    "s4-complete-isolated-models-390x844.png",
+    "s4-active-complete-admin-home-1440x900.png",
+    "s4-active-complete-admin-home-768x1024.png",
+    "s4-active-complete-admin-home-390x844.png",
+    "s4-active-complete-students-1440x900.png",
+    "s4-active-complete-students-768x1024.png",
+    "s4-active-complete-students-390x844.png",
+    "s4-active-complete-student-detail-1440x900.png",
+    "s4-active-complete-student-detail-768x1024.png",
+    "s4-active-complete-student-detail-390x844.png"
+  ],
+  "active_observations": [
+    {
+      "screen": "Inicio activo",
+      "finding": "Los tres tamaños conservan periodo, alcance autorizado y aviso sintético. Las acciones administrativas y la explicación Sin evaluar/Datos insuficientes son legibles; en móvil se apilan y requieren desplazamiento vertical. Alertas y Reportes siguen pendientes. El título lleva el contorno de foco dirigido por navegación, sin ocultar su texto."
+    },
+    {
+      "screen": "Lista activa",
+      "finding": "Total y rango de página se muestran con el contexto. Las filas con null indican Sin dato y Datos insuficientes/Sin estimación; los riesgos usan icono y texto. En tablet los códigos largos se envuelven y la tabla conserva las columnas. En móvil las columnas posteriores requieren desplazamiento horizontal interno y los filtros/botones permanecen dentro del panel; no se observa desbordamiento horizontal global."
+    },
+    {
+      "screen": "Detalle activo",
+      "finding": "Contexto, observaciones, fechas Lima y última evaluación están separados. El historial abierto identifica una evaluación previa y declara que no sustituye una revisión posterior. No presenta porcentajes de confianza no calibrados. En móvil todos los campos y controles se apilan sin solapamiento; la página completa es larga y conserva paginación del historial."
+    }
+  ],
+  "observations": [
+    {
+      "screen": "Acceso",
+      "finding": "Marca SE, aviso sintético, campos etiquetados, foco visible en contraseña y acción de ingreso legibles. En móvil el formulario se apila y necesita desplazamiento vertical. Los campos capturados están vacíos; no hay contraseñas o tokens visibles."
+    },
+    {
+      "screen": "Inicio",
+      "finding": "Periodo y secciones están separados de las acciones. El aviso sintético permanece visible; ADMIN tiene Datos/Modelos, TUTOR solo consulta y RESEARCHER no tiene selector escolar. La navegación de escritorio conserva el orden Inicio, Estudiantes, Alertas, Datos, Reportes; los pendientes no son acciones simuladas. El contorno del título corresponde al foco dirigido por la prueba."
+    },
+    {
+      "screen": "Estudiantes",
+      "finding": "Filtros etiquetados y paginación con total/contexto visibles. La tabla de escritorio permite comparar columnas; en móvil se ven sus primeras columnas y las restantes requieren desplazamiento interno. Sin evaluar, Datos insuficientes y Sin estimación se distinguen de los niveles Bajo/Medio/Alto con texto e iconos. Los faltantes se presentan como Sin dato."
+    },
+    {
+      "screen": "Detalle e historial",
+      "finding": "Contexto, observaciones y ventana temporal legibles. La revisión actual aparece Sin evaluar/Sin estimación y la evaluación histórica Alto se presenta en un bloque separado con el aviso de que no sustituye a una revisión posterior. No hay porcentaje de confianza no calibrado. El selector Eventos por página y controles de historial están visibles; el móvil apila los campos sin solaparlos."
+    },
+    {
+      "screen": "Modelos",
+      "finding": "Listado muestra algoritmo, estado de simulación y versión públicos. El panel Evaluar periodo distingue instante actual y fecha Lima explícita. La inspección suplementaria comprueba que el texto sobre la hora consultada al sistema es legible en los tres tamaños y que radios, botón y contexto permanecen separados. No se ven botones de entrenamiento/activación, gráficos o métricas inventadas. Tabla móvil con desplazamiento interno."
+    }
+  ],
+  "blocking_visual_findings": [],
+  "source_review_findings_resolved": [
+    "El cliente vuelve a comprobar la época de sesión tras leer una respuesta de error, antes de expirar por un 401 tardío.",
+    "La pérdida del cuerpo JSON de una respuesta exitosa se normaliza como NETWORK_ERROR y la mutación conserva incertidumbre; no se reintenta automáticamente."
+  ],
+  "limits": [
+    "Se inspeccionaron 23 PNG aislados y nueve activos distintos. Datos/detalle de modelo y otras capturas inspeccionadas por el coordinador se registran por separado.",
+    "Los PNG son capturas de página completa: su altura puede superar la altura del viewport indicada.",
+    "La inspección visual no sustituye los asserts de permisos, CSRF, consultas, cancelación o persistencia de Playwright/API/PostgreSQL.",
+    "No se ha ejecutado una auditoría completa WCAG AA ni pruebas con lectores de pantalla o todos los navegadores.",
+    "No acredita resultados escolares, rendimiento institucional del modelo o validación de la hipótesis."
+  ]
+}

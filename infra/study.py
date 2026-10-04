@@ -2,8 +2,11 @@
 import argparse
 import base64
 from datetime import UTC,datetime
+import hashlib
 import json
+import os
 from pathlib import Path
+import re
 import subprocess
 import urllib.error
 import urllib.request
@@ -12,6 +15,72 @@ from review_accounts import credentials
 from review_endpoints import Client,BASE
 
 ROOT=Path(__file__).resolve().parents[1]
+
+CSV_HEADERS=('student_code','grade','section','cutoff_at','target_date','available_at',
+    'window_start','average_grade','attendance_pct','activities_pct','participation_level',
+    'behavior_incidents','age_years')
+
+
+def export_destination(output):
+    """Destino explícito: no permite nombres especiales, enlaces o un checkout Git."""
+    path=Path(output)
+    if not path.is_absolute() or '..' in path.parts:
+        raise RuntimeError('CSV_OUTPUT_PATH_INVALID')
+    if (re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,120}\.csv',path.name) is None
+        or path.stem.upper().split('.')[0] in {'CON','PRN','AUX','NUL',
+            *(f'COM{i}' for i in range(1,10)),*(f'LPT{i}' for i in range(1,10))}):
+        raise RuntimeError('CSV_OUTPUT_NAME_INVALID')
+    if any(part.is_symlink() for part in (path,*path.parents)):
+        raise RuntimeError('CSV_OUTPUT_LINK_FORBIDDEN')
+    try:
+        parent=path.parent.resolve(strict=True)
+    except OSError:
+        raise RuntimeError('CSV_OUTPUT_DIRECTORY_REQUIRED') from None
+    if not parent.is_dir():
+        raise RuntimeError('CSV_OUTPUT_DIRECTORY_REQUIRED')
+    if parent.is_relative_to(ROOT.resolve()) or any((part/'.git').exists() for part in (parent,*parent.parents)):
+        raise RuntimeError('CSV_OUTPUT_INSIDE_GIT')
+    if path.exists():
+        raise RuntimeError('CSV_OUTPUT_EXISTS')
+    return parent/path.name
+
+
+def export_csv(account,study_id,output,*,loader=None):
+    """CSV de entrada únicamente; datos privados del comando quedan en memoria."""
+    path=export_destination(output)
+    exported=(loader or internal)('export-csv',account,study_id=study_id)
+    digest=exported.get('csv_sha256','')
+    if not isinstance(digest,str) or re.fullmatch(r'[0-9a-f]{64}',digest) is None:
+        raise RuntimeError('CSV_EXPORT_HASH_REQUIRED')
+    try:
+        content=base64.b64decode(exported['csv_base64'],validate=True)
+        header=content.decode('utf-8').splitlines()[0]
+    except (KeyError,ValueError,UnicodeError,IndexError):
+        raise RuntimeError('CSV_EXPORT_INVALID') from None
+    if not content or len(content)>5*1024*1024 or header!=','.join(CSV_HEADERS):
+        raise RuntimeError('CSV_EXPORT_INVALID')
+    if hashlib.sha256(content).hexdigest()!=digest:
+        raise RuntimeError('CSV_EXPORT_HASH_MISMATCH')
+    # O_EXCL evita incluso la carrera entre comprobación y creación. No se
+    # sobrescribe ningún archivo; los errores no incluyen rutas ni contenido.
+    flags=os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,'O_NOFOLLOW',0)|getattr(os,'O_BINARY',0)
+    try:
+        descriptor=os.open(path,flags,0o600)
+    except FileExistsError:
+        raise RuntimeError('CSV_OUTPUT_EXISTS') from None
+    except OSError:
+        raise RuntimeError('CSV_OUTPUT_NOT_WRITABLE') from None
+    try:
+        with os.fdopen(descriptor,'wb') as handle:
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+    except OSError:
+        # El archivo creado por esta llamada no es una exportación completa.
+        path.unlink(missing_ok=True)
+        raise RuntimeError('CSV_EXPORT_WRITE_FAILED') from None
+    return {'study_id':study_id,'period_id':exported['period_id'],
+        'file_name':path.name,'csv_sha256':digest,'bytes_written':len(content)}
 
 
 def internal(command,account,**values):
@@ -81,23 +150,30 @@ def run_predictions(account,period_id,as_of=None):
     return authenticated(account,run)
 
 
-def main():
+def main(argv=None):
     parser=argparse.ArgumentParser(description='Estudio con datos sintéticos; REAL permanece bloqueado.')
-    parser.add_argument('command',choices=['generate','import','compare','register','activate','run','status'])
+    parser.add_argument('command',choices=['generate','import','compare','register','activate','run','status','export-csv'])
     parser.add_argument('--admin-credential',required=True,choices=['ADMIN'],help='ADMIN explícito de las cuentas locales S2.2')
     parser.add_argument('--study-id'); parser.add_argument('--model-id'); parser.add_argument('--period-id')
     parser.add_argument('--seed',type=int,default=1729); parser.add_argument('--students',type=int)
     parser.add_argument('--tutor-id'); parser.add_argument('--config',type=Path)
     parser.add_argument('--algorithm',choices=['DUMMY','RANDOM_FOREST','SVM','XGBOOST'])
     parser.add_argument('--as-of')
-    args=parser.parse_args()
-    account=credentials()[args.admin_credential]
+    parser.add_argument('--output',type=Path,help='CSV nuevo: ruta absoluta fuera de Git, directorio existente')
+    args=parser.parse_args(argv)
+    if args.command=='export-csv' and (not args.study_id or args.output is None):
+        parser.error('export-csv requiere --study-id y --output')
     try:
+        if args.command=='export-csv':
+            export_destination(args.output)
+        account=credentials()[args.admin_credential]
         if args.command=='generate':
             config=json.loads(args.config.read_text(encoding='utf-8')) if args.config else None
             result=internal('generate',account,seed=args.seed,student_count=args.students,tutor_id=args.tutor_id,config=config)
         elif args.command=='status':
             result=internal('status',account)
+        elif args.command=='export-csv':
+            result=export_csv(account,args.study_id,args.output)
         elif args.command=='import':
             if not args.study_id: parser.error('import requiere --study-id')
             result=import_study(account,args.study_id)

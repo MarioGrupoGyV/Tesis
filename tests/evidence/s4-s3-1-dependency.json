@@ -1,0 +1,394 @@
+{
+  "status": "COMPROBADO",
+  "initial_sha": "412c370519900351f37bf2d444df9c943e58288d",
+  "final_sha": "90a5e8492b9bdd7d1a37ae59e105fddbd7e116a7",
+  "registered_routes": [
+    [
+      "GET",
+      "/api/v1/auth/csrf"
+    ],
+    [
+      "GET",
+      "/api/v1/auth/me"
+    ],
+    [
+      "GET",
+      "/api/v1/health/live"
+    ],
+    [
+      "GET",
+      "/api/v1/health/ready"
+    ],
+    [
+      "GET",
+      "/api/v1/imports/{id}"
+    ],
+    [
+      "GET",
+      "/api/v1/models"
+    ],
+    [
+      "GET",
+      "/api/v1/models/{id}"
+    ],
+    [
+      "GET",
+      "/api/v1/periods"
+    ],
+    [
+      "GET",
+      "/api/v1/predictions/{id}"
+    ],
+    [
+      "GET",
+      "/api/v1/processing/status"
+    ],
+    [
+      "GET",
+      "/api/v1/sections"
+    ],
+    [
+      "GET",
+      "/api/v1/students"
+    ],
+    [
+      "GET",
+      "/api/v1/students/{id}"
+    ],
+    [
+      "GET",
+      "/api/v1/students/{id}/timeline"
+    ],
+    [
+      "POST",
+      "/api/v1/auth/login"
+    ],
+    [
+      "POST",
+      "/api/v1/auth/logout"
+    ],
+    [
+      "POST",
+      "/api/v1/imports/preview"
+    ],
+    [
+      "POST",
+      "/api/v1/imports/{id}/commit"
+    ],
+    [
+      "POST",
+      "/api/v1/predictions/run"
+    ]
+  ],
+  "active_responses_validated": 48,
+  "positive_samples_validated": 16,
+  "backend_tests": 217,
+  "preserved_files": [
+    "package.json",
+    "package-lock.json",
+    "frontend/package.json",
+    "backend/requirements.in",
+    "backend/requirements.txt",
+    "backend/requirements-dev.in",
+    "backend/requirements-dev.txt",
+    "infra/requirements-s0.in",
+    "infra/requirements-s0.txt",
+    "infra/check_runtime.py",
+    "infra/windows_credentials.py",
+    "backend/migrations/versions/0001_demo_schema.py",
+    "backend/migrations/versions/0001_demo_schema.sql",
+    "backend/migrations/versions/0002_institutional_boundary.py",
+    "docs/adr/001-arquitectura.md",
+    "docs/adr/002-base-ejecutable-s1.md",
+    "docs/adr/003-importacion-s2.md",
+    "docs/adr/004-transicion-windows.md",
+    "docs/adr/005-infraestructura-ml-s3.md",
+    "docs/planning/Estado_Sprint_0.md",
+    "docs/planning/Estado_Sprint_1.md",
+    "docs/planning/Estado_Sprint_2.md",
+    "docs/planning/Estado_Sprint_2_1.md",
+    "docs/planning/Estado_Sprint_2_2.md",
+    "docs/planning/Estado_Sprint_3.md",
+    "docs/planning/Matriz_verificacion_S2_2.md",
+    "tests/evidence/.gitkeep",
+    "tests/evidence/s0-archivos.txt",
+    "tests/evidence/s0-checks.json",
+    "tests/evidence/s0-entorno.txt",
+    "tests/evidence/s1-contracts.json",
+    "tests/evidence/s1-database.json",
+    "tests/evidence/s1-environment.json",
+    "tests/evidence/s1-playwright.json",
+    "tests/evidence/s1-private-config-check.json",
+    "tests/evidence/s1-pytest.xml",
+    "tests/evidence/s1-runtime.json",
+    "tests/evidence/s1-seed.json",
+    "tests/evidence/s1-ui-checks.json",
+    "tests/evidence/s1-ui-login-1440x900.png",
+    "tests/evidence/s1-ui-login-390x844-full.png",
+    "tests/evidence/s1-ui-login-390x844.png",
+    "tests/evidence/s1-ui-login-768x1024.png",
+    "tests/evidence/s1-ui-tutor-1440x900-full.png",
+    "tests/evidence/s1-ui-tutor-1440x900.png",
+    "tests/evidence/s1-ui-tutor-390x844-full.png",
+    "tests/evidence/s1-ui-tutor-390x844.png",
+    "tests/evidence/s1-ui-tutor-768x1024-full.png",
+    "tests/evidence/s1-ui-tutor-768x1024.png",
+    "tests/evidence/s2-1-backend-environment.json",
+    "tests/evidence/s2-1-backend-first-environment.json",
+    "tests/evidence/s2-1-backend-first.xml",
+    "tests/evidence/s2-1-backend.xml",
+    "tests/evidence/s2-1-backup.json",
+    "tests/evidence/s2-1-browser-environment.json",
+    "tests/evidence/s2-1-changes.json",
+    "tests/evidence/s2-1-contracts.json",
+    "tests/evidence/s2-1-empty-1440x900.png",
+    "tests/evidence/s2-1-empty-390x844.png",
+    "tests/evidence/s2-1-empty-768x1024.png",
+    "tests/evidence/s2-1-environment.json",
+    "tests/evidence/s2-1-login-1440x900.png",
+    "tests/evidence/s2-1-login-390x844.png",
+    "tests/evidence/s2-1-login-768x1024.png",
+    "tests/evidence/s2-1-playwright.json",
+    "tests/evidence/s2-1-response-samples.json",
+    "tests/evidence/s2-1-runtime.json",
+    "tests/evidence/s2-2-accounts-idempotency.json",
+    "tests/evidence/s2-2-accounts-repeat.json",
+    "tests/evidence/s2-2-accounts.json",
+    "tests/evidence/s2-2-active-admin-1440x900.png",
+    "tests/evidence/s2-2-active-admin-390x844.png",
+    "tests/evidence/s2-2-active-admin-768x1024.png",
+    "tests/evidence/s2-2-active-director-1440x900.png",
+    "tests/evidence/s2-2-active-director-390x844.png",
+    "tests/evidence/s2-2-active-director-768x1024.png",
+    "tests/evidence/s2-2-active-first-admin-1440x900.png",
+    "tests/evidence/s2-2-active-first-admin-390x844.png",
+    "tests/evidence/s2-2-active-first-admin-768x1024.png",
+    "tests/evidence/s2-2-active-first-director-1440x900.png",
+    "tests/evidence/s2-2-active-first-director-390x844.png",
+    "tests/evidence/s2-2-active-first-director-768x1024.png",
+    "tests/evidence/s2-2-active-first-invalid-login.png",
+    "tests/evidence/s2-2-active-first-login-1440x900.png",
+    "tests/evidence/s2-2-active-first-login-390x844.png",
+    "tests/evidence/s2-2-active-first-login-768x1024.png",
+    "tests/evidence/s2-2-active-first-playwright.json",
+    "tests/evidence/s2-2-active-first-researcher-1440x900.png",
+    "tests/evidence/s2-2-active-first-tutor-1440x900.png",
+    "tests/evidence/s2-2-active-first-tutor-390x844.png",
+    "tests/evidence/s2-2-active-first-tutor-768x1024.png",
+    "tests/evidence/s2-2-active-invalid-login.png",
+    "tests/evidence/s2-2-active-login-1440x900.png",
+    "tests/evidence/s2-2-active-login-390x844.png",
+    "tests/evidence/s2-2-active-login-768x1024.png",
+    "tests/evidence/s2-2-active-playwright.json",
+    "tests/evidence/s2-2-active-researcher-1440x900.png",
+    "tests/evidence/s2-2-active-researcher-390x844.png",
+    "tests/evidence/s2-2-active-researcher-768x1024.png",
+    "tests/evidence/s2-2-active-tutor-1440x900.png",
+    "tests/evidence/s2-2-active-tutor-390x844.png",
+    "tests/evidence/s2-2-active-tutor-768x1024.png",
+    "tests/evidence/s2-2-backend-environment.json",
+    "tests/evidence/s2-2-backend.xml",
+    "tests/evidence/s2-2-browser-environment.json",
+    "tests/evidence/s2-2-contracts.json",
+    "tests/evidence/s2-2-endpoints.json",
+    "tests/evidence/s2-2-isolated-admin-1440x900.png",
+    "tests/evidence/s2-2-isolated-admin-390x844.png",
+    "tests/evidence/s2-2-isolated-admin-768x1024.png",
+    "tests/evidence/s2-2-isolated-director-1440x900.png",
+    "tests/evidence/s2-2-isolated-director-390x844.png",
+    "tests/evidence/s2-2-isolated-director-768x1024.png",
+    "tests/evidence/s2-2-isolated-invalid-login.png",
+    "tests/evidence/s2-2-isolated-login-1440x900.png",
+    "tests/evidence/s2-2-isolated-login-390x844.png",
+    "tests/evidence/s2-2-isolated-login-768x1024.png",
+    "tests/evidence/s2-2-isolated-playwright.json",
+    "tests/evidence/s2-2-isolated-researcher-1440x900.png",
+    "tests/evidence/s2-2-isolated-researcher-390x844.png",
+    "tests/evidence/s2-2-isolated-researcher-768x1024.png",
+    "tests/evidence/s2-2-isolated-tutor-1440x900.png",
+    "tests/evidence/s2-2-isolated-tutor-390x844.png",
+    "tests/evidence/s2-2-isolated-tutor-768x1024.png",
+    "tests/evidence/s2-2-persistence.json",
+    "tests/evidence/s2-2-response-samples.json",
+    "tests/evidence/s2-2-review.json",
+    "tests/evidence/s2-baseline-s1-linux-environment.json",
+    "tests/evidence/s2-baseline-s1-linux.xml",
+    "tests/evidence/s2-contracts.json",
+    "tests/evidence/s2-expanded-linux-environment.json",
+    "tests/evidence/s2-expanded-linux.xml",
+    "tests/evidence/s2-first-linux-environment.json",
+    "tests/evidence/s2-first-linux.xml",
+    "tests/evidence/s2-pytest-linux-environment.json",
+    "tests/evidence/s2-pytest-linux.xml",
+    "tests/evidence/s2-response-samples.json",
+    "tests/evidence/s2-runtime.json",
+    "tests/evidence/s2-s1-playwright.json",
+    "tests/evidence/s3-active-admin-1440x900.png",
+    "tests/evidence/s3-active-admin-390x844.png",
+    "tests/evidence/s3-active-admin-768x1024.png",
+    "tests/evidence/s3-active-director-1440x900.png",
+    "tests/evidence/s3-active-director-390x844.png",
+    "tests/evidence/s3-active-director-768x1024.png",
+    "tests/evidence/s3-active-endpoints.json",
+    "tests/evidence/s3-active-invalid-login.png",
+    "tests/evidence/s3-active-login-1440x900.png",
+    "tests/evidence/s3-active-login-390x844.png",
+    "tests/evidence/s3-active-login-768x1024.png",
+    "tests/evidence/s3-active-playwright.json",
+    "tests/evidence/s3-active-researcher-1440x900.png",
+    "tests/evidence/s3-active-researcher-390x844.png",
+    "tests/evidence/s3-active-researcher-768x1024.png",
+    "tests/evidence/s3-active-tutor-1440x900.png",
+    "tests/evidence/s3-active-tutor-390x844.png",
+    "tests/evidence/s3-active-tutor-768x1024.png",
+    "tests/evidence/s3-backend-environment.json",
+    "tests/evidence/s3-backend-first-environment.json",
+    "tests/evidence/s3-backend-first-response-samples.json",
+    "tests/evidence/s3-backend-first.xml",
+    "tests/evidence/s3-backend.xml",
+    "tests/evidence/s3-browser-environment.json",
+    "tests/evidence/s3-contracts.json",
+    "tests/evidence/s3-isolated-admin-1440x900.png",
+    "tests/evidence/s3-isolated-admin-390x844.png",
+    "tests/evidence/s3-isolated-admin-768x1024.png",
+    "tests/evidence/s3-isolated-director-1440x900.png",
+    "tests/evidence/s3-isolated-director-390x844.png",
+    "tests/evidence/s3-isolated-director-768x1024.png",
+    "tests/evidence/s3-isolated-invalid-login.png",
+    "tests/evidence/s3-isolated-login-1440x900.png",
+    "tests/evidence/s3-isolated-login-390x844.png",
+    "tests/evidence/s3-isolated-login-768x1024.png",
+    "tests/evidence/s3-isolated-playwright.json",
+    "tests/evidence/s3-isolated-researcher-1440x900.png",
+    "tests/evidence/s3-isolated-researcher-390x844.png",
+    "tests/evidence/s3-isolated-researcher-768x1024.png",
+    "tests/evidence/s3-isolated-tutor-1440x900.png",
+    "tests/evidence/s3-isolated-tutor-390x844.png",
+    "tests/evidence/s3-isolated-tutor-768x1024.png",
+    "tests/evidence/s3-ml-first.xml",
+    "tests/evidence/s3-ml-response-samples.json",
+    "tests/evidence/s3-ml-summary.json",
+    "tests/evidence/s3-persistence.json",
+    "tests/evidence/s3-response-samples.json",
+    "tests/evidence/s3-review.json"
+  ],
+  "users_password_hashes_preserved": true,
+  "historical_environment_stopped": true,
+  "backup_hashes_match": true,
+  "prior_sessions_and_audit_preserved": true,
+  "database": {
+    "role": "riesgo_app",
+    "schema_contract": "0003_synthetic_study",
+    "origins": {
+      "academic_periods": {
+        "SYNTHETIC": 1
+      },
+      "students": {
+        "SYNTHETIC": 60
+      },
+      "enrollments": {
+        "SYNTHETIC": 60
+      },
+      "import_batches": {
+        "SYNTHETIC": 1
+      },
+      "academic_snapshots": {
+        "SYNTHETIC": 360
+      },
+      "model_versions": {
+        "SYNTHETIC": 1
+      },
+      "predictions": {
+        "SYNTHETIC": 55
+      },
+      "alerts": {},
+      "interventions": {}
+    }
+  },
+  "api_image": "sha256:1fe93cf666e15c96851f9ec8b3d0b1900cc11f44a8fbc1e45b4a352c44750491",
+  "pip_check": "No broken requirements found.",
+  "cli": {
+    "readiness": {
+      "exit_code": 0,
+      "response": {
+        "ready": false,
+        "code": "INSTITUTIONAL_PROCESSING_NOT_READY",
+        "missing": [
+          "procedencia autorizada",
+          "escalas y criterio de referencia",
+          "etiquetas futuras verificables",
+          "calendario y protocolo",
+          "política de elegibilidad y faltantes",
+          "migración de activación"
+        ],
+        "institutional_training": false,
+        "activation": false,
+        "institutional_inference": false
+      }
+    },
+    "compatibility": {
+      "exit_code": 0,
+      "response": {
+        "versions": {
+          "python": "3.12.12",
+          "scikit-learn": "1.9.1",
+          "numpy": "2.5.3",
+          "scipy": "1.18.1",
+          "pandas": "3.0.6",
+          "joblib": "1.6.0",
+          "xgboost-cpu": "3.4.1"
+        },
+        "algorithms": [
+          "DUMMY",
+          "RANDOM_FOREST",
+          "SVM",
+          "XGBOOST"
+        ],
+        "device": "cpu",
+        "threads": 1,
+        "probabilities_calibrated": false,
+        "institutional_ready": false
+      }
+    },
+    "train": {
+      "exit_code": 2,
+      "response": {
+        "code": "INSTITUTIONAL_PROCESSING_NOT_READY",
+        "message": "Entrenamiento e inferencia institucional pendientes de protocolo, datos autorizados y activación. No se procesaron registros.",
+        "readiness": {
+          "ready": false,
+          "code": "INSTITUTIONAL_PROCESSING_NOT_READY",
+          "missing": [
+            "procedencia autorizada",
+            "escalas y criterio de referencia",
+            "etiquetas futuras verificables",
+            "calendario y protocolo",
+            "política de elegibilidad y faltantes",
+            "migración de activación"
+          ],
+          "institutional_training": false,
+          "activation": false,
+          "institutional_inference": false
+        }
+      }
+    }
+  },
+  "inference": {
+    "as_of": "2026-10-04T14:37:38.413120+00:00",
+    "selected": 60,
+    "created": 55,
+    "reused": 0,
+    "abstentions": 5,
+    "repeat_created": 0,
+    "repeat_reused": 55
+  },
+  "browser_cases": {
+    "active": 5,
+    "isolated": 5
+  },
+  "lock_sha256": {
+    "backend/requirements.txt": "a6ac22ca17fa0a53034a844066fdf37e28f1e334b10a35e1325cd990aaf113a3",
+    "backend/requirements-dev.txt": "1c70f637ef20d0e5049f297b9bf55d87e67c578bd66e632569f3b240d7e81899",
+    "package-lock.json": "9b0880027ad75b06c5d8a56fa77cf1d23bf0196bb5cb6012a1d4a33e20990bb7"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "status": "passed",
+  "scope": "active",
+  "cases": [
+    {
+      "title": "ADMIN: navegación S4, datos efectivos, permisos y sesión",
+      "status": "passed",
+      "duration_ms": 32601,
+      "has_simulated_http_503": true,
+      "has_simulated_processing_status_503": true,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": true,
+      "has_simulated_host_clock": true,
+      "real_intercepted_inference_diagnostics": [
+        {
+          "stage": "deferred-post",
+          "status": 200,
+          "code": null,
+          "request_id": "c3c86c27-8551-45d2-842a-6acfbd3c01a7"
+        },
+        {
+          "stage": "body-loss-post",
+          "status": 200,
+          "code": null,
+          "request_id": "2512ff13-32ec-493c-9fa3-668129a24257"
+        }
+      ],
+      "failure": null
+    },
+    {
+      "title": "TUTOR: navegación S4, datos efectivos, permisos y sesión",
+      "status": "passed",
+      "duration_ms": 9172,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    },
+    {
+      "title": "DIRECTOR: navegación S4, datos efectivos, permisos y sesión",
+      "status": "passed",
+      "duration_ms": 6358,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    },
+    {
+      "title": "RESEARCHER: navegación S4, datos efectivos, permisos y sesión",
+      "status": "passed",
+      "duration_ms": 2835,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    },
+    {
+      "title": "Error de credenciales no autoriza contexto",
+      "status": "passed",
+      "duration_ms": 1043,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "has_simulated_host_clock": false,
+      "real_intercepted_inference_diagnostics": [],
+      "failure": null
+    }
+  ]
+}

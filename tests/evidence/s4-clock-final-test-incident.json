@@ -1,0 +1,14 @@
+{
+  "scope": "isolated_browser_test",
+  "status": "FALLIDO_CONSERVADO",
+  "source_report": "s4-clock-final-isolated-playwright.json",
+  "incident": "La aserción de incertidumbre se ejecutó antes de recibir el POST cuyo cuerpo se iba a truncar. El contexto mostraba Evaluando y aún no existía diagnóstico del POST body-loss.",
+  "checked_before_failure": [
+    "Primera inferencia real 200 con Date del navegador adelantado diez minutos",
+    "POST diferido real 200"
+  ],
+  "correction": "Esperar la respuesta HTTP POST predictions/run, exigir 200 y después comprobar el error de lectura y la ausencia de reintento.",
+  "backend_or_protocol_modified": false,
+  "corrected_browser_test_executed_in_this_record": false,
+  "previous_failure_report_preserved": true
+}

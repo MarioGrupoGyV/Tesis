@@ -1,6 +1,6 @@
 # Desarrollo del sistema de riesgo escolar
 
-Estas instrucciones se deben colocar en la raíz del repositorio de la tesis. Describen la implementación prevista. La fase vigente es S3.1: Estudio con datos sintéticos explícitos, autorizado por la solicitud actual. REAL continúa bloqueado; comparación e inferencia local únicamente en el contexto SYNTHETIC registrado. Se conservan las cuatro cuentas locales de S2.2, nunca por semillas de arranque. No existe una autorización implícita para cargar datos de menores ni cambiar la metodología académica.
+Estas instrucciones se deben colocar en la raíz del repositorio de la tesis. Describen la implementación prevista. La fase vigente es S4: interfaz conectada y didáctica para el Estudio con datos sintéticos de S3.1. REAL continúa bloqueado; comparación e inferencia local únicamente en el contexto SYNTHETIC registrado. Se conservan las cuatro cuentas locales de S2.2, nunca por semillas de arranque. No existe una autorización implícita para cargar datos de menores ni cambiar la metodología académica.
 
 El usuario opera exclusivamente desde PowerShell en Windows. Docker conserva imágenes Linux internas; no exigir WSL, Bash ni Make. Versiones y locks fijados se conservan. El primer administrador se crea explícitamente por CLI con entrada secreta, nunca por archivo de cuentas. Los documentos y evidencias históricos S0/S1/S2 no son instrucciones operativas.
 
@@ -14,7 +14,7 @@ Prioridad: instrucciones del usuario, requisitos académicos vigentes y contrato
 
 - Implementar login, permisos, CSV con vista previa y confirmación, estudiantes, tablero, módulo predictivo del proyecto, alertas, intervenciones y exportación CSV.
 - Usar React TypeScript Vite Tailwind y FastAPI SQLAlchemy Alembic PostgreSQL. Fijar versiones compatibles en la primera iteración.
-- S3.1 reutiliza el núcleo S3 y sus cuatro algoritmos CPU. Generador versionado y determinista, CSV exacto registrado, comparación de desarrollo por grupos y reserva externa temporal. Aprobación técnica solo permite simulación. Leer ADR 005/006 y Manual_Estudio_Sintetico.md. Entrenamiento/evaluación/activación REAL requieren protocolo futuro; S4–S6 pendientes.
+- S3.1 reutiliza el núcleo S3 y sus cuatro algoritmos CPU. Generador versionado y determinista, CSV exacto registrado, comparación de desarrollo por grupos y reserva externa temporal. Aprobación técnica solo permite simulación. Leer ADR 005/006 y Manual_Estudio_Sintetico.md. Entrenamiento/evaluación/activación REAL requieren protocolo futuro. S4 completa solo acceso, Inicio, Estudiantes, Datos y Modelos; S5/S6 pendientes. Leer ADR 007 y manual de uso S4.
 - No crear semillas al arrancar ni cuentas predeterminadas. El estudio nuevo SYNTHETIC se prepara/importa exclusivamente por comandos ADMIN explícitos; no recuperar DEMO histórico ni presentar registros generados como personas observadas. Conservar las cuentas/credenciales S2.2.
 - Bloquear importación institucional con `INSTITUTIONAL_PROCESSING_NOT_READY` hasta documentar e implementar procedencia, escala, periodo, ventanas, fechas y calidad. Ninguna variable habilita ese protocolo. Contexto vacío sí puede leerse.
 - No añadir pagos, chats, portales de familias, integraciones ni gestión completa de matrículas administrativas.
@@ -62,7 +62,7 @@ Prioridad: instrucciones del usuario, requisitos académicos vigentes y contrato
 
 ## Interfaz
 
-- Navegación principal: Inicio, Estudiantes, Alertas, Datos y Reportes. Modelo y Configuración dependen del rol.
+- Navegación principal: Inicio, Estudiantes, Alertas, Datos y Reportes. Modelos es secundario y solo ADMIN. Alertas y Reportes se señalan pendientes sin rutas ficticias; no hay Configuración editable en S4.
 - Cada pantalla tiene estados de carga, vacío, error y éxito. No dejar tablas en blanco sin explicación.
 - Mostrar riesgo con texto, icono y color. No depender solo del color.
 - Presentar periodo, actualización y denominador junto a indicadores.

@@ -53,7 +53,8 @@ def main():
                 if args.command=='export-csv':
                     study=service.get_study(db,study_id)
                     _,_,content=service.validate_registered(db,settings,study)
-                    result={'period_id':str(study.period_id),'csv_base64':base64.b64encode(content).decode()}
+                    result={'period_id':str(study.period_id),'csv_sha256':study.csv_sha256,
+                        'csv_base64':base64.b64encode(content).decode()}
                 elif args.command=='compare':
                     result=service.compare_registered(db,actor,settings,study_id,request_id)
                 else:

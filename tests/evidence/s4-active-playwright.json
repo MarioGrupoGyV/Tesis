@@ -1,0 +1,56 @@
+{
+  "status": "failed",
+  "scope": "active",
+  "cases": [
+    {
+      "title": "ADMIN: navegación S4, datos efectivos, permisos y sesión",
+      "status": "failed",
+      "duration_ms": 20692,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": true,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "failure": "Comprobar criterio y captura de esta prueba"
+    },
+    {
+      "title": "TUTOR: navegación S4, datos efectivos, permisos y sesión",
+      "status": "passed",
+      "duration_ms": 7898,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "failure": null
+    },
+    {
+      "title": "DIRECTOR: navegación S4, datos efectivos, permisos y sesión",
+      "status": "passed",
+      "duration_ms": 5171,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "failure": null
+    },
+    {
+      "title": "RESEARCHER: navegación S4, datos efectivos, permisos y sesión",
+      "status": "passed",
+      "duration_ms": 3926,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "failure": null
+    },
+    {
+      "title": "Error de credenciales no autoriza contexto",
+      "status": "passed",
+      "duration_ms": 1722,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": false,
+      "has_simulated_response_body_loss": false,
+      "failure": null
+    }
+  ]
+}

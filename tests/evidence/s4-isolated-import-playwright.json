@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "scope": "isolated",
+  "cases": [
+    {
+      "title": "ADMIN: primera importación registrada mediante interfaz y API reales",
+      "status": "passed",
+      "duration_ms": 8019,
+      "has_simulated_http_503": false,
+      "has_simulated_processing_status_503": false,
+      "has_simulated_preview_stale_409": true,
+      "failure": null
+    }
+  ]
+}

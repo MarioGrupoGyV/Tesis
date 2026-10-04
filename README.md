@@ -1,10 +1,10 @@
 # Seguimiento Escolar
 
-**S3.1: Estudio con datos sintéticos en Windows y Docker.** Registros nuevos de
+**S4: interfaz conectada al Estudio con datos sintéticos en Windows y Docker.** Registros nuevos de
 origen SYNTHETIC ingresan únicamente por el importador verificado y comandos ADMIN
 explícitos. Comparación de cuatro algoritmos e inferencia local de simulación.
 REAL sigue bloqueado; no hay resultados escolares ni hipótesis validada. Las cuatro
-cuentas S2.2 y el histórico se conservan. S4–S6 pendientes.
+cuentas S2.2 y el histórico se conservan. S5/S6 pendientes.
 
 Consultar [manual del estudio](docs/manuals/Manual_Estudio_Sintetico.md),
 [ADR 006](docs/adr/006-estudio-sintetico-s3-1.md) y
@@ -104,10 +104,10 @@ rutas Linux pertenecen a Docker, no son instrucciones para la consola del usuari
 ## Comprobaciones desde PowerShell
 
 ```powershell
-$env:TEST_REPORT_NAME = 's3-1-backend'
+$env:TEST_REPORT_NAME = 's4-backend'
 docker compose -f infra/compose.test.yaml build tester
 docker compose -f infra/compose.test.yaml run --rm tester
-$env:BROWSER_REPORT_PREFIX = 's3-1'
+$env:BROWSER_REPORT_PREFIX = 's4-complete'
 py -3.12 infra/test_browser.py
 py -3.12 -m venv .venv-s0
 .\.venv-s0\Scripts\python.exe -m pip install --require-hashes -r infra/requirements-s0.txt
@@ -127,21 +127,23 @@ efectiva sin ese reemplazo. Todos sus registros y artefactos son fixtures aislad
 
 El runner de navegador necesita Chromium de Playwright instalado (`npx playwright
 install chromium` si falta), usa puerto 15174 y otra base nueva. No guarda la contraseña
-de prueba en archivos y no toca la aplicación activa. Comprueba teclado, acceso,
-contexto vacío y revocación en escritorio, tablet y móvil.
+de prueba en archivos y no toca la aplicación activa. Comprueba primera importación real de CSV registrado, filtros/lista/detalle/historial,
+modelos/inferencia, permisos, teclado y revocación en escritorio, tablet y móvil.
+Las ramas HTTP simuladas se identifican aparte. La revisión crea exclusivamente
+fixtures en la base de prueba; conserva el estudio activo.
 
 `py -3.12 infra/check_runtime.py` comprueba únicamente una aplicación todavía vacía,
 recrea contenedores y conserva un marcador de infraestructura en el volumen. Rechaza
 ejecutarse si ya hay registros; no borra ni inventa datos para que pase.
 
 Con las cuentas actuales usa `py -3.12 infra/check_access_persistence.py`, con
-`$env:PERSISTENCE_REPORT_PREFIX = 's3-1'`: captura el estado, recrea sin eliminar
+`$env:PERSISTENCE_REPORT_PREFIX = 's4'`: captura el estado, recrea sin eliminar
 volúmenes y verifica cuentas, roles, auditoría, estudio y archivos. La revisión
 S3.1 de las 19 operaciones usa `infra/review_study.py`, según el manual del estudio;
 los revisores históricos `review_endpoints.py` y `review_s3.py` esperan bloqueo
 total y no se ejecutan sobre el estudio poblado. `infra/review_browser.py` revisa
 los cuatro roles en localhost usando el almacén privado, con
-`$env:REVIEW_REPORT_PREFIX = 's3-1-active'`. No ejecutar revisiones de login repetidamente: el límite vigente
+`$env:REVIEW_REPORT_PREFIX = 's4-active-complete'`. No ejecutar revisiones de login repetidamente: el límite vigente
 es 10 intentos por IP cada 300 segundos y también cuenta accesos correctos.
 
 ## Contrato, conservación y límites
@@ -183,8 +185,7 @@ Rutas S3 conservadas: `GET /api/v1/models`, `GET /api/v1/models/{id}` (ADMIN),
 `POST /api/v1/predictions/run` (ADMIN/CSRF, simulación SYNTHETIC registrada) y
 `GET /api/v1/predictions/{id}` (ADMIN/TUTOR/DIRECTOR, alcance por sección).
 S3.1 añade `GET /api/v1/processing/status`, autenticado y general por rol, y el aviso
-del servidor en inicio. REAL continúa bloqueado. Sin entrenamiento/activación HTTP
-ni pantallas S4.
+del servidor en inicio. REAL continúa bloqueado. Sin entrenamiento/activación HTTP. S4 usa estas operaciones en pantallas conectadas.
 
 ```powershell
 py -3.12 infra/ml.py readiness
@@ -192,11 +193,11 @@ py -3.12 infra/ml.py configuration
 py -3.12 infra/ml.py compatibility
 py -3.12 infra/ml.py train  # Rechazo esperado, código de salida 2
 py -3.12 infra/study.py status --admin-credential ADMIN
-$env:REVIEW_REPORT_PREFIX = 's3-1-active'
-py -3.12 infra/review_browser.py
-$env:PERSISTENCE_REPORT_PREFIX = 's3-1'
+$env:REVIEW_REPORT_PREFIX = 's4-active-complete'
+py -3.12 infra/review_browser.py --study-id e3a2d28b-2f23-56ae-878c-1a8f4a257e7e --period-id c036cbcb-87db-5ed0-bcfa-bbd644928ccb
+$env:PERSISTENCE_REPORT_PREFIX = 's4'
 py -3.12 infra/check_access_persistence.py
-.\.venv-s0\Scripts\python.exe infra/check_study.py
+.\.venv-s0\Scripts\python.exe infra/check_s4.py
 ```
 
 `check_study.py` contrasta la evidencia S3.1. `check_s3.py` y `.local/s3-before.json`
@@ -206,3 +207,24 @@ El [manual del estudio](docs/manuals/Manual_Estudio_Sintetico.md) describe gener
 importación, comparación, registro y activación explícitos. El [manual ML](docs/manuals/ML_S3.md),
 [ADR 005](docs/adr/005-infraestructura-ml-s3.md) y [Estado S3](docs/planning/Estado_Sprint_3.md)
 conservan la infraestructura y evidencia de aquella iteración.
+
+## Interfaz S4
+
+Acceso, Inicio, Estudiantes/lista/detalle/historial, Datos/importación y Modelos
+se conectan al contrato 0.4.0. Usa periodo/sección autorizados, filtros y paginación
+en servidor. ADMIN importa el CSV registrado y evalúa el periodo sintético; TUTOR
+consulta únicamente su sección; DIRECTOR consulta su alcance; RESEARCHER conserva
+inicio limitado y sesión. Alertas y Reportes están pendientes de S5.
+
+No regenerar ni reentrenar el estudio existente para usar la interfaz. Para obtener
+su CSV de entrada y seleccionarlo en Windows, consulta el comando export-csv del
+[manual de uso S4](docs/manuals/Manual_Uso_S4.md): archivo nuevo fuera de Git, hash
+verificado, sin sobrescritura ni descarga HTTP. Las escalas y fechas son supuestos
+de synthetic-study-v1. El instante actual de evaluación se usa con zona explícita,
+no se retrofecha al calendario simulado. La hora actual procede de la API local
+(HTTP Date y tiempo monótono), con precisión de segundos; la fecha manual conserva
+el instante solicitado en Lima y el servidor valida que no esté en el futuro.
+
+[ADR 007](docs/adr/007-interfaz-s4.md), [matriz S4](docs/planning/Matriz_verificacion_S4.md)
+y [Estado S4](docs/planning/Estado_Sprint_4.md) registran alcance y comprobaciones.
+Solo infraestructura/simulación comprobadas; no tratamiento REAL ni tesis validada.

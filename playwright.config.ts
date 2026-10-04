@@ -7,6 +7,7 @@ export default defineConfig({
   outputDir: '.local/playwright-results',
   reporter: './tests/e2e/review-reporter.ts',
   use: {
+    locale: 'es-PE',
     baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:15174',
     trace: 'off',
     screenshot: 'off',

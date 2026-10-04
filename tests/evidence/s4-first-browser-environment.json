@@ -1,0 +1,25 @@
+{
+  "status": "COMPROBADO",
+  "database": "riesgo_escolar_test_browser_7e8415c5677a",
+  "data_scope": "isolated_test_only",
+  "bootstrap_repeated_rejected": true,
+  "account_survives_restart": true,
+  "active_environment_untouched": true,
+  "roles": [
+    "ADMIN",
+    "TUTOR",
+    "DIRECTOR",
+    "RESEARCHER"
+  ],
+  "first_import_via_real_browser_api": true,
+  "selected_algorithm": "SVM",
+  "initial_predictions": {
+    "selected": 60,
+    "created": 55,
+    "reused": 0,
+    "abstentions": 5
+  },
+  "pending_revision_fixture": "Una revisi\u00f3n a\u00f1adida \u00fanicamente en la DB browser aislada; predicci\u00f3n anterior conservada.",
+  "csv_export_verified": true,
+  "csv_removed_after_review": true
+}
