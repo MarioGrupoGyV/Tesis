@@ -1,0 +1,118 @@
+{
+  "status": "COMPROBADO",
+  "executed_at": "2026-10-11T20:04:29.970702+00:00",
+  "target": {
+    "project": "riesgo-escolar",
+    "database": "riesgo_escolar",
+    "web_url": "http://localhost:15173",
+    "api_url": "http://localhost:18000"
+  },
+  "checks": [
+    "32_ACTUAL_OPERATIONS_MATCH_CONTRACT",
+    "CURRENT_ADMIN_LOGIN_200",
+    "RETROSPECTIVE_HISTORY_FROM_API",
+    "60_PREDICTIONS_49_CORRECT_40_PROPOSALS",
+    "PROPOSALS_SEPARATED_FROM_ACTIONS",
+    "SOURCE_DATES_B1_FROZEN_NO_REFIT",
+    "CSRF_REQUIRED",
+    "MISSING_RETROSPECTIVE_404",
+    "ADMIN_LOGOUT",
+    "CURRENT_TUTOR_LOGIN_200",
+    "TUTOR_SERVER_DENIED",
+    "TUTOR_LOGOUT",
+    "CURRENT_DIRECTOR_LOGIN_200",
+    "DIRECTOR_SERVER_DENIED",
+    "DIRECTOR_LOGOUT",
+    "CURRENT_RESEARCHER_LOGIN_200",
+    "RESEARCHER_SERVER_DENIED",
+    "RESEARCHER_LOGOUT",
+    "ALL_13_EXISTING_NON_ACCESS_TABLES_UNCHANGED",
+    "FOUR_CURRENT_ACCOUNTS_PRESERVED",
+    "EXISTING_IMPORT_FILES_UNCHANGED",
+    "ALL_EXISTING_ML_FILES_UNCHANGED"
+  ],
+  "role_statuses": {
+    "ADMIN": 200,
+    "TUTOR": 403,
+    "DIRECTOR": 403,
+    "RESEARCHER": 403
+  },
+  "counts_before": {
+    "academic_periods": 1,
+    "academic_snapshots": 360,
+    "alerts": 51,
+    "app_users": 4,
+    "audit_events": 347,
+    "enrollments": 60,
+    "followup_decisions": 55,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 2,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 79
+  },
+  "counts_after": {
+    "academic_periods": 1,
+    "academic_snapshots": 360,
+    "alerts": 51,
+    "app_users": 4,
+    "audit_events": 367,
+    "enrollments": 60,
+    "followup_decisions": 55,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 2,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 93
+  },
+  "metrics": {
+    "n": 60,
+    "correct": 49,
+    "accuracy": 0.8166666666666667,
+    "f1_macro": 0.7930479204842023,
+    "confusion": [
+      [
+        20,
+        5,
+        0
+      ],
+      [
+        0,
+        9,
+        2
+      ],
+      [
+        0,
+        4,
+        20
+      ]
+    ],
+    "support": [
+      25,
+      11,
+      24
+    ],
+    "alert_proposals": 40
+  },
+  "evaluation_id": "1c0c3050-a4bd-4489-a8f2-cdb2533fa590",
+  "evaluation_executed_at": "2026-10-11T19:59:51.318198Z",
+  "source_events_verified": true,
+  "compatibility": "CROSS_VERSION_EXPERIMENTAL",
+  "version_warnings": [
+    "Pipeline: 1.8.0 -> 1.9.1",
+    "SVC: 1.8.0 -> 1.9.1",
+    "StandardScaler: 1.8.0 -> 1.9.1"
+  ],
+  "discrepancies": [],
+  "prediction_mismatches": 0,
+  "csv_rows_verified_in_browser": 60,
+  "new_ml_private_files": 6,
+  "registered_evaluations": 3,
+  "evaluation_local_time": "2026-10-11T14:59:51.318198-05:00"
+}

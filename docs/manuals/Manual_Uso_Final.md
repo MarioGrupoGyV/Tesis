@@ -221,3 +221,10 @@ si la versión/capacidad actual no admite ese cambio.
 La revisión documentada de tres tamaños no es una certificación completa de
 accesibilidad o lector de pantalla. Las correcciones y capturas S6 se registran
 con su evidencia real; estas capturas no equivalen a una auditoría completa.
+
+## Evaluación retrospectiva autorizada, 2026-10-11
+
+Se añade un módulo ADMIN separado para el SVM congelado B1/B2 del ZIP.
+Conserva el estudio sintético y el bloqueo REAL operativo. Las propuestas no
+son notificaciones ni intervenciones. Fechas reales, límites, registro privado
+y uso: [Manual retrospectivo](Manual_Evaluacion_Retrospectiva.md).

@@ -2,6 +2,17 @@
 
 Estas instrucciones se deben colocar en la raíz del repositorio de la tesis. Describen la implementación prevista. La fase vigente es S6: integración final, instalación reproducible y respaldo/restauración local. REAL continúa bloqueado; comparación e inferencia local únicamente en el contexto SYNTHETIC registrado. Se conservan las cuatro cuentas locales de S2.2, nunca por semillas de arranque. No existe una autorización implícita para cargar datos de menores ni cambiar la metodología académica.
 
+Excepción explícita del 2026-10-11: el usuario solicita integrar el SVM del paquete
+`Calculos_y_modelo_evaluacion_retrospectiva.zip` y confirma datos reales con
+autorización de procesamiento local. Se admite únicamente el módulo ADMIN
+`RETROSPECTIVE_EVALUATION`, con paquete exacto registrado por CLI, tres variables,
+B1 congelado y B2 de la misma cohorte. No habilita REAL operativo, no mezcla datos
+con SYNTHETIC ni crea casos/notificaciones/intervenciones. Almacenamiento privado
+fuera del checkout, diario firmado inmutable y fechas reales. Leer
+`docs/planning/Plan_Integracion_Retrospectiva.md` y
+`docs/manuals/Manual_Evaluacion_Retrospectiva.md`. La declaración del usuario no
+acredita autenticidad institucional ni ejecución histórica.
+
 El usuario opera exclusivamente desde PowerShell en Windows. Docker conserva imágenes Linux internas; no exigir WSL, Bash ni Make. Versiones y locks fijados se conservan. El primer administrador se crea explícitamente por CLI con entrada secreta, nunca por archivo de cuentas. Los documentos y evidencias históricos S0/S1/S2 no son instrucciones operativas.
 
 Desde el 2026-10-11 el único entorno virtual local es `backend/.venv`, por solicitud del usuario. Desde `backend` se activa con `.\.venv\Scripts\Activate.ps1`. Reúne las dependencias Windows previamente instaladas de backend y herramientas documentales; no recrear `.venv-s0` ni `.venv-s1`. Sus menciones en evidencias y estados históricos describen ejecuciones pasadas. El runtime integrado y XGBoost CPU conservan sus versiones dentro de Docker.

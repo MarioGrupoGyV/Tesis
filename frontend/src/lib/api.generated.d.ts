@@ -528,6 +528,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/retrospective/evaluations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Historial ADMIN firmado, paginado, con métricas agregadas; sin registro devuelve available false.
+         * @description Historial ADMIN firmado, paginado, con métricas agregadas; sin registro devuelve available false.
+         */
+        get: operations["retrospectiveHistory"];
+        put?: never;
+        /**
+         * Nueva ejecución con fecha real y actor; artefacto congelado B1, 60 registros B2. Escalador incluido; sin fit. Registro y auditoría en un único sobre privado firmado e inmutable. Conserva advertencias entre versiones y discrepancias.
+         * @description Nueva ejecución con fecha real y actor; artefacto congelado B1, 60 registros B2. Escalador incluido; sin fit. Registro y auditoría en un único sobre privado firmado e inmutable. Conserva advertencias entre versiones y discrepancias.
+         */
+        post: operations["runRetrospective"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/retrospective/evaluations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Resultado retrospectivo ADMIN, 60 filas anonimizadas y verificación temporal declarada, sin acreditar autenticidad.
+         * @description Resultado retrospectivo ADMIN, 60 filas anonimizadas y verificación temporal declarada, sin acreditar autenticidad.
+         */
+        get: operations["retrospectiveDetail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/retrospective/evaluations/{id}/report.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reporte retrospectivo ADMIN de una ejecución persistida.
+         * @description Reporte retrospectivo ADMIN de una ejecución persistida.
+         */
+        get: operations["exportRetrospectiveCsv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/retrospective/partial-prediction": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ensayo parcial ADMIN no persistido como caso. Tres variables y disponibilidad por variable <= corte B1/B2 a las 00:00 Lima; sin etiquetas en X, sin propuestas operativas.
+         * @description Ensayo parcial ADMIN no persistido como caso. Tres variables y disponibilidad por variable <= corte B1/B2 a las 00:00 Lima; sin etiquetas en X, sin propuestas operativas.
+         */
+        post: operations["retrospectivePartialPrediction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1473,6 +1557,350 @@ export interface components {
              * Format: uuid
              */
             period_id: string;
+        };
+        /** RetrospectiveMetrics */
+        RetrospectiveMetrics: {
+            /** N */
+            n: number;
+            /** Correct */
+            correct: number;
+            /** Accuracy */
+            accuracy: number;
+            /** F1 Macro */
+            f1_macro: number;
+            /** Confusion */
+            confusion: number[][];
+            /** Support */
+            support: number[];
+            /** Alert Proposals */
+            alert_proposals: number;
+        };
+        /** RetrospectivePrediction */
+        RetrospectivePrediction: {
+            /** Row Number */
+            row_number: number;
+            /**
+             * Risk Level
+             * @enum {string}
+             */
+            risk_level: "LOW" | "MEDIUM" | "HIGH";
+            /**
+             * Reference Risk
+             * @enum {string}
+             */
+            reference_risk: "LOW" | "MEDIUM" | "HIGH";
+            /** Correct */
+            correct: boolean;
+            /** Alert Proposed */
+            alert_proposed: boolean;
+            /** Matches Package */
+            matches_package: boolean;
+            /**
+             * Probabilities Calibrated
+             * @constant
+             */
+            probabilities_calibrated: false;
+            /**
+             * Notification Sent
+             * @constant
+             */
+            notification_sent: false;
+            /**
+             * Intervention Performed
+             * @constant
+             */
+            intervention_performed: false;
+        };
+        /** RetrospectiveDetail */
+        RetrospectiveDetail: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Executed At
+             * Format: date-time
+             */
+            executed_at: string;
+            /**
+             * Completed At
+             * Format: date-time
+             */
+            completed_at: string;
+            /**
+             * Scope
+             * @constant
+             */
+            scope: "RETROSPECTIVE_EVALUATION";
+            /**
+             * Data Origin
+             * @constant
+             */
+            data_origin: "REAL_USER_AUTHORIZED_UNVERIFIED";
+            /**
+             * Algorithm
+             * @constant
+             */
+            algorithm: "SVM";
+            /**
+             * Training Term
+             * @constant
+             */
+            training_term: "B1";
+            /**
+             * Evaluation Term
+             * @constant
+             */
+            evaluation_term: "B2";
+            /** Cutoffs */
+            cutoffs: {
+                [key: string]: string;
+            };
+            /** Feature Order */
+            feature_order: string[];
+            /**
+             * Refitted
+             * @constant
+             */
+            refitted: false;
+            /** Scaler B1 Verified */
+            scaler_b1_verified: boolean;
+            /** B1 Support Vectors Verified */
+            b1_support_vectors_verified: boolean;
+            /** Source Events Verified */
+            source_events_verified: boolean;
+            /**
+             * Temporal Check
+             * @enum {string}
+             */
+            temporal_check: "DERIVED_AGGREGATE_ONLY" | "SOURCE_DECLARED_EVENTS_VERIFIED";
+            /**
+             * Same Cohort
+             * @constant
+             */
+            same_cohort: true;
+            /**
+             * Compatibility
+             * @enum {string}
+             */
+            compatibility: "CROSS_VERSION_EXPERIMENTAL" | "SOURCE_SKLEARN_VERSION";
+            /** Version Warnings */
+            version_warnings: string[];
+            /** Versions */
+            versions: {
+                [key: string]: string;
+            };
+            /** Source Versions */
+            source_versions: {
+                [key: string]: string;
+            };
+            metrics: components["schemas"]["RetrospectiveMetrics"];
+            /** Prediction Mismatches */
+            prediction_mismatches: number;
+            /** Discrepancies */
+            discrepancies: string[];
+            /** Missing Package Files */
+            missing_package_files: string[];
+            /**
+             * Notifications Sent
+             * @constant
+             */
+            notifications_sent: 0;
+            /**
+             * Interventions Performed
+             * @constant
+             */
+            interventions_performed: 0;
+            /** Predictions */
+            predictions: components["schemas"]["RetrospectivePrediction"][];
+        };
+        /** RetrospectiveSummary */
+        RetrospectiveSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Executed At
+             * Format: date-time
+             */
+            executed_at: string;
+            /**
+             * Completed At
+             * Format: date-time
+             */
+            completed_at: string;
+            /**
+             * Scope
+             * @constant
+             */
+            scope: "RETROSPECTIVE_EVALUATION";
+            /**
+             * Data Origin
+             * @constant
+             */
+            data_origin: "REAL_USER_AUTHORIZED_UNVERIFIED";
+            /**
+             * Algorithm
+             * @constant
+             */
+            algorithm: "SVM";
+            /**
+             * Training Term
+             * @constant
+             */
+            training_term: "B1";
+            /**
+             * Evaluation Term
+             * @constant
+             */
+            evaluation_term: "B2";
+            /** Cutoffs */
+            cutoffs: {
+                [key: string]: string;
+            };
+            /** Feature Order */
+            feature_order: string[];
+            /**
+             * Refitted
+             * @constant
+             */
+            refitted: false;
+            /** Scaler B1 Verified */
+            scaler_b1_verified: boolean;
+            /** B1 Support Vectors Verified */
+            b1_support_vectors_verified: boolean;
+            /** Source Events Verified */
+            source_events_verified: boolean;
+            /**
+             * Temporal Check
+             * @enum {string}
+             */
+            temporal_check: "DERIVED_AGGREGATE_ONLY" | "SOURCE_DECLARED_EVENTS_VERIFIED";
+            /**
+             * Same Cohort
+             * @constant
+             */
+            same_cohort: true;
+            /**
+             * Compatibility
+             * @enum {string}
+             */
+            compatibility: "CROSS_VERSION_EXPERIMENTAL" | "SOURCE_SKLEARN_VERSION";
+            /** Version Warnings */
+            version_warnings: string[];
+            /** Versions */
+            versions: {
+                [key: string]: string;
+            };
+            /** Source Versions */
+            source_versions: {
+                [key: string]: string;
+            };
+            metrics: components["schemas"]["RetrospectiveMetrics"];
+            /** Prediction Mismatches */
+            prediction_mismatches: number;
+            /** Discrepancies */
+            discrepancies: string[];
+            /** Missing Package Files */
+            missing_package_files: string[];
+            /**
+             * Notifications Sent
+             * @constant
+             */
+            notifications_sent: 0;
+            /**
+             * Interventions Performed
+             * @constant
+             */
+            interventions_performed: 0;
+        };
+        /** RetrospectivePage */
+        RetrospectivePage: {
+            /** Available */
+            available: boolean;
+            /** Items */
+            items: components["schemas"]["RetrospectiveSummary"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** PartialAvailability */
+        PartialAvailability: {
+            /**
+             * Promedio Parcial 0 20
+             * Format: date-time
+             */
+            promedio_parcial_0_20: string;
+            /**
+             * Asistencia Parcial Proporcion
+             * Format: date-time
+             */
+            asistencia_parcial_proporcion: string;
+            /**
+             * Entrega Parcial Proporcion
+             * Format: date-time
+             */
+            entrega_parcial_proporcion: string;
+        };
+        /** PartialValues */
+        PartialValues: {
+            /** Promedio Parcial 0 20 */
+            promedio_parcial_0_20: number;
+            /** Asistencia Parcial Proporcion */
+            asistencia_parcial_proporcion: number;
+            /** Entrega Parcial Proporcion */
+            entrega_parcial_proporcion: number;
+        };
+        /** RetrospectivePartialInput */
+        RetrospectivePartialInput: {
+            /**
+             * Term
+             * @enum {string}
+             */
+            term: "B1" | "B2";
+            values: components["schemas"]["PartialValues"];
+            available_at: components["schemas"]["PartialAvailability"];
+        };
+        /** RetrospectivePartialResult */
+        RetrospectivePartialResult: {
+            /**
+             * Executed At
+             * Format: date-time
+             */
+            executed_at: string;
+            /**
+             * Scope
+             * @constant
+             */
+            scope: "RETROSPECTIVE_EVALUATION";
+            /**
+             * Risk Level
+             * @enum {string}
+             */
+            risk_level: "LOW" | "MEDIUM" | "HIGH";
+            /** Alert Proposed */
+            alert_proposed: boolean;
+            /**
+             * Probabilities Calibrated
+             * @constant
+             */
+            probabilities_calibrated: false;
+            /**
+             * Notification Sent
+             * @constant
+             */
+            notification_sent: false;
+            /**
+             * Intervention Performed
+             * @constant
+             */
+            intervention_performed: false;
         };
     };
     responses: never;
@@ -3702,6 +4130,436 @@ export interface operations {
                 };
             };
             /** @description SERVICE_UNAVAILABLE sanitizado; conflictos de integridad conservan 409 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    retrospectiveHistory: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resultado retrospectivo separado del contexto operativo */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RetrospectivePage"];
+                };
+            };
+            /** @description SESSION_INVALID */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description RETROSPECTIVE_NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Integridad, paquete o artefacto incompatible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Fechas, entradas o escalas no válidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Almacenamiento o base no disponibles */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    runRetrospective: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resultado retrospectivo separado del contexto operativo */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RetrospectiveDetail"];
+                };
+            };
+            /** @description SESSION_INVALID */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description RETROSPECTIVE_NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Integridad, paquete o artefacto incompatible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Fechas, entradas o escalas no válidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Almacenamiento o base no disponibles */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    retrospectiveDetail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resultado retrospectivo separado del contexto operativo */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RetrospectiveDetail"];
+                };
+            };
+            /** @description SESSION_INVALID */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description RETROSPECTIVE_NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Integridad, paquete o artefacto incompatible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Fechas, entradas o escalas no válidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Almacenamiento o base no disponibles */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    exportRetrospectiveCsv: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description CSV UTF-8 con BOM, 60 filas numeradas sin códigos/nombres. Fecha real, riesgo, referencia y propuesta separados de notificación/intervención. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+            /** @description SESSION_INVALID */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description RETROSPECTIVE_NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Integridad, paquete o artefacto incompatible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Fechas, entradas o escalas no válidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Almacenamiento o base no disponibles */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    retrospectivePartialPrediction: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RetrospectivePartialInput"];
+            };
+        };
+        responses: {
+            /** @description Resultado retrospectivo separado del contexto operativo */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RetrospectivePartialResult"];
+                };
+            };
+            /** @description SESSION_INVALID */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description FORBIDDEN o CSRF_INVALID */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description RETROSPECTIVE_NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Integridad, paquete o artefacto incompatible */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Fechas, entradas o escalas no válidas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Error interno sanitizado */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Almacenamiento o base no disponibles */
             503: {
                 headers: {
                     [name: string]: unknown;

@@ -1,6 +1,6 @@
 # Backend de Seguimiento Escolar — S6
 
-S6 conserva negocio, ML, contrato 0.5.0 y migraciones 0001–0004. Añade targeting,
+S6 conserva negocio, ML, contrato 0.6.0 y migraciones 0001–0004. Añade targeting,
 instalación/recuperación y verificación fuera del backend. Estado y comandos finales:
 [Estado S6](../docs/planning/Estado_Sprint_6.md), [instalación](../docs/manuals/Manual_Instalacion_Windows.md)
 y [respaldo](../docs/manuals/Manual_Respaldo_Restauracion.md).
@@ -8,7 +8,7 @@ La API siempre usa riesgo_app; owner solo migra/restaura o diagnostica Alembic s
 conceder privilegios adicionales. Fixtures y cuentas temporales de instalación
 usan los servicios reales en destinos aislados; no se incorporan al arranque.
 
-Contrato público **0.5.0**: **27 operaciones en 26 paths**, bajo `/api/v1`.
+Contrato público **0.6.0**: **32 operaciones en 30 paths**, bajo `/api/v1`.
 PostgreSQL contiene **15 tablas**. S5 añade seguimiento y reportes operativos del
 estudio SYNTHETIC registrado; REAL conserva `INSTITUTIONAL_PROCESSING_NOT_READY`.
 Los resultados de comprobación se registran en
@@ -142,3 +142,10 @@ sesiones, evidencias y volúmenes. Referencias: [ADR 008](../docs/adr/008-seguim
 [manual S5](../docs/manuals/Manual_Seguimiento_Reportes_S5.md) y
 [manual del estudio](../docs/manuals/Manual_Estudio_Sintetico.md).
 S6, restauración final integrada y revisión académica siguen pendientes.
+
+## Evaluación retrospectiva autorizada, 2026-10-11
+
+Se añade un módulo ADMIN separado para el SVM congelado B1/B2 del ZIP.
+Conserva el estudio sintético y el bloqueo REAL operativo. Las propuestas no
+son notificaciones ni intervenciones. Fechas reales, límites, registro privado
+y uso: [Manual retrospectivo](../docs/manuals/Manual_Evaluacion_Retrospectiva.md).

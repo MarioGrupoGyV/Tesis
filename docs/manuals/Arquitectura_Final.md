@@ -40,7 +40,7 @@ la API. `manage up` coordina explícitamente el migrador temporal antes de arran
 | Python de backend | API, servicios y núcleo ML en Docker | 3.12.12 |
 | PostgreSQL | Transacciones, integridad, locks y evidencias | 17.6 |
 | Node/npm de imagen | Frontend y build | 24.14.1 / 11.20.0 |
-| OpenAPI | Campos/operaciones públicas y tipos frontend | 0.5.0, 27 operaciones |
+| OpenAPI | Campos/operaciones públicas y tipos frontend | 0.6.0, 32 operaciones |
 | Alembic | Esquema versionado | 0004_followup, 15 tablas de aplicación |
 | ML CPU | Dummy, Random Forest, SVM y XGBoost | scikit-learn 1.9.1; xgboost-cpu 3.4.1 |
 
@@ -220,3 +220,10 @@ rechazaron alteración DPAPI nativa Windows, HMAC ausente, manifiesto incompatib
 dump modificado, copia no registrada y destino existente; el backup original quedó
 intacto. Es evidencia de recuperación estructural y protección, separada del cierre
 de interfaz y de instalación nueva.
+
+## Evaluación retrospectiva autorizada, 2026-10-11
+
+Se añade un módulo ADMIN separado para el SVM congelado B1/B2 del ZIP.
+Conserva el estudio sintético y el bloqueo REAL operativo. Las propuestas no
+son notificaciones ni intervenciones. Fechas reales, límites, registro privado
+y uso: [Manual retrospectivo](Manual_Evaluacion_Retrospectiva.md).

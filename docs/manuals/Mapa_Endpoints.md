@@ -1,7 +1,7 @@
 # Mapa de endpoints
 
-Contrato vigente: [OpenAPI 0.5.0](../planning/Contrato_API.yaml), **27 operaciones
-en 26 paths**, todas bajo `/api/v1`. Las rutas están implementadas en
+Contrato vigente: [OpenAPI 0.6.0](../planning/Contrato_API.yaml), **32 operaciones
+en 30 paths**, todas bajo `/api/v1`. Las rutas están implementadas en
 [api/v1](../../backend/app/api/v1) y el navegador las consume mediante el
 [cliente tipado](../../frontend/src/lib/api.ts). Los tipos se generan desde el
 contrato; no se define un contrato distinto en cada pantalla.
@@ -227,3 +227,20 @@ Mutaciones y exportaciones no se reintentan automáticamente.
 No hay endpoints de entrenamiento/activación/borrado, comunicaciones, gestión pública
 de cuentas, eficacia escolar o integración institucional. Los comandos de
 instalación/perfiles y recuperación pertenecen a infraestructura, no a la API pública.
+
+## Evaluación retrospectiva S6 — 5 operaciones
+
+| Método / ruta | Rol y control | Entrada | Salida correcta | Consumidor |
+| --- | --- | --- | --- | --- |
+| GET `/retrospective/evaluations` | ADMIN | page/page_size | RetrospectivePage; agregado firmado | Modelos, historial retrospectivo |
+| POST `/retrospective/evaluations` | ADMIN, CSRF | Sin dataset HTTP | RetrospectiveDetail; nueva fecha real y actor | Ejecutar evaluación retrospectiva |
+| GET `/retrospective/evaluations/{id}` | ADMIN | UUID ejecución | RetrospectiveDetail; 60 filas sin códigos | Resultado retrospectivo |
+| GET `/retrospective/evaluations/{id}/report.csv` | ADMIN | UUID ejecución | CSV de 60 filas numeradas, sin nombres/códigos | Descarga retrospectiva |
+| POST `/retrospective/partial-prediction` | ADMIN, CSRF | RetrospectivePartialInput; tres valores y disponibilidad | RetrospectivePartialResult; ensayo sin caso | Entrada parcial en Modelos |
+
+El registro del ZIP se hace exclusivamente por CLI ADMIN explícita. Los permisos
+se aplican en servidor antes de procesar datos. No hay upload de joblib, fit,
+activación institucional, notificaciones ni intervenciones desde estas rutas.
+El CSV retrospectivo es una lectura del diario firmado; su ejecución ya contiene
+actor y auditoría. No se audita cada descarga en la tabla de casos sintéticos.
+[Manual y límites](Manual_Evaluacion_Retrospectiva.md).

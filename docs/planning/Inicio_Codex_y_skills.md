@@ -53,3 +53,12 @@ evidencias, archivos y dependencia siguiente. No fabricar pruebas visuales o mé
 Consultar también Estado_Sprint_3_1.md y contrato 0.5.0; no reescribir los cierres ni migraciones históricos.
 
 S5 conserva locks y extiende API a 0.5.0; TanStack Query, rutas estables, contexto y caché por actor. ProcessingStatus fallido deshabilita escrituras; no inferir preparación desde health. Evidencias nuevas prefijo s5, historial inmutable. ADMIN sincroniza, ADMIN/TUTOR gestionan según sección, DIRECTOR solo consulta/exporta y RESEARCHER mantiene sesión/Inicio limitado. CSV actual por matrícula, auditar solicitud sin afirmar apertura/guardado. No usar checker de base vacía ni check_s4 sobre seguimiento ya poblado; usar check_s5.
+## Excepción retrospectiva explícita del 2026-10-11
+
+El usuario autoriza procesar localmente los datos reales del ZIP para integrar y
+verificar el SVM congelado. El módulo ADMIN RETROSPECTIVE_EVALUATION conserva B1
+como entrenamiento declarado y B2 como evaluación, sin fit. No habilita el flujo
+institucional operativo ni modifica el estudio sintético, cuentas o históricos.
+Plan: Plan_Integracion_Retrospectiva.md; manual: ../manuals/Manual_Evaluacion_Retrospectiva.md.
+Cada ejecución y su actor se conservan en el diario privado firmado del volumen
+ML. La carga entre versiones conserva su advertencia experimental.

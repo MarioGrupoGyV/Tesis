@@ -243,6 +243,8 @@ def backup(target):
                 for k,v in payloads.items() if k.startswith('volumes/')}
             if before!=after or check_files!=recorded: raise RuntimeError('BACKUP_STATE_CHANGED')
             manifest={'version':1,'id':identifier,'origin':'SYNTHETIC','migration':'0004_followup',
+                'private_data_scopes':['SYNTHETIC_STUDY'] + (['RETROSPECTIVE_EVALUATION'] if any(
+                    k.startswith('volumes/ml_data/retrospective/') for k in payloads) else []),
                 'created_at':datetime.now(UTC).isoformat(),'window':{**window,'end':datetime.now(UTC).isoformat()},
                 'source':{k:target.data[k] for k in ('kind','project','database','volumes','ports','images')},
                 'code':code_identity(),'database':before,'inventory':
@@ -261,6 +263,7 @@ def backup(target):
         write_new(directory/(identifier+'.registered.json'),json.dumps(record,indent=2).encode())
         attempt.update(status='COMPROBADO',finished_at=datetime.now(UTC).isoformat())
         report={'status':'COMPROBADO','backup_id':identifier,'backup_file':final.name,
+            'private_data_scopes':manifest['private_data_scopes'],
             'cipher_sha256':record['cipher_sha256'],'bytes':record['bytes'],'origin':'SYNTHETIC',
             'source':manifest['source'],'window':manifest['window'],'database':before,
             'private_file_count':len(recorded),'file_inventory_sha256':hashlib.sha256(json.dumps(recorded,sort_keys=True).encode()).hexdigest(),

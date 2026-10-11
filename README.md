@@ -108,7 +108,7 @@ implícito no acredita aislamiento. Respetar diez logins/IP por 300 segundos.
 
 ## Contratos y límites
 
-[OpenAPI 0.5.0](docs/planning/Contrato_API.yaml): 27 operaciones/26 paths.
+[OpenAPI 0.6.0](docs/planning/Contrato_API.yaml): 32 operaciones/30 paths.
 Alembic `0004_followup`: 15 tablas de aplicación más tabla de revisión.
 No cambian DB/API por editar scripts/manuales. [Esquema.sql](docs/planning/Esquema.sql)
 es referencia: no ejecutarlo para sustituir migraciones. CSV/ML permanecen privados.
@@ -126,3 +126,10 @@ Decisiones en [ADR 009](docs/adr/009-integracion-recuperacion-s6.md),
 [criterios](docs/planning/Sprints_y_aceptacion.md). Cierres S0–S5 intactos.
 HTTPS, protocolo de datos, validación académica y continuidad en otro equipo
 requieren trabajo/autorizaciones posteriores; no se propone un S7.
+
+## Evaluación retrospectiva autorizada, 2026-10-11
+
+Se añade un módulo ADMIN separado para el SVM congelado B1/B2 del ZIP.
+Conserva el estudio sintético y el bloqueo REAL operativo. Las propuestas no
+son notificaciones ni intervenciones. Fechas reales, límites, registro privado
+y uso: [Manual retrospectivo](docs/manuals/Manual_Evaluacion_Retrospectiva.md).

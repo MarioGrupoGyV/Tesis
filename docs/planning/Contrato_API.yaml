@@ -1,9 +1,10 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.5.0
-  description: 'S5: seguimiento y reportes operativos del estudio SYNTHETIC registrado. REAL bloqueado. Sin
-    eficacia escolar, S6 ni entrenamiento/activación HTTP.'
+  version: 0.6.0
+  description: S6 integrado para simulación SYNTHETIC; procesamiento institucional operativo bloqueado. Evaluación
+    retrospectiva separada ADMIN de paquete local previamente registrado/autorizado. No reentrena, activa,
+    envía notificaciones ni crea intervenciones.
 servers:
 - url: /api/v1
   description: Preferir proxy de mismo origen para cookies y CSRF
@@ -19,6 +20,7 @@ tags:
 - name: processing
 - name: followup
 - name: reports
+- name: retrospective
 paths:
   /health/live:
     get:
@@ -556,7 +558,7 @@ paths:
       - name: risk_level
         in: query
         required: false
-        schema: &id030
+        schema: &id031
           type: string
           enum:
           - LOW
@@ -1101,10 +1103,10 @@ paths:
         simulación aprobado técnicamente y activo por CLI explícita. as_of no futuro; última revisión incorporada/disponible
         <= as_of. 409 MODEL_NOT_AVAILABLE/MODEL_INCOMPATIBLE/PERIOD_LOCKED. Abstenciones no insertan riesgo;
         probabilidades null/no calibradas. INSERT único snapshot/model y auditoría atómica; repetición/concurrencia
-        reutiliza resultado. No usa etiquetas de reserva. S5: predicciones, followup-policy-v1
-        y auditoría se confirman juntos. followup refleja solo predicciones seleccionadas que siguen actuales;
-        las históricas se cuentan ignored_stale. Reutilizar predicciones puede crear seguimiento inicial. No
-        commit previo a la sincronización.'
+        reutiliza resultado. No usa etiquetas de reserva. S5: predicciones, followup-policy-v1 y auditoría
+        se confirman juntos. followup refleja solo predicciones seleccionadas que siguen actuales; las históricas
+        se cuentan ignored_stale. Reutilizar predicciones puede crear seguimiento inicial. No commit previo
+        a la sincronización.'
       parameters:
       - name: X-CSRF-Token
         in: header
@@ -1859,6 +1861,353 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /retrospective/evaluations:
+    get:
+      operationId: retrospectiveHistory
+      summary: Historial ADMIN firmado, paginado, con métricas agregadas; sin registro devuelve available false.
+      description: Historial ADMIN firmado, paginado, con métricas agregadas; sin registro devuelve available
+        false.
+      tags:
+      - retrospective
+      x-stage: S6
+      x-roles:
+      - ADMIN
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 10000
+          default: 1
+      - name: page_size
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      responses:
+        '200':
+          description: Resultado retrospectivo separado del contexto operativo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrospectivePage'
+        '401':
+          description: SESSION_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: RETROSPECTIVE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Integridad, paquete o artefacto incompatible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Fechas, entradas o escalas no válidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Almacenamiento o base no disponibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: runRetrospective
+      summary: Nueva ejecución con fecha real y actor; artefacto congelado B1, 60 registros B2. Escalador incluido;
+        sin fit. Registro y auditoría en un único sobre privado firmado e inmutable. Conserva advertencias
+        entre versiones y discrepancias.
+      description: Nueva ejecución con fecha real y actor; artefacto congelado B1, 60 registros B2. Escalador
+        incluido; sin fit. Registro y auditoría en un único sobre privado firmado e inmutable. Conserva advertencias
+        entre versiones y discrepancias.
+      tags:
+      - retrospective
+      x-stage: S6
+      x-roles:
+      - ADMIN
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Resultado retrospectivo separado del contexto operativo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrospectiveDetail'
+        '401':
+          description: SESSION_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: RETROSPECTIVE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Integridad, paquete o artefacto incompatible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Fechas, entradas o escalas no válidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Almacenamiento o base no disponibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /retrospective/evaluations/{id}:
+    get:
+      operationId: retrospectiveDetail
+      summary: Resultado retrospectivo ADMIN, 60 filas anonimizadas y verificación temporal declarada, sin
+        acreditar autenticidad.
+      description: Resultado retrospectivo ADMIN, 60 filas anonimizadas y verificación temporal declarada,
+        sin acreditar autenticidad.
+      tags:
+      - retrospective
+      x-stage: S6
+      x-roles:
+      - ADMIN
+      parameters:
+      - &id027
+        name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Resultado retrospectivo separado del contexto operativo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrospectiveDetail'
+        '401':
+          description: SESSION_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: RETROSPECTIVE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Integridad, paquete o artefacto incompatible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Fechas, entradas o escalas no válidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Almacenamiento o base no disponibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /retrospective/evaluations/{id}/report.csv:
+    get:
+      operationId: exportRetrospectiveCsv
+      summary: Reporte retrospectivo ADMIN de una ejecución persistida.
+      description: Reporte retrospectivo ADMIN de una ejecución persistida.
+      tags:
+      - retrospective
+      x-stage: S6
+      x-roles:
+      - ADMIN
+      parameters:
+      - *id027
+      responses:
+        '200':
+          description: CSV UTF-8 con BOM, 60 filas numeradas sin códigos/nombres. Fecha real, riesgo, referencia
+            y propuesta separados de notificación/intervención.
+          content:
+            text/csv:
+              schema:
+                type: string
+        '401':
+          description: SESSION_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: RETROSPECTIVE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Integridad, paquete o artefacto incompatible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Fechas, entradas o escalas no válidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Almacenamiento o base no disponibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /retrospective/partial-prediction:
+    post:
+      operationId: retrospectivePartialPrediction
+      summary: Ensayo parcial ADMIN no persistido como caso. Tres variables y disponibilidad por variable <=
+        corte B1/B2 a las 00:00 Lima; sin etiquetas en X, sin propuestas operativas.
+      description: Ensayo parcial ADMIN no persistido como caso. Tres variables y disponibilidad por variable
+        <= corte B1/B2 a las 00:00 Lima; sin etiquetas en X, sin propuestas operativas.
+      tags:
+      - retrospective
+      x-stage: S6
+      x-roles:
+      - ADMIN
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Resultado retrospectivo separado del contexto operativo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrospectivePartialResult'
+        '401':
+          description: SESSION_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN o CSRF_INVALID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: RETROSPECTIVE_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Integridad, paquete o artefacto incompatible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Fechas, entradas o escalas no válidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Almacenamiento o base no disponibles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error interno sanitizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrospectivePartialInput'
 components:
   securitySchemes:
     sessionCookie:
@@ -1948,7 +2297,7 @@ components:
           $ref: '#/components/schemas/User'
         csrf_token:
           type: string
-        expires_at: &id029
+        expires_at: &id030
           type: string
           format: date-time
           description: RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
@@ -1975,11 +2324,11 @@ components:
           type: integer
           minimum: 2000
           maximum: 2100
-        start_date: &id027
+        start_date: &id028
           type: string
           format: date
-        end_date: *id027
-        data_origin: &id028
+        end_date: *id028
+        data_origin: &id029
           type: string
           enum:
           - REAL
@@ -2027,11 +2376,11 @@ components:
         id: *id003
         enrollment_id: *id003
         period_id: *id003
-        data_origin: *id028
-        window_start: *id027
-        cutoff_at: *id029
-        available_at: *id029
-        target_date: *id027
+        data_origin: *id029
+        window_start: *id028
+        cutoff_at: *id030
+        available_at: *id030
+        target_date: *id028
         revision:
           type: integer
           minimum: 1
@@ -2106,11 +2455,11 @@ components:
         enrollment_id: *id003
         snapshot_id: *id003
         model_id: *id003
-        data_origin: *id028
-        risk_level: *id030
-        cutoff_at: *id029
-        target_date: *id027
-        predicted_at: *id029
+        data_origin: *id029
+        risk_level: *id031
+        cutoff_at: *id030
+        target_date: *id028
+        predicted_at: *id030
         probability_low:
           type:
           - number
@@ -2189,7 +2538,7 @@ components:
           type: integer
           minimum: 1
           maximum: 5
-        data_origin: *id028
+        data_origin: *id029
         average_grade:
           type:
           - number
@@ -2282,7 +2631,7 @@ components:
           - PREDICTION
           - ALERT
           - INTERVENTION
-        occurred_at: *id029
+        occurred_at: *id030
         summary:
           type: string
         entity_id: *id003
@@ -2316,7 +2665,7 @@ components:
       properties:
         id: *id003
         period_id: *id003
-        data_origin: *id028
+        data_origin: *id029
         file_name:
           type: string
         file_sha256:
@@ -2362,7 +2711,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ImportError'
-        created_at: *id029
+        created_at: *id030
         committed_at:
           type:
           - string
@@ -2415,7 +2764,7 @@ components:
         anon_code:
           type: string
         prediction_id: *id003
-        data_origin: *id028
+        data_origin: *id029
         severity:
           type: string
           enum:
@@ -2438,8 +2787,8 @@ components:
           - string
           - 'null'
           maxLength: 1000
-        opened_at: *id029
-        updated_at: *id029
+        opened_at: *id030
+        updated_at: *id030
         closed_at:
           type:
           - string
@@ -2474,7 +2823,7 @@ components:
           - string
           - 'null'
           format: uuid
-        data_origin: *id028
+        data_origin: *id029
         kind:
           type: string
           enum:
@@ -2492,7 +2841,7 @@ components:
           - PLANNED
           - DONE
           - CANCELLED
-        scheduled_at: *id029
+        scheduled_at: *id030
         performed_at:
           type:
           - string
@@ -2506,8 +2855,8 @@ components:
         version:
           type: integer
           minimum: 1
-        created_at: *id029
-        updated_at: *id029
+        created_at: *id030
+        updated_at: *id030
       required:
       - id
       - enrollment_id
@@ -3632,5 +3981,521 @@ components:
       required:
       - period_id
       title: SyncInput
+      type: object
+    RetrospectiveMetrics:
+      additionalProperties: false
+      properties:
+        n:
+          title: N
+          type: integer
+        correct:
+          title: Correct
+          type: integer
+        accuracy:
+          title: Accuracy
+          type: number
+        f1_macro:
+          title: F1 Macro
+          type: number
+        confusion:
+          items:
+            items:
+              type: integer
+            type: array
+          title: Confusion
+          type: array
+        support:
+          items:
+            type: integer
+          title: Support
+          type: array
+        alert_proposals:
+          title: Alert Proposals
+          type: integer
+      required:
+      - n
+      - correct
+      - accuracy
+      - f1_macro
+      - confusion
+      - support
+      - alert_proposals
+      title: RetrospectiveMetrics
+      type: object
+    RetrospectivePrediction:
+      additionalProperties: false
+      properties:
+        row_number:
+          title: Row Number
+          type: integer
+        risk_level:
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+          title: Risk Level
+          type: string
+        reference_risk:
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+          title: Reference Risk
+          type: string
+        correct:
+          title: Correct
+          type: boolean
+        alert_proposed:
+          title: Alert Proposed
+          type: boolean
+        matches_package:
+          title: Matches Package
+          type: boolean
+        probabilities_calibrated:
+          const: false
+          title: Probabilities Calibrated
+          type: boolean
+        notification_sent:
+          const: false
+          title: Notification Sent
+          type: boolean
+        intervention_performed:
+          const: false
+          title: Intervention Performed
+          type: boolean
+      required:
+      - row_number
+      - risk_level
+      - reference_risk
+      - correct
+      - alert_proposed
+      - matches_package
+      - probabilities_calibrated
+      - notification_sent
+      - intervention_performed
+      title: RetrospectivePrediction
+      type: object
+    RetrospectiveDetail:
+      additionalProperties: false
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        executed_at:
+          format: date-time
+          title: Executed At
+          type: string
+        completed_at:
+          format: date-time
+          title: Completed At
+          type: string
+        scope:
+          const: RETROSPECTIVE_EVALUATION
+          title: Scope
+          type: string
+        data_origin:
+          const: REAL_USER_AUTHORIZED_UNVERIFIED
+          title: Data Origin
+          type: string
+        algorithm:
+          const: SVM
+          title: Algorithm
+          type: string
+        training_term:
+          const: B1
+          title: Training Term
+          type: string
+        evaluation_term:
+          const: B2
+          title: Evaluation Term
+          type: string
+        cutoffs:
+          additionalProperties:
+            type: string
+          title: Cutoffs
+          type: object
+        feature_order:
+          items:
+            type: string
+          title: Feature Order
+          type: array
+        refitted:
+          const: false
+          title: Refitted
+          type: boolean
+        scaler_b1_verified:
+          title: Scaler B1 Verified
+          type: boolean
+        b1_support_vectors_verified:
+          title: B1 Support Vectors Verified
+          type: boolean
+        source_events_verified:
+          title: Source Events Verified
+          type: boolean
+        temporal_check:
+          enum:
+          - DERIVED_AGGREGATE_ONLY
+          - SOURCE_DECLARED_EVENTS_VERIFIED
+          title: Temporal Check
+          type: string
+        same_cohort:
+          const: true
+          title: Same Cohort
+          type: boolean
+        compatibility:
+          enum:
+          - CROSS_VERSION_EXPERIMENTAL
+          - SOURCE_SKLEARN_VERSION
+          title: Compatibility
+          type: string
+        version_warnings:
+          items:
+            type: string
+          title: Version Warnings
+          type: array
+        versions:
+          additionalProperties:
+            type: string
+          title: Versions
+          type: object
+        source_versions:
+          additionalProperties:
+            type: string
+          title: Source Versions
+          type: object
+        metrics:
+          $ref: '#/components/schemas/RetrospectiveMetrics'
+        prediction_mismatches:
+          title: Prediction Mismatches
+          type: integer
+        discrepancies:
+          items:
+            type: string
+          title: Discrepancies
+          type: array
+        missing_package_files:
+          items:
+            type: string
+          title: Missing Package Files
+          type: array
+        notifications_sent:
+          const: 0
+          title: Notifications Sent
+          type: integer
+        interventions_performed:
+          const: 0
+          title: Interventions Performed
+          type: integer
+        predictions:
+          items:
+            $ref: '#/components/schemas/RetrospectivePrediction'
+          title: Predictions
+          type: array
+      required:
+      - id
+      - executed_at
+      - completed_at
+      - scope
+      - data_origin
+      - algorithm
+      - training_term
+      - evaluation_term
+      - cutoffs
+      - feature_order
+      - refitted
+      - scaler_b1_verified
+      - b1_support_vectors_verified
+      - source_events_verified
+      - temporal_check
+      - same_cohort
+      - compatibility
+      - version_warnings
+      - versions
+      - source_versions
+      - metrics
+      - prediction_mismatches
+      - discrepancies
+      - missing_package_files
+      - notifications_sent
+      - interventions_performed
+      - predictions
+      title: RetrospectiveDetail
+      type: object
+    RetrospectiveSummary:
+      additionalProperties: false
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        executed_at:
+          format: date-time
+          title: Executed At
+          type: string
+        completed_at:
+          format: date-time
+          title: Completed At
+          type: string
+        scope:
+          const: RETROSPECTIVE_EVALUATION
+          title: Scope
+          type: string
+        data_origin:
+          const: REAL_USER_AUTHORIZED_UNVERIFIED
+          title: Data Origin
+          type: string
+        algorithm:
+          const: SVM
+          title: Algorithm
+          type: string
+        training_term:
+          const: B1
+          title: Training Term
+          type: string
+        evaluation_term:
+          const: B2
+          title: Evaluation Term
+          type: string
+        cutoffs:
+          additionalProperties:
+            type: string
+          title: Cutoffs
+          type: object
+        feature_order:
+          items:
+            type: string
+          title: Feature Order
+          type: array
+        refitted:
+          const: false
+          title: Refitted
+          type: boolean
+        scaler_b1_verified:
+          title: Scaler B1 Verified
+          type: boolean
+        b1_support_vectors_verified:
+          title: B1 Support Vectors Verified
+          type: boolean
+        source_events_verified:
+          title: Source Events Verified
+          type: boolean
+        temporal_check:
+          enum:
+          - DERIVED_AGGREGATE_ONLY
+          - SOURCE_DECLARED_EVENTS_VERIFIED
+          title: Temporal Check
+          type: string
+        same_cohort:
+          const: true
+          title: Same Cohort
+          type: boolean
+        compatibility:
+          enum:
+          - CROSS_VERSION_EXPERIMENTAL
+          - SOURCE_SKLEARN_VERSION
+          title: Compatibility
+          type: string
+        version_warnings:
+          items:
+            type: string
+          title: Version Warnings
+          type: array
+        versions:
+          additionalProperties:
+            type: string
+          title: Versions
+          type: object
+        source_versions:
+          additionalProperties:
+            type: string
+          title: Source Versions
+          type: object
+        metrics:
+          $ref: '#/components/schemas/RetrospectiveMetrics'
+        prediction_mismatches:
+          title: Prediction Mismatches
+          type: integer
+        discrepancies:
+          items:
+            type: string
+          title: Discrepancies
+          type: array
+        missing_package_files:
+          items:
+            type: string
+          title: Missing Package Files
+          type: array
+        notifications_sent:
+          const: 0
+          title: Notifications Sent
+          type: integer
+        interventions_performed:
+          const: 0
+          title: Interventions Performed
+          type: integer
+      required:
+      - id
+      - executed_at
+      - completed_at
+      - scope
+      - data_origin
+      - algorithm
+      - training_term
+      - evaluation_term
+      - cutoffs
+      - feature_order
+      - refitted
+      - scaler_b1_verified
+      - b1_support_vectors_verified
+      - source_events_verified
+      - temporal_check
+      - same_cohort
+      - compatibility
+      - version_warnings
+      - versions
+      - source_versions
+      - metrics
+      - prediction_mismatches
+      - discrepancies
+      - missing_package_files
+      - notifications_sent
+      - interventions_performed
+      title: RetrospectiveSummary
+      type: object
+    RetrospectivePage:
+      additionalProperties: false
+      properties:
+        available:
+          title: Available
+          type: boolean
+        items:
+          items:
+            $ref: '#/components/schemas/RetrospectiveSummary'
+          title: Items
+          type: array
+        total:
+          title: Total
+          type: integer
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+      required:
+      - available
+      - items
+      - total
+      - page
+      - page_size
+      title: RetrospectivePage
+      type: object
+    PartialAvailability:
+      additionalProperties: false
+      properties:
+        promedio_parcial_0_20:
+          format: date-time
+          title: Promedio Parcial 0 20
+          type: string
+        asistencia_parcial_proporcion:
+          format: date-time
+          title: Asistencia Parcial Proporcion
+          type: string
+        entrega_parcial_proporcion:
+          format: date-time
+          title: Entrega Parcial Proporcion
+          type: string
+      required:
+      - promedio_parcial_0_20
+      - asistencia_parcial_proporcion
+      - entrega_parcial_proporcion
+      title: PartialAvailability
+      type: object
+    PartialValues:
+      additionalProperties: false
+      properties:
+        promedio_parcial_0_20:
+          maximum: 20
+          minimum: 0
+          title: Promedio Parcial 0 20
+          type: number
+        asistencia_parcial_proporcion:
+          maximum: 1
+          minimum: 0
+          title: Asistencia Parcial Proporcion
+          type: number
+        entrega_parcial_proporcion:
+          maximum: 1
+          minimum: 0
+          title: Entrega Parcial Proporcion
+          type: number
+      required:
+      - promedio_parcial_0_20
+      - asistencia_parcial_proporcion
+      - entrega_parcial_proporcion
+      title: PartialValues
+      type: object
+    RetrospectivePartialInput:
+      additionalProperties: false
+      properties:
+        term:
+          enum:
+          - B1
+          - B2
+          title: Term
+          type: string
+        values:
+          $ref: '#/components/schemas/PartialValues'
+        available_at:
+          $ref: '#/components/schemas/PartialAvailability'
+      required:
+      - term
+      - values
+      - available_at
+      title: RetrospectivePartialInput
+      type: object
+    RetrospectivePartialResult:
+      additionalProperties: false
+      properties:
+        executed_at:
+          format: date-time
+          title: Executed At
+          type: string
+        scope:
+          const: RETROSPECTIVE_EVALUATION
+          title: Scope
+          type: string
+        risk_level:
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+          title: Risk Level
+          type: string
+        alert_proposed:
+          title: Alert Proposed
+          type: boolean
+        probabilities_calibrated:
+          const: false
+          title: Probabilities Calibrated
+          type: boolean
+        notification_sent:
+          const: false
+          title: Notification Sent
+          type: boolean
+        intervention_performed:
+          const: false
+          title: Intervention Performed
+          type: boolean
+      required:
+      - executed_at
+      - scope
+      - risk_level
+      - alert_proposed
+      - probabilities_calibrated
+      - notification_sent
+      - intervention_performed
+      title: RetrospectivePartialResult
       type: object
 x-current-sprint: S2.1

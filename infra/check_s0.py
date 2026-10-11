@@ -51,9 +51,9 @@ def run():
     contract_path = ROOT / "docs/planning/Contrato_API.yaml"
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     validate(contract)
-    check(contract["info"]["version"] == "0.5.0", "OpenAPI 3.1 válido, versión 0.5.0")
+    check(contract["info"]["version"] == "0.6.0", "OpenAPI 3.1 válido, versión 0.6.0")
     operation_count = sum(method in ('get','post','patch','put','delete') for methods in contract['paths'].values() for method in methods)
-    check(operation_count == 27, '27 operaciones implementadas S1–S5')
+    check(operation_count == 32, '32 operaciones implementadas; 27 S1–S5 y 5 retrospectivas S6')
     for path, methods in contract["paths"].items():
         for method, operation in methods.items():
             if method not in ("get", "post", "patch", "put", "delete") or path == "/health/live":

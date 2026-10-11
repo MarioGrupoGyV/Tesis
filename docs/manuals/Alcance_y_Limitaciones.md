@@ -106,3 +106,18 @@ inyección HTTP no acredita caída real DB; un mock no acredita DPAPI Windows. F
 omisiones y pruebas obligatorias no ejecutadas deben permanecer visibles. S6 se
 cierra para simulación solo con sus criterios obligatorios comprobados; no se
 declara validación escolar, tesis concluida o habilitación REAL.
+
+## Adición retrospectiva autorizada del 2026-10-11
+
+El módulo ADMIN de evaluación retrospectiva del paquete real autorizado funciona
+en un diario firmado e inmutable dentro de `ml_data/retrospective`. No añade
+tablas/migraciones ni habilita importación/activación REAL operativa. Las nuevas
+ejecuciones conservan fecha real; propuestas, notificaciones e intervenciones
+son contadores distintos. [Registro, uso y límites](Manual_Evaluacion_Retrospectiva.md).
+
+El respaldo completo incluye paquete, autorización, certificado agregado, clave
+del diario y ejecuciones. El campo histórico `origin=SYNTHETIC` describe la DB;
+`private_data_scopes` distingue los archivos del estudio de la evaluación
+retrospectiva autorizada. La recuperación debe ser en un destino nuevo y conservar
+los bytes/firma sin regeneración ni entrenamiento. El Excel con nombres permanece
+en su ubicación original y no se copia al volumen ni al repositorio.

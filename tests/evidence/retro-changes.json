@@ -1,0 +1,471 @@
+{
+  "created_at": "2026-10-11T20:13:09.824450+00:00",
+  "scope": "public_workspace_changes_only",
+  "private_package_and_source_not_in_repository": true,
+  "manifest_self_hash_excluded": true,
+  "file_count": 66,
+  "files": [
+    {
+      "status": " M",
+      "relative_path": ".dockerignore",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\.dockerignore",
+      "bytes": 218,
+      "sha256": "d4c33de30e1dbc53ef5cd37313efb90200ee6144d60ea18eb18f490554987f2e"
+    },
+    {
+      "status": " M",
+      "relative_path": "AGENTS.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\AGENTS.md",
+      "bytes": 11098,
+      "sha256": "85e0b0496de0e57e43a08997ec9d5dacd22ce87fa215fd6331edd4fec98e04eb"
+    },
+    {
+      "status": " M",
+      "relative_path": "README.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\README.md",
+      "bytes": 7252,
+      "sha256": "68a17a0a871847e0dfc0b4ae80773e6da849c222286ce247ba40eeb7eef1ae5b"
+    },
+    {
+      "status": " M",
+      "relative_path": "backend/README.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\backend\\README.md",
+      "bytes": 9160,
+      "sha256": "cc26620b529cb49baec7b83b5184fc705b6a3c3bb35ba5f7d8677687784d47ed"
+    },
+    {
+      "status": "??",
+      "relative_path": "backend/app/api/v1/retrospective.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\backend\\app\\api\\v1\\retrospective.py",
+      "bytes": 2872,
+      "sha256": "d890be110e59bd9cf33b8d5c2f41bc38f0d7c4bbf1d07a3c075ca3fb9f07befd"
+    },
+    {
+      "status": " M",
+      "relative_path": "backend/app/main.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\backend\\app\\main.py",
+      "bytes": 5033,
+      "sha256": "6293791484c12006302c4fbb56a9aa3bc4876eeaa7f3333cf4450c32c7070896"
+    },
+    {
+      "status": "??",
+      "relative_path": "backend/app/ml/retrospective.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\backend\\app\\ml\\retrospective.py",
+      "bytes": 12562,
+      "sha256": "a69c3bd23838ff8c34a8aaec5838cbf949b6ff417ed69f76c3ed59af9cfebe51"
+    },
+    {
+      "status": "??",
+      "relative_path": "backend/app/repositories/retrospective.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\backend\\app\\repositories\\retrospective.py",
+      "bytes": 5282,
+      "sha256": "fc1b9cb79ed947b03662ca9bc536b281efe1641fa18d76e816a127fd1177aa9e"
+    },
+    {
+      "status": "??",
+      "relative_path": "backend/app/retrospective_cli.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\backend\\app\\retrospective_cli.py",
+      "bytes": 3891,
+      "sha256": "5698de6bcc0fbbdcb56ed781f9a349104212b5826c26ae0f4c8820378268abd5"
+    },
+    {
+      "status": "??",
+      "relative_path": "backend/app/schemas/retrospective.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\backend\\app\\schemas\\retrospective.py",
+      "bytes": 2899,
+      "sha256": "145594d7e94c222e867b7abd5c7d17585272c7ca5ad9f2d14a78f91651e68a44"
+    },
+    {
+      "status": "??",
+      "relative_path": "backend/app/services/retrospective.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\backend\\app\\services\\retrospective.py",
+      "bytes": 4375,
+      "sha256": "e19d499064df892deb0bb4d6866227cf8698fde5ed82a413c67fcce9bfe95545"
+    },
+    {
+      "status": "??",
+      "relative_path": "backend/tests/test_retrospective.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\backend\\tests\\test_retrospective.py",
+      "bytes": 9743,
+      "sha256": "6940641eca52e39345f82d5888ddf1c7c9604c7e78fbb9add041a3dbfaad5899"
+    },
+    {
+      "status": " M",
+      "relative_path": "docs/manuals/Alcance_y_Limitaciones.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\manuals\\Alcance_y_Limitaciones.md",
+      "bytes": 7792,
+      "sha256": "4793bda82e29a5141b948685baf400e5713ae09c49959f20aeb1317762ee845e"
+    },
+    {
+      "status": " M",
+      "relative_path": "docs/manuals/Arquitectura_Final.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\manuals\\Arquitectura_Final.md",
+      "bytes": 12399,
+      "sha256": "5dd1e6cf3e3be03b4e73b86cc14b0f4e578c6d19b0adc2e26394cb8ec2ac48b0"
+    },
+    {
+      "status": " M",
+      "relative_path": "docs/manuals/Diccionario_Base_Datos.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\manuals\\Diccionario_Base_Datos.md",
+      "bytes": 54438,
+      "sha256": "80039b7e74a01e9b8428ca4707554ad2997a4ae0b036aae21b38b394bb024dfe"
+    },
+    {
+      "status": "??",
+      "relative_path": "docs/manuals/Manual_Evaluacion_Retrospectiva.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\manuals\\Manual_Evaluacion_Retrospectiva.md",
+      "bytes": 5638,
+      "sha256": "9edf0d226a765352c325528f5d918bdea21cfea17c8c8929062a53e19c6e4945"
+    },
+    {
+      "status": " M",
+      "relative_path": "docs/manuals/Manual_Instalacion_Windows.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\manuals\\Manual_Instalacion_Windows.md",
+      "bytes": 14640,
+      "sha256": "ca56daed5533be07eb3d571c90771c73c3e3d4c51f4f8647e158108f3a4e29fd"
+    },
+    {
+      "status": " M",
+      "relative_path": "docs/manuals/Manual_Respaldo_Restauracion.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\manuals\\Manual_Respaldo_Restauracion.md",
+      "bytes": 7542,
+      "sha256": "ce6bdac5092dbcab188d4726d370924d48f83c0b33c9da203d2dca92ae2d80cf"
+    },
+    {
+      "status": " M",
+      "relative_path": "docs/manuals/Manual_Uso_Final.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\manuals\\Manual_Uso_Final.md",
+      "bytes": 13863,
+      "sha256": "e840fab87f2770d6b51f17e5eee7afa731570cb1e2699c6832d38900634a4289"
+    },
+    {
+      "status": " M",
+      "relative_path": "docs/manuals/Mapa_Endpoints.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\manuals\\Mapa_Endpoints.md",
+      "bytes": 17841,
+      "sha256": "955e416cba39e86f1c8cc71884396477d366c187eee79eb4a347420fe2bb118f"
+    },
+    {
+      "status": " M",
+      "relative_path": "docs/planning/Contrato_API.yaml",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\planning\\Contrato_API.yaml",
+      "bytes": 132005,
+      "sha256": "3aee6977d3fc9e854fcf04862eb6e44d702de87001dfbb0d999d7b620bf387de"
+    },
+    {
+      "status": " M",
+      "relative_path": "docs/planning/Esquema.sql",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\planning\\Esquema.sql",
+      "bytes": 30342,
+      "sha256": "f3592b4d60d59222f91a2c73c1505a271f3d04f2e75d047a6a7b3a6fe00eeff7"
+    },
+    {
+      "status": "??",
+      "relative_path": "docs/planning/Informe_Integracion_Retrospectiva.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\planning\\Informe_Integracion_Retrospectiva.md",
+      "bytes": 16635,
+      "sha256": "b47ed86612d3fd6c06c3b5375da2059edcf89d5abfe9e394137deeb0b8a281d0"
+    },
+    {
+      "status": " M",
+      "relative_path": "docs/planning/Inicio_Codex_y_skills.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\planning\\Inicio_Codex_y_skills.md",
+      "bytes": 5223,
+      "sha256": "746297870e1d7c0d23786c1976b1a086ea45e369f48bf1ee2b916a3bc63ee31a"
+    },
+    {
+      "status": "??",
+      "relative_path": "docs/planning/Plan_Integracion_Retrospectiva.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\planning\\Plan_Integracion_Retrospectiva.md",
+      "bytes": 2182,
+      "sha256": "91e41bc3b6f8001421e59018ae1f162bf63cde468d072a0ee7fb6998bcd6606a"
+    },
+    {
+      "status": " M",
+      "relative_path": "docs/planning/Plan_tesis_riesgo_escolar.md",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\docs\\planning\\Plan_tesis_riesgo_escolar.md",
+      "bytes": 7544,
+      "sha256": "7b084b10645c1bc2100fa539fd0bf50340af5f30790a4c2692c80cbabab16309"
+    },
+    {
+      "status": " M",
+      "relative_path": "frontend/src/features/models/ModelsPage.tsx",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\frontend\\src\\features\\models\\ModelsPage.tsx",
+      "bytes": 4328,
+      "sha256": "ec7d04da1ef57f01cafa4d3b490aaaf1f6f1d9023597cb32cc7d36d58057af3d"
+    },
+    {
+      "status": "??",
+      "relative_path": "frontend/src/features/models/RetrospectivePanel.tsx",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\frontend\\src\\features\\models\\RetrospectivePanel.tsx",
+      "bytes": 9398,
+      "sha256": "b950f18721bca38b045c38209594949ef6ad85bfc0001e42f641e53fec5200b5"
+    },
+    {
+      "status": " M",
+      "relative_path": "frontend/src/features/models/features.css",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\frontend\\src\\features\\models\\features.css",
+      "bytes": 4671,
+      "sha256": "8fc60d78f27b3b78f987f727a83501d539844df6ae271351ac2a3fd274aef81f"
+    },
+    {
+      "status": " M",
+      "relative_path": "frontend/src/lib/api.generated.d.ts",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\frontend\\src\\lib\\api.generated.d.ts",
+      "bytes": 154974,
+      "sha256": "9a39313985d7c30bde9e498bee5bf0cae18263ee31c22749a567414d8daf2554"
+    },
+    {
+      "status": " M",
+      "relative_path": "frontend/src/lib/api.ts",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\frontend\\src\\lib\\api.ts",
+      "bytes": 13565,
+      "sha256": "af41c061d751f729df6e2225a38224d631629d78865538836c76b90e1ad1d171"
+    },
+    {
+      "status": "??",
+      "relative_path": "infra/audit_retrospective_source.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\infra\\audit_retrospective_source.py",
+      "bytes": 8028,
+      "sha256": "3a050edc498ac1dcb1659294c773229d2493cec1f8aa8415c1ffc06896e89c88"
+    },
+    {
+      "status": " M",
+      "relative_path": "infra/backup_restore.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\infra\\backup_restore.py",
+      "bytes": 24962,
+      "sha256": "fdb7136c96768c8119db69546f8b835608033000dd6a75cc4edbeca724ea2e66"
+    },
+    {
+      "status": " M",
+      "relative_path": "infra/check_s0.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\infra\\check_s0.py",
+      "bytes": 14389,
+      "sha256": "1715c22c3461944d7efc7389bc810c2d3a0c6d2b8aa0f3de56db4431381c49fa"
+    },
+    {
+      "status": "??",
+      "relative_path": "infra/register_retrospective.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\infra\\register_retrospective.py",
+      "bytes": 2262,
+      "sha256": "866cfb827db60df28a0d628bc2c2f071d0fa740f65a2c98de4cbdcac33001176"
+    },
+    {
+      "status": "??",
+      "relative_path": "infra/run_retrospective_tests.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\infra\\run_retrospective_tests.py",
+      "bytes": 1888,
+      "sha256": "7d355152e64b214501a7096ba4c2312b6d41d22ac5e5fe796ae6216c5bc8798a"
+    },
+    {
+      "status": "??",
+      "relative_path": "infra/sync_retrospective_contract.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\infra\\sync_retrospective_contract.py",
+      "bytes": 4985,
+      "sha256": "3660014b27c12e711409e32f5368954c54779c9ec2b59d9c69d214234ba31a58"
+    },
+    {
+      "status": "??",
+      "relative_path": "infra/test_retrospective_browser.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\infra\\test_retrospective_browser.py",
+      "bytes": 1156,
+      "sha256": "59bb7a1a64b580e7ff7b8c2a918ed45edccce81b7766dc219f6d3c6a4eac9682"
+    },
+    {
+      "status": "??",
+      "relative_path": "infra/verify_retrospective_live.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\infra\\verify_retrospective_live.py",
+      "bytes": 5825,
+      "sha256": "75d7e317776778ab6c229ba0940c4edf30e50dc77aadebd1ba7964de39a10664"
+    },
+    {
+      "status": "??",
+      "relative_path": "infra/verify_retrospective_recovery.py",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\infra\\verify_retrospective_recovery.py",
+      "bytes": 4038,
+      "sha256": "153609910b3ec256fe72a8aa9a24572d22a62132b88aa70388bd22dc6ccc82bd"
+    },
+    {
+      "status": "??",
+      "relative_path": "playwright.retrospective.config.ts",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\playwright.retrospective.config.ts",
+      "bytes": 580,
+      "sha256": "4a0c46ed5e84c66b7d2a3e7454eac9ff97eeadb31ab9c13535a806a6b703a0e0"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/e2e/retrospective.spec.ts",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\e2e\\retrospective.spec.ts",
+      "bytes": 4598,
+      "sha256": "62405d390d2429fcf6ee45d2c19895626a45a234a3da97a163c0d76ce947a90a"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-active-verification.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-active-verification.json",
+      "bytes": 2931,
+      "sha256": "4f70296cfe25f634a5d29f9ffbe6380e105fd4608cba314c19a1996f3b7a8f12"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-backend-environment.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-backend-environment.json",
+      "bytes": 238,
+      "sha256": "0e05f422e3a830ecfd2ef3fa7cab0df85967a49689ce43f64bb91fd754e07c88"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-backend.xml",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-backend.xml",
+      "bytes": 38804,
+      "sha256": "0552a2da9712b8ed82ddd213b14e87aaea2cc81df0c44c7fd7dcbb85d2f881b5"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-backup-final.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-backup-final.json",
+      "bytes": 36268,
+      "sha256": "d22815646372d510e533787f665783068b56b3f87657f8395158387b67a0fa77"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-existing-model.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-existing-model.json",
+      "bytes": 1105,
+      "sha256": "d8b8407ef3ebfad9eb60354f3b13e788f1e6cd9b0a66415c0e3edce7a0a26d4f"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-final-tests-environment.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-final-tests-environment.json",
+      "bytes": 156,
+      "sha256": "1db0346cdb3a7429e18a38d01a171dc7e90fa80a0bbc4c780ca18253d3974fe3"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-final-tests.xml",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-final-tests.xml",
+      "bytes": 2847,
+      "sha256": "ffa568d0e1bc244e0dc6071fd884a627df74ce1ffa27f144e636a6aaf271f02f"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-followup-response-samples.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-followup-response-samples.json",
+      "bytes": 29264,
+      "sha256": "0b689e7d9012f63427766aa55751af61fcf9405811763a7ff58d692b30b5698d"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-infra-final-tests.xml",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-infra-final-tests.xml",
+      "bytes": 6936,
+      "sha256": "d1996851169dd21ac512553b7c530e4889fee79b325045984136a246eb975ce3"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-infra-tests.xml",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-infra-tests.xml",
+      "bytes": 9112,
+      "sha256": "cdfbfbf73df33707ad159b0c060779ab70c1b2630c5856d5a643bec205193a0e"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-local-tests.xml",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-local-tests.xml",
+      "bytes": 3183,
+      "sha256": "032eeb2fa76e800575e812c24241da06d872e0dad5352d4c87a77f7fdd259e02"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-ml-response-samples.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-ml-response-samples.json",
+      "bytes": 2907,
+      "sha256": "8f63c7027938409fd61b6c1deb887db2bc00bfa16b3e67643bc8d3ed7f5c8c48"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-ml-summary.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-ml-summary.json",
+      "bytes": 514,
+      "sha256": "647a6f70cc422571e9f6abae668533c2791a8e735dd61bcb3381114f03dfe267"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-persistence.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-persistence.json",
+      "bytes": 2593,
+      "sha256": "982792a7a53b918f1d7569efa9549a8b88a9d922352ffc4f90c6d76bf032011e"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-playwright-first.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-playwright-first.json",
+      "bytes": 9641,
+      "sha256": "20232a3f9430af86a714bc27ccf86f590379f614a73787c224a5f91db09a5a39"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-playwright.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-playwright.json",
+      "bytes": 6284,
+      "sha256": "323c6af4f159556d48b043d0f701bf153562decca692fe91004a041fc23304fe"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-recovered-api.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-recovered-api.json",
+      "bytes": 799,
+      "sha256": "ca214b8d5a576be9604b179253d7b076a783915cf6d910e451318289b51af81e"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-response-samples.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-response-samples.json",
+      "bytes": 6956,
+      "sha256": "19751d88da7a047ea632b614e83d4a2bb0c97f5182b2dff6df5fec0abe10e525"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-restore-final.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-restore-final.json",
+      "bytes": 35728,
+      "sha256": "ab36bbc255f9a2ff54d02251021ba73ca71a2f77da905960533e6795bb1d6b3c"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-result-1440x900.png",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-result-1440x900.png",
+      "bytes": 65381,
+      "sha256": "ea1a18afe0f3af71d94b8572e2262d425aefbb028676aae3421d253724c00e3a"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-result-390x844.png",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-result-390x844.png",
+      "bytes": 38135,
+      "sha256": "622637e2c4bc23e2df98b62b6270c3ec900f209435219b3a9710e2de03027cd7"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-result-768x1024.png",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-result-768x1024.png",
+      "bytes": 65213,
+      "sha256": "5685d79d98fcaa21efb1618807ca790577f25491783b7bb0a8152e55e090824e"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/retro-source-audit.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\retro-source-audit.json",
+      "bytes": 815,
+      "sha256": "516773e9f489d79fcb6b14ca0e39a2b0dfaa0b0c14afc4b3e416ba03246a9923"
+    },
+    {
+      "status": "??",
+      "relative_path": "tests/evidence/s6-retrospective-contracts.json",
+      "absolute_path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\evidence\\s6-retrospective-contracts.json",
+      "bytes": 787,
+      "sha256": "8d81b42c90b1f0345ab42a3bf0fbe6e6661a5744463c28d89e73a08f325b00ad"
+    }
+  ]
+}

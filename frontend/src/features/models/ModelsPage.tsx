@@ -4,6 +4,7 @@ import { api, type Model, type Period, type ProcessingStatus, type User } from '
 import { timestampLabel } from '../../lib/format';
 import { EmptyState, ErrorState, LoadingState, PageHeader, Pagination } from '../../components/ui';
 import { EvaluationPanel } from './EvaluationPanel';
+import { RetrospectivePanel } from './RetrospectivePanel';
 import './features.css';
 
 export type ModelsProps = { user: User; period: Period | null; processing: ProcessingStatus | null; onNavigate: (path: string) => void };
@@ -31,5 +32,6 @@ function ModelListing({ user, period, processing, onNavigate }: ModelsProps) {
         <Pagination page={models.data.page} pageSize={models.data.page_size} total={models.data.total} onPageChange={setPage} />
       </section>}
     <EvaluationPanel user={user} period={period} processing={processing} onNavigate={onNavigate} />
+    <RetrospectivePanel user={user} />
   </div>;
 }

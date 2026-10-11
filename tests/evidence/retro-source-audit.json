@@ -1,0 +1,23 @@
+{
+  "audit_version": "source-declarations-v1",
+  "input_sha256": "9cd4243f420b6da5e4ddab629d239334cbe6f2c100642eb6c0ec7ae53243c862",
+  "package_sha256": "08ace0a90feb05e29d1ff5dedb6bd126139fd42ca85df06c5ef5802a70a86de4",
+  "source_events_verified": true,
+  "authenticity_verified": false,
+  "students": 60,
+  "bimester_rows": 120,
+  "partial_grades": 720,
+  "attendance_windows": 120,
+  "activity_windows": 120,
+  "derived_feature_matches": 360,
+  "reference_matches": 120,
+  "latest_feature_availability": {
+    "B1": "2026-04-21T00:00:00-05:00",
+    "B2": "2026-06-30T00:00:00-05:00"
+  },
+  "rounding_changes": 2,
+  "historical_predictions_preserved_in_source": 120,
+  "historical_alerts_preserved_in_source": 79,
+  "workbook_modified": false,
+  "source_hash_unchanged_after_audit": true
+}

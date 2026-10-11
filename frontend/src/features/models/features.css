@@ -39,3 +39,12 @@
 .model-abstentions li { margin-bottom: 13px; line-height: 1.6; }
 .model-reason-code { display: block; margin-top: 3px; color: #6f7e67; font-size: 11px; overflow-wrap: anywhere; }
 @media (max-width: 460px) { .model-list-panel, .model-detail-panel, .model-evaluation-panel { padding: 18px; } .model-detail-values { grid-template-columns: minmax(0, 1fr); gap: 18px; } .model-time-options { flex-direction: column; gap: 14px; } .model-radio { align-items: flex-start; line-height: 1.6; } .model-radio input { margin-top: 2px; } .model-evaluation-result { padding: 16px; } .model-result-values { gap: 18px; } .model-evaluation-action .button { width: 100%; } }
+.retrospective-panel { margin-top: 1.5rem; display: grid; gap: 1rem; min-width: 0; }
+.retrospective-panel h2, .retrospective-panel h3, .retrospective-panel p { margin: 0; }
+.retrospective-panel > * { min-width: 0; }
+.retrospective-panel button { width: fit-content; max-width: 100%; }
+.retrospective-panel .table-container { max-height: 30rem; overflow: auto; min-width: 0; }
+.retrospective-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; min-width: 0; margin: 0; padding: 0; border: 0; }
+.retrospective-form label { display: grid; gap: .4rem; }
+.retrospective-form input { min-width: 0; width: 100%; }
+@media (max-width: 600px) { .retrospective-form { grid-template-columns: 1fr; } }

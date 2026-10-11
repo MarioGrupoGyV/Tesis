@@ -70,7 +70,7 @@ por sección, CSRF, límites de CSV y paginación, idempotencia y bloqueo de per
 No añadir pagos, chats, portales familiares, mensajería automática ni matrícula
 administrativa completa. Las decisiones pedagógicas son humanas.
 
-Contrato público: Contrato_API.yaml 0.5.0, 27 operaciones implementadas y 15 tablas. Migración 0004 posterior a 0003; no reescribir las anteriores.
+Contrato público: Contrato_API.yaml 0.6.0, 32 operaciones implementadas y 15 tablas; incluye cinco operaciones retrospectivas ADMIN separadas. Migración 0004 posterior a 0003; no reescribir las anteriores.
 Esquema.sql es referencia; migraciones históricas no se reescriben. Las tablas y
 endpoints de investigación que falten requieren otra iteración, nunca se simulan.
 

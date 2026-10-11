@@ -539,3 +539,6 @@ COMMIT;
 -- No incluir etiquetas, riesgo predicho ni intervenciones posteriores como features.
 -- Extensión posterior: criterios, etiquetas de referencia, señales, protocolo,
 -- participantes y mediciones pareadas; diseñar su migración y contratos en T0/T1.
+-- S6, 2026-10-11: RETROSPECTIVE_EVALUATION usa diario firmado append-only
+-- en el volumen ML privado. No introduce tablas, DDL ni modifica registros
+-- académicos; referencia al contrato OpenAPI 0.6.0 y manual retrospectivo.
