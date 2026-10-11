@@ -96,6 +96,23 @@ conteo, sin afirmar apertura/guardado del archivo.
 
 ## Preparación y pruebas desde PowerShell
 
+Para diagnóstico local desde `backend`, con el entorno Python activado:
+
+```powershell
+python -m uvicorn app.main:app --reload
+```
+
+El arranque carga automáticamente `backend/.env`, con ruta independiente del
+directorio de trabajo. El archivo es privado y no se versiona. Si el entorno ya
+declara `DATABASE_URL` o `DATABASE_URL_FILE`, o `APP_ENV=test`, no se carga ese
+archivo: Docker y las pruebas conservan su configuración explícita. Las demás
+variables del entorno tienen prioridad sobre las del archivo local.
+
+El diagnóstico local no acredita el recorrido completo: los archivos privados de
+importación y modelos de la instalación activa permanecen en sus volúmenes Docker.
+El sistema integrado se opera desde `http://localhost:15173`; no crear carpetas
+vacías para sustituir esos archivos ni cambiar los locks para arrancar localmente.
+
 Desde la raíz del repositorio, con Docker Desktop en modo contenedores Linux:
 
 ```powershell

@@ -160,7 +160,7 @@ for(const role of roles) test(`${role}: navegación S4, datos efectivos, permiso
   for(const operation of Object.values(status.operations) as {available:boolean;reason:string|null}[]) {
     expect(typeof operation.available).toBe('boolean');if(role==='RESEARCHER') expect(operation.available).toBe(false);
   }
-  await expect(page.getByText(notice,{exact:true}).first()).toBeVisible();
+  await expect(page.getByText(notice,{exact:true})).toHaveCount(0);
   await capture(page,`${role.toLowerCase()}-home`);
   await page.setViewportSize({width:390,height:844});
   const menu=page.getByRole('button',{name:'Abrir menú',exact:true});await menu.click();

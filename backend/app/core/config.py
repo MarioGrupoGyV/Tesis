@@ -1,12 +1,16 @@
 """Configuración explícita; ningún valor de producción se incluye en código."""
 
 from functools import lru_cache
+from os import environ
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlsplit
 
 from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+_LOCAL_ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
 
 
 class Settings(BaseSettings):
@@ -85,4 +89,8 @@ class Settings(BaseSettings):
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    return Settings()
+    # Docker and test runners provide an explicit connection. Never combine it
+    # with credentials or paths belonging to the developer's local installation.
+    explicit_connection = "DATABASE_URL" in environ or "DATABASE_URL_FILE" in environ
+    env_file = None if explicit_connection or environ.get("APP_ENV") == "test" else _LOCAL_ENV_FILE
+    return Settings(_env_file=env_file, _env_file_encoding="utf-8")

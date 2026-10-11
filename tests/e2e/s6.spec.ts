@@ -217,7 +217,7 @@ if (['s6-integrated', 's6-review'].includes(phase!)) for (const role of roles) t
     await capture(page, 'researcher-restricted');
   } else {
     await expect(page.getByLabel('Periodo de consulta')).toHaveValue(study.period_id);
-    await expect(page.locator('#main-content').getByText('Estudio con datos sintéticos. No corresponde a estudiantes reales.', { exact: true })).toBeVisible();
+    await expect(page.locator('#main-content').getByText('Estudio con datos sintéticos. No corresponde a estudiantes reales.', { exact: true })).toHaveCount(0);
     if (role === 'ADMIN') {
       if (phase === 's6-integrated') { await evaluate(page, true); await capture(page, 'first-ui-inference'); }
       expect((await page.request.post('/api/v1/predictions/run', { data: { period_id: study.period_id, as_of: new Date().toISOString() } })).status()).toBe(403);

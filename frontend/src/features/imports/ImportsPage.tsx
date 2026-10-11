@@ -254,7 +254,6 @@ export function ImportsPage({ user, period, status, statusLoading, statusError, 
 
   return <div className="import-page">
     <PageHeader title="Importar información" eyebrow="DATOS" description="Prepara, revisa y confirma el CSV registrado del estudio sintético." />
-    <p className="import-scope">{status?.notice ?? 'Estudio con datos sintéticos. No corresponde a estudiantes reales.'}</p>
     <ol className="import-steps" aria-label="Pasos de importación">
       <li aria-current={activeStep === 1 ? 'step' : undefined}><span aria-hidden="true">1</span>Preparar archivo</li>
       <li aria-current={activeStep === 2 ? 'step' : undefined}><span aria-hidden="true">2</span>Revisar validaciones</li>
