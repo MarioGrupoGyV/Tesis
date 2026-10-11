@@ -99,6 +99,7 @@ conteo, sin afirmar apertura/guardado del archivo.
 Para diagnóstico local desde `backend`, con el entorno Python activado:
 
 ```powershell
+..\.venv\Scripts\Activate.ps1
 python -m uvicorn app.main:app --reload
 ```
 

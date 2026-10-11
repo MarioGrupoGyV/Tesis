@@ -16,6 +16,14 @@ El operador utiliza PowerShell, Python Launcher y Docker Desktop en Windows.
 Docker ejecuta Linux internamente; no hace falta una consola Bash, WSL o Make.
 Los comandos se ejecutan desde la raíz del repositorio.
 
+El entorno virtual local vigente es únicamente `.venv`. Reúne las dependencias
+Windows previamente instaladas de backend y validación documental. Para usarlo
+desde la raíz, ejecutar `.\.venv\Scripts\Activate.ps1`; desde `backend`, ejecutar
+`..\.venv\Scripts\Activate.ps1`. La consolidación conserva los locks y versiones;
+no añade XGBoost CPU al anfitrión ni sustituye los archivos privados de Docker.
+Las referencias a `.venv-s0` y `.venv-s1` en estados/evidencias históricos son
+registros de ejecuciones anteriores, no instrucciones para crear dos entornos.
+
 | Herramienta | Versión comprobada en el anfitrión S6 |
 | --- | --- |
 | Git | 2.47.0.windows.1 |
