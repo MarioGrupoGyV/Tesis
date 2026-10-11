@@ -35,7 +35,7 @@ HTTP de joblib, scripts del paquete ni rutas proporcionadas por el navegador.
 
 ```powershell
 # Desde la raíz; elegir el descriptor actual, nunca uno anterior al build.
-$destino = "$env:LOCALAPPDATA\SeguimientoEscolar\S6\active-retrospective-final.json"
+$destino = "$env:LOCALAPPDATA\SeguimientoEscolar\S6\active-svm-reference.json"
 $paquete = 'C:\Users\mario\OneDrive\Escritorio\Downloads\Calculos_y_modelo_evaluacion_retrospectiva.zip'
 $fuente = 'C:\Users\mario\OneDrive\Escritorio\Downloads\registro_academico_60_estudiantes.xlsx'
 $pythonDocumental = 'C:\Users\mario\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
@@ -70,11 +70,17 @@ La selección declarada es por F1 macro en cinco folds B1 (SVM 0,897008 frente a
 arrancar y no mezcla participación/incidencias finales en X. Verifica scaler
 media/varianza/n=60 y vectores de soporte contra B1 sin fit.
 
-El artefacto se guardó con scikit-learn 1.8.0; el proyecto conserva 1.9.1. El
-resultado entre versiones se identifica **CROSS_VERSION_EXPERIMENTAL** y conserva
-las tres advertencias. La coincidencia de estas 60 clases acredita el ensayo
-observado, no compatibilidad general ni activación productiva. scikit-learn
-[no respalda cargar modelos entre versiones](https://scikit-learn.org/stable/model_persistence.html).
+El artefacto se guardó con scikit-learn 1.8.0. El backend conserva 1.9.1, pero
+las nuevas inferencias se ejecutan en un intérprete Docker separado con las
+versiones originales, identificado **COMPATIBLE_REFERENCE_RUNTIME**. El modelo
+no se carga en el intérprete del backend. Una discrepancia de versiones o runtime
+ausente rechaza la inferencia; no existe fallback. Las tres ejecuciones anteriores
+siguen **CROSS_VERSION_EXPERIMENTAL**, con sus advertencias y fechas originales.
+Todas las advertencias nuevas de carga/inferencia se conservan en el resultado;
+la interfaz muestra versiones y advertencias de la ejecución seleccionada.
+Instalación, reproducción y límites: [runtime compatible](Manual_Runtime_SVM.md).
+scikit-learn exige conservar las versiones del entorno de persistencia:
+[documentación oficial](https://scikit-learn.org/stable/model_persistence.html).
 
 Para sustentar la tesis faltan autorización documental/procedencia institucional,
 validación pedagógica del criterio RIESGO_V1 y de su escala, evidencias externas

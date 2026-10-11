@@ -149,3 +149,8 @@ Se añade un módulo ADMIN separado para el SVM congelado B1/B2 del ZIP.
 Conserva el estudio sintético y el bloqueo REAL operativo. Las propuestas no
 son notificaciones ni intervenciones. Fechas reales, límites, registro privado
 y uso: [Manual retrospectivo](../docs/manuals/Manual_Evaluacion_Retrospectiva.md).
+
+La inferencia retrospectiva usa `app/ml/retrospective_runtime.py` para invocar
+Python 3.12.14 aislado; no deserializa el joblib en el runtime ML del backend.
+`requirements-retrospective.txt` fija sus ruedas Linux x86_64 con hashes.
+[Procedimiento reproducible](../docs/manuals/Manual_Runtime_SVM.md).

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="1" tests="5" time="4.709" timestamp="2026-10-11T15:25:36.980236-05:00" hostname="Mario"><testcase classname="backend.tests.test_retrospective_runtime" name="test_missing_reference_never_falls_back" time="0.001" /><testcase classname="backend.tests.test_retrospective_runtime" name="test_untrusted_package_rejected_before_process" time="0.001" /><testcase classname="backend.tests.test_retrospective_runtime" name="test_worker_versions_are_verified_and_environment_is_clean" time="0.001" /><testcase classname="backend.tests.test_retrospective_runtime" name="test_incompatible_interpreter_rejected_before_joblib" time="0.496"><failure message="AssertionError: Regex pattern did not match.&#10;  Expected regex: 'REFERENCE_VERSION_MISMATCH'&#10;  Actual message: 'RETROSPECTIVE_REFERENCE_RUNTIME_FAILED'">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000023CD7527FB0&gt;
+
+    def test_incompatible_interpreter_rejected_before_joblib(monkeypatch):
+        import sys
+        monkeypatch.setenv('RETROSPECTIVE_PYTHON', sys.executable)
+&gt;       with pytest.raises(RetrospectiveError, match='REFERENCE_VERSION_MISMATCH'):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'REFERENCE_VERSION_MISMATCH'
+E         Actual message: 'RETROSPECTIVE_REFERENCE_RUNTIME_FAILED'
+
+backend\tests\test_retrospective_runtime.py:45: AssertionError</failure></testcase><testcase classname="backend.tests.test_retrospective_runtime" name="test_real_reference_runtime_no_fit_matches_b2" time="0.001"><skipped type="pytest.skip" message="Run in Docker tester with reference runtime and authorized ZIP">C:\Users\mario\OneDrive\Escritorio\tesis-riesgo-escolar\backend\tests\test_retrospective_runtime.py:53: Run in Docker tester with reference runtime and authorized ZIP</skipped></testcase></testsuite></testsuites>

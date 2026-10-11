@@ -227,3 +227,11 @@ Se añade un módulo ADMIN separado para el SVM congelado B1/B2 del ZIP.
 Conserva el estudio sintético y el bloqueo REAL operativo. Las propuestas no
 son notificaciones ni intervenciones. Fechas reales, límites, registro privado
 y uso: [Manual retrospectivo](Manual_Evaluacion_Retrospectiva.md).
+
+El backend Python 3.12.12 mantiene su conjunto ML SYNTHETIC. Solo la retrospectiva
+ejecuta un proceso `/opt/retrospective/bin/python3.12 -I` con Python 3.12.14 y
+dependencias originales fijadas por hash. JSON por stdin/stdout, entorno sin
+secretos de DB, timeout de 30 segundos y sin fallback. La misma imagen API incluye
+ambos intérpretes; no hay un servicio adicional ni cambios de PostgreSQL. El
+diario firmado registra identidad del runtime/lock y los hashes originales.
+[Instalación y reproducción](Manual_Runtime_SVM.md).

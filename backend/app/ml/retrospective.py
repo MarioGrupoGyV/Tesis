@@ -133,7 +133,7 @@ def load_frozen(files, rows):
     # Byte identity is established against reviewed package/model constants BEFORE
     # deserialization; never accept joblib uploads, scripts, URLs or arbitrary paths.
     with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter('always', InconsistentVersionWarning)
+        warnings.simplefilter('always')
         model = joblib.load(io.BytesIO(model_bytes))
     if (type(model) is not Pipeline or list(model.named_steps) != ['standardscaler', 'svc']
             or type(model.named_steps['standardscaler']) is not StandardScaler
@@ -151,8 +151,10 @@ def load_frozen(files, rows):
             or np.any(svm.support_ < 0) or np.any(svm.support_ >= 60)
             or not np.allclose(svm.support_vectors_, scaler.transform(train)[svm.support_], rtol=0, atol=1e-12)):
         raise RetrospectiveError('RETROSPECTIVE_SUPPORT_VECTORS_NOT_B1')
-    version_warnings = sorted({f'{w.message.estimator_name}: {w.message.original_sklearn_version} -> {w.message.current_sklearn_version}'
-                               for w in caught if isinstance(w.message, InconsistentVersionWarning)})
+    version_warnings = sorted({
+        f'{w.message.estimator_name}: {w.message.original_sklearn_version} -> {w.message.current_sklearn_version}'
+        if isinstance(w.message, InconsistentVersionWarning) else f'{w.category.__name__}: {w.message}'
+        for w in caught})
     return model, version_warnings
 
 

@@ -50,7 +50,7 @@ export function RetrospectivePanel({ user }: { user: User }) {
     <div className="notice"><strong>Alcance retrospectivo</strong><p>Las propuestas de alerta se evalúan aquí. La autorización local fue declarada por el usuario; la autenticidad institucional requiere sustento documental. Los resultados no demuestran ejecución histórica ni efecto escolar.</p></div>
     {history.isPending ? <LoadingState label="Consultando evaluaciones retrospectivas…" /> : history.isError ? <ErrorState error={history.error} onRetry={() => void history.refetch()} /> : !history.data.available ?
       <p role="status">Paquete retrospectivo aún no registrado mediante el procedimiento administrativo local.</p> : <>
-        <p>El artefacto usa scikit-learn 1.8.0; su carga en el runtime 1.9.1 es experimental y no está respaldada como compatibilidad entre versiones. Se conservan las advertencias y las discrepancias reales.</p>
+        <p>Las nuevas ejecuciones usan un intérprete aislado con las versiones originales: Python 3.12.14, scikit-learn 1.8.0, NumPy 2.3.5, SciPy 1.17.0 y joblib 1.5.3. Si ese entorno no está disponible o no coincide, la inferencia se rechaza. Las ejecuciones anteriores conservan sus advertencias.</p>
         <button className="button" type="button" disabled={run.isPending} onClick={() => run.mutate()}>{run.isPending ? 'Evaluando B2…' : 'Ejecutar evaluación retrospectiva'}</button>
         {run.isError && <ErrorState error={run.error} onRetry={() => run.mutate()} />}
         {history.data.total === 0 ? <p role="status">Todavía no hay ejecuciones retrospectivas.</p> : <>
@@ -61,7 +61,9 @@ export function RetrospectivePanel({ user }: { user: User }) {
           <h3>Resultado B2</h3><p role="status">{detail.data.metrics.correct} aciertos de {detail.data.metrics.n}; exactitud {(detail.data.metrics.accuracy * 100).toFixed(2)} %; F1 macro {detail.data.metrics.f1_macro.toFixed(6)}.</p>
           <p>{detail.data.metrics.alert_proposals} propuestas de alerta · {detail.data.notifications_sent} notificaciones enviadas · {detail.data.interventions_performed} intervenciones realizadas por esta ejecución.</p>
           <p>Ejecución: {timestampLabel(detail.data.executed_at)}. Coincidencia con las clases del ZIP: {detail.data.metrics.n - detail.data.prediction_mismatches} / {detail.data.metrics.n}. Escalador B1: {detail.data.scaler_b1_verified ? 'comprobado' : 'sin comprobar'}. Reajuste: {detail.data.refitted ? 'sí' : 'no'}.</p>
-          <p>{detail.data.source_events_verified ? 'Fechas declaradas de 720 notas parciales y 240 ventanas de asistencia/actividades verificadas contra el Excel original y el CSV derivado.' : 'Disponibilidad temporal comprobada en el CSV derivado; eventos fuente originales pendientes.'} La autenticidad institucional requiere sustento documental. Compatibilidad: {detail.data.compatibility === 'CROSS_VERSION_EXPERIMENTAL' ? 'experimental entre versiones' : 'misma versión scikit-learn'}.</p>
+          <p>{detail.data.source_events_verified ? 'Fechas declaradas de 720 notas parciales y 240 ventanas de asistencia/actividades verificadas contra el Excel original y el CSV derivado.' : 'Disponibilidad temporal comprobada en el CSV derivado; eventos fuente originales pendientes.'} La autenticidad institucional requiere sustento documental. Compatibilidad: {detail.data.compatibility === 'COMPATIBLE_REFERENCE_RUNTIME' ? 'entorno de referencia compatible y aislado' : detail.data.compatibility === 'CROSS_VERSION_EXPERIMENTAL' ? 'experimental entre versiones' : 'misma versión scikit-learn'}.</p>
+          <p>Versiones de esta ejecución: {Object.entries(detail.data.versions).map(([name, version]) => `${name} ${version}`).join(' · ')}.</p>
+          {detail.data.version_warnings.length > 0 ? <div role="alert"><strong>Advertencias conservadas de esta ejecución</strong><ul>{detail.data.version_warnings.map(warning => <li key={warning}>{warning}</li>)}</ul></div> : <p>Sin advertencias al cargar el modelo en esta ejecución.</p>}
           {detail.data.discrepancies.length > 0 && <p role="alert">Discrepancias: {detail.data.discrepancies.join(', ')}</p>}
           <button className="button secondary" disabled={downloading} onClick={() => void download()}>{downloading ? 'Preparando CSV…' : 'Descargar reporte retrospectivo CSV'}</button>
           {downloadError !== null && <ErrorState error={downloadError} onRetry={() => void download()} />}
@@ -78,7 +80,7 @@ export function RetrospectivePanel({ user }: { user: User }) {
         </fieldset>
         </form>
         {partial.isError && <ErrorState error={partial.error} />}
-        {partialResult && <p role="status">{riskLabels[partialResult.risk_level]}. {partialResult.alert_proposed ? 'Propuesta de alerta' : 'Sin propuesta de alerta'}. 0 notificaciones enviadas; 0 intervenciones realizadas. Ejecución: {timestampLabel(partialResult.executed_at)}.</p>}
+        {partialResult && <><p role="status">{riskLabels[partialResult.risk_level]}. {partialResult.alert_proposed ? 'Propuesta de alerta' : 'Sin propuesta de alerta'}. 0 notificaciones enviadas; 0 intervenciones realizadas. Ejecución: {timestampLabel(partialResult.executed_at)}. Entorno de referencia compatible y aislado.</p>{partialResult.version_warnings.length > 0 && <p role="alert">Advertencias: {partialResult.version_warnings.join('; ')}</p>}</>}
       </>}
   </section>;
 }

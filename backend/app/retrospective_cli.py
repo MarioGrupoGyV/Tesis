@@ -15,7 +15,8 @@ from app.core.database import Database
 from app.core.security import password_verify
 from app.repositories.s1 import user_by_email
 from app.repositories.retrospective import RetrospectiveStore
-from app.ml.retrospective import MAX_PACKAGE, PACKAGE_SHA256, RetrospectiveError, inspect_package, load_frozen
+from app.ml.retrospective import MAX_PACKAGE, PACKAGE_SHA256, RetrospectiveError
+from app.ml.retrospective_runtime import invoke
 from app.services import retrospective
 
 
@@ -37,8 +38,7 @@ def main():
             if payload.get('authorized_local_processing') is not True:
                 raise RetrospectiveError('RETROSPECTIVE_AUTHORIZATION_REQUIRED')
             content = base64.b64decode(payload['package_base64'], validate=True)
-            files, rows, _, _ = inspect_package(content)
-            load_frozen(files, rows)
+            invoke('inspect', content)
             audit = payload.get('source_audit')
             if audit is not None and (audit.get('audit_version') != 'source-declarations-v1'
                     or audit.get('input_sha256') != '9cd4243f420b6da5e4ddab629d239334cbe6f2c100642eb6c0ec7ae53243c862'

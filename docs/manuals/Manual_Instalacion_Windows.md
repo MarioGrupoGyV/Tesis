@@ -261,3 +261,7 @@ del diario y ejecuciones. El campo histórico `origin=SYNTHETIC` describe la DB;
 retrospectiva autorizada. La recuperación debe ser en un destino nuevo y conservar
 los bytes/firma sin regeneración ni entrenamiento. El Excel con nombres permanece
 en su ubicación original y no se copia al volumen ni al repositorio.
+
+El build API actual también instala el runtime original del SVM en un intérprete
+aislado interno. No se añade un entorno virtual Windows ni se modifica el lock
+del backend. [Versiones, instalación y reproducción](Manual_Runtime_SVM.md).

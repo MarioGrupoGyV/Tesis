@@ -13,6 +13,13 @@ fuera del checkout, diario firmado inmutable y fechas reales. Leer
 `docs/manuals/Manual_Evaluacion_Retrospectiva.md`. La declaración del usuario no
 acredita autenticidad institucional ni ejecución histórica.
 
+Compatibilidad retrospectiva actualizada por solicitud explícita el mismo día:
+la imagen API incluye el intérprete aislado `/opt/retrospective`, Python 3.12.14,
+con el lock `backend/requirements-retrospective.txt`. Solo ese proceso carga el
+SVM del ZIP; sin fallback al ML del backend, sin fit ni cambios del joblib.
+Las ejecuciones históricas experimentales conservan sus advertencias. Leer
+`docs/manuals/Manual_Runtime_SVM.md`; no instalar ese lock en backend/.venv.
+
 El usuario opera exclusivamente desde PowerShell en Windows. Docker conserva imágenes Linux internas; no exigir WSL, Bash ni Make. Versiones y locks fijados se conservan. El primer administrador se crea explícitamente por CLI con entrada secreta, nunca por archivo de cuentas. Los documentos y evidencias históricos S0/S1/S2 no son instrucciones operativas.
 
 Desde el 2026-10-11 el único entorno virtual local es `backend/.venv`, por solicitud del usuario. Desde `backend` se activa con `.\.venv\Scripts\Activate.ps1`. Reúne las dependencias Windows previamente instaladas de backend y herramientas documentales; no recrear `.venv-s0` ni `.venv-s1`. Sus menciones en evidencias y estados históricos describen ejecuciones pasadas. El runtime integrado y XGBoost CPU conservan sus versiones dentro de Docker.

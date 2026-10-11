@@ -133,3 +133,7 @@ Se añade un módulo ADMIN separado para el SVM congelado B1/B2 del ZIP.
 Conserva el estudio sintético y el bloqueo REAL operativo. Las propuestas no
 son notificaciones ni intervenciones. Fechas reales, límites, registro privado
 y uso: [Manual retrospectivo](docs/manuals/Manual_Evaluacion_Retrospectiva.md).
+
+La retrospectiva usa las versiones originales en un intérprete aislado dentro de
+la imagen API; los locks del backend y el estudio SYNTHETIC se conservan.
+[Instalar y reproducir el runtime SVM](docs/manuals/Manual_Runtime_SVM.md).

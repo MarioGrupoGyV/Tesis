@@ -4147,6 +4147,7 @@ components:
           enum:
           - CROSS_VERSION_EXPERIMENTAL
           - SOURCE_SKLEARN_VERSION
+          - COMPATIBLE_REFERENCE_RUNTIME
           title: Compatibility
           type: string
         version_warnings:
@@ -4294,6 +4295,7 @@ components:
           enum:
           - CROSS_VERSION_EXPERIMENTAL
           - SOURCE_SKLEARN_VERSION
+          - COMPATIBLE_REFERENCE_RUNTIME
           title: Compatibility
           type: string
         version_warnings:
@@ -4466,6 +4468,20 @@ components:
           const: RETROSPECTIVE_EVALUATION
           title: Scope
           type: string
+        compatibility:
+          const: COMPATIBLE_REFERENCE_RUNTIME
+          title: Compatibility
+          type: string
+        versions:
+          additionalProperties:
+            type: string
+          title: Versions
+          type: object
+        version_warnings:
+          items:
+            type: string
+          title: Version Warnings
+          type: array
         risk_level:
           enum:
           - LOW
@@ -4491,6 +4507,9 @@ components:
       required:
       - executed_at
       - scope
+      - compatibility
+      - versions
+      - version_warnings
       - risk_level
       - alert_proposed
       - probabilities_calibrated

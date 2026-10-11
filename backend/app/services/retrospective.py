@@ -4,7 +4,8 @@ import io
 from uuid import uuid4
 
 from app.core.errors import AppError
-from app.ml.retrospective import RetrospectiveError, evaluate, inspect_package, load_frozen, predict_partial
+from app.ml.retrospective import RetrospectiveError
+from app.ml.retrospective_runtime import evaluate_reference, partial_reference
 from app.repositories.retrospective import RetrospectiveStore
 from app.schemas.retrospective import RetrospectiveDetail, RetrospectivePage, RetrospectiveSummary
 
@@ -55,7 +56,7 @@ def run(user, settings, request_id):
     require_admin(user)
     try:
         store = RetrospectiveStore(settings.ml_storage_dir)
-        record = evaluate(store.package(), uuid4(), user.id)
+        record = evaluate_reference(store.package(), uuid4(), user.id)
         source_audit = store.read('authorization.json').get('source_audit')
         if source_audit:
             record['source_audit'] = source_audit
@@ -72,11 +73,11 @@ def run(user, settings, request_id):
 def partial(user, settings, payload):
     require_admin(user)
     try:
-        files, rows, _, _ = inspect_package(RetrospectiveStore(settings.ml_storage_dir).package())
-        model, _ = load_frozen(files, rows)
-        result = predict_partial(model, payload.term, payload.values.model_dump(),
-                                 payload.available_at.model_dump(mode='json'))
-        return {'executed_at': datetime.now(timezone.utc), 'scope': 'RETROSPECTIVE_EVALUATION', **result}
+        result = partial_reference(RetrospectiveStore(settings.ml_storage_dir).package(),
+            payload.term, payload.values.model_dump(), payload.available_at.model_dump(mode='json'))
+        return {k: result[k] for k in ('executed_at', 'scope', 'risk_level', 'alert_proposed',
+            'probabilities_calibrated', 'notification_sent', 'intervention_performed',
+            'compatibility', 'versions', 'version_warnings')}
     except (RetrospectiveError, OSError) as error:
         raise diagnostic(error) from None
 

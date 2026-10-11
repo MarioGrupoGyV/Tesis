@@ -62,7 +62,7 @@ def code_identity():
     hashes = {name:digest(ROOT/name) for name in sorted(set(names))
               if (ROOT/name).is_file() and not name.startswith('tests/evidence/')}
     locks = {name:value for name,value in hashes.items() if name.endswith(('requirements.txt','requirements-dev.txt',
-        'requirements-s0.txt','package-lock.json'))}
+        'requirements-s0.txt','requirements-retrospective.txt','package-lock.json'))}
     return {'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
         'files':hashes,'locks':locks,'tree_sha256':hashlib.sha256(json.dumps(hashes,sort_keys=True).encode()).hexdigest()}
 

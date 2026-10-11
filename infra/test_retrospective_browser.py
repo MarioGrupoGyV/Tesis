@@ -12,10 +12,16 @@ from windows_credentials import read
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--target', type=Path, required=True)
+    parser.add_argument('--evidence-prefix', default='retro')
     args = parser.parse_args()
     target = Target.load(args.target)
     target.assert_resources()
-    environment = {**os.environ, 'E2E_BASE_URL': target.web_url,
+    import re
+    if not re.fullmatch('[a-z0-9-]+', args.evidence_prefix):
+        raise RuntimeError('INVALID_EVIDENCE_PREFIX')
+    if (ROOT / 'tests/evidence' / (args.evidence_prefix + '-playwright.json')).exists():
+        raise RuntimeError('EVIDENCE_ALREADY_EXISTS')
+    environment = {**os.environ, 'E2E_BASE_URL': target.web_url, 'RETROSPECTIVE_EVIDENCE_PREFIX': args.evidence_prefix,
                    'E2E_ACCOUNTS': json.dumps({role: read(role) for role in ('ADMIN','TUTOR','DIRECTOR','RESEARCHER')})}
     command = ['npx.cmd', 'playwright', 'test', '--config', 'playwright.retrospective.config.ts']
     result = subprocess.run(command, cwd=ROOT, env=environment)

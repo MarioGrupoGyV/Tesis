@@ -53,12 +53,20 @@ def main():
             'available_at':{k:'2026-06-30T00:00:00-05:00' for k in ('promedio_parcial_0_20','asistencia_parcial_proporcion','entrega_parcial_proporcion')}})
         if partial.status_code != 200 or partial.json()['notification_sent'] or partial.json()['intervention_performed']:
             raise RuntimeError('RESTORED_FROZEN_MODEL_FAILED')
+        if data['compatibility'] == 'COMPATIBLE_REFERENCE_RUNTIME':
+            if (partial.json().get('compatibility') != data['compatibility']
+                    or partial.json().get('versions') != data['versions']
+                    or partial.json().get('version_warnings') != []):
+                raise RuntimeError('RESTORED_REFERENCE_RUNTIME_INCOMPATIBLE')
         client.post('/api/v1/auth/logout', headers={'X-CSRF-Token':token}).raise_for_status()
     report = {'status':'COMPROBADO','executed_at':datetime.now(timezone.utc).isoformat(),
               'source_project':source.project,'restored_project':restored.project,
               'signed_journal_bytes_exact':True,'signed_evaluations':len(recovered['ids']),
               'package_valid':True,'current_admin_login':True,'csv_rows':60,
-              'metrics':data['metrics'],'frozen_partial_inference':True,'regenerated_or_refitted':False}
+              'metrics':data['metrics'],'frozen_partial_inference':True,'regenerated_or_refitted':False,
+              'compatibility':data['compatibility'],'versions':data['versions'],
+              'version_warnings':data['version_warnings'],
+              'partial_compatibility':partial.json().get('compatibility')}
     args.report.write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
     print(json.dumps({'status':report['status'],'signed_evaluations':report['signed_evaluations'],'restored_project':restored.project}))
 

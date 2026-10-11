@@ -25,11 +25,15 @@ test('ADMIN: entrada parcial, SVM congelado, 60 propuestas/predicciones, histori
   expect(stored.predictions.filter((r: { alert_proposed: boolean }) => r.alert_proposed)).toHaveLength(40);
   expect(stored.source_events_verified).toBe(true);
   expect(stored.b1_support_vectors_verified).toBe(true);
+  expect(stored.compatibility).toBe('COMPATIBLE_REFERENCE_RUNTIME');
+  expect(stored.versions).toEqual({ python: '3.12.14', scikit_learn: '1.8.0', numpy: '2.3.5', scipy: '1.17.0', joblib: '1.5.3', threadpoolctl: '3.6.0' });
+  expect(stored.version_warnings).toEqual([]);
+  await expect(panel.getByText(/Compatibilidad: entorno de referencia compatible y aislado/)).toBeVisible();
   const result = panel.locator('[aria-label="Resultado retrospectivo"]');
   for (const [width, height] of [[1440,900],[768,1024],[390,844]]) {
     await page.setViewportSize({ width, height });
     await result.scrollIntoViewIfNeeded();
-    await page.screenshot({ path: `tests/evidence/retro-result-${width}x${height}.png` });
+    await page.screenshot({ path: `tests/evidence/${process.env.RETROSPECTIVE_EVIDENCE_PREFIX ?? 'retro'}-result-${width}x${height}.png` });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Overflow at ${width}x${height}`).toBe(true);
   }
   const downloadPromise = page.waitForEvent('download');
@@ -53,6 +57,16 @@ test('ADMIN: entrada parcial, SVM congelado, 60 propuestas/predicciones, histori
   await page.reload();
   await expect(panel.getByRole('heading', { name: 'Evaluación retrospectiva B1 → B2' })).toBeVisible();
   expect((await (await page.request.get('/api/v1/retrospective/evaluations')).json()).items.some((r: { id: string }) => r.id === id)).toBe(true);
+  // Historical incompatible executions remain visible with their original warnings.
+  const old = next.items.find((r: { compatibility: string }) => r.compatibility === 'CROSS_VERSION_EXPERIMENTAL');
+  if (old) {
+    const response = await page.request.get(`/api/v1/retrospective/evaluations/${old.id}`);
+    const historical = await response.json();
+    expect(historical.version_warnings).toHaveLength(3);
+    await panel.getByRole('region', { name: 'Historial retrospectivo' }).locator('tbody tr').nth(next.items.findIndex((r: { id: string }) => r.id === old.id)).getByRole('button').click();
+    await expect(panel.getByText('Advertencias conservadas de esta ejecución')).toBeVisible();
+    for (const warning of historical.version_warnings) await expect(panel.getByText(warning, { exact: true })).toBeVisible();
+  }
 });
 
 for (const role of ['TUTOR','DIRECTOR','RESEARCHER']) {

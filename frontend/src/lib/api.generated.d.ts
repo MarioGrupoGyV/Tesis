@@ -1684,7 +1684,7 @@ export interface components {
              * Compatibility
              * @enum {string}
              */
-            compatibility: "CROSS_VERSION_EXPERIMENTAL" | "SOURCE_SKLEARN_VERSION";
+            compatibility: "CROSS_VERSION_EXPERIMENTAL" | "SOURCE_SKLEARN_VERSION" | "COMPATIBLE_REFERENCE_RUNTIME";
             /** Version Warnings */
             version_warnings: string[];
             /** Versions */
@@ -1788,7 +1788,7 @@ export interface components {
              * Compatibility
              * @enum {string}
              */
-            compatibility: "CROSS_VERSION_EXPERIMENTAL" | "SOURCE_SKLEARN_VERSION";
+            compatibility: "CROSS_VERSION_EXPERIMENTAL" | "SOURCE_SKLEARN_VERSION" | "COMPATIBLE_REFERENCE_RUNTIME";
             /** Version Warnings */
             version_warnings: string[];
             /** Versions */
@@ -1879,6 +1879,17 @@ export interface components {
              * @constant
              */
             scope: "RETROSPECTIVE_EVALUATION";
+            /**
+             * Compatibility
+             * @constant
+             */
+            compatibility: "COMPATIBLE_REFERENCE_RUNTIME";
+            /** Versions */
+            versions: {
+                [key: string]: string;
+            };
+            /** Version Warnings */
+            version_warnings: string[];
             /**
              * Risk Level
              * @enum {string}

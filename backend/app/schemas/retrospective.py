@@ -36,7 +36,7 @@ class RetrospectiveSummary(RetroModel):
     source_events_verified: bool
     temporal_check: Literal['DERIVED_AGGREGATE_ONLY', 'SOURCE_DECLARED_EVENTS_VERIFIED']
     same_cohort: Literal[True]
-    compatibility: Literal['CROSS_VERSION_EXPERIMENTAL', 'SOURCE_SKLEARN_VERSION']
+    compatibility: Literal['CROSS_VERSION_EXPERIMENTAL', 'SOURCE_SKLEARN_VERSION', 'COMPATIBLE_REFERENCE_RUNTIME']
     version_warnings: list[str]
     versions: dict[str, str]
     source_versions: dict[str, str]
@@ -93,6 +93,9 @@ class RetrospectivePartialInput(RetroModel):
 class RetrospectivePartialResult(RetroModel):
     executed_at: AwareDatetime
     scope: Literal['RETROSPECTIVE_EVALUATION']
+    compatibility: Literal['COMPATIBLE_REFERENCE_RUNTIME']
+    versions: dict[str, str]
+    version_warnings: list[str]
     risk_level: Risk
     alert_proposed: bool
     probabilities_calibrated: Literal[False]

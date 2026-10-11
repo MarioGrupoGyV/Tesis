@@ -61,4 +61,5 @@ como entrenamiento declarado y B2 como evaluación, sin fit. No habilita el fluj
 institucional operativo ni modifica el estudio sintético, cuentas o históricos.
 Plan: Plan_Integracion_Retrospectiva.md; manual: ../manuals/Manual_Evaluacion_Retrospectiva.md.
 Cada ejecución y su actor se conservan en el diario privado firmado del volumen
-ML. La carga entre versiones conserva su advertencia experimental.
+ML. Las ejecuciones históricas entre versiones conservan sus advertencias;
+las nuevas usan el intérprete aislado fijado en Manual_Runtime_SVM.md.

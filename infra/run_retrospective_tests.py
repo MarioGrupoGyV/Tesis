@@ -22,9 +22,13 @@ urls = {role: make_url(url).set(database=database).render_as_string(hide_passwor
 os.environ.update(TEST_DATABASE_URL=urls['app'], ADMIN_DATABASE_URL=urls['owner'], DATABASE_URL=urls['app'],
     MIGRATION_DATABASE_URL=urls['owner'], APP_ENV='test', CSRF_SECRET='isolated-retro-tests-CSRF-key-at-least-32-bytes')
 subprocess.run([sys.executable, '-m', 'alembic', '-c', 'backend/alembic.ini', 'upgrade', 'head'], check=True)
-result = subprocess.run([sys.executable, '-m', 'pytest', 'backend/tests/test_retrospective.py', '-q', '--tb=short',
-    '-o', 'cache_dir=/tmp/pytest-cache', '--junitxml=/evidence/retro-final-tests.xml'])
-Path('/evidence/retro-final-tests-environment.json').write_text(json.dumps({
+report = os.environ.get('TEST_REPORT_NAME', 'retro-final-tests')
+if not report.replace('-', '').isalnum() or Path('/evidence/' + report + '.xml').exists():
+    raise RuntimeError('NEW_TEST_REPORT_REQUIRED')
+result = subprocess.run([sys.executable, '-m', 'pytest', 'backend/tests/test_retrospective.py',
+    'backend/tests/test_retrospective_runtime.py', '-q', '--tb=short',
+    '-o', 'cache_dir=/tmp/pytest-cache', f'--junitxml=/evidence/{report}.xml'])
+Path(f'/evidence/{report}-environment.json').write_text(json.dumps({
     'status': 'COMPROBADO' if result.returncode == 0 else 'FALLIDO', 'database': database,
     'final_application_sources_mounted_readonly': True, 'exit_code': result.returncode}, indent=2))
 raise SystemExit(result.returncode)

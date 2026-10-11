@@ -23,3 +23,10 @@ review_browser.py realiza además el encargo explícito de acceso en localhost a
 con las cuatro credenciales privadas Windows. Evidencias active/isolated separadas;
 active-first conserva el fallo inicial del estado del investigador. El reporter
 publica solo títulos, estado y duración: nunca cuerpos, argumentos, trazas o secretos.
+
+La compatibilidad retrospectiva se verifica con test_retrospective_runtime.py
+en el tester Docker que contiene ambos intérpretes. El test evita cargar el joblib
+en el padre, exige versiones originales, prohíbe fit y reproduce B2. El ZIP se monta
+desde su ubicación autorizada en solo lectura; no forma parte de fixtures ni imagen.
+Los runners aceptan prefijos de evidencia nuevos para conservar las ejecuciones
+anteriores. [Procedimiento](../docs/manuals/Manual_Runtime_SVM.md).

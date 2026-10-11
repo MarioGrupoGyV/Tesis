@@ -1,0 +1,119 @@
+{
+  "status": "COMPROBADO",
+  "executed_at": "2026-10-11T20:32:38.057712+00:00",
+  "checks": [
+    "EXACT_REFERENCE_RUNTIME_SEPARATE_FROM_BACKEND",
+    "API_WEB_RESTARTED_DB_NOT_RESTARTED",
+    "ALL_15_TABLES_EXACT_AFTER_RESTART",
+    "ALL_PRIVATE_FILES_EXACT_AFTER_RESTART",
+    "THREE_HISTORICAL_INCOMPATIBLE_RUNS_WARNINGS_PRESERVED",
+    "FULL_60_B2_INFERENCE_AFTER_RESTART",
+    "ACTUAL_CSV_60_ROWS",
+    "PARTIAL_INFERENCE_REFERENCE_RUNTIME",
+    "ORIGINAL_MODEL_HASH_AND_REFERENCE_LOCK_IN_SIGNED_RUN",
+    "ALL_13_EXISTING_NON_ACCESS_TABLES_UNCHANGED",
+    "FOUR_CURRENT_ACCOUNTS_UNCHANGED",
+    "ALL_PREEXISTING_PRIVATE_BYTES_UNCHANGED"
+  ],
+  "target_project": "riesgo-escolar",
+  "images": {
+    "api": "sha256:815a1ac15f683deedededd90a9e116d5bbfb2202cdd7e28dbe3a49e44d5c18ba",
+    "db": "sha256:567d5d704a3e5a4864393b623a0d50eb1b5a4ad134cdac7cf19555cb2d8ffe9e",
+    "web": "sha256:ac8eeb7746fb2fc51417b7026aafa4fb0aa3868bb3bbb2fb0bb0fa3d9ad4a1b5"
+  },
+  "backend_versions": {
+    "python": "3.12.12",
+    "scikit_learn": "1.9.1",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0"
+  },
+  "reference_runtime": {
+    "versions": {
+      "python": "3.12.14",
+      "scikit_learn": "1.8.0",
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "joblib": "1.5.3",
+      "threadpoolctl": "3.6.0"
+    },
+    "isolated": true,
+    "prefix": "/opt/retrospective"
+  },
+  "latest_evaluation_id": "be27bf54-ce3c-4d16-9a35-871c206f2007",
+  "latest_executed_at": "2026-10-11T20:32:24.717534Z",
+  "metrics": {
+    "n": 60,
+    "correct": 49,
+    "accuracy": 0.8166666666666667,
+    "f1_macro": 0.7930479204842023,
+    "confusion": [
+      [
+        20,
+        5,
+        0
+      ],
+      [
+        0,
+        9,
+        2
+      ],
+      [
+        0,
+        4,
+        20
+      ]
+    ],
+    "support": [
+      25,
+      11,
+      24
+    ],
+    "alert_proposals": 40
+  },
+  "compatibility": "COMPATIBLE_REFERENCE_RUNTIME",
+  "version_warnings": [],
+  "journal_identity": {
+    "model_sha256": "69efc39488faec44b25fd151d638659b4bcc7189d644e0cd96ccec2667137c15",
+    "package_sha256": "08ace0a90feb05e29d1ff5dedb6bd126139fd42ca85df06c5ef5802a70a86de4",
+    "runtime_lock_sha256": "0539b84d9b771feff24218f9e3537936f488f73475dd711e734b49d503cd1373",
+    "runtime_id": "svm-reference-v1"
+  },
+  "counts_before": {
+    "academic_periods": 1,
+    "academic_snapshots": 360,
+    "alerts": 51,
+    "app_users": 4,
+    "audit_events": 367,
+    "enrollments": 60,
+    "followup_decisions": 55,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 2,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 93
+  },
+  "counts_after": {
+    "academic_periods": 1,
+    "academic_snapshots": 360,
+    "alerts": 51,
+    "app_users": 4,
+    "audit_events": 373,
+    "enrollments": 60,
+    "followup_decisions": 55,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 2,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 98
+  },
+  "historical_incompatible_runs_preserved": 3,
+  "new_evaluations": 2,
+  "restart_completed": true
+}
