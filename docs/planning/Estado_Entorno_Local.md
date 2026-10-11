@@ -1,7 +1,7 @@
 # Entorno Python local único
 
 Fecha: 2026-10-11 (America/Lima). Solicitud explícita del usuario: mantener un
-único entorno virtual local. El entorno vigente es `.venv` en la raíz del proyecto.
+único entorno virtual local. El entorno vigente es `backend/.venv`.
 
 Se creó de nuevo con Python Windows 3.12.0 y se consolidaron las distribuciones
 ya instaladas en S0/S1: 73 paquetes y 24 entradas de consola regeneradas para la
@@ -18,22 +18,22 @@ utilizaba `.venv-s1`:
 
 `%LOCALAPPDATA%/SeguimientoEscolar/EntornosArchivados/consolidacion-20261011-140341/`.
 
-Dentro del proyecto queda solamente `.venv`. Los directorios archivados no son
+Dentro del proyecto queda solamente `backend/.venv`. Los directorios archivados no son
 entornos de trabajo vigentes; las referencias S0/S1 en estados y evidencias
 históricos se conservan como registros de ejecuciones pasadas.
 
 Desde una terminal PowerShell en `backend`:
 
 ```powershell
-..\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 python -m uvicorn app.main:app --reload
 ```
 
-Desde la raíz, la activación es `.\.venv\Scripts\Activate.ps1`.
+Desde la raíz, la activación es `.\backend\.venv\Scripts\Activate.ps1`.
 README, manual de instalación, manual del estudio, manual ML, backend e infra
 utilizan ahora el entorno único en sus instrucciones operativas.
 
-Comprobado:
+Comprobado durante la consolidación inicial en la raíz:
 
 - `pip.exe check`: sin dependencias rotas, también después del traslado.
 - `python -m pytest backend/tests/test_config_local_env.py -q`: cuatro pruebas
@@ -46,6 +46,14 @@ Comprobado:
 - Después de archivar los entornos anteriores, readiness 200 mediante TestClient
   y un único directorio `.venv*` en la raíz.
 - Los tres contenedores activos siguen running/healthy.
+
+El mismo día se trasladó el entorno a `backend/.venv` para permitir el comando
+solicitado desde `backend`. Se regeneraron la configuración, la activación y las
+24 entradas de consola para la nueva ruta. Se conservaron los 73 paquetes y los
+hashes de locks. La activación exacta `.\.venv\Scripts\Activate.ps1`, Python
+3.12.0, `pip check`, importación de Argon2, readiness 200 mediante TestClient y
+las cuatro pruebas de configuración se comprobaron de nuevo tras el traslado.
+El inventario adicional queda en `.local/backend-env-relocation-after.json`.
 
 Inventario, scripts, hashes de locks y archivo:
 `.local/environment-consolidation-20261011T185907Z.json`.

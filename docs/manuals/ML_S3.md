@@ -199,7 +199,7 @@ $env:TEST_REPORT_NAME = 's3-backend'
 docker compose -f infra/compose.test.yaml build tester
 docker compose -f infra/compose.test.yaml run --rm tester
 npm run generate:api --workspace frontend
-.\.venv\Scripts\python.exe infra/check_s0.py
+.\backend\.venv\Scripts\python.exe infra/check_s0.py
 docker compose build web
 $env:BROWSER_REPORT_PREFIX = 's3'
 py -3.12 infra/test_browser.py

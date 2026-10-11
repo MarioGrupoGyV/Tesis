@@ -187,10 +187,10 @@ Estudiantes/lista/detalle/historial conservan alcance, filtros, orden/paginació
 $env:TEST_REPORT_NAME = 's3-1-backend'
 docker compose -f infra/compose.test.yaml build tester
 docker compose -f infra/compose.test.yaml run --rm tester
-.\.venv\Scripts\python.exe infra/sync_study_contract.py
+.\backend\.venv\Scripts\python.exe infra/sync_study_contract.py
 npm run generate:api --workspace frontend
 npm run build --workspace frontend
-.\.venv\Scripts\python.exe infra/check_s0.py
+.\backend\.venv\Scripts\python.exe infra/check_s0.py
 py -3.12 infra/review_study.py --admin-credential ADMIN --tutor-id $tutorId
 $env:REVIEW_REPORT_PREFIX = 's3-1-active'
 py -3.12 infra/review_browser.py
@@ -198,7 +198,7 @@ $env:PERSISTENCE_REPORT_PREFIX = 's3-1'
 py -3.12 infra/check_access_persistence.py
 $env:BROWSER_REPORT_PREFIX = 's3-1'
 py -3.12 infra/test_browser.py
-.\.venv\Scripts\python.exe infra/check_study.py
+.\backend\.venv\Scripts\python.exe infra/check_study.py
 git diff --check
 ```
 

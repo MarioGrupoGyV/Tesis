@@ -114,7 +114,7 @@ py -3.12 infra/sync_followup_contract.py
 npm run generate:api --workspace frontend
 npm run typecheck --workspace frontend
 npm run build --workspace frontend
-.\.venv\Scripts\python.exe -X utf8 infra/check_s0.py
+.\backend\.venv\Scripts\python.exe -X utf8 infra/check_s0.py
 git diff --check
 ```
 
@@ -126,7 +126,7 @@ navegador, contrato, persistencia, dependencias, volúmenes, respaldos y entorno
 histórico detenido. Es un cierre coordinado sobre la base poblada:
 
 ```powershell
-.\.venv\Scripts\python.exe -X utf8 infra/check_s5.py `
+.\backend\.venv\Scripts\python.exe -X utf8 infra/check_s5.py `
   --backend-prefix $env:TEST_REPORT_NAME `
   --isolated-prefix $env:BROWSER_REPORT_PREFIX `
   --active-prefix $env:REVIEW_REPORT_PREFIX

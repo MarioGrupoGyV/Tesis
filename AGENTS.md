@@ -4,7 +4,7 @@ Estas instrucciones se deben colocar en la raíz del repositorio de la tesis. De
 
 El usuario opera exclusivamente desde PowerShell en Windows. Docker conserva imágenes Linux internas; no exigir WSL, Bash ni Make. Versiones y locks fijados se conservan. El primer administrador se crea explícitamente por CLI con entrada secreta, nunca por archivo de cuentas. Los documentos y evidencias históricos S0/S1/S2 no son instrucciones operativas.
 
-Desde el 2026-10-11 el único entorno virtual local es `.venv` en la raíz, por solicitud del usuario. Reúne las dependencias Windows previamente instaladas de backend y herramientas documentales; no recrear `.venv-s0` ni `.venv-s1`. Sus menciones en evidencias y estados históricos describen ejecuciones pasadas. El runtime integrado y XGBoost CPU conservan sus versiones dentro de Docker.
+Desde el 2026-10-11 el único entorno virtual local es `backend/.venv`, por solicitud del usuario. Desde `backend` se activa con `.\.venv\Scripts\Activate.ps1`. Reúne las dependencias Windows previamente instaladas de backend y herramientas documentales; no recrear `.venv-s0` ni `.venv-s1`. Sus menciones en evidencias y estados históricos describen ejecuciones pasadas. El runtime integrado y XGBoost CPU conservan sus versiones dentro de Docker.
 
 ## Fuentes del proyecto
 

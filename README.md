@@ -15,13 +15,13 @@ No se requiere una consola WSL, Bash o Make. Versiones conservadas: Python
 3.12.12/Linux, PostgreSQL 17.6, Node 24.14.1, npm 11.20.0, scikit-learn 1.9.1
 y XGBoost CPU 3.4.1. Launcher del host Python 3.12.0; no sustituye el backend.
 
-El único entorno virtual local es `.venv` en la raíz. Para activarlo desde allí:
+El único entorno virtual local es `backend/.venv`. Para activarlo desde `backend`:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-Si la terminal está dentro de `backend`, usar `..\.venv\Scripts\Activate.ps1`.
+Si la terminal está en la raíz, usar `.\backend\.venv\Scripts\Activate.ps1`.
 Ese entorno reúne las dependencias Windows y herramientas documentales que antes
 estaban separadas en S0/S1. Las rutas anteriores solo se conservan en documentos
 históricos. El sistema completo continúa operándose en Docker.
@@ -95,12 +95,12 @@ npm run generate:api --workspace frontend
 npm run typecheck --workspace frontend
 npm run build --workspace frontend
 $env:CONTRACT_REPORT_PREFIX = "s6-$s6Run"
-.\.venv\Scripts\python.exe infra/check_s0.py
+.\backend\.venv\Scripts\python.exe infra/check_s0.py
 docker compose exec -T api python -m pip check
 git diff --check
 ```
 
-Herramienta documental: crear `.venv` e instalar `infra/requirements-s0.txt`
+Herramienta documental: crear `backend/.venv` e instalar `infra/requirements-s0.txt`
 con `--require-hashes` si falta. Backend crea PostgreSQL aislado nuevo y ejecuta
 como riesgo_app; fixtures no son resultados escolares. Navegador requiere Chromium
 instalado por Playwright. Destinos y comandos efectivos en Estado S6; un BASE
