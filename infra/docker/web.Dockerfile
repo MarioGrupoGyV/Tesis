@@ -9,4 +9,4 @@ RUN npm run build --workspace frontend
 RUN chown -R node:node /workspace
 USER node
 EXPOSE 5173
-CMD ["npm", "run", "dev", "--workspace", "frontend"]
+CMD ["npm", "run", "dev", "--workspace", "frontend", "--", "--host", "0.0.0.0"]
