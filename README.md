@@ -35,6 +35,14 @@ Se conservan cuatro cuentas S2.2 y accesos privados Windows
 restablecer contraseñas ni ejecutar `review_accounts.py` en esta instalación.
 Su [cierre S2.2](docs/planning/Estado_Sprint_2_2.md) conserva identidad y evidencia.
 
+El 2026-10-11 el usuario autorizó renovar esos accesos. Los correos vigentes son
+`admin@example.com`, `tutor@example.com`, `director@example.com` e
+`investigador@example.com`. Las contraseñas nuevas tienen 13 caracteres y se
+consultan en la ventana privada de `py -3.12 infra/windows_credentials.py ADMIN`
+(sustituir el rol cuando corresponda). Se conservan las cuatro identidades y el
+historial. El [estado de accesos](docs/planning/Estado_Accesos_Locales.md) documenta
+esta actualización; no utilizar los correos ni contraseñas históricos para login.
+
 El launcher exige destino explícito y lee únicamente ADMIN:
 
 ```powershell

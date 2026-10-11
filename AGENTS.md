@@ -10,12 +10,14 @@ Antes de implementar, incorporar en `docs/planning/` el plan, `Contrato_API.yaml
 
 Prioridad: instrucciones del usuario, requisitos académicos vigentes y contratos de la iteración actual. Ante un conflicto, registrar la decisión y corregir los documentos afectados. No copiar resultados ni poblaciones de una tesis de referencia.
 
+Actualización explícitamente autorizada el 2026-10-11: se renovaron los cuatro accesos locales con nuevos correos y contraseñas más cortas. Se conservan UUID, roles, asignaciones, historial y las mismas entradas privadas Windows; sus valores vigentes sustituyen a las credenciales originales S2.2. Los accesos anteriores quedan en un respaldo DPAPI privado fuera del repositorio. Consultar `docs/planning/Estado_Accesos_Locales.md`; no recrear ni restaurar automáticamente los accesos históricos.
+
 ## Alcance vigente
 
 - Implementar login, permisos, CSV con vista previa y confirmación, estudiantes, tablero, módulo predictivo del proyecto, alertas, intervenciones y exportación CSV.
 - Usar React TypeScript Vite Tailwind y FastAPI SQLAlchemy Alembic PostgreSQL. Fijar versiones compatibles en la primera iteración.
 - S3.1 reutiliza el núcleo S3 y sus cuatro algoritmos CPU. Generador versionado y determinista, CSV exacto registrado, comparación de desarrollo por grupos y reserva externa temporal. Aprobación técnica solo permite simulación. Leer ADR 005/006 y Manual_Estudio_Sintetico.md. Entrenamiento/evaluación/activación REAL requieren protocolo futuro. S4 conserva acceso, Inicio, Estudiantes, Datos y Modelos. S5 añade alertas/intervenciones/resumen/CSV con followup-policy-v1, versiones estrictas, decisión persistente e idempotencia original. Leer ADR 007/008 y Manual_Seguimiento_Reportes_S5.md. S6 integra instalación nueva, recuperación completa sin regeneración y revisión activa no destructiva; leer ADR 009 y manuales finales. Destino explícito antes de escribir, backups DPAPI privados y copias S6 nuevas; nunca restaurar sobre el activo. No S7, commit/push o externo.
-- No crear semillas al arrancar ni cuentas predeterminadas. El estudio nuevo SYNTHETIC se prepara/importa exclusivamente por comandos ADMIN explícitos; no recuperar DEMO histórico ni presentar registros generados como personas observadas. Conservar las cuentas/credenciales S2.2.
+- No crear semillas al arrancar ni cuentas predeterminadas. El estudio nuevo SYNTHETIC se prepara/importa exclusivamente por comandos ADMIN explícitos; no recuperar DEMO histórico ni presentar registros generados como personas observadas. Conservar las identidades de las cuatro cuentas y sus accesos vigentes documentados en `docs/planning/Estado_Accesos_Locales.md`.
 - Bloquear importación institucional con `INSTITUTIONAL_PROCESSING_NOT_READY` hasta documentar e implementar procedencia, escala, periodo, ventanas, fechas y calidad. Ninguna variable habilita ese protocolo. Contexto vacío sí puede leerse.
 - No añadir pagos, chats, portales de familias, integraciones ni gestión completa de matrículas administrativas.
 
