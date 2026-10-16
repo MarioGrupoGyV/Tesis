@@ -30,7 +30,7 @@ services:
       DATABASE_URL_FILE: /run/secrets/app_database_url
       CSRF_SECRET_FILE: /run/secrets/csrf_secret
       APP_ENV: development
-      ALLOWED_ORIGINS: "${ALLOWED_ORIGINS:-http://localhost:15173,http://127.0.0.1:15173}"
+      ALLOWED_ORIGINS: "${ALLOWED_ORIGINS:-http://localhost:15173,http://127.0.0.1:15173,http://localhost:5173,http://127.0.0.1:5173}"
       SESSION_COOKIE_SECURE: "${SESSION_COOKIE_SECURE:-false}"
       TZ: UTC
       DISPLAY_TIMEZONE: America/Lima

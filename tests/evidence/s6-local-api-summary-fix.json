@@ -1,0 +1,25 @@
+{
+  "checked_at": "2026-10-16T04:45:37.238577+00:00",
+  "base_url": "http://localhost:5173",
+  "api_target": "http://localhost:18000",
+  "period_id": "c036cbcb-87db-5ed0-bcfa-bbd644928ccb",
+  "status": "PASS",
+  "checks": {
+    "unauthenticated_summary": 401,
+    "unlisted_origin_login": 403,
+    "local_login": 200,
+    "same_session_integrated_web": 200,
+    "local_summary": 200,
+    "summary_counts": {
+      "total": 60,
+      "evaluated": 55,
+      "not_evaluated": 0,
+      "insufficient_data": 5
+    },
+    "processing_status": 200,
+    "synthetic_ready": true,
+    "logout_without_csrf": 403,
+    "logout_with_csrf": 204,
+    "summary_after_logout": 401
+  }
+}

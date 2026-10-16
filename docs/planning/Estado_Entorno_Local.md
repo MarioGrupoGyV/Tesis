@@ -62,3 +62,64 @@ No se ejecutaron entrenamiento, migraciones, restauración ni un recorrido
 integrado de importación/seguimiento/exportación para este cambio. XGBoost CPU y
 los archivos privados del estudio permanecen en Docker; esta consolidación no
 afirma compatibilidad del runtime ML completo con Windows.
+
+## Corrección del resumen desde el frontend local — 2026-10-15 (Lima)
+
+El usuario reportó `503` en `GET /api/v1/reports/summary` desde
+`http://localhost:5173`. Vite apuntaba por defecto al Uvicorn nativo en `8000`:
+ese proceso consulta la base existente pero no tiene `ML_STORAGE_DIR` ni los
+archivos privados del estudio Docker. El servicio rechazaba correctamente la
+lectura con `STUDY_STORAGE_UNAVAILABLE`. No se sustituyó la validación de
+procedencia por una consulta sin verificar.
+
+Se cambió el destino predeterminado del proxy Vite a la API integrada en
+`http://localhost:18000`. `API_PROXY_TARGET` explícito sigue teniendo prioridad;
+el contenedor web conserva su destino explícito `http://api:8000`. Se añadieron
+los dos orígenes locales exactos de `5173` a la configuración Docker, conservando
+los de `15173`, `changeOrigin: false` y las comprobaciones de Origin/CSRF.
+Se aplicó únicamente la configuración de la API; DB, web y volúmenes existentes
+no se recrearon. No se copiaron archivos privados a Windows ni se crearon
+almacenes alternativos. El Uvicorn nativo continúa siendo un diagnóstico separado,
+sin acceso a los volúmenes privados ni acreditación del recorrido completo.
+
+Archivos modificados:
+
+- `frontend/vite.config.ts`: destino integrado por defecto.
+- `compose.yaml` y `.env.example`: orígenes explícitos de desarrollo local.
+- `.env` privado existente: mismos orígenes, sin cambios de puertos o secretos.
+- `frontend/README.md` y `backend/README.md`: operación integrada y selección
+  explícita de la API nativa de diagnóstico.
+- Este estado y las evidencias enlazadas a continuación.
+
+Comprobado:
+
+- `docker compose up -d --no-deps --no-build --wait api`: API healthy, con los
+  volúmenes existentes; sin build de imágenes, migración ni reinicio de la base.
+- `npm run build --workspace frontend`: TypeScript y Vite aprobados. El primer
+  intento dentro de la restricción de ejecución falló con `spawn EPERM`; el mismo
+  comando con ejecución autorizada finalizó correctamente, sin modificar locks.
+- Verificación HTTP real en `5173` usando solo ADMIN del almacén Windows, con
+  contraseña/cookie/CSRF únicamente en memoria: login `200`, resumen `200`,
+  preparación `200`, misma sesión/identidad reconocida en `15173`. Resumen:
+  60 matrículas sintéticas, 55 evaluadas, 0 pendientes y 5 con datos insuficientes.
+- Sin sesión y después del logout: resumen `401`. Login con origen no autorizado:
+  `403 ORIGIN_NOT_ALLOWED`. Logout sin CSRF: `403`; con CSRF: `204`. La sesión
+  temporal de comprobación se cerró sin revocar la sesión del navegador del usuario.
+- Inicio real recargado en `5173`: resumen visible sin el error. Revisión visual
+  en 1440×900, 768×1024 y 390×844; tamaño del navegador restaurado al terminar.
+- `git diff --check`: sin errores de whitespace.
+
+Evidencias:
+
+- [Resultados HTTP sanitizados](../../tests/evidence/s6-local-api-summary-fix.json).
+- [Inicio en escritorio](../../tests/evidence/s6-local-summary-fix-1440x900.jpg).
+- [Inicio en tableta](../../tests/evidence/s6-local-summary-fix-768x1024.jpg).
+- [Inicio en móvil](../../tests/evidence/s6-local-summary-fix-390x844.jpg).
+
+Sin incidencias pendientes para el 503 reportado. No se ejecutaron entrenamiento,
+inferencia, importación, migraciones, recuperación ni el recorrido completo
+importar/evaluar/atender/exportar. Las comprobaciones de acceso añadieron solo los
+eventos normales de autenticación. No se modificaron cuentas, observaciones,
+predicciones, casos o intervenciones. Dependencia operativa: Docker Desktop y la
+API integrada deben estar disponibles; un destino diferente exige declarar
+`API_PROXY_TARGET` y sus orígenes de forma explícita. Sin commit ni push.

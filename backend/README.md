@@ -111,8 +111,11 @@ variables del entorno tienen prioridad sobre las del archivo local.
 
 El diagnóstico local no acredita el recorrido completo: los archivos privados de
 importación y modelos de la instalación activa permanecen en sus volúmenes Docker.
-El sistema integrado se opera desde `http://localhost:15173`; no crear carpetas
-vacías para sustituir esos archivos ni cambiar los locks para arrancar localmente.
+El sistema integrado se opera desde `http://localhost:15173`. El frontend de
+desarrollo en `http://localhost:5173` usa por defecto la misma API integrada en
+`18000`; configuración y alternativa de diagnóstico explícita en el
+[README del frontend](../frontend/README.md). No crear carpetas vacías para
+sustituir esos archivos ni cambiar los locks para arrancar localmente.
 
 Desde la raíz del repositorio, con Docker Desktop en modo contenedores Linux:
 

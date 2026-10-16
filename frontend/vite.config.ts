@@ -12,7 +12,9 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       proxy: {
         '/api/v1': {
-          target: process.env.API_PROXY_TARGET || env.API_PROXY_TARGET || 'http://localhost:8000',
+          // The integrated API owns the private study/model volumes. The native
+          // diagnostic API on :8000 does not have those files.
+          target: process.env.API_PROXY_TARGET || env.API_PROXY_TARGET || 'http://localhost:18000',
           // Preserve Host/Origin: the API checks the browser's allowed origin.
           changeOrigin: false,
         },
