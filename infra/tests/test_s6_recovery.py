@@ -198,6 +198,30 @@ class TargetGuardTests(unittest.TestCase):
         with patch.object(target, 'configuration', return_value={}), patch.object(target, 'containers', return_value=[]), patch.object(runtime, 'docker', return_value=SimpleNamespace(stdout=target.data['volumes']['ml_data'] + '\n')), self.assertRaisesRegex(RuntimeError, '^TARGET_VOLUME_EXISTS$'):
             target.assert_resources(fresh=True)
 
+    def test_local_development_origins_only_belong_to_active_configuration(self):
+        for kind in ('ACTIVE', 'INSTALL', 'RESTORE'):
+            target=runtime.Target(descriptor(kind))
+            web={target.web_url,target.web_url.replace('localhost','127.0.0.1')}
+            cases=[(web,True),
+                (web|{'http://localhost:5173','http://127.0.0.1:5173'},kind=='ACTIVE'),
+                (web|{'http://localhost:59999'},False),
+                (web|{'http://external.example.com'},False),
+                ({'http://localhost:5173','http://127.0.0.1:5173'},False)]
+            for origins,accepted in cases:
+                config={'name':target.project,
+                    'volumes':{key:{'name':name} for key,name in target.data['volumes'].items()},
+                    'services':{service:{'ports':[{'host_ip':'127.0.0.1',
+                        'published':target.data['ports'][service],'target':port}],
+                        'environment':{}} for service,port in (('web',5173),('api',8000),('db',5432))}}
+                config['services']['db']['environment']['POSTGRES_DB']=target.database
+                config['services']['api']['environment']['ALLOWED_ORIGINS']=','.join(sorted(origins))
+                with self.subTest(kind=kind,origins=origins), patch.object(runtime, 'digest',return_value='0'*64), patch.object(runtime.subprocess,'run',return_value=SimpleNamespace(returncode=0,stdout=json.dumps(config))):
+                    if accepted:
+                        self.assertEqual(target.configuration(),config)
+                    else:
+                        with self.assertRaisesRegex(RuntimeError,'^TARGET_ORIGIN_CONFIG_INVALID$'):
+                            target.configuration()
+
     def test_unknown_volume_owner_refused_before_operation(self):
         target = runtime.Target(descriptor())
         volume = target.data['volumes']['db_data']

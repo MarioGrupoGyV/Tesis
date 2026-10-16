@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "checked_at": "2026-10-16T04:53:57.891471+00:00",
+  "base_url": "http://localhost:5173",
+  "checks": {
+    "existing_admin_login": 200,
+    "/periods": {
+      "status": 200,
+      "records": 0
+    },
+    "/models": {
+      "status": 200,
+      "records": 0
+    },
+    "/retrospective/evaluations": {
+      "status": 200,
+      "records": 0
+    },
+    "empty_processing_state": 200,
+    "/students_old_period": 404,
+    "/reports/summary_old_period": 404,
+    "/alerts_old_period": 404,
+    "temporary_session_logout": 204
+  },
+  "zero_operational_records_after_api_restart": true,
+  "four_user_records_exactly_unchanged": true,
+  "counts": {
+    "academic_periods": 0,
+    "academic_snapshots": 0,
+    "alerts": 0,
+    "app_users": 4,
+    "audit_events": 388,
+    "enrollments": 0,
+    "followup_decisions": 0,
+    "grade_sections": 0,
+    "import_batches": 0,
+    "interventions": 0,
+    "model_versions": 0,
+    "predictions": 0,
+    "students": 0,
+    "synthetic_studies": 0,
+    "user_sessions": 106
+  }
+}

@@ -123,3 +123,12 @@ eventos normales de autenticación. No se modificaron cuentas, observaciones,
 predicciones, casos o intervenciones. Dependencia operativa: Docker Desktop y la
 API integrada deben estar disponibles; un destino diferente exige declarar
 `API_PROXY_TARGET` y sus orígenes de forma explícita. Sin commit ni push.
+
+## Limpieza autorizada de datos y configuración — 2026-10-15 (Lima)
+
+Después del arreglo de conexión, el usuario solicitó vaciar estudiantes y luego
+confirmó vaciar también periodos, secciones y modelos, conservando usuarios.
+La base operativa está vacía y las cuatro cuentas se comprobaron idénticas.
+Se conservan auditoría, accesos y un respaldo DPAPI completo verificado del estado
+anterior. Conteos, comandos, archivos y evidencias en
+[Estado de limpieza local](Estado_Limpieza_Local.md). No regenerar datos al arrancar.

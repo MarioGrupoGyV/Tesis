@@ -1,0 +1,73 @@
+{
+  "status": "PASS",
+  "backup_file": "s6-20261016T045000Z-5f4e3d304fcb.sebackup",
+  "started_at": "2026-10-16T04:53:16.876625+00:00",
+  "source": {
+    "project": "riesgo-escolar",
+    "database": "riesgo_escolar"
+  },
+  "cleared_tables": [
+    "academic_periods",
+    "academic_snapshots",
+    "alerts",
+    "enrollments",
+    "followup_decisions",
+    "grade_sections",
+    "import_batches",
+    "interventions",
+    "model_versions",
+    "predictions",
+    "students",
+    "synthetic_studies"
+  ],
+  "storage": {
+    "import_data": {
+      "checked_files": 2,
+      "removed_files": 2
+    },
+    "ml_data": {
+      "checked_files": 23,
+      "removed_files": 22
+    }
+  },
+  "database_committed": true,
+  "before_counts": {
+    "academic_periods": 1,
+    "academic_snapshots": 360,
+    "alerts": 51,
+    "app_users": 4,
+    "audit_events": 385,
+    "enrollments": 60,
+    "followup_decisions": 55,
+    "grade_sections": 2,
+    "import_batches": 1,
+    "interventions": 2,
+    "model_versions": 1,
+    "predictions": 55,
+    "students": 60,
+    "synthetic_studies": 1,
+    "user_sessions": 105
+  },
+  "after_counts": {
+    "academic_periods": 0,
+    "academic_snapshots": 0,
+    "alerts": 0,
+    "app_users": 4,
+    "audit_events": 386,
+    "enrollments": 0,
+    "followup_decisions": 0,
+    "grade_sections": 0,
+    "import_batches": 0,
+    "interventions": 0,
+    "model_versions": 0,
+    "predictions": 0,
+    "students": 0,
+    "synthetic_studies": 0,
+    "user_sessions": 105
+  },
+  "accounts_exactly_preserved": true,
+  "sessions_exactly_preserved": true,
+  "prior_audit_preserved": true,
+  "schema_and_grants_preserved": true,
+  "finished_at": "2026-10-16T04:53:27.555023+00:00"
+}

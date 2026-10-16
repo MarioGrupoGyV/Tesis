@@ -133,7 +133,13 @@ class Target:
         if config['services']['db']['environment']['POSTGRES_DB']!=self.database:
             raise RuntimeError('TARGET_DATABASE_CONFIG_INVALID')
         allowed=config['services']['api']['environment'].get('ALLOWED_ORIGINS','')
-        if set(allowed.split(','))!={self.web_url,self.web_url.replace('localhost','127.0.0.1')}:
+        web_origins={self.web_url,self.web_url.replace('localhost','127.0.0.1')}
+        accepted_origins=[web_origins]
+        # The active installation also serves the local Vite frontend. Isolated
+        # recovery targets must retain their own exact origin pair.
+        if self.kind=='ACTIVE':
+            accepted_origins.append(web_origins|{'http://localhost:5173','http://127.0.0.1:5173'})
+        if set(allowed.split(',')) not in accepted_origins:
             raise RuntimeError('TARGET_ORIGIN_CONFIG_INVALID')
         return config
 

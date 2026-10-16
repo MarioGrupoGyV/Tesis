@@ -39,6 +39,13 @@ comprobaciones y el archivo reversible de los entornos anteriores.
 
 ## Conservar la instalación activa
 
+Estado del 2026-10-15: por solicitud explícita se vaciaron estudiantes, datos
+asociados, periodos, secciones y modelos; se conservaron intactas las cuatro
+cuentas. El estado anterior tiene un respaldo DPAPI completo verificado.
+Consultar el [registro de limpieza](docs/planning/Estado_Limpieza_Local.md).
+Las evidencias pobladas de S2–S6 son históricas; no regenerar ni restaurar datos
+automáticamente para reproducirlas en el activo vacío.
+
 Proyecto `riesgo-escolar`, DB `riesgo_escolar`, puertos loopback
 15173/18000/55432, volúmenes `riesgo-escolar_db_data`, `riesgo-escolar_import_data`
 y `riesgo-escolar_ml_data`. Abrir http://localhost:15173.
