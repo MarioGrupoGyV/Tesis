@@ -972,61 +972,53 @@ export interface components {
                 [key: string]: string;
             };
         };
-        /** Prediction */
+        /** @description Probabilidades todas null o todas presentes; suma 1 con tolerancia 0.00001. Validar suma en servidor. calibrated true exige valores presentes. */
         Prediction: {
-            /**
-             * Id
-             * Format: uuid
-             */
+            /** Format: uuid */
             id: string;
-            /**
-             * Enrollment Id
-             * Format: uuid
-             */
+            /** Format: uuid */
             enrollment_id: string;
-            /**
-             * Snapshot Id
-             * Format: uuid
-             */
+            /** Format: uuid */
             snapshot_id: string;
-            /**
-             * Model Id
-             * Format: uuid
-             */
+            /** Format: uuid */
             model_id: string;
-            /**
-             * Data Origin
-             * @enum {string}
-             */
+            /** @enum {string} */
             data_origin: "REAL" | "SYNTHETIC";
-            /**
-             * Risk Level
-             * @enum {string}
-             */
+            /** @enum {string} */
             risk_level: "LOW" | "MEDIUM" | "HIGH";
             /**
-             * Cutoff At
              * Format: date-time
+             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
              */
             cutoff_at: string;
-            /** Target Date */
-            target_date?: string | null;
-            /** Model Horizon Date */
-            model_horizon_date?: string | null;
             /**
-             * Predicted At
+             * Format: date
+             * @description Fecha objetivo observada (CSV). Null en mediciones MANUAL.
+             */
+            target_date?: string | null;
+            /**
              * Format: date-time
+             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
              */
             predicted_at: string;
-            /** Probability Low */
             probability_low: number | null;
-            /** Probability Medium */
             probability_medium: number | null;
-            /** Probability High */
             probability_high: number | null;
-            /** Probabilities Calibrated */
             probabilities_calibrated: boolean;
-        };
+            /**
+             * Format: date
+             * @description Solo MANUAL: corte (America/Lima) + horizonte del modelo; derivado, no es un dato observado.
+             */
+            model_horizon_date?: string | null;
+        } & (({
+            probability_low?: null;
+            probability_medium?: null;
+            probability_high?: null;
+        } | {
+            probability_low?: number;
+            probability_medium?: number;
+            probability_high?: number;
+        }) & unknown);
         /** Student */
         Student: {
             /**
@@ -2552,7 +2544,7 @@ export interface components {
              * Status
              * @enum {string}
              */
-            status: "EVALUATED" | "INSUFFICIENT_DATA" | "NOT_ELIGIBLE" | "MODEL_NOT_AVAILABLE";
+            status: "EVALUATED" | "INSUFFICIENT_DATA" | "NOT_ELIGIBLE";
             /** Risk Level */
             risk_level?: ("LOW" | "MEDIUM" | "HIGH") | null;
             /** Reason */
@@ -6214,7 +6206,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Periodo bloqueado, modelo no disponible o conflicto de integridad */
+            /** @description Periodo bloqueado, modelo no disponible o conflicto de integridad (MODEL_NOT_AVAILABLE si no hay modelo activo) */
             409: {
                 headers: {
                     [name: string]: unknown;

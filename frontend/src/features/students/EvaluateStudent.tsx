@@ -33,7 +33,6 @@ export function EvaluateStudent({ student, period, hasSnapshot, onNavigate }: Pr
           {data.alert_id && <p><a className="followup-link" href={`/alertas/${data.alert_id}?period_id=${encodeURIComponent(period.id)}`} onClick={event => { if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); onNavigate(`/alertas/${encodeURIComponent(data.alert_id!)}?period_id=${encodeURIComponent(period.id)}`); } }}>Abrir el caso de seguimiento →</a></p>}</>}
         {data.status === 'INSUFFICIENT_DATA' && <p><strong>Datos insuficientes.</strong> {data.reason} No se asigna riesgo bajo por defecto.</p>}
         {data.status === 'NOT_ELIGIBLE' && <p><strong>No elegible para la simulación.</strong> {data.reason}</p>}
-        {data.status === 'MODEL_NOT_AVAILABLE' && <p><strong>Modelo no disponible.</strong> {data.reason}</p>}
       </div>}
     </div>
     <p className="muted student-list-note">La fecha de horizonte que se muestra en la evaluación es la del modelo (corte + días del horizonte); no es una fecha objetivo observada.</p>

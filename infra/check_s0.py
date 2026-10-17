@@ -53,7 +53,7 @@ def run():
     validate(contract)
     check(contract["info"]["version"] == "0.8.0", "OpenAPI 3.1 válido, versión 0.8.0 Bloque 1")
     operation_count = sum(method in ('get','post','patch','put','delete') for methods in contract['paths'].values() for method in methods)
-    check(operation_count == 44, '44 operaciones: 32 conservadas y 12 M1')
+    check(operation_count == 45, '45 operaciones: 32 conservadas, 12 M1 y 1 del Bloque 1')
     for path, methods in contract["paths"].items():
         for method, operation in methods.items():
             if method not in ("get", "post", "patch", "put", "delete") or path == "/health/live":
@@ -220,8 +220,8 @@ def run():
     evidence_name = "s5-contracts.json" if sprint == "S5" else "s0-checks.json" if sprint == "S0" else "s4-contracts.json" if sprint == "S4" else "s3-1-contracts.json"
     prefix = os.environ.get('CONTRACT_REPORT_PREFIX')
     if prefix:
-        if not re.fullmatch(r'(s6|m1)[a-z0-9-]+', prefix):
-            raise ValueError('Prefijo contractual S6/M1 inválido')
+        if not re.fullmatch(r'(s6|m1|mejoras)[a-z0-9-]+', prefix):
+            raise ValueError('Prefijo contractual S6/M1/mejoras inválido')
         evidence_name = prefix + '-contracts.json'
         if (ROOT / 'tests/evidence' / evidence_name).exists():
             raise ValueError('La evidencia S6 ya existe')

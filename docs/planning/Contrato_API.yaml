@@ -3177,7 +3177,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Periodo bloqueado, modelo no disponible o conflicto de integridad
+          description: Periodo bloqueado, modelo no disponible o conflicto de integridad (MODEL_NOT_AVAILABLE
+            si no hay modelo activo)
           content:
             application/json:
               schema:
@@ -3288,7 +3289,7 @@ components:
           $ref: '#/components/schemas/User'
         csrf_token:
           type: string
-        expires_at: &id025
+        expires_at: &id028
           type: string
           format: date-time
           description: RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
@@ -3536,76 +3537,60 @@ components:
       - missing_fraction
       title: Snapshot
     Prediction:
+      type: object
       properties:
-        id:
+        id: &id025
           type: string
           format: uuid
-          title: Id
-        enrollment_id:
-          type: string
-          format: uuid
-          title: Enrollment Id
-        snapshot_id:
-          type: string
-          format: uuid
-          title: Snapshot Id
-        model_id:
-          type: string
-          format: uuid
-          title: Model Id
+        enrollment_id: *id025
+        snapshot_id: *id025
+        model_id: *id025
         data_origin:
           type: string
           enum:
           - REAL
           - SYNTHETIC
-          title: Data Origin
         risk_level:
           type: string
           enum:
           - LOW
           - MEDIUM
           - HIGH
-          title: Risk Level
-        cutoff_at:
+        cutoff_at: &id026
           type: string
           format: date-time
-          title: Cutoff At
+          description: RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
         target_date:
-          anyOf:
-          - type: string
-            format: date
-          - type: 'null'
-          title: Target Date
-        model_horizon_date:
-          anyOf:
-          - type: string
-            format: date
-          - type: 'null'
-          title: Model Horizon Date
-        predicted_at:
-          type: string
-          format: date-time
-          title: Predicted At
+          type: &id027
+          - string
+          - 'null'
+          format: date
+          description: Fecha objetivo observada (CSV). Null en mediciones MANUAL.
+        predicted_at: *id026
         probability_low:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Probability Low
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 1
         probability_medium:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Probability Medium
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 1
         probability_high:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Probability High
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 1
         probabilities_calibrated:
           type: boolean
-          title: Probabilities Calibrated
-      additionalProperties: false
-      type: object
+        model_horizon_date:
+          type: *id027
+          format: date
+          description: 'Solo MANUAL: corte (America/Lima) + horizonte del modelo; derivado, no es un dato observado.'
       required:
       - id
       - enrollment_id
@@ -3615,11 +3600,37 @@ components:
       - risk_level
       - cutoff_at
       - predicted_at
+      - probabilities_calibrated
       - probability_low
       - probability_medium
       - probability_high
-      - probabilities_calibrated
-      title: Prediction
+      additionalProperties: false
+      description: Probabilidades todas null o todas presentes; suma 1 con tolerancia 0.00001. Validar suma
+        en servidor. calibrated true exige valores presentes.
+      allOf:
+      - oneOf:
+        - properties:
+            probability_low:
+              type: 'null'
+            probability_medium:
+              type: 'null'
+            probability_high:
+              type: 'null'
+        - properties:
+            probability_low:
+              type: number
+            probability_medium:
+              type: number
+            probability_high:
+              type: number
+      - if:
+          properties:
+            probabilities_calibrated:
+              const: true
+        then:
+          properties:
+            probability_low:
+              type: number
     Student:
       properties:
         id:
@@ -3768,7 +3779,7 @@ components:
           - PREDICTION
           - ALERT
           - INTERVENTION
-        occurred_at: *id025
+        occurred_at: *id028
         summary:
           type: string
         entity_id: *id024
@@ -3802,7 +3813,7 @@ components:
       properties:
         id: *id024
         period_id: *id024
-        data_origin: &id026
+        data_origin: &id029
           type: string
           enum:
           - REAL
@@ -3852,7 +3863,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ImportError'
-        created_at: *id025
+        created_at: *id028
         committed_at:
           type:
           - string
@@ -3905,7 +3916,7 @@ components:
         anon_code:
           type: string
         prediction_id: *id024
-        data_origin: *id026
+        data_origin: *id029
         severity:
           type: string
           enum:
@@ -3928,8 +3939,8 @@ components:
           - string
           - 'null'
           maxLength: 1000
-        opened_at: *id025
-        updated_at: *id025
+        opened_at: *id028
+        updated_at: *id028
         closed_at:
           type:
           - string
@@ -3964,7 +3975,7 @@ components:
           - string
           - 'null'
           format: uuid
-        data_origin: *id026
+        data_origin: *id029
         kind:
           type: string
           enum:
@@ -3982,7 +3993,7 @@ components:
           - PLANNED
           - DONE
           - CANCELLED
-        scheduled_at: *id025
+        scheduled_at: *id028
         performed_at:
           type:
           - string
@@ -3996,8 +4007,8 @@ components:
         version:
           type: integer
           minimum: 1
-        created_at: *id025
-        updated_at: *id025
+        created_at: *id028
+        updated_at: *id028
       required:
       - id
       - enrollment_id
@@ -6185,7 +6196,6 @@ components:
           - EVALUATED
           - INSUFFICIENT_DATA
           - NOT_ELIGIBLE
-          - MODEL_NOT_AVAILABLE
           title: Status
         risk_level:
           anyOf:

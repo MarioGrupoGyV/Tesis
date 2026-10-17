@@ -50,7 +50,7 @@ class PredictionRunResult(ContractModel):
 
 class StudentEvaluation(ContractModel):
     """Resultado de evaluar la última medición de una matrícula (simulación)."""
-    status: Literal['EVALUATED','INSUFFICIENT_DATA','NOT_ELIGIBLE','MODEL_NOT_AVAILABLE']
+    status: Literal['EVALUATED','INSUFFICIENT_DATA','NOT_ELIGIBLE']
     risk_level: Literal['LOW','MEDIUM','HIGH'] | None = None
     reason: str | None = None
     snapshot_id: UUID
