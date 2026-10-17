@@ -17,7 +17,8 @@ from app.models.s1 import AppUser
 from app.services import synthetic_study
 from test_s1_schema import assert_sqlstate
 from test_s3_1_integration import study_env, prepare, import_study, login_as, API  # noqa: F401
-from test_m1_manual import setup as real_setup, write
+from test_m1_manual import setup as real_setup, write, database_urls, owner_engine  # noqa: F401
+from conftest import database_urls as _database_urls  # noqa: F401  (BD propia: no contamina bootstrap/S1)
 
 ORIGIN = {'Origin': 'http://testserver'}
 HIGH = dict(average_grade=7, attendance_pct=50, activities_pct=40, participation_level=1, behavior_incidents=8)
