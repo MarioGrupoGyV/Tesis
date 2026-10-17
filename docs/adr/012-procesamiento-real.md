@@ -1,6 +1,6 @@
 # ADR 012: procesamiento REAL local de una cohorte (Bloque 3A, solo diseño)
 
-Estado: **propuesta para auditoría**; no implementada. Fecha: 2026-10-17. Rama `mejoras-tesis`.
+Estado: **aceptada con ajustes** (auditoría del 2026-10-17); implementación por etapas: 3B-1 (esquema y componentes puros, sin cambiar el comportamiento) y 3B-2 (activación). Fecha: 2026-10-17. Rama `mejoras-tesis`.
 Relacionados: [ADR 011](011-fase-mejoras-tesis.md), [Mapa de impacto](../planning/Mapa_Impacto_REAL.md),
 [Indicadores de la tesis](../manuals/Indicadores_Tesis.md).
 
@@ -32,6 +32,22 @@ Decisión del usuario sobre autorización: no se guarda el documento, el nombre 
   (actor + instante UTC) sin datos personales. Sin él, REAL sigue bloqueado.
 - **D5** Solo local; REAL y SYNTHETIC no se mezclan en ningún cálculo, modelo, índice ni reporte.
 - **D6** Gráficos en SVG propio, sin librerías (Bloque 6).
+
+## 2b. Decisiones del usuario (2026-10-17)
+
+Recogidas del encargo del Bloque 3B-1 tras la auditoría de este ADR:
+
+1. **Arquitectura (a) aprobada:** generalizar el registro de estudio con un parámetro de origen, sin renombrar la tabla `synthetic_studies` en 3B.
+2. **No se importa historial de alertas ni de intervenciones del Excel.** El sistema produce sus propias predicciones y alertas (sección 10).
+3. **Evaluación retrospectiva con dos relojes:** los instantes de registro (`recorded_at`, `predicted_at`, `opened_at`) siguen siendo el momento real;
+   `predictions.as_of_at` y `alerts.detected_at` dicen **qué momento simula** la evaluación. En corridas normales `as_of_at = predicted_at` y `detected_at = opened_at`.
+4. **3B-1 no cambia el comportamiento:** toda operación REAL sigue devolviendo `INSTITUTIONAL_PROCESSING_NOT_READY`, incluso con un protocolo confirmado,
+   hasta 3B-2. Las 338 pruebas existentes deben seguir pasando.
+5. **Elegibilidad REAL por protocolo confirmado, sin consentimientos en el sistema:** la regla se diseña y se prepara en 3B-1 y se activa en 3B-2.
+6. **El protocolo es un interruptor técnico:** no guarda consentimientos, documento, autorizador ni fecha de permiso (D4); la confirmación es un booleano de ADMIN con auditoría.
+
+Nota de transcripción: el encargo mencionaba «los 6 puntos de arriba» y esa lista no llegó en el mensaje; los seis anteriores se deducen del propio encargo.
+Si el usuario tenía otra lista en mente, debe transcribirse aquí.
 
 ## 3. Lo que contiene el Excel (hojas y agregados, sin datos personales)
 
@@ -174,12 +190,12 @@ risk_references(
 - Migración necesaria: 0007 (esta tabla, `processing_protocols`, ampliaciones de CHECK, trigger de elegibilidad, extensión de `check_prediction_study` y
   `check_followup_provenance`, índice de un modelo activo por origen).
 
-### 6.4 Bitácora de recepción e historial importado (para PRV, CRA, PDER, NIA)
+### 6.4 Bitácora de recepción y de reportes (para PRV y CRA)
 
 El indicador PRV de la tesis usa 126 recepciones (120 válidas, 6 rechazadas) y el CRA, 120 fichas esperadas con 113 generadas. El importador actual rechaza el archivo
 completo si hay filas inválidas (`import_batches`: `COMMITTED` exige `invalid_rows=0`), por lo que el sistema no puede reproducir 120/126 con un CSV ya filtrado.
 Tablas propuestas, de solo lectura tras la carga: `reception_log` (lote, fecha, código, estado y motivo de validación), `report_log`
-(esperado/generado/motivo por estudiante-bimestre) e historial de alertas e intervenciones importadas (ver sección 10). Solo códigos.
+(esperado/generado/motivo por estudiante-bimestre). Solo códigos. **No** se importa historial de alertas ni de intervenciones (decisión 2 de la sección 2b).
 
 ## 7. Corte y cierre por bimestre
 
@@ -261,27 +277,26 @@ no envía nada por red y descarta toda columna de nombre.
    (calculados con enteros y redondeados mitad hacia arriba), fechas RFC 3339 en America/Lima, grado 3, secciones A y B.
 2. `cierres.csv` — insumos de cierre por estudiante-bimestre (seis notas de curso o su media, días programados/asistidos, actividades programadas/entregadas, participación, incidencias, fechas de cierre y disponibilidad). El
    backend calcula RIESGO_V1; el conversor **no** envía el nivel (solo lo usa para una verificación local: 120/120 debe coincidir).
-3. `recepcion.csv` (126 filas con estado y motivo), `reportes.csv` (120 filas), y el historial de alertas e intervenciones (ver abajo).
+3. `recepcion.csv` (126 filas con estado y motivo) y `reportes.csv` (120 filas). **No** se produce historial de alertas ni de intervenciones.
 4. Opcional: `identidades.local.csv` (código → nombre) para cargar `full_name` en la ficha mediante una orden de ADMIN. Nunca entra al repositorio ni a evidencias.
 
 **Validación y rechazo** (replica las 6 causas de la hoja `Procesamiento`): clave estudiante-bimestre duplicada; código fuera de la cohorte; asistidos > programados; nota fuera de la escala; entregadas >
 programadas; bimestre ausente. Además: fechas dentro del calendario del protocolo, disponibilidad ≤ corte, `target_date` = cierre, y rechazo de cualquier campo que parezca un nombre. Las filas rechazadas **no** van al CSV de
 cortes; sí quedan en `recepcion.csv` (PRV 120/126).
 
-**Alertas e intervenciones del Excel: ¿historial o regeneración?** Las 79 alertas del Excel nacen de `CLASIFICADOR_V1` calculado **con los datos del cierre** y emitidas después de él
-(05-11…07-28); además el plazo parametrizado es 3/5 días. Bajo D1 el sistema genera sus propias alertas al corte (≈ 04-21), semanas antes. Si se regenerasen alertas y se asociaran
-las intervenciones del Excel, la oportunidad dejaría de ser comparable con la Tabla 6 de la tesis.
-**Recomendación:** (1) **importar** alertas e intervenciones del Excel como **historial de solo lectura** (tablas `history_*`, con `source`), de modo que los indicadores PRV, CRA, NIA, oportuna y PDER del
-Capítulo III se calculen con el motor de indicadores sobre los mismos hechos que el Excel; (2) mantener el flujo vivo del sistema (modelo → predicción → alerta → intervención) como pista **separada** y
-etiquetada, para el modelo y la demostración. Alternativa de camino mínimo: calcular las tablas de la tesis directamente desde el Excel y usar el sistema solo para el modelo (ver sección 11).
+**Alertas e intervenciones del Excel: no se importan** (decisión del usuario, 2026-10-17). Las 79 alertas del Excel nacen de `CLASIFICADOR_V1` calculado con los datos del cierre y emitidas
+después de él (05-11…07-28); bajo D1 el sistema genera las suyas al corte (≈ 04-21). Por tanto el sistema **produce** predicciones y alertas propias mediante una evaluación **retrospectiva**:
+cada evaluación se ejecuta con `as_of` simulado y deja constancia de ambos relojes (registro real frente a momento simulado) en `predictions.as_of_at` y `alerts.detected_at`. Los indicadores PDER y de
+oportunidad leen `detected_at`, de modo que una evaluación retrospectiva del corte del 21 de abril se mide como detectada ese día y no el día real de la corrida.
+Queda abierta la forma de registrar las intervenciones ejecutadas (sección 13, pregunta 1): no se cargan como historial.
 
 ## 11. Plan por bloques
 
 | Bloque | Alcance | Archivos (aprox.) | Depende de |
 |---|---|---|---|
 | **3B** Protocolo y generalización | Migración 0007; `processing_protocols`; `risk_references`; función `risk_reference`; `require_real_protocol`; parámetro de origen en servicios/repositorios/SQL; elegibilidad por protocolo; pruebas de no mezcla | ~35 de aplicación + ~12 pruebas | — |
-| **4** Conversor y carga | `convert_real_excel.py`; contrato del CSV canónico; CLI de registro de protocolo/estudio/cierres/historial; ruta de importación REAL con hash del CSV | ~15 | contrato CSV (congelar antes), 3B para la carga |
-| **5** Entrenamiento, evaluación e indicadores REAL | conjunto de variables configurable; `compare_institutional`; registro/activación REAL; evaluación al corte; indicadores por origen/bimestre/fuente; etiquetas de UI | ~20 | 3B, 4 |
+| **4** Conversor y carga | `convert_real_excel.py`; contrato del CSV canónico; CLI de registro de protocolo/estudio/cierres; ruta de importación REAL con hash del CSV | ~15 | contrato CSV (congelar antes), 3B para la carga |
+| **5** Entrenamiento, evaluación e indicadores REAL | conjunto de variables configurable; `compare_institutional`; registro/activación REAL; evaluación retrospectiva al corte con `as_of_at`/`detected_at`; indicadores por origen y bimestre; etiquetas de UI | ~20 | 3B, 4 |
 | **6** SVG | Gráficos propios en la página Indicadores | ~3 | API de indicadores estable |
 | **7** Demo y E2E | datos de demo y prueba E2E | ~5 | 5 |
 
@@ -289,8 +304,7 @@ etiquetada, para el modelo y la demostración. Alternativa de camino mínimo: ca
 se paralelizan las migraciones (un solo responsable) ni 5 con 3B/4.
 
 **Camino mínimo para la sustentación:** 3B núcleo (protocolo, generalización del estudio, `risk_references`, compuertas) → conversor + carga de cortes y cierres → comparación/registro/activación REAL y
-evaluación al corte → indicadores desde `risk_references`. **Recortable:** bitácora de recepción y reportes dentro del sistema (calcular PRV/CRA fuera), importación de historial (calcular NIA/oportuna/PDER
-desde el Excel), validación anidada, leave-one-out, gráficos SVG, flujo vivo de alertas con REAL, carga de nombres, respaldo REAL.
+evaluación al corte → indicadores desde `risk_references`. **Recortable:** bitácora de recepción y reportes dentro del sistema (calcular PRV/CRA fuera), validación anidada, leave-one-out, gráficos SVG, flujo vivo de alertas con REAL, carga de nombres, respaldo REAL.
 
 ## 12. Criterios de aceptación (medibles)
 
@@ -305,14 +319,14 @@ manifiesto; la evaluación al corte crea predicciones solo con las 4 variables; 
 
 ## 13. Riesgos y preguntas abiertas para el usuario (máx. 8)
 
-1. **Fuente de los indicadores del Capítulo III.** ¿Alertas e intervenciones del Excel (posteriores al cierre, `CLASIFICADOR_V1`) o las que genere el sistema al corte? *Recomendación:* importar las del Excel como historial para los indicadores y usar el flujo vivo solo para modelo/demostración.
+1. **Intervenciones ejecutadas.** Resuelto: no se importa el historial. ¿Cómo entran en el sistema las intervenciones realizadas para NIA y oportunidad? *Recomendación:* una orden local que las registre como actividades de las alertas **generadas por el sistema**, con su fecha efectiva real y solo para estudiantes que tengan alerta; las demás quedan fuera del denominador (`without_alert`).
 2. **Plazos de oportunidad.** El Excel usa 3 días (detección) y 5 (intervención); las decisiones de los Bloques 1–2 usan «alerta antes del cierre» y 14 días. *Recomendación:* parametrizarlos en el protocolo y usar los de la tesis; ¿cuáles son los definitivos?
 3. **Participación al corte.** No existe antes del cierre. *Recomendación:* excluirla de las características (4 variables) y usarla solo en RIESGO_V1; ¿confirmas?
 4. **Mapeo del corte.** Propongo `cutoff_at` = disponibilidad de la última fuente (04-21 y 06-30), horizonte 17 días, porque el sistema exige disponibilidad ≤ corte. ¿Aceptas, o prefieres corte 04-17/06-26 (21 días) con otro criterio?
 5. **Un periodo 2026 para B1 y B2** (recomendado) frente a dos periodos. ¿Conforme?
 6. **PRV de la tesis.** ¿Es 120/126 (95,24 %) sobre la bitácora de recepción? Implica cargar esa bitácora (recomendado) o calcularlo fuera del sistema.
-7. **Pretest/postest.** ¿B1 es la línea base sin sistema y B2 con sistema? Afecta qué alertas/intervenciones se esperan en B1 y cómo se presenta la comparación.
+7. **Pretest/postest.** ¿B1 es la línea base sin sistema y B2 con sistema? Afecta qué alertas e intervenciones se esperan en B1 y cómo se presenta la comparación.
 8. **Nombres.** ¿Cargar nombres en la ficha (D3 lo permite) o trabajar solo con códigos? *Recomendación:* solo códigos, y cargar nombres únicamente si se necesitan para la demostración, desde un archivo local.
 
 Riesgos técnicos: regresión por el parámetro de origen en SQL (mitigación: migración aditiva y pruebas cruzadas); `check_followup_provenance` y `check_prediction_study` son críticas (mitigación: pruebas
-de trigger con REAL y SYNTHETIC); n pequeño (mitigación: advertencias y reporte de dispersión); coexistencia de dos pistas de alertas (mitigación: etiqueta `source` en toda salida).
+de trigger con REAL y SYNTHETIC); n pequeño (mitigación: advertencias y reporte de dispersión); semántica de la evaluación retrospectiva (mitigación: `as_of_at`/`detected_at` documentados y probados en 3B-1).
