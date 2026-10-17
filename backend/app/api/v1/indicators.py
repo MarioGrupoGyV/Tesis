@@ -37,3 +37,14 @@ def export(request: Request, context: AuthenticatedSession, db: DbSession, perio
     return Response(content=body, media_type='text/csv; charset=utf-8', headers={
         'Content-Disposition': 'attachment; filename="seguimiento-escolar-indicadores.csv"',
         'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff'})
+
+
+@router.get('/interventions.csv', response_class=Response, operation_id='exportInterventionsCsv',
+            responses={200: {'content': {'text/csv': {'schema': {'type': 'string', 'format': 'binary'}}}}})
+def export_interventions(request: Request, context: AuthenticatedSession, db: DbSession, period_id: UUID,
+                         section_id: UUID | None = None, as_of: AwareDatetime | None = None):
+    body = service.export_interventions_csv(db, context.user, request.app.state.settings, request_id(request),
+                                            period_id, section_id, as_of)
+    return Response(content=body, media_type='text/csv; charset=utf-8', headers={
+        'Content-Disposition': 'attachment; filename="seguimiento-escolar-intervenciones.csv"',
+        'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff'})

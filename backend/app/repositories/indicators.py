@@ -54,3 +54,24 @@ def batch_totals(db, period_id, as_of):
         WHERE sn.period_id=:period AND sn.entry_channel='MANUAL' AND sn.created_at<=:as_of'''),
         {'period': period_id, 'as_of': as_of})
     return batches, processed, manual
+
+
+INTERVENTION_ROWS = """
+SELECT i.id AS intervention_id,i.alert_id,i.performed_at,s.anon_code,e.section_id,g.code AS section_code,g.grade,
+  a.opened_at AS alert_opened_at
+FROM risk_school.interventions i
+JOIN risk_school.enrollments e ON e.id=i.enrollment_id
+JOIN risk_school.students s ON s.id=e.student_id
+JOIN risk_school.grade_sections g ON g.id=e.section_id
+LEFT JOIN risk_school.alerts a ON a.id=i.alert_id AND a.opened_at<=:as_of
+WHERE e.period_id=:period AND e.data_origin='SYNTHETIC' AND e.created_at<=:as_of
+  AND e.section_id=ANY(CAST(:sections AS uuid[]))
+  AND s.is_active AND s.eligible_for_processing
+  AND i.status='DONE' AND i.performed_at<=:as_of AND i.created_at<=:as_of
+ORDER BY s.anon_code,i.performed_at,i.id"""
+
+
+def intervention_rows(db, period_id, as_of, section_ids):
+    """Intervenciones realizadas de estudiantes elegibles; la alerta ligada solo cuenta si ya existía en as_of."""
+    return db.execute(text(INTERVENTION_ROWS), {'period': period_id, 'as_of': as_of,
+        'sections': list(section_ids)}).mappings().all()

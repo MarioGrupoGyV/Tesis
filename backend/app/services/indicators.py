@@ -124,7 +124,17 @@ def student_records(db, settings, period, allowed_ids, as_of, close_at):
     return records, reference_reason
 
 
-def summarize(rows, section=None, reference_reason=None):
+def intervention_records(db, allowed_ids, period, as_of):
+    """Una fila por intervención realizada. Días = diferencia de fechas calendario en Lima desde la apertura de la alerta."""
+    records = []
+    for row in repository.intervention_rows(db, period.id, as_of, allowed_ids):
+        opened, performed = row['alert_opened_at'], row['performed_at']
+        days = (performed.astimezone(LIMA).date() - opened.astimezone(LIMA).date()).days if opened else None
+        records.append(dict(row, days=days, opportune=(0 <= days <= OPPORTUNE_WINDOW_DAYS) if days is not None else None))
+    return records
+
+
+def summarize(rows, section=None, reference_reason=None, interventions=()):
     eligible = [r for r in rows if r['eligible']]
     covered = sum(1 for r in eligible if r['predicted_risk'] is not None and
                   (r['predicted_risk'] == 'LOW' or r['alert_id'] is not None))
@@ -147,6 +157,10 @@ def summarize(rows, section=None, reference_reason=None):
     opportune = schemas.Opportune(**ratio.model_dump(), window_days=OPPORTUNE_WINDOW_DAYS,
         median_days_to_first=float(median(first_days)) if first_days else None,
         students_with_first_intervention=len(first_days))
+    linked = [i for i in interventions if i['alert_opened_at'] is not None]
+    by_intervention = pct(sum(1 for i in linked if i['opportune']), len(linked), 'NO_INTERVENTIONS_LINKED_TO_ALERT')
+    opportune_by_intervention = schemas.OpportuneByIntervention(**by_intervention.model_dump(), window_days=OPPORTUNE_WINDOW_DAYS,
+        without_alert=sum(1 for i in interventions if i['alert_opened_at'] is None))
     performance = schemas.Performance(average_grade=describe(r['average_grade'] for r in eligible),
         attendance_pct=describe(r['attendance_pct'] for r in eligible))
     pairs = [(r['reference'], r['predicted_risk']) for r in eligible if r['reference'] and r['predicted_risk']]
@@ -169,7 +183,7 @@ def summarize(rows, section=None, reference_reason=None):
         reference_reason=reference_reason)
     return schemas.Summary(section_id=section.id if section else None, section_code=section.code if section else None,
         grade=section.grade if section else None, eligible_students=len(eligible), cra=cra, pder=pder, nia=nia,
-        opportune=opportune, performance=performance, model_metrics=metrics, model_metrics_reason=metrics_reason,
+        opportune=opportune, opportune_by_intervention=opportune_by_intervention, performance=performance, model_metrics=metrics, model_metrics_reason=metrics_reason,
         exclusions=exclusions)
 
 
@@ -205,11 +219,13 @@ def compute(db, user, settings, period_id, section_id, as_of, close_at):
 def indicators(db, user, settings, period_id, section_id, as_of, close_at):
     period, allowed, chosen, as_of, close, records, reference_reason = compute(
         db, user, settings, period_id, section_id, as_of, close_at)
-    sections = [summarize([r for r in records if r['section_id'] == s.id], s, reference_reason) for s in chosen]
+    events = intervention_records(db, [s.id for s in chosen], period, as_of)
+    sections = [summarize([r for r in records if r['section_id'] == s.id], s, reference_reason,
+                          [i for i in events if i['section_id'] == s.id]) for s in chosen]
     return schemas.IndicatorsResponse(period_id=period.id, period_code=period.code, data_origin='SYNTHETIC',
         is_simulation=True, notice=NOTICE, as_of=as_of, close_at=close, opportune_window_days=OPPORTUNE_WINDOW_DAYS,
         section_id=section_id, authorized_section_ids=[s.id for s in allowed],
-        prv=prv(db, user, period, as_of, section_id), total=summarize(records, None, reference_reason), sections=sections)
+        prv=prv(db, user, period, as_of, section_id), total=summarize(records, None, reference_reason, events), sections=sections)
 
 
 def student_item(record):
@@ -254,6 +270,43 @@ def export_csv(db, user, settings, request_id, period_id, section_id, as_of, clo
             action='INDICATORS_EXPORT_REQUESTED', request_id=request_id, recorded_at=datetime.now(UTC),
             payload={'scope': 'SYNTHETIC_STUDY', 'data_origin': 'SYNTHETIC', 'as_of': as_of.isoformat(),
                      'section_id': str(section_id) if section_id else None, 'enrollment_count': len(records),
+                     'authorized_section_ids': [str(s.id) for s in allowed]}))
+        db.flush()
+        db.commit()
+        return b'\xef\xbb\xbf' + content.getvalue().encode('utf-8')
+    except Exception:
+        db.rollback()
+        raise
+
+
+INTERVENTION_CSV_HEADERS = ('origen', 'alcance', 'periodo', 'as_of_utc', 'codigo_anonimo', 'grado', 'seccion',
+    'alerta_vinculada', 'fecha_alerta_utc', 'fecha_intervencion_utc', 'dias_desde_alerta', 'oportuna')
+
+
+def intervention_item(record):
+    return schemas.InterventionIndicator(anon_code=record['anon_code'], grade=record['grade'],
+        section_code=record['section_code'], alert_opened_at=record['alert_opened_at'], performed_at=record['performed_at'],
+        days_since_alert=record['days'], opportune=record['opportune'])
+
+
+def export_interventions_csv(db, user, settings, request_id, period_id, section_id, as_of):
+    try:
+        period, allowed, chosen, as_of, _, _, _ = compute(db, user, settings, period_id, section_id, as_of, None)
+        records = intervention_records(db, [s.id for s in chosen], period, as_of)
+        content = io.StringIO(newline='')
+        writer = csv.writer(content, lineterminator='\r\n', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(INTERVENTION_CSV_HEADERS)
+        for record in records:
+            item = intervention_item(record)
+            values = ('SYNTHETIC', 'SYNTHETIC_STUDY', period.code, as_of.astimezone(UTC).isoformat(), item.anon_code,
+                item.grade, item.section_code, 'SI' if item.alert_opened_at else 'NO',
+                item.alert_opened_at.astimezone(UTC).isoformat() if item.alert_opened_at else None,
+                item.performed_at.astimezone(UTC).isoformat(), item.days_since_alert, yes_no(item.opportune))
+            writer.writerow([safe_csv_text(value) for value in values])
+        db.add(AuditEvent(id=uuid4(), actor_id=user.id, entity_type='REPORT', entity_id=period.id,
+            action='INDICATORS_INTERVENTIONS_EXPORT_REQUESTED', request_id=request_id, recorded_at=datetime.now(UTC),
+            payload={'scope': 'SYNTHETIC_STUDY', 'data_origin': 'SYNTHETIC', 'as_of': as_of.isoformat(),
+                     'section_id': str(section_id) if section_id else None, 'intervention_count': len(records),
                      'authorized_section_ids': [str(s.id) for s in allowed]}))
         db.flush()
         db.commit()

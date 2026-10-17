@@ -42,6 +42,12 @@ class Opportune(Ratio):
     students_with_first_intervention: int = 0
 
 
+class OpportuneByIntervention(Ratio):
+    """Por intervención (comparable con la Tabla 6): realizadas ligadas a alerta dentro de la ventana ÷ realizadas ligadas."""
+    window_days: int
+    without_alert: int
+
+
 class Descriptive(ContractModel):
     n: int
     mean: float | None
@@ -95,6 +101,7 @@ class Summary(ContractModel):
     pder: Ratio
     nia: Nia
     opportune: Opportune
+    opportune_by_intervention: OpportuneByIntervention
     performance: Performance
     model_metrics: ModelMetrics | None
     model_metrics_reason: str | None = None
@@ -156,3 +163,13 @@ class IndicatorContext(ContractModel):
     school_year: int
     is_locked: bool
     sections: list[ContextSection]
+
+
+class InterventionIndicator(ContractModel):
+    anon_code: str
+    grade: int
+    section_code: str
+    alert_opened_at: datetime | None
+    performed_at: datetime
+    days_since_alert: int | None
+    opportune: bool | None
