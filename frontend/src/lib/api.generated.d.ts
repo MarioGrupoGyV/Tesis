@@ -792,6 +792,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/indicators": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Indicators
+         * @description Cálculo con corte as_of explícito (reproducible). TUTOR solo ve sus secciones; sin riesgo de referencia almacenado el indicador es null con motivo REFERENCE_NOT_AVAILABLE. Solo códigos anónimos.
+         */
+        get: operations["indicators"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/indicators/students": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Students
+         * @description Cálculo con corte as_of explícito (reproducible). TUTOR solo ve sus secciones; sin riesgo de referencia almacenado el indicador es null con motivo REFERENCE_NOT_AVAILABLE. Solo códigos anónimos.
+         */
+        get: operations["indicatorStudents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/indicators/export.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export
+         * @description Cálculo con corte as_of explícito (reproducible). TUTOR solo ve sus secciones; sin riesgo de referencia almacenado el indicador es null con motivo REFERENCE_NOT_AVAILABLE. Solo códigos anónimos.
+         */
+        get: operations["exportIndicatorsCsv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2569,6 +2629,264 @@ export interface components {
             case_action: "CREATED" | "UPDATED" | "REUSED" | "NONE";
             /** Alert Id */
             alert_id?: string | null;
+        };
+        /** ClassMetric */
+        ClassMetric: {
+            /** Support */
+            support: number;
+            /** Precision */
+            precision: number | null;
+            /** Recall */
+            recall: number | null;
+            /** F1 */
+            f1: number | null;
+        };
+        /** Descriptive */
+        Descriptive: {
+            /** N */
+            n: number;
+            /** Mean */
+            mean: number | null;
+            /** Sd */
+            sd: number | null;
+            /** Median */
+            median: number | null;
+            /** Minimum */
+            minimum: number | null;
+            /** Maximum */
+            maximum: number | null;
+        };
+        /** Exclusions */
+        Exclusions: {
+            /** Ineligible */
+            ineligible: number;
+            /** No Snapshot */
+            no_snapshot: number;
+            /** No Reference */
+            no_reference: number;
+            /** Reference Reason */
+            reference_reason?: string | null;
+        };
+        /** IndicatorsResponse */
+        IndicatorsResponse: {
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /** Period Code */
+            period_code: string;
+            /**
+             * Data Origin
+             * @constant
+             */
+            data_origin: "SYNTHETIC";
+            /** Is Simulation */
+            is_simulation: boolean;
+            /** Notice */
+            notice: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /**
+             * Close At
+             * Format: date-time
+             */
+            close_at: string;
+            /** Opportune Window Days */
+            opportune_window_days: number;
+            /** Section Id */
+            section_id: string | null;
+            /** Authorized Section Ids */
+            authorized_section_ids: string[];
+            prv: components["schemas"]["Prv"];
+            total: components["schemas"]["Summary"];
+            /** Sections */
+            sections: components["schemas"]["Summary"][];
+        };
+        /** MacroMetrics */
+        MacroMetrics: {
+            /** Precision */
+            precision: number | null;
+            /** Recall */
+            recall: number | null;
+            /** F1 */
+            f1: number | null;
+        };
+        /** ModelMetrics */
+        ModelMetrics: {
+            /** N */
+            n: number;
+            /** Class Order */
+            class_order: string[];
+            /** Confusion Matrix */
+            confusion_matrix: number[][];
+            /** Per Class */
+            per_class: {
+                [key: string]: components["schemas"]["ClassMetric"];
+            };
+            macro: components["schemas"]["MacroMetrics"];
+            /** Accuracy */
+            accuracy: number | null;
+            /** Not Estimable Reasons */
+            not_estimable_reasons: {
+                [key: string]: string;
+            };
+        };
+        /** Nia */
+        Nia: {
+            /** Total */
+            total: number;
+            /** Students */
+            students: number;
+            /** Mean */
+            mean: number | null;
+            /** Median */
+            median: number | null;
+            /** Alerted Students */
+            alerted_students: number;
+            /** Mean Alerted */
+            mean_alerted: number | null;
+            /** Median Alerted */
+            median_alerted: number | null;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** Opportune */
+        Opportune: {
+            /** Numerator */
+            numerator: number | null;
+            /** Denominator */
+            denominator: number | null;
+            /** Percent */
+            percent: number | null;
+            /** Reason */
+            reason?: string | null;
+            /** Window Days */
+            window_days: number;
+            /** Median Days To First */
+            median_days_to_first?: number | null;
+            /**
+             * Students With First Intervention
+             * @default 0
+             */
+            students_with_first_intervention: number;
+        };
+        /** Performance */
+        Performance: {
+            average_grade: components["schemas"]["Descriptive"];
+            attendance_pct: components["schemas"]["Descriptive"];
+        };
+        /** Prv */
+        Prv: {
+            /** Numerator */
+            numerator: number | null;
+            /** Denominator */
+            denominator: number | null;
+            /** Percent */
+            percent: number | null;
+            /** Reason */
+            reason?: string | null;
+            /** Received */
+            received?: number | null;
+            /** Valid Processed */
+            valid_processed?: number | null;
+            /** Rejected */
+            rejected?: number | null;
+            /** Valid Not Committed */
+            valid_not_committed?: number | null;
+            /** Ineligible Omitted */
+            ineligible_omitted?: number | null;
+            /** Manual Measurements */
+            manual_measurements?: number | null;
+        };
+        /**
+         * Ratio
+         * @description Numerador y denominador siempre visibles; percent es null sin denominador o sin fuente.
+         */
+        Ratio: {
+            /** Numerator */
+            numerator: number | null;
+            /** Denominator */
+            denominator: number | null;
+            /** Percent */
+            percent: number | null;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** StudentIndicator */
+        StudentIndicator: {
+            /** Anon Code */
+            anon_code: string;
+            /** Grade */
+            grade: number;
+            /** Section Code */
+            section_code: string;
+            /** Eligible */
+            eligible: boolean;
+            /** Average Grade */
+            average_grade: number | null;
+            /** Attendance Pct */
+            attendance_pct: number | null;
+            /** Reference Risk */
+            reference_risk: ("LOW" | "MEDIUM" | "HIGH") | null;
+            /** Predicted Risk */
+            predicted_risk: ("LOW" | "MEDIUM" | "HIGH") | null;
+            /** Alert Opened At */
+            alert_opened_at: string | null;
+            /** Alert Before Close */
+            alert_before_close: boolean | null;
+            /** Nia */
+            nia: number;
+            /** Opportune */
+            opportune: boolean | null;
+            /** Days To First Intervention */
+            days_to_first_intervention: number | null;
+            /** Exclusion Reason */
+            exclusion_reason: string | null;
+        };
+        /** StudentIndicatorPage */
+        StudentIndicatorPage: {
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /** Items */
+            items: components["schemas"]["StudentIndicator"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** Summary */
+        Summary: {
+            /** Section Id */
+            section_id: string | null;
+            /** Section Code */
+            section_code: string | null;
+            /** Grade */
+            grade: number | null;
+            /** Eligible Students */
+            eligible_students: number;
+            cra: components["schemas"]["Ratio"];
+            pder: components["schemas"]["Ratio"];
+            nia: components["schemas"]["Nia"];
+            opportune: components["schemas"]["Opportune"];
+            performance: components["schemas"]["Performance"];
+            model_metrics: components["schemas"]["ModelMetrics"] | null;
+            /** Model Metrics Reason */
+            model_metrics_reason?: string | null;
+            exclusions: components["schemas"]["Exclusions"];
         };
     };
     responses: never;
@@ -6216,6 +6534,218 @@ export interface operations {
                 };
             };
             /** @description Sin medición, estudio no preparado o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    indicators: {
+        parameters: {
+            query: {
+                period_id: string;
+                section_id?: string | null;
+                as_of?: string | null;
+                close_at?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IndicatorsResponse"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol sin acceso */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Periodo o sección ajena o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description as_of futuro o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    indicatorStudents: {
+        parameters: {
+            query: {
+                period_id: string;
+                section_id?: string | null;
+                as_of?: string | null;
+                close_at?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentIndicatorPage"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol sin acceso */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Periodo o sección ajena o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description as_of futuro o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    exportIndicatorsCsv: {
+        parameters: {
+            query: {
+                period_id: string;
+                section_id?: string | null;
+                as_of?: string | null;
+                close_at?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol sin acceso */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Periodo o sección ajena o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description as_of futuro o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY) */
             422: {
                 headers: {
                     [name: string]: unknown;

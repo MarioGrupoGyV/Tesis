@@ -51,9 +51,9 @@ def run():
     contract_path = ROOT / "docs/planning/Contrato_API.yaml"
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     validate(contract)
-    check(contract["info"]["version"] == "0.8.0", "OpenAPI 3.1 válido, versión 0.8.0 Bloque 1")
+    check(contract["info"]["version"] == "0.9.0", "OpenAPI 3.1 válido, versión 0.9.0 Bloque 2")
     operation_count = sum(method in ('get','post','patch','put','delete') for methods in contract['paths'].values() for method in methods)
-    check(operation_count == 45, '45 operaciones: 32 conservadas, 12 M1 y 1 del Bloque 1')
+    check(operation_count == 48, '48 operaciones: 32 conservadas, 12 M1, 1 del Bloque 1 y 3 de indicadores')
     for path, methods in contract["paths"].items():
         for method, operation in methods.items():
             if method not in ("get", "post", "patch", "put", "delete") or path == "/health/live":
@@ -126,7 +126,7 @@ def run():
                 check(any(p.get("name") == "X-CSRF-Token" and p.get("required")
                           for p in operation.get("parameters", [])), f"CSRF especificado {method} {path}")
             if "RESEARCHER" in operation.get("x-roles", []):
-                check(path in ("/auth/me", "/auth/csrf", "/auth/logout", "/processing/status"),
+                check(path in ("/auth/me", "/auth/csrf", "/auth/logout", "/processing/status") or path.startswith("/indicators"),  # Bloque 2: indicadores autorizados expresamente
                       f"Investigador restringido {path}")
     uid = "00000000-0000-4000-8000-000000000001"
     prediction = {key: uid for key in ("id", "enrollment_id", "snapshot_id", "model_id")}

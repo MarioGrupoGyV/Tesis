@@ -1,9 +1,10 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.8.0
-  description: 'S6 y M1 conservados. Bloque 1: ADMIN evalúa la última medición de una matrícula SYNTHETIC con
-    el modelo activo del estudio (simulación). REAL continúa bloqueado con INSTITUTIONAL_PROCESSING_NOT_READY.'
+  version: 0.9.0
+  description: 'S6, M1 y Bloque 1 conservados. Bloque 2: indicadores de la tesis (PRV, CRA, PDER, NIA, intervención
+    oportuna, métricas del modelo, rendimiento) por periodo y sección; solo lectura, SYNTHETIC. REAL continúa
+    bloqueado con INSTITUTIONAL_PROCESSING_NOT_READY.'
 servers:
 - url: /api/v1
   description: Preferir proxy de mismo origen para cookies y CSRF
@@ -21,6 +22,7 @@ tags:
 - name: reports
 - name: retrospective
 - name: manual
+- name: indicators
 paths:
   /health/live:
     get:
@@ -3198,6 +3200,281 @@ paths:
         persiste la predicción y sincroniza el seguimiento de esa predicción en una sola transacción. Idempotente
         por medición y modelo. El horizonte del modelo de una medición MANUAL se deriva y no se guarda como
         fecha objetivo.
+  /indicators:
+    get:
+      tags:
+      - indicators
+      summary: Indicators
+      operationId: indicators
+      parameters:
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
+      - name: section_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Section Id
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: As Of
+      - name: close_at
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Close At
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndicatorsResponse'
+        '422':
+          description: as_of futuro o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol sin acceso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Periodo o sección ajena o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: B2
+      x-roles: &id024
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      - RESEARCHER
+      security:
+      - sessionCookie: []
+      description: Cálculo con corte as_of explícito (reproducible). TUTOR solo ve sus secciones; sin riesgo
+        de referencia almacenado el indicador es null con motivo REFERENCE_NOT_AVAILABLE. Solo códigos anónimos.
+  /indicators/students:
+    get:
+      tags:
+      - indicators
+      summary: Students
+      operationId: indicatorStudents
+      parameters:
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
+      - name: section_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Section Id
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: As Of
+      - name: close_at
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Close At
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 10000
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentIndicatorPage'
+        '422':
+          description: as_of futuro o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol sin acceso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Periodo o sección ajena o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: B2
+      x-roles: *id024
+      security:
+      - sessionCookie: []
+      description: Cálculo con corte as_of explícito (reproducible). TUTOR solo ve sus secciones; sin riesgo
+        de referencia almacenado el indicador es null con motivo REFERENCE_NOT_AVAILABLE. Solo códigos anónimos.
+  /indicators/export.csv:
+    get:
+      tags:
+      - indicators
+      summary: Export
+      operationId: exportIndicatorsCsv
+      parameters:
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
+      - name: section_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Section Id
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: As Of
+      - name: close_at
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Close At
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '422':
+          description: as_of futuro o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol sin acceso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Periodo o sección ajena o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: B2
+      x-roles: *id024
+      security:
+      - sessionCookie: []
+      description: Cálculo con corte as_of explícito (reproducible). TUTOR solo ve sus secciones; sin riesgo
+        de referencia almacenado el indicador es null con motivo REFERENCE_NOT_AVAILABLE. Solo códigos anónimos.
 components:
   securitySchemes:
     sessionCookie:
@@ -3230,7 +3507,7 @@ components:
             required:
             - message
             additionalProperties: false
-        request_id: &id024
+        request_id: &id025
           type: string
           format: uuid
       required:
@@ -3253,7 +3530,7 @@ components:
     User:
       type: object
       properties:
-        id: *id024
+        id: *id025
         display_name:
           type: string
         role:
@@ -3289,7 +3566,7 @@ components:
           $ref: '#/components/schemas/User'
         csrf_token:
           type: string
-        expires_at: &id028
+        expires_at: &id029
           type: string
           format: date-time
           description: RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
@@ -3539,12 +3816,12 @@ components:
     Prediction:
       type: object
       properties:
-        id: &id025
+        id: &id026
           type: string
           format: uuid
-        enrollment_id: *id025
-        snapshot_id: *id025
-        model_id: *id025
+        enrollment_id: *id026
+        snapshot_id: *id026
+        model_id: *id026
         data_origin:
           type: string
           enum:
@@ -3556,17 +3833,17 @@ components:
           - LOW
           - MEDIUM
           - HIGH
-        cutoff_at: &id026
+        cutoff_at: &id027
           type: string
           format: date-time
           description: RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
         target_date:
-          type: &id027
+          type: &id028
           - string
           - 'null'
           format: date
           description: Fecha objetivo observada (CSV). Null en mediciones MANUAL.
-        predicted_at: *id026
+        predicted_at: *id027
         probability_low:
           type:
           - number
@@ -3588,7 +3865,7 @@ components:
         probabilities_calibrated:
           type: boolean
         model_horizon_date:
-          type: *id027
+          type: *id028
           format: date
           description: 'Solo MANUAL: corte (America/Lima) + horizonte del modelo; derivado, no es un dato observado.'
       required:
@@ -3771,7 +4048,7 @@ components:
     TimelineEvent:
       type: object
       properties:
-        id: *id024
+        id: *id025
         event_type:
           type: string
           enum:
@@ -3779,10 +4056,10 @@ components:
           - PREDICTION
           - ALERT
           - INTERVENTION
-        occurred_at: *id028
+        occurred_at: *id029
         summary:
           type: string
-        entity_id: *id024
+        entity_id: *id025
       required:
       - id
       - event_type
@@ -3811,9 +4088,9 @@ components:
     ImportBatch:
       type: object
       properties:
-        id: *id024
-        period_id: *id024
-        data_origin: &id029
+        id: *id025
+        period_id: *id025
+        data_origin: &id030
           type: string
           enum:
           - REAL
@@ -3863,7 +4140,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ImportError'
-        created_at: *id028
+        created_at: *id029
         committed_at:
           type:
           - string
@@ -3891,7 +4168,7 @@ components:
     ImportCommit:
       type: object
       properties:
-        batch_id: *id024
+        batch_id: *id025
         status:
           type: string
           enum:
@@ -3910,13 +4187,13 @@ components:
     Alert:
       type: object
       properties:
-        id: *id024
-        enrollment_id: *id024
-        student_id: *id024
+        id: *id025
+        enrollment_id: *id025
+        student_id: *id025
         anon_code:
           type: string
-        prediction_id: *id024
-        data_origin: *id029
+        prediction_id: *id025
+        data_origin: *id030
         severity:
           type: string
           enum:
@@ -3939,8 +4216,8 @@ components:
           - string
           - 'null'
           maxLength: 1000
-        opened_at: *id028
-        updated_at: *id028
+        opened_at: *id029
+        updated_at: *id029
         closed_at:
           type:
           - string
@@ -3968,14 +4245,14 @@ components:
     Intervention:
       type: object
       properties:
-        id: *id024
-        enrollment_id: *id024
+        id: *id025
+        enrollment_id: *id025
         alert_id:
           type:
           - string
           - 'null'
           format: uuid
-        data_origin: *id029
+        data_origin: *id030
         kind:
           type: string
           enum:
@@ -3993,7 +4270,7 @@ components:
           - PLANNED
           - DONE
           - CANCELLED
-        scheduled_at: *id028
+        scheduled_at: *id029
         performed_at:
           type:
           - string
@@ -4007,8 +4284,8 @@ components:
         version:
           type: integer
           minimum: 1
-        created_at: *id028
-        updated_at: *id028
+        created_at: *id029
+        updated_at: *id029
       required:
       - id
       - enrollment_id
@@ -6247,4 +6524,602 @@ components:
       - snapshot_id
       title: StudentEvaluation
       description: Resultado de evaluar la última medición de una matrícula (simulación).
+    ClassMetric:
+      properties:
+        support:
+          type: integer
+          title: Support
+        precision:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Precision
+        recall:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Recall
+        f1:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: F1
+      additionalProperties: false
+      type: object
+      required:
+      - support
+      - precision
+      - recall
+      - f1
+      title: ClassMetric
+    Descriptive:
+      properties:
+        n:
+          type: integer
+          title: N
+        mean:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Mean
+        sd:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Sd
+        median:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median
+        minimum:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Minimum
+        maximum:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Maximum
+      additionalProperties: false
+      type: object
+      required:
+      - n
+      - mean
+      - sd
+      - median
+      - minimum
+      - maximum
+      title: Descriptive
+    Exclusions:
+      properties:
+        ineligible:
+          type: integer
+          title: Ineligible
+        no_snapshot:
+          type: integer
+          title: No Snapshot
+        no_reference:
+          type: integer
+          title: No Reference
+        reference_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reference Reason
+      additionalProperties: false
+      type: object
+      required:
+      - ineligible
+      - no_snapshot
+      - no_reference
+      title: Exclusions
+    IndicatorsResponse:
+      properties:
+        period_id:
+          type: string
+          format: uuid
+          title: Period Id
+        period_code:
+          type: string
+          title: Period Code
+        data_origin:
+          type: string
+          const: SYNTHETIC
+          title: Data Origin
+        is_simulation:
+          type: boolean
+          title: Is Simulation
+        notice:
+          type: string
+          title: Notice
+        as_of:
+          type: string
+          format: date-time
+          title: As Of
+        close_at:
+          type: string
+          format: date-time
+          title: Close At
+        opportune_window_days:
+          type: integer
+          title: Opportune Window Days
+        section_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Section Id
+        authorized_section_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Authorized Section Ids
+        prv:
+          $ref: '#/components/schemas/Prv'
+        total:
+          $ref: '#/components/schemas/Summary'
+        sections:
+          items:
+            $ref: '#/components/schemas/Summary'
+          type: array
+          title: Sections
+      additionalProperties: false
+      type: object
+      required:
+      - period_id
+      - period_code
+      - data_origin
+      - is_simulation
+      - notice
+      - as_of
+      - close_at
+      - opportune_window_days
+      - section_id
+      - authorized_section_ids
+      - prv
+      - total
+      - sections
+      title: IndicatorsResponse
+    MacroMetrics:
+      properties:
+        precision:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Precision
+        recall:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Recall
+        f1:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: F1
+      additionalProperties: false
+      type: object
+      required:
+      - precision
+      - recall
+      - f1
+      title: MacroMetrics
+    ModelMetrics:
+      properties:
+        n:
+          type: integer
+          title: N
+        class_order:
+          items:
+            type: string
+          type: array
+          title: Class Order
+        confusion_matrix:
+          items:
+            items:
+              type: integer
+            type: array
+          type: array
+          title: Confusion Matrix
+        per_class:
+          additionalProperties:
+            $ref: '#/components/schemas/ClassMetric'
+          type: object
+          title: Per Class
+        macro:
+          $ref: '#/components/schemas/MacroMetrics'
+        accuracy:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Accuracy
+        not_estimable_reasons:
+          additionalProperties:
+            type: string
+          type: object
+          title: Not Estimable Reasons
+      additionalProperties: false
+      type: object
+      required:
+      - n
+      - class_order
+      - confusion_matrix
+      - per_class
+      - macro
+      - accuracy
+      - not_estimable_reasons
+      title: ModelMetrics
+    Nia:
+      properties:
+        total:
+          type: integer
+          title: Total
+        students:
+          type: integer
+          title: Students
+        mean:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Mean
+        median:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median
+        alerted_students:
+          type: integer
+          title: Alerted Students
+        mean_alerted:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Mean Alerted
+        median_alerted:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median Alerted
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+      additionalProperties: false
+      type: object
+      required:
+      - total
+      - students
+      - mean
+      - median
+      - alerted_students
+      - mean_alerted
+      - median_alerted
+      title: Nia
+    Opportune:
+      properties:
+        numerator:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Numerator
+        denominator:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Denominator
+        percent:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Percent
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+        window_days:
+          type: integer
+          title: Window Days
+        median_days_to_first:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median Days To First
+        students_with_first_intervention:
+          type: integer
+          title: Students With First Intervention
+          default: 0
+      additionalProperties: false
+      type: object
+      required:
+      - numerator
+      - denominator
+      - percent
+      - window_days
+      title: Opportune
+    Performance:
+      properties:
+        average_grade:
+          $ref: '#/components/schemas/Descriptive'
+        attendance_pct:
+          $ref: '#/components/schemas/Descriptive'
+      additionalProperties: false
+      type: object
+      required:
+      - average_grade
+      - attendance_pct
+      title: Performance
+    Prv:
+      properties:
+        numerator:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Numerator
+        denominator:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Denominator
+        percent:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Percent
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+        received:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Received
+        valid_processed:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Valid Processed
+        rejected:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rejected
+        valid_not_committed:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Valid Not Committed
+        ineligible_omitted:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Ineligible Omitted
+        manual_measurements:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Manual Measurements
+      additionalProperties: false
+      type: object
+      required:
+      - numerator
+      - denominator
+      - percent
+      title: Prv
+    Ratio:
+      properties:
+        numerator:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Numerator
+        denominator:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Denominator
+        percent:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Percent
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+      additionalProperties: false
+      type: object
+      required:
+      - numerator
+      - denominator
+      - percent
+      title: Ratio
+      description: Numerador y denominador siempre visibles; percent es null sin denominador o sin fuente.
+    StudentIndicator:
+      properties:
+        anon_code:
+          type: string
+          title: Anon Code
+        grade:
+          type: integer
+          title: Grade
+        section_code:
+          type: string
+          title: Section Code
+        eligible:
+          type: boolean
+          title: Eligible
+        average_grade:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Average Grade
+        attendance_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Attendance Pct
+        reference_risk:
+          anyOf:
+          - type: string
+            enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+          - type: 'null'
+          title: Reference Risk
+        predicted_risk:
+          anyOf:
+          - type: string
+            enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+          - type: 'null'
+          title: Predicted Risk
+        alert_opened_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Alert Opened At
+        alert_before_close:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Alert Before Close
+        nia:
+          type: integer
+          title: Nia
+        opportune:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Opportune
+        days_to_first_intervention:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Days To First Intervention
+        exclusion_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Exclusion Reason
+      additionalProperties: false
+      type: object
+      required:
+      - anon_code
+      - grade
+      - section_code
+      - eligible
+      - average_grade
+      - attendance_pct
+      - reference_risk
+      - predicted_risk
+      - alert_opened_at
+      - alert_before_close
+      - nia
+      - opportune
+      - days_to_first_intervention
+      - exclusion_reason
+      title: StudentIndicator
+    StudentIndicatorPage:
+      properties:
+        period_id:
+          type: string
+          format: uuid
+          title: Period Id
+        as_of:
+          type: string
+          format: date-time
+          title: As Of
+        items:
+          items:
+            $ref: '#/components/schemas/StudentIndicator'
+          type: array
+          title: Items
+        total:
+          type: integer
+          title: Total
+        page:
+          type: integer
+          title: Page
+        page_size:
+          type: integer
+          title: Page Size
+      additionalProperties: false
+      type: object
+      required:
+      - period_id
+      - as_of
+      - items
+      - total
+      - page
+      - page_size
+      title: StudentIndicatorPage
+    Summary:
+      properties:
+        section_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Section Id
+        section_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Section Code
+        grade:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Grade
+        eligible_students:
+          type: integer
+          title: Eligible Students
+        cra:
+          $ref: '#/components/schemas/Ratio'
+        pder:
+          $ref: '#/components/schemas/Ratio'
+        nia:
+          $ref: '#/components/schemas/Nia'
+        opportune:
+          $ref: '#/components/schemas/Opportune'
+        performance:
+          $ref: '#/components/schemas/Performance'
+        model_metrics:
+          anyOf:
+          - $ref: '#/components/schemas/ModelMetrics'
+          - type: 'null'
+        model_metrics_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Model Metrics Reason
+        exclusions:
+          $ref: '#/components/schemas/Exclusions'
+      additionalProperties: false
+      type: object
+      required:
+      - section_id
+      - section_code
+      - grade
+      - eligible_students
+      - cra
+      - pder
+      - nia
+      - opportune
+      - performance
+      - model_metrics
+      - exclusions
+      title: Summary
 x-current-sprint: S2.1
