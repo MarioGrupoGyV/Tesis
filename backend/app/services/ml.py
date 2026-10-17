@@ -207,6 +207,24 @@ def run_period(db,user,payload,settings,request_id):
         raise
 
 
+LABELS = {'average_grade':'promedio','attendance_pct':'asistencia','activities_pct':'actividades',
+          'participation_level':'participación','behavior_incidents':'incidencias'}
+
+
+def out_of_model_scale(observation, config):
+    """Mensajes para valores que el modelo activo no admite; solo informa, no cambia la inferencia."""
+    problems = []
+    for name, value in observation.values.items():
+        if value is None:
+            continue
+        scale = config.scales[name]
+        if not scale.minimum <= value <= scale.maximum:
+            problems.append(f'{LABELS.get(name,name)} {value:g} (el modelo admite {scale.minimum:g}–{scale.maximum:g})')
+        elif name == 'participation_level' and value not in config.participation_values:
+            problems.append(f'participación {value:g} (el modelo admite {", ".join(str(v) for v in config.participation_values)})')
+    return problems
+
+
 def evaluate_student(db,user,student_id,period_id,settings,request_id):
     """Evalúa solo la última revisión de la matrícula y sincroniza su seguimiento; un solo commit."""
     require_admin(user)
@@ -228,7 +246,13 @@ def evaluate_student(db,user,student_id,period_id,settings,request_id):
             raise AppError(422,'NO_MEASUREMENT','Registra una medición antes de evaluar al estudiante.')
         row = rows[0]
         from app.ml.predict import predict_snapshot
-        result = predict_snapshot(observation_from_row(row,period,bundle),bundle)
+        observation = observation_from_row(row,period,bundle)
+        outside = out_of_model_scale(observation,bundle.config)
+        if outside:
+            raise AppError(422,'MEASUREMENT_OUT_OF_MODEL_SCALE',
+                'La medición tiene valores fuera de la escala del modelo activo: '+'; '.join(outside)+
+                '. Corrige la medición (se crea una revisión) y evalúa de nuevo. No se asignó riesgo.')
+        result = predict_snapshot(observation,bundle)
         base = dict(snapshot_id=row['id'])
         if result.status == 'INELIGIBLE':
             out = schemas.StudentEvaluation(status='NOT_ELIGIBLE',reason='El estudiante no está activo o no es elegible para la simulación.',**base)

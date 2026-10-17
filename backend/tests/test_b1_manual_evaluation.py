@@ -22,7 +22,7 @@ from conftest import database_urls as _database_urls  # noqa: F401  (BD propia: 
 
 ORIGIN = {'Origin': 'http://testserver'}
 HIGH = dict(average_grade=7, attendance_pct=50, activities_pct=40, participation_level=1, behavior_incidents=8)
-LOW = dict(average_grade=18, attendance_pct=98, activities_pct=95, participation_level=5, behavior_incidents=0)
+LOW = dict(average_grade=18, attendance_pct=98, activities_pct=95, participation_level=3, behavior_incidents=0)
 
 
 @pytest.fixture
@@ -167,6 +167,18 @@ def test_missing_required_variable_gives_insufficient_data_without_risk(demo):
     detail = state.client.get(API + f"/students/{student['id']}?period_id={state.period_id}").json()
     assert detail['latest_prediction'] is None and detail['student']['risk_level'] is None
     assert detail['student']['evaluation_status'] == 'INSUFFICIENT_DATA'
+    with state.owner.connect() as conn:
+        assert conn.scalar(text('SELECT count(*) FROM risk_school.predictions WHERE enrollment_id=:e'),
+                           {'e': enrollment_of(state, student)}) == 0
+
+
+def test_value_outside_model_scale_gets_clear_error_and_no_prediction(demo):
+    state = demo
+    student = new_student(state)
+    measure(state, student, {**LOW, 'participation_level': 5})  # el modelo sintético admite categorías 1–3
+    response = evaluate(state, student)
+    assert response.status_code == 422 and response.json()['code'] == 'MEASUREMENT_OUT_OF_MODEL_SCALE'
+    assert 'participación' in response.json()['message']
     with state.owner.connect() as conn:
         assert conn.scalar(text('SELECT count(*) FROM risk_school.predictions WHERE enrollment_id=:e'),
                            {'e': enrollment_of(state, student)}) == 0
