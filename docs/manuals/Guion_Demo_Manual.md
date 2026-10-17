@@ -19,17 +19,26 @@ contraseñas y no ejecutar limpieza sobre la instalación activa. Según
 El periodo del estudio sintético usa el año 2025 (2025-01-01 a 2025-12-31). Las mediciones de
 ejemplo usan un corte pasado dentro de ese periodo.
 
-## Datos de ejemplo (ficticios)
+## Datos de ejemplo (ficticios) — ensayados con el modelo real
 
-| Alumno | Promedio | Asistencia % | Actividades % | Participación | Incidencias | Resultado esperado* |
-|---|---|---|---|---|---|---|
-| DEMO-ALTO | 7 | 50 | 40 | 1 | 8 | riesgo ALTO |
-| DEMO-BAJO | 18 | 98 | 95 | 5 | 0 | riesgo BAJO |
+Ensayo del 2026-10-17 en una instalación **aislada** (estudio sintético semilla 1729, modelo SVM
+activo). Se registró el riesgo que **devolvió el modelo**, no el esperado:
+
+| Alumno | Promedio | Asistencia % | Actividades % | Participación | Incidencias | Riesgo observado | Caso |
+|---|---|---|---|---|---|---|---|
+| DEMO-ALTO | 7 | 50 | 40 | 1 | 8 | **ALTO** | Se crea |
+| DEMO-BAJO | 18 | 98 | 95 | **3** | 0 | **BAJO** | No se crea |
+| (intermedio A) | 12 | 75 | 70 | 2 | 4 | **MEDIO** | Se crea |
+| (intermedio B) | 15 | 90 | 85 | 2 | 1 | **MEDIO** | Se crea |
 
 Corte: 2025-04-15 18:00 (Lima); disponible desde 2025-04-15 17:00; inicio de ventana 2025-03-16.
-\*El modelo decide; los valores se eligieron lejos de los umbrales del criterio sintético
-(promedio <10, asistencia <65, incidencias ≥6 para ALTO). Ensayar antes: si el modelo
-devuelve otra clase, ajustar los valores y no prometer el resultado.
+
+**Importante:** el modelo sintético usa participación en categorías **1–3** (el formulario admite
+1–5). Con 4 o 5 la evaluación se rechaza con el mensaje «valores fuera de la escala del modelo
+activo» y no se asigna riesgo; por eso DEMO-BAJO usa participación 3. Un valor 5 en el primer
+ensayo produjo ese rechazo. Otros datos intermedios (p. ej. promedio 15, asistencia 90) dan MEDIO:
+si se quiere mostrar un caso MEDIO, usar la fila «intermedio A». Los resultados dependen del
+modelo entrenado en cada instalación: repetir el ensayo si se regenera o reactiva.
 
 ## Guion
 
@@ -54,5 +63,6 @@ devuelve otra clase, ajustar los valores y no prometer el resultado.
 | «Datos insuficientes» | Falta el promedio u otras variables | Es el comportamiento correcto: no se asigna riesgo. Completar la medición (revisión). |
 | «No elegible para la simulación» | Alumno creado antes del Bloque 1 | Usar un alumno nuevo. |
 | 409 periodo bloqueado | Periodo cerrado | Reabrirlo en Editar periodo (ADMIN). |
+| «Valores fuera de la escala del modelo activo» | Participación 4–5 u otro valor fuera de rango | Corregir la medición (nueva revisión) con participación 1–3. |
 | Riesgo distinto al esperado | El modelo decide | Aclararlo: es una simulación; no se promete exactitud. |
 | Error 5xx o sin respuesta | Servicio caído | `docker compose ps`; reiniciar con `docker compose up -d --wait`. No usar `down -v`. |
