@@ -2,11 +2,11 @@
   {
     "schema": "ImportBatch",
     "body": {
-      "id": "a0a07850-1796-4a87-a5e5-f702439ac4da",
-      "period_id": "2fd55edd-637e-4f1c-9370-ace38d9e2f74",
+      "id": "4a5e0827-8884-4fc3-ba04-992a2b04c73c",
+      "period_id": "c89a8eb3-ae6d-4de8-a2b5-a3c141294029",
       "data_origin": "REAL",
       "file_name": "sintetico.csv",
-      "file_sha256": "7aaa7da93d9151c1637db2e3198b10f26876f88ca5f88bce4bf209f23e3ceb5f",
+      "file_sha256": "72c32198247c91aa70470e243ccacc2cef49bbc92e9c29751a2046b74db0b1c0",
       "schema_version": "academic-v1",
       "status": "READY",
       "total_rows": 1,
@@ -17,14 +17,14 @@
       "planned_snapshots": 1,
       "preview_version": 1,
       "errors": [],
-      "created_at": "2026-10-17T21:10:59.296675Z",
+      "created_at": "2026-10-17T21:26:04.578165Z",
       "committed_at": null
     }
   },
   {
     "schema": "ImportCommit",
     "body": {
-      "batch_id": "a0a07850-1796-4a87-a5e5-f702439ac4da",
+      "batch_id": "4a5e0827-8884-4fc3-ba04-992a2b04c73c",
       "status": "COMMITTED",
       "created_snapshots": 1,
       "reused_result": false
@@ -33,11 +33,11 @@
   {
     "schema": "ImportBatch",
     "body": {
-      "id": "763f52c1-17f4-4424-a777-9b381d328bdc",
-      "period_id": "ee569bcf-8667-4972-9f5d-a90e4719ac9a",
+      "id": "123618ef-b225-441a-8e24-f0828e88d133",
+      "period_id": "edb03029-a2b2-48bf-9a79-4bab8ec8979c",
       "data_origin": "REAL",
       "file_name": "sintetico.csv",
-      "file_sha256": "9f94fe00efe4eda94174d2a4b55fec93736212d195919292afe2ae3e02a74bf1",
+      "file_sha256": "b59c2072947f75aa382ea5b5f4ee8f04dab89fa37b33125876c6ac45d915810f",
       "schema_version": "academic-v1",
       "status": "FAILED",
       "total_rows": 1,
@@ -55,7 +55,7 @@
           "message": "Usa un n\u00famero con punto y m\u00e1ximo dos decimales entre 0 y 20, o deja vac\u00edo si falta."
         }
       ],
-      "created_at": "2026-10-17T21:11:00.064142Z",
+      "created_at": "2026-10-17T21:26:05.122197Z",
       "committed_at": null
     }
   },
@@ -65,7 +65,7 @@
       "code": "IMPORT_INVALID",
       "message": "Corrige todas las filas y revisa una nueva vista previa antes de confirmar.",
       "details": [],
-      "request_id": "a3c97596-25cf-4123-aac4-d18a4e98844c"
+      "request_id": "2d03ce60-d193-48ad-99ff-795c5458d866"
     }
   },
   {
@@ -74,7 +74,7 @@
       "code": "SERVICE_UNAVAILABLE",
       "message": "El servicio no est\u00e1 disponible. Int\u00e9ntalo nuevamente.",
       "details": [],
-      "request_id": "b03eab31-7a67-42e0-b995-1f8f7e79c008"
+      "request_id": "234d0f9e-0499-4af5-9d81-5de4ae5d025f"
     }
   },
   {
@@ -83,7 +83,7 @@
       "code": "INTEGRITY_CONFLICT",
       "message": "El estado cambi\u00f3 o no permite esta operaci\u00f3n. Revisa los datos antes de reintentar.",
       "details": [],
-      "request_id": "f9c7bb0b-b427-4e03-8561-4c15d80ab7be"
+      "request_id": "a6ba8daa-9105-4147-8a00-c02d942e1e3d"
     }
   },
   {
@@ -92,7 +92,7 @@
       "code": "INTERNAL_ERROR",
       "message": "No se pudo completar la operaci\u00f3n.",
       "details": [],
-      "request_id": "58c90e56-7313-4292-8e52-06432414e8c8"
+      "request_id": "4037b311-ef0b-466f-a5af-311eb6b9b82f"
     }
   },
   {
@@ -100,16 +100,16 @@
     "body": {
       "items": [
         {
-          "id": "cd3e97f3-dce3-4c1b-9f71-927ff1792e32",
-          "anon_code": "S2-abca80c28708-A",
+          "id": "fa8f7642-0425-48a4-9e75-554e1ea82148",
+          "anon_code": "S2-adc79a89ad48-A",
           "full_name": null,
           "is_active": true,
           "version": 1,
           "enrollment_version": 1,
-          "enrollment_id": "27b9e464-c772-4544-9053-bb6d81402217",
-          "period_id": "68364d41-b830-4d17-83ea-84b9cff73ab5",
-          "section_id": "643d847e-3274-4901-ae11-709c033f7fc2",
-          "section_code": "S1-91da06d1",
+          "enrollment_id": "2f912f7a-019c-41aa-a815-e47c9e0e8c7a",
+          "period_id": "b1e03ea0-9145-471f-8652-7776e9dd3fc5",
+          "section_id": "d75bbd5c-cbbb-4c94-aba6-893e599acf77",
+          "section_code": "S1-ca405d5c",
           "grade": 1,
           "data_origin": "REAL",
           "average_grade": 14.25,
@@ -129,16 +129,16 @@
     "schema": "StudentDetail",
     "body": {
       "student": {
-        "id": "cd3e97f3-dce3-4c1b-9f71-927ff1792e32",
-        "anon_code": "S2-abca80c28708-A",
+        "id": "fa8f7642-0425-48a4-9e75-554e1ea82148",
+        "anon_code": "S2-adc79a89ad48-A",
         "full_name": null,
         "is_active": true,
         "version": 1,
         "enrollment_version": 1,
-        "enrollment_id": "27b9e464-c772-4544-9053-bb6d81402217",
-        "period_id": "68364d41-b830-4d17-83ea-84b9cff73ab5",
-        "section_id": "643d847e-3274-4901-ae11-709c033f7fc2",
-        "section_code": "S1-91da06d1",
+        "enrollment_id": "2f912f7a-019c-41aa-a815-e47c9e0e8c7a",
+        "period_id": "b1e03ea0-9145-471f-8652-7776e9dd3fc5",
+        "section_id": "d75bbd5c-cbbb-4c94-aba6-893e599acf77",
+        "section_code": "S1-ca405d5c",
         "grade": 1,
         "data_origin": "REAL",
         "average_grade": 14.25,
@@ -149,9 +149,9 @@
         "active_alert_id": null
       },
       "latest_snapshot": {
-        "id": "b0ecc10f-9e68-4dcb-a98d-02b79b754b0b",
-        "enrollment_id": "27b9e464-c772-4544-9053-bb6d81402217",
-        "period_id": "68364d41-b830-4d17-83ea-84b9cff73ab5",
+        "id": "5e248619-5ef2-42f3-8f7f-623fef6b8c81",
+        "enrollment_id": "2f912f7a-019c-41aa-a815-e47c9e0e8c7a",
+        "period_id": "b1e03ea0-9145-471f-8652-7776e9dd3fc5",
         "data_origin": "REAL",
         "window_start": "2026-04-01",
         "cutoff_at": "2026-05-02T04:30:00Z",
@@ -169,7 +169,7 @@
         "entry_channel": "CSV",
         "purpose": "PARTIAL",
         "created_by": null,
-        "created_at": "2026-10-17T21:12:07.210032Z",
+        "created_at": "2026-10-17T21:26:55.806516Z",
         "correction_reason": null,
         "variable_available_at": {}
       },
@@ -183,11 +183,11 @@
     "body": {
       "items": [
         {
-          "id": "b0ecc10f-9e68-4dcb-a98d-02b79b754b0b",
+          "id": "5e248619-5ef2-42f3-8f7f-623fef6b8c81",
           "event_type": "SNAPSHOT",
-          "occurred_at": "2026-10-17T21:12:07.210032Z",
+          "occurred_at": "2026-10-17T21:26:55.806516Z",
           "summary": "Corte acad\u00e9mico \u00b7 revisi\u00f3n 1",
-          "entity_id": "b0ecc10f-9e68-4dcb-a98d-02b79b754b0b"
+          "entity_id": "5e248619-5ef2-42f3-8f7f-623fef6b8c81"
         }
       ],
       "total": 1,
@@ -199,16 +199,16 @@
     "schema": "StudentDetail",
     "body": {
       "student": {
-        "id": "6cd7fdf6-46d8-4084-8ee4-ec539e2fb8a6",
-        "anon_code": "S2-a5df2a34e84f",
+        "id": "b6ecd859-206b-4ce2-81c5-cea8ec971c2b",
+        "anon_code": "S2-a8d8900f3c93",
         "full_name": null,
         "is_active": true,
         "version": 1,
         "enrollment_version": 1,
-        "enrollment_id": "efa16510-b87e-4521-8d98-373128e43f76",
-        "period_id": "f151f895-5a77-46a1-bfac-0344b2971935",
-        "section_id": "0ccecdb3-6f78-44ce-a285-cea6821c28ac",
-        "section_code": "S1-e3c3f729",
+        "enrollment_id": "6ff255bb-ecaf-4bb6-bbef-2c66bee305c8",
+        "period_id": "2059ab54-dfe6-4c18-bb17-2fed69262b91",
+        "section_id": "93a852bf-339e-4135-91de-9bfe88a768e9",
+        "section_code": "S1-5d021371",
         "grade": 1,
         "data_origin": "REAL",
         "average_grade": 14.25,
@@ -219,9 +219,9 @@
         "active_alert_id": null
       },
       "latest_snapshot": {
-        "id": "7e75b3bf-fa9e-48cc-a05d-02437c0b6756",
-        "enrollment_id": "efa16510-b87e-4521-8d98-373128e43f76",
-        "period_id": "f151f895-5a77-46a1-bfac-0344b2971935",
+        "id": "587ded92-fcdb-4aa6-9217-9e5d04fe721a",
+        "enrollment_id": "6ff255bb-ecaf-4bb6-bbef-2c66bee305c8",
+        "period_id": "2059ab54-dfe6-4c18-bb17-2fed69262b91",
         "data_origin": "REAL",
         "window_start": "2026-04-01",
         "cutoff_at": "2026-05-02T04:30:00Z",
@@ -239,7 +239,7 @@
         "entry_channel": "CSV",
         "purpose": "PARTIAL",
         "created_by": null,
-        "created_at": "2026-10-17T21:12:10.093110Z",
+        "created_at": "2026-10-17T21:26:58.485296Z",
         "correction_reason": null,
         "variable_available_at": {}
       },
