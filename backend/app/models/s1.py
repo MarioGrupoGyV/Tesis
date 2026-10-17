@@ -3,7 +3,7 @@
 from datetime import date, datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import Boolean, CHAR, Date, DateTime, ForeignKey, SmallInteger, Text, func
+from sqlalchemy import Boolean, CHAR, Date, DateTime, ForeignKey, Integer, SmallInteger, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -44,6 +44,7 @@ class AcademicPeriod(Base):
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
     data_origin: Mapped[str] = mapped_column(Text, nullable=False)
     is_locked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    version: Mapped[int] = mapped_column(Integer, default=1)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
 
@@ -55,6 +56,8 @@ class GradeSection(Base):
     grade: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     school_year: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     tutor_id: Mapped[UUID | None] = mapped_column(ForeignKey("risk_school.app_users.id"))
+    data_origin: Mapped[str | None] = mapped_column(Text)
+    version: Mapped[int] = mapped_column(Integer, default=1)
 
 
 class AuditEvent(Base):

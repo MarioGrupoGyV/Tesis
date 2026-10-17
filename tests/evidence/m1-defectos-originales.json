@@ -1,0 +1,11 @@
+{
+  "fecha_local": "2026-10-16",
+  "head": "85defb8d38cedf4fcc87de56b5cdf23ff01c8dbb",
+  "metodo": "Inspección reproducible de rutas, interfaz y DDL antes de modificar producto",
+  "defectos": [
+    {"id":"M1-01","pasos":"Abrir Estudiantes sin periodos","esperado":"Preparación ADMIN desde interfaz","obtenido":"StudentsPage retorna Selecciona un periodo sin acciones de alta","evidencia":"frontend/src/features/students/StudentsPage.tsx"},
+    {"id":"M1-02","pasos":"Intentar registrar identidad/matrícula/medición por API","esperado":"Escrituras autenticadas y persistentes","obtenido":"students y catalogs solo exponen GET","evidencia":"backend/app/api/v1/students.py y catalogs.py"},
+    {"id":"M1-03","pasos":"Representar medición manual sin archivo/horizonte","esperado":"Trazabilidad manual sin CSV fabricado","obtenido":"NOT NULL import_batch_id, source_row_number, row_sha256 y target_date","evidencia":"backend/migrations/versions/0001_demo_schema.sql"},
+    {"id":"M1-04","pasos":"Consultar disponibilidad académica sin estudio/modelo","esperado":"Registro y lectura separados de inferencia","obtenido":"read_students depende de estudio validado","evidencia":"backend/app/services/processing_policy.py"}
+  ]
+}

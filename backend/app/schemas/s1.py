@@ -42,6 +42,7 @@ class Period(ContractModel):
     end_date: date
     data_origin: Literal["REAL", "SYNTHETIC"]
     is_locked: bool
+    version: int = 1
 
 
 class Section(ContractModel):
@@ -50,3 +51,5 @@ class Section(ContractModel):
     grade: int = Field(ge=1, le=5)
     school_year: int = Field(ge=2000, le=2100)
     tutor_id: UUID | None
+    data_origin: Literal['REAL', 'SYNTHETIC'] | None = None
+    version: int = 1

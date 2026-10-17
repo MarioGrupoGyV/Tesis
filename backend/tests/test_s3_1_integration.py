@@ -386,7 +386,8 @@ def test_processing_status_tutor_without_synthetic_section(study_env):
     assert response.status_code == 200
     status = response.json()
     assert status['synthetic_ready'] and not status['institutional_ready']
-    assert status['operations']['read_students']['available'] is False
+    # M1 permite consulta académica REAL asignada aunque no acceda al estudio.
+    assert status['operations']['read_students']['available'] is True
     periods = state.client.get(API + '/periods')
     assert periods.status_code == 200
     assert str(state.period_id) not in {period['id'] for period in periods.json()}

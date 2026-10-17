@@ -2,6 +2,15 @@
 
 Estas instrucciones se deben colocar en la raíz del repositorio de la tesis. Describen la implementación prevista. La fase vigente es S6: integración final, instalación reproducible y respaldo/restauración local. REAL continúa bloqueado; comparación e inferencia local únicamente en el contexto SYNTHETIC registrado. Se conservan las cuatro cuentas locales de S2.2, nunca por semillas de arranque. No existe una autorización implícita para cargar datos de menores ni cambiar la metodología académica.
 
+Ampliación explícita M1 del 2026-10-16: registro académico manual local autorizado
+para REAL/SYNTHETIC, separado de importación y predicción. ADMIN administra periodos,
+secciones, alumnos y matrículas; TUTOR registra/corrige mediciones de sus secciones.
+No implica consentimiento, elegibilidad, autenticidad ni habilitación predictiva REAL.
+Las mediciones MANUAL no fabrican CSV ni horizonte objetivo y quedan sin evaluar.
+No importar los tres Excel, entrenar/activar/restaurar modelos, hacer commit/push
+o implementar la siguiente fase. Conservar S6 y sus evidencias históricas. Leer
+`docs/adr/010-registro-manual-m1.md` y `docs/manuals/Registro_Manual_M1.md`.
+
 Excepción explícita del 2026-10-11: el usuario solicita integrar el SVM del paquete
 `Calculos_y_modelo_evaluacion_retrospectiva.zip` y confirma datos reales con
 autorización de procesamiento local. Se admite únicamente el módulo ADMIN

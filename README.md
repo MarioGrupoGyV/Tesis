@@ -5,7 +5,13 @@ importación versionada, estudiantes/historial, evaluación técnica, alertas,
 actividades y reportes CSV. S6 comprueba instalación nueva, recuperación completa
 y revisión activa por separado. Resultados en [Estado S6](docs/planning/Estado_Sprint_6.md)
 y la [matriz final](docs/manuals/Matriz_Trazabilidad_Final.md).
-REAL continúa bloqueado; el software y las métricas sintéticas no validan la tesis,
+M1 añade **registro académico manual local REAL/SYNTHETIC** desde Estudiantes:
+periodos, secciones, alumnos/matrículas, mediciones y revisiones persistentes.
+[Guía M1](docs/manuals/Registro_Manual_M1.md),
+[estado](docs/planning/Estado_M1_Registro_Manual.md) y
+[verificación](docs/planning/Matriz_Verificacion_M1.md).
+La importación y predicción REAL continúan bloqueadas; las mediciones manuales
+quedan sin evaluar y no generan seguimiento. El software y las métricas sintéticas no validan la tesis,
 la eficacia escolar ni una aprobación institucional. Sin commit/push o despliegue externo.
 
 ## Guía de operación
@@ -115,8 +121,8 @@ implícito no acredita aislamiento. Respetar diez logins/IP por 300 segundos.
 
 ## Contratos y límites
 
-[OpenAPI 0.6.0](docs/planning/Contrato_API.yaml): 32 operaciones/30 paths.
-Alembic `0004_followup`: 15 tablas de aplicación más tabla de revisión.
+[OpenAPI 0.7.0](docs/planning/Contrato_API.yaml): ampliación M1 tipada.
+Alembic `0005_manual_academic`: 15 tablas de aplicación más tabla de revisión.
 No cambian DB/API por editar scripts/manuales. [Esquema.sql](docs/planning/Esquema.sql)
 es referencia: no ejecutarlo para sustituir migraciones. CSV/ML permanecen privados.
 Cookie HttpOnly, CSRF, roles/sección se validan en servidor. 503 Error sanitizada;

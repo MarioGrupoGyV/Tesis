@@ -40,7 +40,7 @@ def test_clean_head_privileges_immutable_decisions_and_upgrade_s4_preserves_hist
         with engine.connect() as db:
             tables=inspect(db).get_table_names(schema='risk_school'); assert len(tables)==14
             before={table:db.scalar(text(f"SELECT md5(coalesce(string_agg(to_jsonb(x)::text,'|' ORDER BY id),'')) FROM risk_school.{table} x")) for table in tables}
-        migrate('head')
+        migrate('0004_followup')  # Cierre histórico S5; upgrade M1 se comprueba por separado.
         with engine.connect() as db:
             assert len(inspect(db).get_table_names(schema='risk_school'))==15
             assert {table:db.scalar(text(f"SELECT md5(coalesce(string_agg(to_jsonb(x)::text,'|' ORDER BY id),'')) FROM risk_school.{table} x")) for table in tables}==before

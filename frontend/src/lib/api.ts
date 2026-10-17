@@ -7,6 +7,18 @@ export type Student = components['schemas']['Student'];
 export type StudentPage = components['schemas']['StudentPage'];
 export type StudentDetail = components['schemas']['StudentDetail'];
 export type Snapshot = components['schemas']['Snapshot'];
+export type PeriodCreate = components['schemas']['PeriodCreate'];
+export type PeriodPatch = components['schemas']['PeriodPatch'];
+export type SectionCreate = components['schemas']['SectionCreate'];
+export type SectionPatch = components['schemas']['SectionPatch'];
+export type StudentCreate = components['schemas']['StudentCreate'];
+export type StudentPatch = components['schemas']['StudentPatch'];
+export type Identity = components['schemas']['Identity'];
+export type MeasurementCreate = components['schemas']['MeasurementCreate'];
+export type EnrollmentCreate = components['schemas']['EnrollmentCreate'];
+export type EnrollmentPatch = components['schemas']['EnrollmentPatch'];
+export type MeasurementPage = components['schemas']['MeasurementPage'];
+export type EnrollmentView = components['schemas']['EnrollmentView'];
 export type TimelineEventPage = components['schemas']['TimelineEventPage'];
 export type Model = components['schemas']['Model'];
 export type ModelPage = components['schemas']['ModelPage'];
@@ -120,6 +132,18 @@ async function requestCsv(path: string, signal?: AbortSignal): Promise<Blob> {
   return blob;
 }
 export const api = {
+  tutors: () => request<User[]>('/catalogs/tutors'),
+  createPeriod: (body: PeriodCreate) => write<Period>('/periods', body),
+  updatePeriod: (id: string, body: PeriodPatch) => write<Period>(`/periods/${encodeURIComponent(id)}`, body, undefined, 'PATCH'),
+  createSection: (body: SectionCreate) => write<Section>('/sections', body),
+  updateSection: (id: string, body: SectionPatch) => write<Section>(`/sections/${encodeURIComponent(id)}`, body, undefined, 'PATCH'),
+  identities: (search: string) => request<Identity[]>(`/student-identities?${query({ search })}`),
+  createStudent: (body: StudentCreate) => write<Identity>('/students', body),
+  updateStudent: (id: string, body: StudentPatch) => write<Identity>(`/students/${encodeURIComponent(id)}`, body, undefined, 'PATCH'),
+  createEnrollment: (body: EnrollmentCreate) => write<EnrollmentView>('/enrollments', body),
+  updateEnrollment: (id: string, body: EnrollmentPatch) => write<EnrollmentView>(`/enrollments/${encodeURIComponent(id)}`, body, undefined, 'PATCH'),
+  measurements: (id: string, periodId: string, page = 1) => request<MeasurementPage>(`/students/${encodeURIComponent(id)}/measurements?${query({ period_id: periodId, page, page_size: 10 })}`),
+  createMeasurement: (id: string, periodId: string, body: MeasurementCreate) => write<Snapshot>(`/students/${encodeURIComponent(id)}/measurements?${query({ period_id: periodId })}`, body),
   async restoreSession(signal?: AbortSignal): Promise<User> {
     const user = await request<User>('/auth/me', { signal }); await csrf(signal); return user;
   },

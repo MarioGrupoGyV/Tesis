@@ -73,15 +73,17 @@ def processing_status(db,user,settings):
         user.role=='TUTOR' and any(sections_for_period(db,db.get(AcademicPeriod,s.period_id),user.id) for s in writable))
     def op(role_ok,ready,reason):
         return {'available':bool(role_ok and ready),'reason':None if role_ok and ready else 'ROLE_RESTRICTED' if not role_ok else reason}
+    from app.repositories.s1 import institutional_periods
+    academic_readable = user.role in ('ADMIN','DIRECTOR') or user.role=='TUTOR' and bool(institutional_periods(db,user.id))
     return ProcessingStatus.model_validate({'scope':'SYNTHETIC_STUDY',
-        'notice':'Estudio con datos sintéticos. No corresponde a estudiantes reales.',
+        'notice':'Registro académico local disponible según rol y origen. Inferencia institucional pendiente de protocolo.',
         'institutional_ready':False,'synthetic_ready':prepared,
         'operations':{'import':op(admin,bool(writable),'SYNTHETIC_STUDY_NOT_PREPARED_OR_LOCKED'),
           'compare':op(admin,committed,'SYNTHETIC_IMPORT_REQUIRED'),
           'register':op(admin,compared,'SYNTHETIC_COMPARISON_REQUIRED'),
           'activate':op(admin,bool(compatible),'SYNTHETIC_REGISTERED_MODEL_REQUIRED'),
           'predict':op(admin,active,'MODEL_NOT_AVAILABLE'),
-          'read_students':op(user.role in ('ADMIN','TUTOR','DIRECTOR'),readable,'SYNTHETIC_CONTEXT_NOT_ACCESSIBLE'),
+          'read_students':op(user.role in ('ADMIN','TUTOR','DIRECTOR'),academic_readable,'ACADEMIC_CONTEXT_NOT_ACCESSIBLE'),
           'read_models':op(admin,True,None),
           'read_alerts':op(user.role in ('ADMIN','TUTOR','DIRECTOR'),readable,'SYNTHETIC_CONTEXT_NOT_ACCESSIBLE'),
           'write_followup':op(user.role in ('ADMIN','TUTOR'),writable_readable,'SYNTHETIC_CONTEXT_NOT_ACCESSIBLE_OR_LOCKED'),

@@ -19,7 +19,7 @@ def test_admin_and_director_read_demo_year_catalog(client, login, context, role)
     assert str(context["periods"]["other_year"]["id"]) in {row["id"] for row in rows}
     assert all(row["data_origin"] == "REAL" for row in rows)
     for row in rows:
-        assert set(row) == {"id", "code", "school_year", "start_date", "end_date", "data_origin", "is_locked"}
+        assert set(row) == {"id", "code", "school_year", "start_date", "end_date", "data_origin", "is_locked", "version"}
         UUID(row["id"])
         assert 2000 <= row["school_year"] <= 2100
         assert date.fromisoformat(row["start_date"]) < date.fromisoformat(row["end_date"])
@@ -30,7 +30,7 @@ def test_admin_and_director_read_demo_year_catalog(client, login, context, role)
     assert str(own["id"]) in visible and str(other["id"]) in visible
     assert str(next_year["id"]) not in visible
     for row in sections.json():
-        assert set(row) == {"id", "code", "grade", "school_year", "tutor_id"}
+        assert set(row) == {"id", "code", "grade", "school_year", "tutor_id", "data_origin", "version"}
         assert row["school_year"] == 2026
         assert 1 <= row["grade"] <= 5
         if row["tutor_id"] is not None:

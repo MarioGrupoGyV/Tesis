@@ -1,0 +1,147 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.m1.config.ts"
+    ],
+    "configFile": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\playwright.m1.config.ts",
+    "rootDir": "C:/Users/mario/OneDrive/Escritorio/tesis-riesgo-escolar/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/mario/OneDrive/Escritorio/tesis-riesgo-escolar/.local/m1-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/mario/OneDrive/Escritorio/tesis-riesgo-escolar/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "m1.spec.ts"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "tests/evidence/m1-browser-second.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "m1.spec.ts",
+      "file": "m1.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "M1: preparación vacía, registro, revisiones, persistencia y cuatro roles",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 30522,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'Tercer alumno de prueba M1', exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'Tercer alumno de prueba M1', exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'Tercer alumno de prueba M1', exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'Tercer alumno de prueba M1', exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'Tercer alumno de prueba M1', exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'Tercer alumno de prueba M1', exact: true })\u001b[22m\n\n    at newStudent (C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\e2e\\m1.spec.ts:32:66)\n    at C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\e2e\\m1.spec.ts:57:19",
+                    "location": {
+                      "file": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\e2e\\m1.spec.ts",
+                      "column": 66,
+                      "line": 32
+                    },
+                    "snippet": "  30 |   } else await page.getByLabel('Grado / sección', { exact: true }).selectOption({ label: '1.º / A' });\n  31 |   await page.getByRole('button', { name: 'Guardar estudiante y matrícula' }).click();\n> 32 |   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();\n     |                                                                  ^\n  33 |   return new URL(page.url());\n  34 | }\n  35 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\e2e\\m1.spec.ts",
+                        "column": 66,
+                        "line": 32
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'Tercer alumno de prueba M1', exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'Tercer alumno de prueba M1', exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'Tercer alumno de prueba M1', exact: true })\u001b[22m\n\n\n  30 |   } else await page.getByLabel('Grado / sección', { exact: true }).selectOption({ label: '1.º / A' });\n  31 |   await page.getByRole('button', { name: 'Guardar estudiante y matrícula' }).click();\n> 32 |   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();\n     |                                                                  ^\n  33 |   return new URL(page.url());\n  34 | }\n  35 |\n    at newStudent (C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\e2e\\m1.spec.ts:32:66)\n    at C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\e2e\\m1.spec.ts:57:19"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T06:09:39.993Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\.local\\m1-playwright\\m1-M1-preparación-vacía-re-a82b5-persistencia-y-cuatro-roles\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\e2e\\m1.spec.ts",
+                    "column": 66,
+                    "line": 32
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "1c39409c6e78644cb110-d58e84026656937cd2f5",
+          "file": "m1.spec.ts",
+          "line": 36,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-16T06:09:37.630Z",
+    "duration": 34986.490000000005,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

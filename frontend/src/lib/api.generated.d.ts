@@ -132,12 +132,16 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Listar periodos configurados; lista vacia antes de configuracion
-         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+         * Periods
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
          */
         get: operations["periods"];
         put?: never;
-        post?: never;
+        /**
+         * Period Create
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
+         */
+        post: operations["createPeriod"];
         delete?: never;
         options?: never;
         head?: never;
@@ -152,12 +156,16 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Listar secciones autorizadas del año del periodo
-         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+         * Sections
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
          */
         get: operations["sections"];
         put?: never;
-        post?: never;
+        /**
+         * Section Create
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
+         */
+        post: operations["createSection"];
         delete?: never;
         options?: never;
         head?: never;
@@ -172,12 +180,16 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Listar estudiantes autorizados
-         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+         * Students
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
          */
         get: operations["students"];
         put?: never;
-        post?: never;
+        /**
+         * Student Create
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
+         */
+        post: operations["createStudent"];
         delete?: never;
         options?: never;
         head?: never;
@@ -192,8 +204,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Consultar seguimiento del estudiante
-         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+         * Detail
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
          */
         get: operations["studentDetail"];
         put?: never;
@@ -201,7 +213,11 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Student Patch
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
+         */
+        patch: operations["updateStudent"];
         trace?: never;
     };
     "/students/{id}/timeline": {
@@ -212,8 +228,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Consultar historial
-         * @description Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+         * Timeline
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
          */
         get: operations["studentTimeline"];
         put?: never;
@@ -612,6 +628,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/catalogs/tutors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tutors
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
+         */
+        get: operations["activeTutors"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/periods/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Period Patch
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
+         */
+        patch: operations["updatePeriod"];
+        trace?: never;
+    };
+    "/sections/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Section Patch
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
+         */
+        patch: operations["updateSection"];
+        trace?: never;
+    };
+    "/student-identities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Identities
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
+         */
+        get: operations["studentIdentities"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/enrollments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enrollment Create
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
+         */
+        post: operations["createEnrollment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/enrollments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Enrollment Patch
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
+         */
+        patch: operations["updateEnrollment"];
+        trace?: never;
+    };
+    "/students/{id}/measurements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Measurements
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
+         */
+        get: operations["studentMeasurements"];
+        put?: never;
+        /**
+         * Measurement Create
+         * @description M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia por actor; expected_version/expected_revision en cambios. Sin predicción.
+         */
+        post: operations["createMeasurement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -655,64 +815,142 @@ export interface components {
         Csrf: {
             csrf_token: string;
         };
+        /** Period */
         Period: {
-            /** Format: uuid */
+            /**
+             * Id
+             * Format: uuid
+             */
             id: string;
+            /** Code */
             code: string;
+            /** School Year */
             school_year: number;
-            /** Format: date */
+            /**
+             * Start Date
+             * Format: date
+             */
             start_date: string;
-            /** Format: date */
+            /**
+             * End Date
+             * Format: date
+             */
             end_date: string;
-            /** @enum {string} */
+            /**
+             * Data Origin
+             * @enum {string}
+             */
             data_origin: "REAL" | "SYNTHETIC";
+            /** Is Locked */
             is_locked: boolean;
+            /**
+             * Version
+             * @default 1
+             */
+            version: number;
         };
+        /** Section */
         Section: {
-            /** Format: uuid */
+            /**
+             * Id
+             * Format: uuid
+             */
             id: string;
+            /** Code */
             code: string;
+            /** Grade */
             grade: number;
+            /** School Year */
             school_year: number;
-            /** Format: uuid */
+            /** Tutor Id */
             tutor_id: string | null;
+            /** Data Origin */
+            data_origin?: ("REAL" | "SYNTHETIC") | null;
+            /**
+             * Version
+             * @default 1
+             */
+            version: number;
         };
+        /** Snapshot */
         Snapshot: {
-            /** Format: uuid */
+            /**
+             * Id
+             * Format: uuid
+             */
             id: string;
-            /** Format: uuid */
+            /**
+             * Enrollment Id
+             * Format: uuid
+             */
             enrollment_id: string;
-            /** Format: uuid */
+            /**
+             * Period Id
+             * Format: uuid
+             */
             period_id: string;
-            /** @enum {string} */
+            /**
+             * Data Origin
+             * @enum {string}
+             */
             data_origin: "REAL" | "SYNTHETIC";
-            /** Format: date */
+            /**
+             * Window Start
+             * Format: date
+             */
             window_start: string;
             /**
+             * Cutoff At
              * Format: date-time
-             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
              */
             cutoff_at: string;
             /**
+             * Available At
              * Format: date-time
-             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
              */
             available_at: string;
-            /** Format: date */
-            target_date: string;
+            /** Target Date */
+            target_date: string | null;
+            /** Revision */
             revision: number;
-            /**
-             * Format: uuid
-             * @description Revisión anterior del mismo corte y matrícula; null en la primera.
-             */
+            /** Supersedes Id */
             supersedes_id: string | null;
+            /** Average Grade */
             average_grade: number | null;
+            /** Attendance Pct */
             attendance_pct: number | null;
+            /** Activities Pct */
             activities_pct: number | null;
+            /** Participation Level */
             participation_level: number | null;
+            /** Behavior Incidents */
             behavior_incidents: number | null;
+            /** Age Years */
             age_years: number | null;
+            /** Missing Fraction */
             missing_fraction: number;
+            /**
+             * Entry Channel
+             * @default CSV
+             * @enum {string}
+             */
+            entry_channel: "CSV" | "MANUAL";
+            /**
+             * Purpose
+             * @default PARTIAL
+             * @enum {string}
+             */
+            purpose: "PARTIAL" | "CLOSING_REFERENCE";
+            /** Created By */
+            created_by?: string | null;
+            /** Created At */
+            created_at?: string | null;
+            /** Correction Reason */
+            correction_reason?: string | null;
+            /** Variable Available At */
+            variable_available_at?: {
+                [key: string]: string;
+            };
         };
         /** @description Probabilidades todas null o todas presentes; suma 1 con tolerancia 0.00001. Validar suma en servidor. calibrated true exige valores presentes. */
         Prediction: {
@@ -753,36 +991,80 @@ export interface components {
             probability_medium?: number;
             probability_high?: number;
         }) & unknown);
+        /** Student */
         Student: {
-            /** Format: uuid */
+            /**
+             * Id
+             * Format: uuid
+             */
             id: string;
+            /** Anon Code */
             anon_code: string;
-            /** Format: uuid */
+            /** Full Name */
+            full_name?: string | null;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Version
+             * @default 1
+             */
+            version: number;
+            /**
+             * Enrollment Version
+             * @default 1
+             */
+            enrollment_version: number;
+            /**
+             * Enrollment Id
+             * Format: uuid
+             */
             enrollment_id: string;
-            /** Format: uuid */
+            /**
+             * Period Id
+             * Format: uuid
+             */
             period_id: string;
-            /** Format: uuid */
+            /**
+             * Section Id
+             * Format: uuid
+             */
             section_id: string;
+            /** Section Code */
             section_code: string;
+            /** Grade */
             grade: number;
-            /** @enum {string} */
+            /**
+             * Data Origin
+             * @enum {string}
+             */
             data_origin: "REAL" | "SYNTHETIC";
+            /** Average Grade */
             average_grade: number | null;
+            /** Attendance Pct */
             attendance_pct: number | null;
-            /** Format: date-time */
+            /** Latest Cutoff At */
             latest_cutoff_at: string | null;
-            /** @enum {string|null} */
-            risk_level: "LOW" | "MEDIUM" | "HIGH" | null;
-            /** @enum {string} */
+            /** Risk Level */
+            risk_level: ("LOW" | "MEDIUM" | "HIGH") | null;
+            /**
+             * Evaluation Status
+             * @enum {string}
+             */
             evaluation_status: "EVALUATED" | "NOT_EVALUATED" | "INSUFFICIENT_DATA";
-            /** Format: uuid */
+            /** Active Alert Id */
             active_alert_id: string | null;
         };
+        /** StudentDetail */
         StudentDetail: {
             student: components["schemas"]["Student"];
             latest_snapshot: components["schemas"]["Snapshot"] | null;
             latest_prediction: components["schemas"]["Prediction"] | null;
+            /** Alerts */
             alerts: components["schemas"]["Alert"][];
+            /** Interventions */
             interventions: components["schemas"]["Intervention"][];
         };
         TimelineEvent: {
@@ -908,10 +1190,15 @@ export interface components {
              */
             updated_at: string;
         };
+        /** StudentPage */
         StudentPage: {
+            /** Items */
             items: components["schemas"]["Student"][];
+            /** Total */
             total: number;
+            /** Page */
             page: number;
+            /** Page Size */
             page_size: number;
         };
         TimelineEventPage: {
@@ -1913,6 +2200,313 @@ export interface components {
              */
             intervention_performed: false;
         };
+        /** EnrollmentCreate */
+        EnrollmentCreate: {
+            /**
+             * Creation Key
+             * Format: uuid
+             */
+            creation_key: string;
+            /**
+             * Student Id
+             * Format: uuid
+             */
+            student_id: string;
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /**
+             * Section Id
+             * Format: uuid
+             */
+            section_id: string;
+        };
+        /** EnrollmentPatch */
+        EnrollmentPatch: {
+            /**
+             * Creation Key
+             * Format: uuid
+             */
+            creation_key: string;
+            /**
+             * Section Id
+             * Format: uuid
+             */
+            section_id: string;
+            /** Expected Version */
+            expected_version: number;
+        };
+        /** EnrollmentView */
+        EnrollmentView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Student Id
+             * Format: uuid
+             */
+            student_id: string;
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /**
+             * Section Id
+             * Format: uuid
+             */
+            section_id: string;
+            /**
+             * Data Origin
+             * @enum {string}
+             */
+            data_origin: "REAL" | "SYNTHETIC";
+            /** Version */
+            version: number;
+        };
+        /** Identity */
+        Identity: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Anon Code */
+            anon_code: string;
+            /** Full Name */
+            full_name: string | null;
+            /**
+             * Data Origin
+             * @enum {string}
+             */
+            data_origin: "REAL" | "SYNTHETIC";
+            /** Is Active */
+            is_active: boolean;
+            /** Version */
+            version: number;
+        };
+        /** ImportErrorItem */
+        ImportErrorItem: {
+            /** Row */
+            row: number;
+            /** Column */
+            column: string;
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+        };
+        /** MeasurementCreate */
+        MeasurementCreate: {
+            /**
+             * Creation Key
+             * Format: uuid
+             */
+            creation_key: string;
+            /**
+             * Window Start
+             * Format: date
+             */
+            window_start: string;
+            /**
+             * Cutoff At
+             * Format: date-time
+             */
+            cutoff_at: string;
+            /**
+             * Available At
+             * Format: date-time
+             */
+            available_at: string;
+            /**
+             * Purpose
+             * @enum {string}
+             */
+            purpose: "PARTIAL" | "CLOSING_REFERENCE";
+            /** Average Grade */
+            average_grade?: (number) | null;
+            /** Attendance Pct */
+            attendance_pct?: (number) | null;
+            /** Activities Pct */
+            activities_pct?: (number) | null;
+            /** Participation Level */
+            participation_level?: number | null;
+            /** Behavior Incidents */
+            behavior_incidents?: number | null;
+            /** Variable Available At */
+            variable_available_at?: {
+                [key: string]: string;
+            };
+            /** Supersedes Id */
+            supersedes_id?: string | null;
+            /** Expected Revision */
+            expected_revision?: number | null;
+            /** Correction Reason */
+            correction_reason?: string | null;
+        };
+        /** MeasurementPage */
+        MeasurementPage: {
+            /** Items */
+            items: components["schemas"]["Snapshot"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** PeriodCreate */
+        PeriodCreate: {
+            /**
+             * Creation Key
+             * Format: uuid
+             */
+            creation_key: string;
+            /** Code */
+            code: string;
+            /** School Year */
+            school_year: number;
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+            /**
+             * End Date
+             * Format: date
+             */
+            end_date: string;
+            /**
+             * Data Origin
+             * @enum {string}
+             */
+            data_origin: "REAL" | "SYNTHETIC";
+        };
+        /** PeriodPatch */
+        PeriodPatch: {
+            /**
+             * Creation Key
+             * Format: uuid
+             */
+            creation_key: string;
+            /** Code */
+            code: string;
+            /** School Year */
+            school_year: number;
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+            /**
+             * End Date
+             * Format: date
+             */
+            end_date: string;
+            /**
+             * Data Origin
+             * @enum {string}
+             */
+            data_origin: "REAL" | "SYNTHETIC";
+            /** Expected Version */
+            expected_version: number;
+            /** Is Locked */
+            is_locked: boolean;
+        };
+        /** SectionCreate */
+        SectionCreate: {
+            /**
+             * Creation Key
+             * Format: uuid
+             */
+            creation_key: string;
+            /** Code */
+            code: string;
+            /** Grade */
+            grade: number;
+            /** School Year */
+            school_year: number;
+            /**
+             * Tutor Id
+             * Format: uuid
+             */
+            tutor_id: string;
+            /**
+             * Data Origin
+             * @enum {string}
+             */
+            data_origin: "REAL" | "SYNTHETIC";
+        };
+        /** SectionPatch */
+        SectionPatch: {
+            /**
+             * Creation Key
+             * Format: uuid
+             */
+            creation_key: string;
+            /** Code */
+            code: string;
+            /** Grade */
+            grade: number;
+            /** School Year */
+            school_year: number;
+            /**
+             * Tutor Id
+             * Format: uuid
+             */
+            tutor_id: string;
+            /**
+             * Data Origin
+             * @enum {string}
+             */
+            data_origin: "REAL" | "SYNTHETIC";
+            /** Expected Version */
+            expected_version: number;
+        };
+        /** StudentCreate */
+        StudentCreate: {
+            /**
+             * Creation Key
+             * Format: uuid
+             */
+            creation_key: string;
+            /** Anon Code */
+            anon_code: string;
+            /** Full Name */
+            full_name: string;
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /**
+             * Section Id
+             * Format: uuid
+             */
+            section_id: string;
+        };
+        /** StudentPatch */
+        StudentPatch: {
+            /**
+             * Creation Key
+             * Format: uuid
+             */
+            creation_key: string;
+            /** Expected Version */
+            expected_version: number;
+            /** Full Name */
+            full_name: string;
+            /** Is Active */
+            is_active: boolean;
+            /** Confirmed */
+            confirmed: boolean;
+            /** Reason */
+            reason: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -2319,7 +2913,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Operación completada */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2328,7 +2922,7 @@ export interface operations {
                     "application/json": components["schemas"]["Period"][];
                 };
             };
-            /** @description Sesión inválida */
+            /** @description Sesión requerida */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -2337,7 +2931,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Rol, alcance o CSRF no permitido */
+            /** @description Rol, CSRF u Origin no autorizado */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -2346,7 +2940,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Recurso no encontrado */
+            /** @description Recurso ajeno o inexistente */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -2355,7 +2949,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
+            /** @description Duplicado, versión, cierre o integridad */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -2364,7 +2958,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
+            /** @description Campos, escalas, origen o fechas inválidos */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2373,8 +2967,8 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
+            /** @description Servicio no disponible */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2382,7 +2976,78 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+        };
+    };
+    createPeriod: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PeriodCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Period"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Duplicado, versión, cierre o integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -2404,7 +3069,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Operación completada */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2413,7 +3078,7 @@ export interface operations {
                     "application/json": components["schemas"]["Section"][];
                 };
             };
-            /** @description Sesión inválida */
+            /** @description Sesión requerida */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -2422,7 +3087,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Rol, alcance o CSRF no permitido */
+            /** @description Rol, CSRF u Origin no autorizado */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -2431,7 +3096,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Recurso no encontrado */
+            /** @description Recurso ajeno o inexistente */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -2440,7 +3105,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
+            /** @description Duplicado, versión, cierre o integridad */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -2449,7 +3114,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
+            /** @description Campos, escalas, origen o fechas inválidos */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2458,8 +3123,8 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
+            /** @description Servicio no disponible */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2467,7 +3132,78 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+        };
+    };
+    createSection: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SectionCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Section"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Duplicado, versión, cierre o integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -2482,11 +3218,11 @@ export interface operations {
         parameters: {
             query: {
                 period_id: string;
-                section_id?: string;
+                section_id?: string | null;
                 page?: number;
                 page_size?: number;
-                search?: string;
-                risk_level?: "LOW" | "MEDIUM" | "HIGH";
+                search?: string | null;
+                risk_level?: ("LOW" | "MEDIUM" | "HIGH") | null;
                 sort?: "anon_code" | "risk_desc" | "updated_desc";
             };
             header?: never;
@@ -2495,7 +3231,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Operación completada */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2504,7 +3240,7 @@ export interface operations {
                     "application/json": components["schemas"]["StudentPage"];
                 };
             };
-            /** @description Sesión inválida */
+            /** @description Sesión requerida */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -2513,7 +3249,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Rol, alcance o CSRF no permitido */
+            /** @description Rol, CSRF u Origin no autorizado */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -2522,7 +3258,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Recurso no encontrado */
+            /** @description Recurso ajeno o inexistente */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -2531,7 +3267,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
+            /** @description Duplicado, versión, cierre o integridad */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -2540,7 +3276,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
+            /** @description Campos, escalas, origen o fechas inválidos */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2549,8 +3285,8 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
+            /** @description Servicio no disponible */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2558,7 +3294,78 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+        };
+    };
+    createStudent: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StudentCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Identity"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Duplicado, versión, cierre o integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -2582,7 +3389,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Operación completada */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2591,7 +3398,7 @@ export interface operations {
                     "application/json": components["schemas"]["StudentDetail"];
                 };
             };
-            /** @description Sesión inválida */
+            /** @description Sesión requerida */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -2600,7 +3407,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Rol, alcance o CSRF no permitido */
+            /** @description Rol, CSRF u Origin no autorizado */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -2609,7 +3416,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Recurso no encontrado */
+            /** @description Recurso ajeno o inexistente */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -2618,7 +3425,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
+            /** @description Duplicado, versión, cierre o integridad */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -2627,7 +3434,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
+            /** @description Campos, escalas, origen o fechas inválidos */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2636,8 +3443,8 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
+            /** @description Servicio no disponible */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2645,7 +3452,80 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+        };
+    };
+    updateStudent: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StudentPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Identity"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Duplicado, versión, cierre o integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -2671,7 +3551,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Operación completada */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2680,7 +3560,7 @@ export interface operations {
                     "application/json": components["schemas"]["TimelineEventPage"];
                 };
             };
-            /** @description Sesión inválida */
+            /** @description Sesión requerida */
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -2689,7 +3569,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Rol, alcance o CSRF no permitido */
+            /** @description Rol, CSRF u Origin no autorizado */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -2698,7 +3578,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Recurso no encontrado */
+            /** @description Recurso ajeno o inexistente */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -2707,7 +3587,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Conflicto de versión, periodo bloqueado o modelo no disponible */
+            /** @description Duplicado, versión, cierre o integridad */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -2716,7 +3596,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras de importacion; sin escrituras escolares. */
+            /** @description Campos, escalas, origen o fechas inválidos */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2725,16 +3605,7 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
-            /** @description Error interno inesperado sanitizado; no se exponen detalles de base. */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503. */
+            /** @description Servicio no disponible */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -4571,6 +5442,646 @@ export interface operations {
                 };
             };
             /** @description Almacenamiento o base no disponibles */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    activeTutors: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"][];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Duplicado, versión, cierre o integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    updatePeriod: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PeriodPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Period"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Duplicado, versión, cierre o integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    updateSection: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SectionPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Section"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Duplicado, versión, cierre o integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    studentIdentities: {
+        parameters: {
+            query: {
+                search: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Identity"][];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Duplicado, versión, cierre o integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    createEnrollment: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnrollmentCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnrollmentView"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Duplicado, versión, cierre o integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    updateEnrollment: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnrollmentPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnrollmentView"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Duplicado, versión, cierre o integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    studentMeasurements: {
+        parameters: {
+            query: {
+                period_id: string;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeasurementPage"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Duplicado, versión, cierre o integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    createMeasurement: {
+        parameters: {
+            query: {
+                period_id: string;
+            };
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MeasurementCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Snapshot"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Recurso ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Duplicado, versión, cierre o integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
             503: {
                 headers: {
                     [name: string]: unknown;

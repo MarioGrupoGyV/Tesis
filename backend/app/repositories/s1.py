@@ -50,10 +50,10 @@ def sections_for_period(db,period,tutor_id=None):
     match='AND st.period_id=:period' if period.data_origin=='SYNTHETIC' else ''
     tutor='AND g.tutor_id=:tutor' if tutor_id else ''
     sql=f'''SELECT g.* FROM risk_school.grade_sections g WHERE g.school_year=:year {tutor}
-        AND {comparison}(SELECT 1 FROM risk_school.synthetic_studies st,
+        AND (g.data_origin=:origin OR (g.data_origin IS NULL AND {comparison}(SELECT 1 FROM risk_school.synthetic_studies st,
             jsonb_array_elements(st.manifest->'context'->'sections') section
             WHERE (st.config->>'school_year')::integer=g.school_year {match}
-              AND section->>'code'=g.code AND (section->>'grade')::integer=g.grade)
+              AND section->>'code'=g.code AND (section->>'grade')::integer=g.grade)))
         ORDER BY g.grade,g.code,g.id'''
     return list(db.scalars(select(GradeSection).from_statement(text(sql)),
-        {'year':period.school_year,'period':period.id,'tutor':tutor_id}))
+        {'year':period.school_year,'period':period.id,'tutor':tutor_id,'origin':period.data_origin}))

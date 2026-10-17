@@ -1,10 +1,9 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.6.0
-  description: S6 integrado para simulación SYNTHETIC; procesamiento institucional operativo bloqueado. Evaluación
-    retrospectiva separada ADMIN de paquete local previamente registrado/autorizado. No reentrena, activa,
-    envía notificaciones ni crea intervenciones.
+  version: 0.7.0
+  description: S6 conservado. M1 registro académico manual REAL/SYNTHETIC local. Inferencia e importación REAL
+    bloqueadas; sin integración predictiva de mediciones manuales.
 servers:
 - url: /api/v1
   description: Preferir proxy de mismo origen para cookies y CSRF
@@ -21,6 +20,7 @@ tags:
 - name: followup
 - name: reports
 - name: retrospective
+- name: manual
 paths:
   /health/live:
     get:
@@ -333,380 +333,696 @@ paths:
         description: Token CSRF ligado a la sesión; validarlo en servidor.
   /periods:
     get:
-      operationId: periods
-      summary: Listar periodos configurados; lista vacia antes de configuracion
       tags:
       - catalogs
-      x-stage: S2.1
-      x-roles: &id001
-      - ADMIN
-      - TUTOR
-      - DIRECTOR
-      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+      summary: Periods
+      operationId: periods
       responses:
         '200':
-          description: Operación completada
+          description: Successful Response
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Period'
+                title: Response Periods
         '401':
-          description: Sesión inválida
+          description: Sesión requerida
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Rol, alcance o CSRF no permitido
+          description: Rol, CSRF u Origin no autorizado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Recurso no encontrado
+          description: Recurso ajeno o inexistente
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Conflicto de versión, periodo bloqueado o modelo no disponible
+          description: Duplicado, versión, cierre o integridad
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
-            de importacion; sin escrituras escolares.
+          description: Campos, escalas, origen o fechas inválidos
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '503':
-          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
+          description: Servicio no disponible
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '500':
-          description: Error interno inesperado sanitizado; no se exponen detalles de base.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /sections:
-    get:
-      operationId: sections
-      summary: Listar secciones autorizadas del año del periodo
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+    post:
       tags:
-      - catalogs
-      x-stage: S2.1
-      x-roles: *id001
-      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+      - manual
+      summary: Period Create
+      operationId: createPeriod
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeriodCreate'
       responses:
         '200':
-          description: Operación completada
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Period'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+  /sections:
+    get:
+      tags:
+      - catalogs
+      summary: Sections
+      operationId: sections
+      parameters:
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
+      responses:
+        '200':
+          description: Successful Response
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Section'
+                title: Response Sections
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '401':
-          description: Sesión inválida
+          description: Sesión requerida
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Rol, alcance o CSRF no permitido
+          description: Rol, CSRF u Origin no autorizado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Recurso no encontrado
+          description: Recurso ajeno o inexistente
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Conflicto de versión, periodo bloqueado o modelo no disponible
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
-            de importacion; sin escrituras escolares.
+          description: Duplicado, versión, cierre o integridad
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '503':
-          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
+          description: Servicio no disponible
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '500':
-          description: Error interno inesperado sanitizado; no se exponen detalles de base.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      parameters:
-      - &id002
-        name: period_id
-        in: query
-        required: true
-        schema: &id003
-          type: string
-          format: uuid
-  /students:
-    get:
-      operationId: students
-      summary: Listar estudiantes autorizados
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+    post:
       tags:
-      - students
-      x-stage: S2.1
-      x-roles: *id001
-      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+      - manual
+      summary: Section Create
+      operationId: createSection
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SectionCreate'
       responses:
         '200':
-          description: Operación completada
+          description: Successful Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StudentPage'
+                $ref: '#/components/schemas/Section'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '401':
-          description: Sesión inválida
+          description: Sesión requerida
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Rol, alcance o CSRF no permitido
+          description: Rol, CSRF u Origin no autorizado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Recurso no encontrado
+          description: Recurso ajeno o inexistente
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Conflicto de versión, periodo bloqueado o modelo no disponible
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
-            de importacion; sin escrituras escolares.
+          description: Duplicado, versión, cierre o integridad
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '503':
-          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
+          description: Servicio no disponible
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '500':
-          description: Error interno inesperado sanitizado; no se exponen detalles de base.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+  /students:
+    get:
+      tags:
+      - students
+      summary: Students
+      operationId: students
       parameters:
-      - *id002
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
       - name: section_id
         in: query
         required: false
-        schema: *id003
-      - &id004
-        name: page
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Section Id
+      - name: page
         in: query
         required: false
         schema:
           type: integer
           minimum: 1
           default: 1
-      - &id005
-        name: page_size
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Page Size
+      - name: search
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            maxLength: 160
+          - type: 'null'
+          title: Search
+      - name: risk_level
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+            type: string
+          - type: 'null'
+          title: Risk Level
+      - name: sort
+        in: query
+        required: false
+        schema:
+          enum:
+          - anon_code
+          - risk_desc
+          - updated_desc
+          type: string
+          default: anon_code
+          title: Sort
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentPage'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+    post:
+      tags:
+      - manual
+      summary: Student Create
+      operationId: createStudent
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Identity'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+  /students/{id}:
+    get:
+      tags:
+      - students
+      summary: Detail
+      operationId: studentDetail
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentDetail'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+    patch:
+      tags:
+      - manual
+      summary: Student Patch
+      operationId: updateStudent
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentPatch'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Identity'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+  /students/{id}/timeline:
+    get:
+      tags:
+      - students
+      summary: Timeline
+      operationId: studentTimeline
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
+      - name: page
         in: query
         required: false
         schema:
           type: integer
           minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
           maximum: 100
+          minimum: 1
           default: 20
-      - name: search
-        in: query
-        required: false
-        schema:
-          type: string
-          maxLength: 40
-      - name: risk_level
-        in: query
-        required: false
-        schema: &id031
-          type: string
-          enum:
-          - LOW
-          - MEDIUM
-          - HIGH
-      - name: sort
-        in: query
-        required: false
-        schema:
-          type: string
-          enum:
-          - anon_code
-          - risk_desc
-          - updated_desc
-  /students/{id}:
-    get:
-      operationId: studentDetail
-      summary: Consultar seguimiento del estudiante
-      tags:
-      - students
-      x-stage: S2.1
-      x-roles: *id001
-      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
+          title: Page Size
       responses:
         '200':
-          description: Operación completada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StudentDetail'
-        '401':
-          description: Sesión inválida
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: Rol, alcance o CSRF no permitido
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Recurso no encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: Conflicto de versión, periodo bloqueado o modelo no disponible
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
-            de importacion; sin escrituras escolares.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error interno inesperado sanitizado; no se exponen detalles de base.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema: *id003
-      - *id002
-  /students/{id}/timeline:
-    get:
-      operationId: studentTimeline
-      summary: Consultar historial
-      tags:
-      - students
-      x-stage: S2.1
-      x-roles: *id001
-      description: Autorizacion en servidor por rol y seccion. Origen institucional; no habilita procesamiento.
-      responses:
-        '200':
-          description: Operación completada
+          description: Successful Response
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TimelineEventPage'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '401':
-          description: Sesión inválida
+          description: Sesión requerida
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Rol, alcance o CSRF no permitido
+          description: Rol, CSRF u Origin no autorizado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Recurso no encontrado
+          description: Recurso ajeno o inexistente
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Conflicto de versión, periodo bloqueado o modelo no disponible
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: Entrada invalida, origen no admitido o INSTITUTIONAL_PROCESSING_NOT_READY en escrituras
-            de importacion; sin escrituras escolares.
+          description: Duplicado, versión, cierre o integridad
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '503':
-          description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
-            ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
+          description: Servicio no disponible
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '500':
-          description: Error interno inesperado sanitizado; no se exponen detalles de base.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema: *id003
-      - *id002
-      - *id004
-      - *id005
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
   /imports/preview:
     post:
       operationId: previewImport
@@ -722,7 +1038,7 @@ paths:
         Conserva parser, límites, expected_preview_version, stale 409, transacción, revisiones e idempotencia.
         Confirmación vincula etiquetas/resultados privados a cortes verificados sin exponerlos.'
       responses:
-        '201': &id006
+        '201': &id001
           description: Operación completada
           content:
             application/json:
@@ -759,7 +1075,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '200': *id006
+        '200': *id001
         '503':
           description: Servicio de base de datos no disponible. Error sanitizado; sin consultas, parametros
             ni secretos. Los conflictos de integridad se devuelven como errores de dominio 409/422, nunca 503.
@@ -790,7 +1106,9 @@ paths:
                 file:
                   type: string
                   format: binary
-                period_id: *id003
+                period_id: &id002
+                  type: string
+                  format: uuid
               required:
               - file
               - period_id
@@ -860,7 +1178,7 @@ paths:
       - name: id
         in: path
         required: true
-        schema: *id003
+        schema: *id002
   /imports/{id}/commit:
     post:
       operationId: commitImport
@@ -930,7 +1248,7 @@ paths:
       - name: id
         in: path
         required: true
-        schema: *id003
+        schema: *id002
       - name: X-CSRF-Token
         in: header
         required: true
@@ -984,45 +1302,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ModelPage'
-        '401': &id007
+        '401': &id003
           description: 'SESSION_INVALID: sesión requerida o revocada.'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '403': &id008
+        '403': &id004
           description: FORBIDDEN o CSRF_INVALID; permisos comprobados en servidor.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '404': &id009
+        '404': &id005
           description: Recurso inexistente o no accesible en la sección; no revela casos ajenos.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '409': &id010
+        '409': &id006
           description: PERIOD_LOCKED, MODEL_NOT_AVAILABLE, MODEL_INCOMPATIBLE, PREDICTION_CONFLICT o INTEGRITY_CONFLICT.
             Reutilización snapshot/model devuelve resultado existente, no error.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '422': &id011
+        '422': &id007
           description: Validación, NOT_ELIGIBLE o INSTITUTIONAL_PROCESSING_NOT_READY; sin escrituras académicas.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503': &id012
+        '503': &id008
           description: 'Base no disponible: Error sanitizado, sin consultas, parámetros ni secretos; nunca
             para integridad.'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '500': &id013
+        '500': &id009
           description: Error interno inesperado sanitizado.
           content:
             application/json:
@@ -1039,7 +1357,7 @@ paths:
       - ADMIN
       description: Metadatos públicos sanitizados. No activa ni descarga modelos.
       parameters:
-      - &id014
+      - &id010
         name: id
         in: path
         required: true
@@ -1053,13 +1371,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Model'
-        '401': *id007
-        '403': *id008
-        '404': *id009
-        '409': *id010
-        '422': *id011
-        '503': *id012
-        '500': *id013
+        '401': *id003
+        '403': *id004
+        '404': *id005
+        '409': *id006
+        '422': *id007
+        '503': *id008
+        '500': *id009
   /predictions/{id}:
     get:
       operationId: predictionDetail
@@ -1074,7 +1392,7 @@ paths:
       description: TUTOR solo su sección. Inexistente o ajena devuelve 404. No sustituye riesgo faltante por
         LOW.
       parameters:
-      - *id014
+      - *id010
       responses:
         '200':
           description: Resultado de la operación implementada; ejecución institucional bloqueada en S3.
@@ -1082,13 +1400,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Prediction'
-        '401': *id007
-        '403': *id008
-        '404': *id009
-        '409': *id010
-        '422': *id011
-        '503': *id012
-        '500': *id013
+        '401': *id003
+        '403': *id004
+        '404': *id005
+        '409': *id006
+        '422': *id007
+        '503': *id008
+        '500': *id009
   /predictions/run:
     post:
       operationId: runPredictions
@@ -1120,13 +1438,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PredictionRunResult'
-        '401': *id007
-        '403': *id008
-        '404': *id009
-        '409': *id010
-        '422': *id011
-        '503': *id012
-        '500': *id013
+        '401': *id003
+        '403': *id004
+        '404': *id005
+        '409': *id006
+        '422': *id007
+        '503': *id008
+        '500': *id009
       requestBody:
         required: true
         content:
@@ -1257,7 +1575,7 @@ paths:
       tags:
       - followup
       x-stage: S5
-      x-roles: &id016
+      x-roles: &id012
       - ADMIN
       - TUTOR
       - DIRECTOR
@@ -1265,19 +1583,19 @@ paths:
         Orden estable con UUID desempate. Estado/severidad pertenecen al caso; riesgo actual puede ser null
         o LOW y nunca cierra el caso automáticamente.
       parameters:
-      - &id019
+      - &id015
         name: period_id
         in: query
         required: true
-        schema: &id015
+        schema: &id011
           type: string
           format: uuid
-      - &id020
+      - &id016
         name: section_id
         in: query
         required: false
-        schema: *id015
-      - &id021
+        schema: *id011
+      - &id017
         name: search
         in: query
         required: false
@@ -1312,7 +1630,7 @@ paths:
           - severity_desc
           - updated_desc
           default: updated_desc
-      - &id022
+      - &id018
         name: page
         in: query
         required: false
@@ -1321,7 +1639,7 @@ paths:
           minimum: 1
           maximum: 10000
           default: 1
-      - &id023
+      - &id019
         name: page_size
         in: query
         required: false
@@ -1388,16 +1706,16 @@ paths:
       tags:
       - followup
       x-stage: S5
-      x-roles: *id016
+      x-roles: *id012
       description: 'Consultar caso con fuente, evaluación actual, actividades, capacidades y últimos 100 eventos
         auditados. Fuente antigua no se atribuye al último corte. Tutor público por nombre o null. Ajeno/inexistente:
         mismo404.'
       parameters:
-      - &id017
+      - &id013
         name: id
         in: path
         required: true
-        schema: *id015
+        schema: *id011
       responses:
         '200':
           description: Resultado público actual del estudio sintético
@@ -1454,14 +1772,14 @@ paths:
       tags:
       - followup
       x-stage: S5
-      x-roles: &id018
+      x-roles: &id014
       - ADMIN
       - TUTOR
       description: Cambiar estado de caso con expected_version entero estricto. OPEN permite IN_REVIEW/RESOLVED/DISMISSED;
         IN_REVIEW permite cierre; cerrado terminal. Cierre exige motivo no vacío, closed_at servidor. No completa/cancela
         actividades. Cambio efectivo y auditoría atómicos, una versión; no-op no incrementa.
       parameters:
-      - *id017
+      - *id013
       - name: X-CSRF-Token
         in: header
         required: true
@@ -1531,7 +1849,7 @@ paths:
       tags:
       - followup
       x-stage: S5
-      x-roles: *id018
+      x-roles: *id014
       description: Planificar actividad de simulación en caso activo autorizado. expected_alert_version estricto,
         creation_key UUID y payload original canonicalizado incluyendo versión. Mismo actor/clave/payload reutiliza
         aun si la actividad luego cambió; otra carga409. Deriva matrícula/origen/actor; PLANNED y performed_at
@@ -1612,13 +1930,13 @@ paths:
       tags:
       - followup
       x-stage: S5
-      x-roles: *id018
+      x-roles: *id014
       description: Editar actividad PLANNED con expected_version estricto. DONE exige performed_at con zona
         no futuro del servidor; CANCELLED conserva null. DONE/CANCELLED terminales. Puede completar/cancelar
         una actividad previamente planificada después del cierre del caso; no permite nuevas allí. Digest original
         no cambia. Cambio/auditoría atómicos.
       parameters:
-      - *id017
+      - *id013
       - name: X-CSRF-Token
         in: header
         required: true
@@ -1688,17 +2006,17 @@ paths:
       tags:
       - reports
       x-stage: S5
-      x-roles: *id016
+      x-roles: *id012
       description: Resumen ACTUAL del conjunto filtrado autorizado, unidad matrícula. Total=evaluated+not_evaluated+insufficient_data;
         evaluated=LOW+MEDIUM+HIGH. Porcentajes de riesgo sobre evaluados con denominador y null si cero. Casos/actividades
         agregados antes de unir; DONE única actividad realizada. generated_at servidor y rango de últimos cortes.
         items paginados; agregados cubren conjunto completo. Lectura consistente, sin eficacia ni métricas
         ML.
       parameters:
-      - *id019
-      - *id020
-      - *id021
-      - &id024
+      - *id015
+      - *id016
+      - *id017
+      - &id020
         name: risk_level
         in: query
         required: false
@@ -1708,7 +2026,7 @@ paths:
           - LOW
           - MEDIUM
           - HIGH
-      - &id025
+      - &id021
         name: evaluation_status
         in: query
         required: false
@@ -1718,7 +2036,7 @@ paths:
           - EVALUATED
           - NOT_EVALUATED
           - INSUFFICIENT_DATA
-      - &id026
+      - &id022
         name: alert_status
         in: query
         required: false
@@ -1729,8 +2047,8 @@ paths:
           - IN_REVIEW
           - RESOLVED
           - DISMISSED
-      - *id022
-      - *id023
+      - *id018
+      - *id019
       responses:
         '200':
           description: Resultado público actual del estudio sintético
@@ -1788,18 +2106,18 @@ paths:
       tags:
       - reports
       x-stage: S5
-      x-roles: *id016
+      x-roles: *id012
       description: Solicitar CSV completo del mismo conjunto actual y filtros de resumen. Orden código/UUID,
         una matrícula por fila. Alcance/origen/periodo/generated_at públicos; no notas, narraciones, etiquetas,
         métricas privadas. Attachment/no-store; errores JSON Error. Audita solicitud/actor/filtros/alcance/instante/conteo,
         no apertura/guardado del archivo.
       parameters:
-      - *id019
+      - *id015
+      - *id016
+      - *id017
       - *id020
       - *id021
-      - *id024
-      - *id025
-      - *id026
+      - *id022
       responses:
         '200':
           description: UTF-8 con BOM; una fila por matrícula del conjunto filtrado completo, null celda vacía.
@@ -2017,7 +2335,7 @@ paths:
       x-roles:
       - ADMIN
       parameters:
-      - &id027
+      - &id023
         name: id
         in: path
         required: true
@@ -2084,7 +2402,7 @@ paths:
       x-roles:
       - ADMIN
       parameters:
-      - *id027
+      - *id023
       responses:
         '200':
           description: CSV UTF-8 con BOM, 60 filas numeradas sin códigos/nombres. Fecha real, riesgo, referencia
@@ -2208,6 +2526,599 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RetrospectivePartialInput'
+  /catalogs/tutors:
+    get:
+      tags:
+      - manual
+      summary: Tutors
+      operationId: activeTutors
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/User'
+                type: array
+                title: Response Activetutors
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+  /periods/{id}:
+    patch:
+      tags:
+      - manual
+      summary: Period Patch
+      operationId: updatePeriod
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeriodPatch'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Period'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+  /sections/{id}:
+    patch:
+      tags:
+      - manual
+      summary: Section Patch
+      operationId: updateSection
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SectionPatch'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Section'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+  /student-identities:
+    get:
+      tags:
+      - manual
+      summary: Identities
+      operationId: studentIdentities
+      parameters:
+      - name: search
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 2
+          maxLength: 160
+          title: Search
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Identity'
+                title: Response Studentidentities
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+  /enrollments:
+    post:
+      tags:
+      - manual
+      summary: Enrollment Create
+      operationId: createEnrollment
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrollmentCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollmentView'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+  /enrollments/{id}:
+    patch:
+      tags:
+      - manual
+      summary: Enrollment Patch
+      operationId: updateEnrollment
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrollmentPatch'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollmentView'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+  /students/{id}/measurements:
+    get:
+      tags:
+      - manual
+      summary: Measurements
+      operationId: studentMeasurements
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 10000
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 10
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeasurementPage'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
+    post:
+      tags:
+      - manual
+      summary: Measurement Create
+      operationId: createMeasurement
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeasurementCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Snapshot'
+        '422':
+          description: Campos, escalas, origen o fechas inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Recurso ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Duplicado, versión, cierre o integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: M1
+      x-roles:
+      - ADMIN
+      - TUTOR
+      security:
+      - sessionCookie: []
+      description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
+        por actor; expected_version/expected_revision en cambios. Sin predicción.'
 components:
   securitySchemes:
     sessionCookie:
@@ -2240,7 +3151,9 @@ components:
             required:
             - message
             additionalProperties: false
-        request_id: *id003
+        request_id: &id024
+          type: string
+          format: uuid
       required:
       - code
       - message
@@ -2261,7 +3174,7 @@ components:
     User:
       type: object
       properties:
-        id: *id003
+        id: *id024
         display_name:
           type: string
         role:
@@ -2297,7 +3210,7 @@ components:
           $ref: '#/components/schemas/User'
         csrf_token:
           type: string
-        expires_at: &id030
+        expires_at: &id025
           type: string
           format: date-time
           description: RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
@@ -2315,120 +3228,216 @@ components:
       - csrf_token
       additionalProperties: false
     Period:
-      type: object
       properties:
-        id: *id003
+        id:
+          type: string
+          format: uuid
+          title: Id
         code:
           type: string
+          title: Code
         school_year:
           type: integer
-          minimum: 2000
-          maximum: 2100
-        start_date: &id028
+          maximum: 2100.0
+          minimum: 2000.0
+          title: School Year
+        start_date:
           type: string
           format: date
-        end_date: *id028
-        data_origin: &id029
+          title: Start Date
+        end_date:
+          type: string
+          format: date
+          title: End Date
+        data_origin:
           type: string
           enum:
           - REAL
           - SYNTHETIC
+          title: Data Origin
         is_locked:
           type: boolean
+          title: Is Locked
+        version:
+          type: integer
+          title: Version
+          default: 1
+      additionalProperties: false
+      type: object
       required:
       - id
       - code
+      - school_year
       - start_date
       - end_date
       - data_origin
       - is_locked
-      - school_year
-      additionalProperties: false
+      title: Period
     Section:
-      type: object
       properties:
-        id: *id003
+        id:
+          type: string
+          format: uuid
+          title: Id
         code:
           type: string
+          title: Code
         grade:
           type: integer
-          minimum: 1
-          maximum: 5
+          maximum: 5.0
+          minimum: 1.0
+          title: Grade
         school_year:
           type: integer
-          minimum: 2000
-          maximum: 2100
+          maximum: 2100.0
+          minimum: 2000.0
+          title: School Year
         tutor_id:
-          type:
-          - string
-          - 'null'
-          format: uuid
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Tutor Id
+        data_origin:
+          anyOf:
+          - type: string
+            enum:
+            - REAL
+            - SYNTHETIC
+          - type: 'null'
+          title: Data Origin
+        version:
+          type: integer
+          title: Version
+          default: 1
+      additionalProperties: false
+      type: object
       required:
       - id
       - code
       - grade
       - school_year
       - tutor_id
-      additionalProperties: false
+      title: Section
     Snapshot:
-      type: object
       properties:
-        id: *id003
-        enrollment_id: *id003
-        period_id: *id003
-        data_origin: *id029
-        window_start: *id028
-        cutoff_at: *id030
-        available_at: *id030
-        target_date: *id028
+        id:
+          type: string
+          format: uuid
+          title: Id
+        enrollment_id:
+          type: string
+          format: uuid
+          title: Enrollment Id
+        period_id:
+          type: string
+          format: uuid
+          title: Period Id
+        data_origin:
+          type: string
+          enum:
+          - REAL
+          - SYNTHETIC
+          title: Data Origin
+        window_start:
+          type: string
+          format: date
+          title: Window Start
+        cutoff_at:
+          type: string
+          format: date-time
+          title: Cutoff At
+        available_at:
+          type: string
+          format: date-time
+          title: Available At
+        target_date:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Target Date
         revision:
           type: integer
-          minimum: 1
+          title: Revision
         supersedes_id:
-          type:
-          - string
-          - 'null'
-          format: uuid
-          description: Revisión anterior del mismo corte y matrícula; null en la primera.
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Supersedes Id
         average_grade:
-          type:
-          - number
-          - 'null'
-          minimum: 0
-          maximum: 20
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Average Grade
         attendance_pct:
-          type:
-          - number
-          - 'null'
-          minimum: 0
-          maximum: 100
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Attendance Pct
         activities_pct:
-          type:
-          - number
-          - 'null'
-          minimum: 0
-          maximum: 100
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Activities Pct
         participation_level:
-          type:
-          - integer
-          - 'null'
-          minimum: 1
-          maximum: 3
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Participation Level
         behavior_incidents:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Behavior Incidents
         age_years:
-          type:
-          - integer
-          - 'null'
-          minimum: 5
-          maximum: 25
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Age Years
         missing_fraction:
           type: number
-          minimum: 0
-          maximum: 1
+          title: Missing Fraction
+        entry_channel:
+          type: string
+          enum:
+          - CSV
+          - MANUAL
+          title: Entry Channel
+          default: CSV
+        purpose:
+          type: string
+          enum:
+          - PARTIAL
+          - CLOSING_REFERENCE
+          title: Purpose
+          default: PARTIAL
+        created_by:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Created By
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+        correction_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Correction Reason
+        variable_available_at:
+          additionalProperties:
+            type: string
+            format: date-time
+          type: object
+          title: Variable Available At
+      additionalProperties: false
+      type: object
       required:
       - id
       - enrollment_id
@@ -2439,7 +3448,6 @@ components:
       - available_at
       - target_date
       - revision
-      - missing_fraction
       - supersedes_id
       - average_grade
       - attendance_pct
@@ -2447,19 +3455,31 @@ components:
       - participation_level
       - behavior_incidents
       - age_years
-      additionalProperties: false
+      - missing_fraction
+      title: Snapshot
     Prediction:
       type: object
       properties:
-        id: *id003
-        enrollment_id: *id003
-        snapshot_id: *id003
-        model_id: *id003
-        data_origin: *id029
-        risk_level: *id031
-        cutoff_at: *id030
-        target_date: *id028
-        predicted_at: *id030
+        id: *id024
+        enrollment_id: *id024
+        snapshot_id: *id024
+        model_id: *id024
+        data_origin: &id026
+          type: string
+          enum:
+          - REAL
+          - SYNTHETIC
+        risk_level:
+          type: string
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+        cutoff_at: *id025
+        target_date:
+          type: string
+          format: date
+        predicted_at: *id025
         probability_low:
           type:
           - number
@@ -2522,60 +3542,95 @@ components:
             probability_low:
               type: number
     Student:
-      type: object
       properties:
-        id: *id003
+        id:
+          type: string
+          format: uuid
+          title: Id
         anon_code:
           type: string
-          minLength: 3
-          maxLength: 40
-        enrollment_id: *id003
-        period_id: *id003
-        section_id: *id003
+          title: Anon Code
+        full_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Full Name
+        is_active:
+          type: boolean
+          title: Is Active
+          default: true
+        version:
+          type: integer
+          title: Version
+          default: 1
+        enrollment_version:
+          type: integer
+          title: Enrollment Version
+          default: 1
+        enrollment_id:
+          type: string
+          format: uuid
+          title: Enrollment Id
+        period_id:
+          type: string
+          format: uuid
+          title: Period Id
+        section_id:
+          type: string
+          format: uuid
+          title: Section Id
         section_code:
           type: string
+          title: Section Code
         grade:
           type: integer
-          minimum: 1
-          maximum: 5
-        data_origin: *id029
-        average_grade:
-          type:
-          - number
-          - 'null'
-          minimum: 0
-          maximum: 20
-        attendance_pct:
-          type:
-          - number
-          - 'null'
-          minimum: 0
-          maximum: 100
-        latest_cutoff_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        risk_level:
-          type:
-          - string
-          - 'null'
+          title: Grade
+        data_origin:
+          type: string
           enum:
-          - LOW
-          - MEDIUM
-          - HIGH
-          - null
+          - REAL
+          - SYNTHETIC
+          title: Data Origin
+        average_grade:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Average Grade
+        attendance_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Attendance Pct
+        latest_cutoff_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Latest Cutoff At
+        risk_level:
+          anyOf:
+          - type: string
+            enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+          - type: 'null'
+          title: Risk Level
         evaluation_status:
           type: string
           enum:
           - EVALUATED
           - NOT_EVALUATED
           - INSUFFICIENT_DATA
+          title: Evaluation Status
         active_alert_id:
-          type:
-          - string
-          - 'null'
-          format: uuid
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Active Alert Id
+      additionalProperties: false
+      type: object
       required:
       - id
       - anon_code
@@ -2585,15 +3640,14 @@ components:
       - section_code
       - grade
       - data_origin
-      - evaluation_status
       - average_grade
       - attendance_pct
       - latest_cutoff_at
       - risk_level
+      - evaluation_status
       - active_alert_id
-      additionalProperties: false
+      title: Student
     StudentDetail:
-      type: object
       properties:
         student:
           $ref: '#/components/schemas/Student'
@@ -2606,24 +3660,28 @@ components:
           - $ref: '#/components/schemas/Prediction'
           - type: 'null'
         alerts:
-          type: array
           items:
             $ref: '#/components/schemas/Alert'
-        interventions:
           type: array
+          title: Alerts
+        interventions:
           items:
             $ref: '#/components/schemas/Intervention'
+          type: array
+          title: Interventions
+      additionalProperties: false
+      type: object
       required:
       - student
       - latest_snapshot
       - latest_prediction
       - alerts
       - interventions
-      additionalProperties: false
+      title: StudentDetail
     TimelineEvent:
       type: object
       properties:
-        id: *id003
+        id: *id024
         event_type:
           type: string
           enum:
@@ -2631,10 +3689,10 @@ components:
           - PREDICTION
           - ALERT
           - INTERVENTION
-        occurred_at: *id030
+        occurred_at: *id025
         summary:
           type: string
-        entity_id: *id003
+        entity_id: *id024
       required:
       - id
       - event_type
@@ -2663,9 +3721,9 @@ components:
     ImportBatch:
       type: object
       properties:
-        id: *id003
-        period_id: *id003
-        data_origin: *id029
+        id: *id024
+        period_id: *id024
+        data_origin: *id026
         file_name:
           type: string
         file_sha256:
@@ -2711,7 +3769,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ImportError'
-        created_at: *id030
+        created_at: *id025
         committed_at:
           type:
           - string
@@ -2739,7 +3797,7 @@ components:
     ImportCommit:
       type: object
       properties:
-        batch_id: *id003
+        batch_id: *id024
         status:
           type: string
           enum:
@@ -2758,13 +3816,13 @@ components:
     Alert:
       type: object
       properties:
-        id: *id003
-        enrollment_id: *id003
-        student_id: *id003
+        id: *id024
+        enrollment_id: *id024
+        student_id: *id024
         anon_code:
           type: string
-        prediction_id: *id003
-        data_origin: *id029
+        prediction_id: *id024
+        data_origin: *id026
         severity:
           type: string
           enum:
@@ -2787,8 +3845,8 @@ components:
           - string
           - 'null'
           maxLength: 1000
-        opened_at: *id030
-        updated_at: *id030
+        opened_at: *id025
+        updated_at: *id025
         closed_at:
           type:
           - string
@@ -2816,14 +3874,14 @@ components:
     Intervention:
       type: object
       properties:
-        id: *id003
-        enrollment_id: *id003
+        id: *id024
+        enrollment_id: *id024
         alert_id:
           type:
           - string
           - 'null'
           format: uuid
-        data_origin: *id029
+        data_origin: *id026
         kind:
           type: string
           enum:
@@ -2841,7 +3899,7 @@ components:
           - PLANNED
           - DONE
           - CANCELLED
-        scheduled_at: *id030
+        scheduled_at: *id025
         performed_at:
           type:
           - string
@@ -2855,8 +3913,8 @@ components:
         version:
           type: integer
           minimum: 1
-        created_at: *id030
-        updated_at: *id030
+        created_at: *id025
+        updated_at: *id025
       required:
       - id
       - enrollment_id
@@ -2873,28 +3931,29 @@ components:
       - notes
       additionalProperties: false
     StudentPage:
-      type: object
       properties:
         items:
-          type: array
           items:
             $ref: '#/components/schemas/Student'
+          type: array
+          title: Items
         total:
           type: integer
-          minimum: 0
+          title: Total
         page:
           type: integer
-          minimum: 1
+          title: Page
         page_size:
           type: integer
-          minimum: 1
-          maximum: 100
+          title: Page Size
+      additionalProperties: false
+      type: object
       required:
       - items
       - total
       - page
       - page_size
-      additionalProperties: false
+      title: StudentPage
     TimelineEventPage:
       type: object
       properties:
@@ -4517,4 +5576,522 @@ components:
       - intervention_performed
       title: RetrospectivePartialResult
       type: object
+    EnrollmentCreate:
+      properties:
+        creation_key:
+          type: string
+          format: uuid
+          title: Creation Key
+        student_id:
+          type: string
+          format: uuid
+          title: Student Id
+        period_id:
+          type: string
+          format: uuid
+          title: Period Id
+        section_id:
+          type: string
+          format: uuid
+          title: Section Id
+      additionalProperties: false
+      type: object
+      required:
+      - creation_key
+      - student_id
+      - period_id
+      - section_id
+      title: EnrollmentCreate
+    EnrollmentPatch:
+      properties:
+        creation_key:
+          type: string
+          format: uuid
+          title: Creation Key
+        section_id:
+          type: string
+          format: uuid
+          title: Section Id
+        expected_version:
+          type: integer
+          minimum: 1.0
+          title: Expected Version
+      additionalProperties: false
+      type: object
+      required:
+      - creation_key
+      - section_id
+      - expected_version
+      title: EnrollmentPatch
+    EnrollmentView:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        student_id:
+          type: string
+          format: uuid
+          title: Student Id
+        period_id:
+          type: string
+          format: uuid
+          title: Period Id
+        section_id:
+          type: string
+          format: uuid
+          title: Section Id
+        data_origin:
+          type: string
+          enum:
+          - REAL
+          - SYNTHETIC
+          title: Data Origin
+        version:
+          type: integer
+          title: Version
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - student_id
+      - period_id
+      - section_id
+      - data_origin
+      - version
+      title: EnrollmentView
+    Identity:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        anon_code:
+          type: string
+          title: Anon Code
+        full_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Full Name
+        data_origin:
+          type: string
+          enum:
+          - REAL
+          - SYNTHETIC
+          title: Data Origin
+        is_active:
+          type: boolean
+          title: Is Active
+        version:
+          type: integer
+          title: Version
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - anon_code
+      - full_name
+      - data_origin
+      - is_active
+      - version
+      title: Identity
+    ImportErrorItem:
+      properties:
+        row:
+          type: integer
+          minimum: 1.0
+          title: Row
+        column:
+          type: string
+          title: Column
+        code:
+          type: string
+          title: Code
+        message:
+          type: string
+          title: Message
+      additionalProperties: false
+      type: object
+      required:
+      - row
+      - column
+      - code
+      - message
+      title: ImportErrorItem
+    MeasurementCreate:
+      properties:
+        creation_key:
+          type: string
+          format: uuid
+          title: Creation Key
+        window_start:
+          type: string
+          format: date
+          title: Window Start
+        cutoff_at:
+          type: string
+          format: date-time
+          title: Cutoff At
+        available_at:
+          type: string
+          format: date-time
+          title: Available At
+        purpose:
+          type: string
+          enum:
+          - PARTIAL
+          - CLOSING_REFERENCE
+          title: Purpose
+        average_grade:
+          anyOf:
+          - anyOf:
+            - type: integer
+            - type: number
+            ge: 0
+            le: 20
+          - type: 'null'
+          title: Average Grade
+        attendance_pct:
+          anyOf:
+          - anyOf:
+            - type: integer
+            - type: number
+            ge: 0
+            le: 100
+          - type: 'null'
+          title: Attendance Pct
+        activities_pct:
+          anyOf:
+          - anyOf:
+            - type: integer
+            - type: number
+            ge: 0
+            le: 100
+          - type: 'null'
+          title: Activities Pct
+        participation_level:
+          anyOf:
+          - type: integer
+            maximum: 5.0
+            minimum: 1.0
+          - type: 'null'
+          title: Participation Level
+        behavior_incidents:
+          anyOf:
+          - type: integer
+            maximum: 2147483647.0
+            minimum: 0.0
+          - type: 'null'
+          title: Behavior Incidents
+        variable_available_at:
+          additionalProperties:
+            type: string
+            format: date-time
+          propertyNames:
+            enum:
+            - average_grade
+            - attendance_pct
+            - activities_pct
+            - participation_level
+            - behavior_incidents
+          type: object
+          title: Variable Available At
+        supersedes_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Supersedes Id
+        expected_revision:
+          anyOf:
+          - type: integer
+            minimum: 1.0
+          - type: 'null'
+          title: Expected Revision
+        correction_reason:
+          anyOf:
+          - type: string
+            maxLength: 1000
+            minLength: 3
+          - type: 'null'
+          title: Correction Reason
+      additionalProperties: false
+      type: object
+      required:
+      - creation_key
+      - window_start
+      - cutoff_at
+      - available_at
+      - purpose
+      title: MeasurementCreate
+    MeasurementPage:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/Snapshot'
+          type: array
+          title: Items
+        total:
+          type: integer
+          title: Total
+        page:
+          type: integer
+          title: Page
+        page_size:
+          type: integer
+          title: Page Size
+      additionalProperties: false
+      type: object
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: MeasurementPage
+    PeriodCreate:
+      properties:
+        creation_key:
+          type: string
+          format: uuid
+          title: Creation Key
+        code:
+          type: string
+          maxLength: 40
+          minLength: 1
+          title: Code
+        school_year:
+          type: integer
+          maximum: 2100.0
+          minimum: 2000.0
+          title: School Year
+        start_date:
+          type: string
+          format: date
+          title: Start Date
+        end_date:
+          type: string
+          format: date
+          title: End Date
+        data_origin:
+          type: string
+          enum:
+          - REAL
+          - SYNTHETIC
+          title: Data Origin
+      additionalProperties: false
+      type: object
+      required:
+      - creation_key
+      - code
+      - school_year
+      - start_date
+      - end_date
+      - data_origin
+      title: PeriodCreate
+    PeriodPatch:
+      properties:
+        creation_key:
+          type: string
+          format: uuid
+          title: Creation Key
+        code:
+          type: string
+          maxLength: 40
+          minLength: 1
+          title: Code
+        school_year:
+          type: integer
+          maximum: 2100.0
+          minimum: 2000.0
+          title: School Year
+        start_date:
+          type: string
+          format: date
+          title: Start Date
+        end_date:
+          type: string
+          format: date
+          title: End Date
+        data_origin:
+          type: string
+          enum:
+          - REAL
+          - SYNTHETIC
+          title: Data Origin
+        expected_version:
+          type: integer
+          minimum: 1.0
+          title: Expected Version
+        is_locked:
+          type: boolean
+          title: Is Locked
+      additionalProperties: false
+      type: object
+      required:
+      - creation_key
+      - code
+      - school_year
+      - start_date
+      - end_date
+      - data_origin
+      - expected_version
+      - is_locked
+      title: PeriodPatch
+    SectionCreate:
+      properties:
+        creation_key:
+          type: string
+          format: uuid
+          title: Creation Key
+        code:
+          type: string
+          maxLength: 40
+          minLength: 1
+          title: Code
+        grade:
+          type: integer
+          maximum: 5.0
+          minimum: 1.0
+          title: Grade
+        school_year:
+          type: integer
+          maximum: 2100.0
+          minimum: 2000.0
+          title: School Year
+        tutor_id:
+          type: string
+          format: uuid
+          title: Tutor Id
+        data_origin:
+          type: string
+          enum:
+          - REAL
+          - SYNTHETIC
+          title: Data Origin
+      additionalProperties: false
+      type: object
+      required:
+      - creation_key
+      - code
+      - grade
+      - school_year
+      - tutor_id
+      - data_origin
+      title: SectionCreate
+    SectionPatch:
+      properties:
+        creation_key:
+          type: string
+          format: uuid
+          title: Creation Key
+        code:
+          type: string
+          maxLength: 40
+          minLength: 1
+          title: Code
+        grade:
+          type: integer
+          maximum: 5.0
+          minimum: 1.0
+          title: Grade
+        school_year:
+          type: integer
+          maximum: 2100.0
+          minimum: 2000.0
+          title: School Year
+        tutor_id:
+          type: string
+          format: uuid
+          title: Tutor Id
+        data_origin:
+          type: string
+          enum:
+          - REAL
+          - SYNTHETIC
+          title: Data Origin
+        expected_version:
+          type: integer
+          minimum: 1.0
+          title: Expected Version
+      additionalProperties: false
+      type: object
+      required:
+      - creation_key
+      - code
+      - grade
+      - school_year
+      - tutor_id
+      - data_origin
+      - expected_version
+      title: SectionPatch
+    StudentCreate:
+      properties:
+        creation_key:
+          type: string
+          format: uuid
+          title: Creation Key
+        anon_code:
+          type: string
+          maxLength: 40
+          minLength: 3
+          title: Anon Code
+        full_name:
+          type: string
+          maxLength: 160
+          minLength: 1
+          title: Full Name
+        period_id:
+          type: string
+          format: uuid
+          title: Period Id
+        section_id:
+          type: string
+          format: uuid
+          title: Section Id
+      additionalProperties: false
+      type: object
+      required:
+      - creation_key
+      - anon_code
+      - full_name
+      - period_id
+      - section_id
+      title: StudentCreate
+    StudentPatch:
+      properties:
+        creation_key:
+          type: string
+          format: uuid
+          title: Creation Key
+        expected_version:
+          type: integer
+          minimum: 1.0
+          title: Expected Version
+        full_name:
+          type: string
+          maxLength: 160
+          minLength: 1
+          title: Full Name
+        is_active:
+          type: boolean
+          title: Is Active
+        confirmed:
+          type: boolean
+          title: Confirmed
+        reason:
+          type: string
+          maxLength: 1000
+          minLength: 3
+          title: Reason
+      additionalProperties: false
+      type: object
+      required:
+      - creation_key
+      - expected_version
+      - full_name
+      - is_active
+      - confirmed
+      - reason
+      title: StudentPatch
 x-current-sprint: S2.1

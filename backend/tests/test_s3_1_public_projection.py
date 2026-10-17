@@ -93,7 +93,7 @@ def test_processing_status_requires_session_and_researcher_receives_general_stat
     status = response.json()
     assert set(status) == {'scope', 'notice', 'institutional_ready', 'synthetic_ready', 'operations'}
     assert status['scope'] == 'SYNTHETIC_STUDY' and status['institutional_ready'] is False
-    assert status['notice'] == 'Estudio con datos sintéticos. No corresponde a estudiantes reales.'
+    assert status['notice'] == 'Registro académico local disponible según rol y origen. Inferencia institucional pendiente de protocolo.'
     assert isinstance(status['synthetic_ready'], bool)
     assert set(status['operations']) == {'import', 'compare', 'register', 'activate',
                                         'predict', 'read_students', 'read_models',

@@ -22,7 +22,7 @@ def authorize_period(db, user, period_id, section_id=None):
         if section is None or section.school_year != period.school_year:
             raise AppError(404, "SECTION_NOT_FOUND", "La sección no está disponible en este periodo.")
         if user.role == "TUTOR" and section.tutor_id != user.id:
-            raise AppError(403, "FORBIDDEN", "No tienes acceso a esta sección.")
+            raise AppError(404, "SECTION_NOT_FOUND", "La sección no está disponible en este periodo.")
         if section_id not in {section.id for section in allowed_sections}:
             raise AppError(404,'SECTION_NOT_FOUND','La sección no pertenece al contexto de este periodo.')
     institutional_period(period)

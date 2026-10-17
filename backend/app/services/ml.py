@@ -94,6 +94,10 @@ def infer_selected(db, user, period, as_of, model, bundle, request_id):
     created = reused = 0
     abstentions = []
     for row in selected:
+        if row.get('entry_channel') == 'MANUAL':
+            abstentions.append(schemas.Abstention(snapshot_id=row['id'],status='INCOMPATIBLE',
+                reason='La evaluación de mediciones manuales guardadas corresponde a una fase posterior a M1.'))
+            continue
         observation = Observation(student_key=str(row['student_id']),snapshot_id=row['id'],
             enrollment_id=row['enrollment_id'],period_id=period.id,data_origin=row['data_origin'],
             schema_version=row['schema_version'],revision=row['revision'],supersedes_id=row['supersedes_id'],

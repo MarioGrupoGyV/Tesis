@@ -15,7 +15,7 @@ LEFT JOIN risk_school.import_batches ib ON ib.id=sn.import_batch_id
 LEFT JOIN LATERAL (
  SELECT m.* FROM risk_school.model_versions m WHERE m.is_active AND m.status='APPROVED'
  AND m.data_origin=e.data_origin AND (e.data_origin<>'SYNTHETIC' OR m.study_id=ib.study_id)
- AND m.created_at<=statement_timestamp()
+ AND m.created_at<=statement_timestamp() AND sn.entry_channel='CSV'
  LIMIT 1
 ) current_model ON true
 LEFT JOIN LATERAL (
@@ -27,7 +27,7 @@ LEFT JOIN LATERAL (
 ) pred ON true
 LEFT JOIN risk_school.alerts a ON a.enrollment_id=e.id AND a.status IN ('OPEN','IN_REVIEW')
 """
-STUDENT_COLUMNS = """s.id,s.anon_code,e.id AS enrollment_id,e.period_id,e.section_id,
+STUDENT_COLUMNS = """s.id,s.anon_code,s.full_name,s.is_active,s.version,e.version AS enrollment_version,e.id AS enrollment_id,e.period_id,e.section_id,
 g.code AS section_code,g.grade,e.data_origin,sn.average_grade,sn.attendance_pct,
 sn.cutoff_at AS latest_cutoff_at,pred.risk_level,
 CASE WHEN pred.id IS NOT NULL THEN 'EVALUATED'
@@ -55,7 +55,7 @@ def list_students(db, user, period_id, section_id, search, risk_level, sort, pag
         clauses.append("e.section_id=:section")
         params['section'] = section_id
     if search:
-        clauses.append("s.anon_code ILIKE :search ESCAPE '\\'")
+        clauses.append("(s.anon_code ILIKE :search ESCAPE '\\' OR s.full_name ILIKE :search ESCAPE '\\')")
         params['search'] = '%' + search.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_') + '%'
     if risk_level:
         clauses.append("pred.risk_level=:risk")

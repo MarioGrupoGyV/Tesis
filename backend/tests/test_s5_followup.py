@@ -405,8 +405,14 @@ def test_unregistered_same_year_section_cannot_sync_or_expose_followup(followup_
             {'id':foreign,'code':'S5-FOREIGN-'+uuid4().hex[:12],'grade':grade,'year':state.config.school_year})
         # Corrupción exclusiva de fixture: misma matrícula/origen/año, sección
         # ajena al manifest. No se crea ni se mueve una cuenta o dato activo.
-        db.execute(text('UPDATE risk_school.enrollments SET section_id=:section WHERE id=:id'),
-            {'section':foreign,'id':selected['enrollment_id']});db.commit()
+        # M1 ahora impide este traslado aun por SQL con riesgo_app. Conservar el
+        # intento rechazado y simular catálogo ajeno cambiando solo su código.
+        from test_s1_schema import assert_sqlstate
+        assert_sqlstate(db,'UPDATE risk_school.enrollments SET section_id=:section WHERE id=:id',
+            {'section':foreign,'id':selected['enrollment_id']},'55000')
+        affected=db.scalar(text('SELECT count(*) FROM risk_school.enrollments WHERE section_id=:id'),{'id':selected['section_id']})
+        db.execute(text('UPDATE risk_school.grade_sections SET code=:code WHERE id=:id'),
+            {'code':'S5-ALTERED-'+uuid4().hex[:12],'id':selected['section_id']});db.commit()
     before=counts(state)
     response=sync(state)
     assert response.status_code==409 and response.json()['code']=='STUDY_INTEGRITY_ERROR',response.text
@@ -414,7 +420,7 @@ def test_unregistered_same_year_section_cannot_sync_or_expose_followup(followup_
     listed=alerts(state);assert listed['total']==0
     report=state.client.get(API+'/reports/summary',params={'period_id':str(state.period_id),'page_size':100})
     assert report.status_code==200,report.text
-    assert report.json()['total']==len(state.rows)-1
+    assert report.json()['total']==len(state.rows)-affected
     assert str(selected['enrollment_id']) not in {row['enrollment_id'] for row in report.json()['items']}
     assert state.client.get(API+f"/alerts/{case['id']}").status_code==404
     assert patch_case(state,case,'IN_REVIEW').status_code==404

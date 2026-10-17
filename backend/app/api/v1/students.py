@@ -11,7 +11,7 @@ router = APIRouter(prefix='/students', tags=['students'])
 @router.get('', response_model=StudentPage, operation_id='students')
 def students(context: AuthenticatedSession, db: DbSession, period_id: UUID,
              section_id: UUID | None = None, page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100),
-             search: str | None = Query(None, max_length=40), risk_level: Literal['LOW', 'MEDIUM', 'HIGH'] | None = None,
+             search: str | None = Query(None, max_length=160), risk_level: Literal['LOW', 'MEDIUM', 'HIGH'] | None = None,
              sort: Literal['anon_code', 'risk_desc', 'updated_desc'] = 'anon_code'):
     return service.list_students(db, context.user, period_id=period_id, section_id=section_id, page=page,
         page_size=page_size, search=search, risk_level=risk_level, sort=sort)

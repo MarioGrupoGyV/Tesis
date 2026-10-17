@@ -1,0 +1,139 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.m1.config.ts"
+    ],
+    "configFile": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\playwright.m1.config.ts",
+    "rootDir": "C:/Users/mario/OneDrive/Escritorio/tesis-riesgo-escolar/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/mario/OneDrive/Escritorio/tesis-riesgo-escolar/.local/m1-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/mario/OneDrive/Escritorio/tesis-riesgo-escolar/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "m1.spec.ts"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "tests/evidence/m1-browser-first.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "m1.spec.ts",
+      "file": "m1.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "M1: preparación vacía, registro, revisiones, persistencia y cuatro roles",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 90061,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 90000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 90000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 90000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\e2e\\m1.spec.ts",
+                        "column": 69,
+                        "line": 10
+                      },
+                      "message": "Error: locator.click: Test timeout of 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Ingresar', exact: true })\u001b[22m\n\n\n   8 |   await page.getByLabel('Correo electrónico').fill(accounts[role].email);\n   9 |   await page.getByLabel('Contraseña', { exact: true }).fill(accounts[role].password);\n> 10 |   await page.getByRole('button', { name: 'Iniciar sesión', exact: false }).click();\n     |                                                                     ^\n  11 |   await expect(page.getByRole('button', { name: 'Cerrar sesión', exact: true })).toBeVisible();\n  12 | }\n  13 | async function screenshot(page: Page, label: string, width: number, height: number) {\n    at login (C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\e2e\\m1.spec.ts:10:69)\n    at C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\tests\\e2e\\m1.spec.ts:37:3"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T06:04:05.920Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\.local\\m1-playwright\\m1-M1-preparación-vacía-re-a82b5-persistencia-y-cuatro-roles\\error-context.md"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "1c39409c6e78644cb110-d58e84026656937cd2f5",
+          "file": "m1.spec.ts",
+          "line": 36,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-16T06:04:05.288Z",
+    "duration": 92534.827,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

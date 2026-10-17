@@ -51,9 +51,9 @@ def run():
     contract_path = ROOT / "docs/planning/Contrato_API.yaml"
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     validate(contract)
-    check(contract["info"]["version"] == "0.6.0", "OpenAPI 3.1 válido, versión 0.6.0")
+    check(contract["info"]["version"] == "0.7.0", "OpenAPI 3.1 válido, versión 0.7.0 M1")
     operation_count = sum(method in ('get','post','patch','put','delete') for methods in contract['paths'].values() for method in methods)
-    check(operation_count == 32, '32 operaciones implementadas; 27 S1–S5 y 5 retrospectivas S6')
+    check(operation_count == 44, '44 operaciones: 32 conservadas y 12 M1')
     for path, methods in contract["paths"].items():
         for method, operation in methods.items():
             if method not in ("get", "post", "patch", "put", "delete") or path == "/health/live":
@@ -100,8 +100,11 @@ def run():
             expected_type, expected_format = type_mapping[sql_type]
             actual = definition.get("type", [])
             actual = [actual] if isinstance(actual, str) else actual
+            variants = definition.get('anyOf', [])
+            actual += [v.get('type') for v in variants]
+            actual_format = definition.get('format') or next((v.get('format') for v in variants if v.get('format')), None)
             check(expected_type in actual and
-                  (not expected_format or definition.get("format") == expected_format),
+                  (not expected_format or actual_format == expected_format),
                   f"Tipo SQL/API {schema_name}.{field}")
             matched += 1
     check("UNIQUE (grade, code, school_year)" in sql and
@@ -217,8 +220,8 @@ def run():
     evidence_name = "s5-contracts.json" if sprint == "S5" else "s0-checks.json" if sprint == "S0" else "s4-contracts.json" if sprint == "S4" else "s3-1-contracts.json"
     prefix = os.environ.get('CONTRACT_REPORT_PREFIX')
     if prefix:
-        if not re.fullmatch(r's6[a-z0-9-]+', prefix):
-            raise ValueError('Prefijo contractual S6 inválido')
+        if not re.fullmatch(r'(s6|m1)[a-z0-9-]+', prefix):
+            raise ValueError('Prefijo contractual S6/M1 inválido')
         evidence_name = prefix + '-contracts.json'
         if (ROOT / 'tests/evidence' / evidence_name).exists():
             raise ValueError('La evidencia S6 ya existe')

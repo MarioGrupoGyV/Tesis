@@ -57,7 +57,7 @@ class Snapshot(ContractModel):
     window_start: date
     cutoff_at: datetime
     available_at: datetime
-    target_date: date
+    target_date: date | None
     revision: int
     supersedes_id: UUID | None
     average_grade: Number | None
@@ -67,6 +67,12 @@ class Snapshot(ContractModel):
     behavior_incidents: int | None
     age_years: int | None
     missing_fraction: Number
+    entry_channel: Literal['CSV', 'MANUAL'] = 'CSV'
+    purpose: Literal['PARTIAL', 'CLOSING_REFERENCE'] = 'PARTIAL'
+    created_by: UUID | None = None
+    created_at: datetime | None = None
+    correction_reason: str | None = None
+    variable_available_at: dict[str, datetime] = Field(default_factory=dict)
 
 
 class Prediction(ContractModel):
@@ -88,6 +94,10 @@ class Prediction(ContractModel):
 class Student(ContractModel):
     id: UUID
     anon_code: str
+    full_name: str | None = None
+    is_active: bool = True
+    version: int = 1
+    enrollment_version: int = 1
     enrollment_id: UUID
     period_id: UUID
     section_id: UUID
