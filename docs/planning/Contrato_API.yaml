@@ -3475,6 +3475,58 @@ paths:
       - sessionCookie: []
       description: Cálculo con corte as_of explícito (reproducible). TUTOR solo ve sus secciones; sin riesgo
         de referencia almacenado el indicador es null con motivo REFERENCE_NOT_AVAILABLE. Solo códigos anónimos.
+  /indicators/contexts:
+    get:
+      tags:
+      - indicators
+      summary: Contexts
+      operationId: indicatorContexts
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/IndicatorContext'
+                type: array
+                title: Response Indicatorcontexts
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol sin acceso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Periodo o sección ajena o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: as_of futuro o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: B2
+      x-roles: *id024
+      security:
+      - sessionCookie: []
+      description: Cálculo con corte as_of explícito (reproducible). TUTOR solo ve sus secciones; sin riesgo
+        de referencia almacenado el indicador es null con motivo REFERENCE_NOT_AVAILABLE. Solo códigos anónimos.
 components:
   securitySchemes:
     sessionCookie:
@@ -7122,4 +7174,53 @@ components:
       - model_metrics
       - exclusions
       title: Summary
+    ContextSection:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        code:
+          type: string
+          title: Code
+        grade:
+          type: integer
+          title: Grade
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - code
+      - grade
+      title: ContextSection
+    IndicatorContext:
+      properties:
+        period_id:
+          type: string
+          format: uuid
+          title: Period Id
+        period_code:
+          type: string
+          title: Period Code
+        school_year:
+          type: integer
+          title: School Year
+        is_locked:
+          type: boolean
+          title: Is Locked
+        sections:
+          items:
+            $ref: '#/components/schemas/ContextSection'
+          type: array
+          title: Sections
+      additionalProperties: false
+      type: object
+      required:
+      - period_id
+      - period_code
+      - school_year
+      - is_locked
+      - sections
+      title: IndicatorContext
+      description: Periodo SYNTHETIC con estudio registrado y sus secciones autorizadas (incluye RESEARCHER).
 x-current-sprint: S2.1

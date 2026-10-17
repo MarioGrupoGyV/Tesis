@@ -852,6 +852,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/indicators/contexts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Contexts
+         * @description Cálculo con corte as_of explícito (reproducible). TUTOR solo ve sus secciones; sin riesgo de referencia almacenado el indicador es null con motivo REFERENCE_NOT_AVAILABLE. Solo códigos anónimos.
+         */
+        get: operations["indicatorContexts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2887,6 +2907,37 @@ export interface components {
             /** Model Metrics Reason */
             model_metrics_reason?: string | null;
             exclusions: components["schemas"]["Exclusions"];
+        };
+        /** ContextSection */
+        ContextSection: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Code */
+            code: string;
+            /** Grade */
+            grade: number;
+        };
+        /**
+         * IndicatorContext
+         * @description Periodo SYNTHETIC con estudio registrado y sus secciones autorizadas (incluye RESEARCHER).
+         */
+        IndicatorContext: {
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /** Period Code */
+            period_code: string;
+            /** School Year */
+            school_year: number;
+            /** Is Locked */
+            is_locked: boolean;
+            /** Sections */
+            sections: components["schemas"]["ContextSection"][];
         };
     };
     responses: never;
@@ -6716,6 +6767,71 @@ export interface operations {
                 };
                 content: {
                     "text/csv": string;
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol sin acceso */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Periodo o sección ajena o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description as_of futuro o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    indicatorContexts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IndicatorContext"][];
                 };
             };
             /** @description Sesión requerida */

@@ -1,16 +1,16 @@
 {
   "status": "COMPROBADO",
   "scope": "Contratos documentales e infraestructura S5; sin pruebas funcionales",
-  "checks": 329,
+  "checks": 331,
   "sql_statements": 102,
   "tables": 15,
   "mapped_field_types": 120,
-  "api_paths": 41,
-  "api_operations": 48,
+  "api_paths": 42,
+  "api_operations": 49,
   "contract_samples": 3,
   "real_contract_responses": 66,
   "hashes": {
-    "docs\\planning\\Contrato_API.yaml": "8c6cd8be9a6352f9436b02139caeb119e86090ba4ea056ace3202371ccb808e9",
+    "docs\\planning\\Contrato_API.yaml": "1258e0c25071d4d32044701998468df1a2da698e45312d60eda9c10b4ad42418",
     "docs\\planning\\Esquema.sql": "1cabc8560544c89f781df073aa9dcdd3d88c2880d8a3631ad52bf91b63c1a70a",
     "package-lock.json": "9b0880027ad75b06c5d8a56fa77cf1d23bf0196bb5cb6012a1d4a33e20990bb7"
   },

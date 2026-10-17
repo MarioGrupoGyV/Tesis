@@ -53,7 +53,7 @@ def run():
     validate(contract)
     check(contract["info"]["version"] == "0.9.0", "OpenAPI 3.1 válido, versión 0.9.0 Bloque 2")
     operation_count = sum(method in ('get','post','patch','put','delete') for methods in contract['paths'].values() for method in methods)
-    check(operation_count == 48, '48 operaciones: 32 conservadas, 12 M1, 1 del Bloque 1 y 3 de indicadores')
+    check(operation_count == 49, '49 operaciones: 32 conservadas, 12 M1, 1 del Bloque 1 y 4 de indicadores')
     for path, methods in contract["paths"].items():
         for method, operation in methods.items():
             if method not in ("get", "post", "patch", "put", "delete") or path == "/health/live":
