@@ -12,7 +12,12 @@ periodos, secciones, alumnos/matrículas, mediciones y revisiones persistentes.
 [verificación](docs/planning/Matriz_Verificacion_M1.md).
 La importación y predicción REAL continúan bloqueadas; las mediciones manuales
 quedan sin evaluar y no generan seguimiento. El software y las métricas sintéticas no validan la tesis,
-la eficacia escolar ni una aprobación institucional. Sin commit/push o despliegue externo.
+la eficacia escolar ni una aprobación institucional. Sin push o despliegue externo.
+
+**Fase de mejoras de tesis (2026-10-17, rama local `mejoras-tesis`):** se autorizan
+bloques de mejora uno a uno y commits locales; lo no autorizado por un bloque conserva
+las restricciones anteriores. Cuentas, secretos, volúmenes, cierres y salvaguardas
+de menores no cambian. Ver [ADR 011](docs/adr/011-fase-mejoras-tesis.md).
 
 ## Guía de operación
 

@@ -1,0 +1,30 @@
+{
+  "bloque": "0",
+  "rama": "mejoras-tesis",
+  "base_commit": "b84243d",
+  "fecha_inicio_utc": "2026-10-17T07:02:16Z",
+  "duracion_pytest_s": 264.27,
+  "comando": [
+    "$env:TEST_REPORT_NAME = 'mejoras-00-baseline-backend'",
+    "docker compose -f infra/compose.test.yaml build tester",
+    "docker compose -f infra/compose.test.yaml run --rm tester"
+  ],
+  "entorno": {"compose": "riesgo-escolar-tests", "python": "3.12.12", "postgresql": "17.6", "base_aislada": "riesgo_escolar_test_fe1215286cf0"},
+  "resultado": "FALLIDO",
+  "exit_code": 1,
+  "pruebas_totales": 322,
+  "pasaron": 310,
+  "fallaron": 1,
+  "omitidas": 11,
+  "errores": 0,
+  "fallos": [
+    {
+      "prueba": "backend/tests/test_s2_imports.py::test_students_list_detail_timeline_permissions_and_pagination",
+      "linea": 387,
+      "mensaje": "assert 2 == 1 (GET /students con search='-B' devuelve total 2, se esperaba 1)",
+      "estado": "preexistente, anterior a cualquier cambio de este bloque; no corregido"
+    }
+  ],
+  "no_ejecutado": ["pruebas frontend", "Playwright/navegador", "check_s0.py", "recuperacion S6"],
+  "artefactos": "tests/evidence/mejoras-00-baseline-backend.xml y -environment.json"
+}

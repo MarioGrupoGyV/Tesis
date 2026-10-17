@@ -33,6 +33,14 @@ El usuario opera exclusivamente desde PowerShell en Windows. Docker conserva im�
 
 Desde el 2026-10-11 el único entorno virtual local es `backend/.venv`, por solicitud del usuario. Desde `backend` se activa con `.\.venv\Scripts\Activate.ps1`. Reúne las dependencias Windows previamente instaladas de backend y herramientas documentales; no recrear `.venv-s0` ni `.venv-s1`. Sus menciones en evidencias y estados históricos describen ejecuciones pasadas. El runtime integrado y XGBoost CPU conservan sus versiones dentro de Docker.
 
+Fase de mejoras de tesis, autorizada el 2026-10-17 (`docs/adr/011-fase-mejoras-tesis.md`):
+rama local `mejoras-tesis`, commits locales permitidos, sin push. Sustituye las
+restricciones «no implementar la siguiente fase», «no importar los tres Excel», «REAL
+bloqueado» y «sin commit» únicamente en lo que cada bloque (1–7) autorice cuando se
+pida. Sin esa autorización de bloque, rigen las restricciones anteriores. No cambian
+cuentas, secretos, volúmenes, cierres históricos, auditoría/revisiones inmutables, UTC/Lima,
+CSRF ni permisos por sección. Nunca importar ni mostrar nombres de menores; solo local.
+
 ## Fuentes del proyecto
 
 Antes de implementar, incorporar en `docs/planning/` el plan, `Contrato_API.yaml`, `Esquema.sql` y `Inicio_Codex_y_skills.md`. Guardar el documento académico y sus referencias en un destino de acceso adecuado; no incorporar archivos con datos identificables al repositorio.
