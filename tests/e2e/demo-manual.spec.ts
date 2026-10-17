@@ -55,8 +55,8 @@ async function register(page: Page, code: string, values: Record<string, string>
   await expect(page.getByText(/Medición guardada en el servidor/)).toBeVisible();
 }
 
-const HIGH = { 'Promedio · 0–20': '7', 'Asistencia · 0–100 %': '50', 'Entrega de actividades · 0–100 %': '40', 'Participación · 1–5': '1', 'Incidencias · entero ≥ 0': '8' };
-const LOW = { 'Promedio · 0–20': '18', 'Asistencia · 0–100 %': '98', 'Entrega de actividades · 0–100 %': '95', 'Participación · 1–5': '3', 'Incidencias · entero ≥ 0': '0' };
+const HIGH = { 'Promedio · 0–20': '7', 'Asistencia · 0–100 %': '50', 'Entrega de actividades · 0–100 %': '40', 'Participación · 1–3 en la simulación': '1', 'Incidencias · entero ≥ 0': '8' };
+const LOW = { 'Promedio · 0–20': '18', 'Asistencia · 0–100 %': '98', 'Entrega de actividades · 0–100 %': '95', 'Participación · 1–3 en la simulación': '3', 'Incidencias · entero ≥ 0': '0' };
 
 test('B1: crear alumno, medir, evaluar, abrir alerta, planificar actividad y ver reporte', async ({ page }) => {
   const high = 'D' + randomUUID().slice(0, 6).toUpperCase() + 'A';

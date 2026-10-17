@@ -52,6 +52,7 @@ modelo entrenado en cada instalación: repetir el ensayo si se regenera o reacti
 | 6:00 | Repetir con DEMO-BAJO: registrar, evaluar. | «Riesgo bajo no crea caso; tampoco se rellena riesgo bajo cuando faltan datos.» |
 | 7:00 | Volver a **Evaluar** en DEMO-ALTO. | «Es idempotente: reutiliza la evaluación y el mismo caso.» |
 | 7:30 | Abrir **Reportes**: ambos alumnos, caso activo solo en DEMO-ALTO; **Descargar CSV**. | «El CSV no incluye notas ni nombres.» |
+| 8:00 | (Opcional) Tercer alumno **DEMO-MEDIO** con 12 / 75 / 70 / 2 / 4 (ensayado: riesgo **MEDIO**, se crea caso). Evaluar y abrir el caso. | «Un riesgo medio también requiere seguimiento humano; la severidad del caso es MEDIA.» |
 | 8:30 | (Opcional) Corregir la medición de DEMO-ALTO y evaluar de nuevo. | «Una corrección crea una revisión; la evaluación anterior no se aplica a la nueva.» |
 
 ## Si algo falla
