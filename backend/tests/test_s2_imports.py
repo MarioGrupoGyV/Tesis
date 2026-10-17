@@ -54,7 +54,7 @@ def env(owner_engine, database_urls, synthetic_password, synthetic_password_hash
         assert conn.scalar(text('SELECT current_user')) == 'riesgo_app'
     with TestClient(app) as client:
         result = SimpleNamespace(client=client, app=app, context=context, owner=owner_engine,
-            directory=tmp_path / 'private-imports', prefix='S2-' + uuid4().hex[:12])
+            directory=tmp_path / 'private-imports', prefix='S2-a' + uuid4().hex[:11])
         login_as(result, 'ADMIN')
         yield result
 
