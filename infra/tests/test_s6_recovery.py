@@ -88,6 +88,23 @@ class ArchiveValidationTests(unittest.TestCase):
                 manifest = {**manifest_for(values), **mutation}
                 backup.validate_archive(zip_package(values, manifest))
 
+    def test_current_migration_heads_are_accepted_and_unknown_or_inconsistent_rejected(self):
+        for head in ('0004_followup', '0005_manual_academic', '0006_manual_evaluable'):
+            with self.subTest(head=head):
+                values = package_payloads()
+                manifest = manifest_for(values)
+                manifest['migration'] = head
+                manifest['database']['alembic'] = [head]
+                self.assertEqual(backup.validate_archive(zip_package(values, manifest))['migration'], head)
+        for migration, recorded in (('0007_future', ['0007_future']), ('0006_manual_evaluable', ['0005_manual_academic']),
+                                    ('0006_manual_evaluable', ['0005_manual_academic', '0006_manual_evaluable'])):
+            with self.subTest(migration=migration, recorded=recorded), self.assertRaisesRegex(RuntimeError, '^BACKUP_VERSION_INCOMPATIBLE$'):
+                values = package_payloads()
+                manifest = manifest_for(values)
+                manifest['migration'] = migration
+                manifest['database']['alembic'] = recorded
+                backup.validate_archive(zip_package(values, manifest))
+
     def test_missing_manifest_or_required_private_members(self):
         with self.assertRaisesRegex(RuntimeError, '^BACKUP_MANIFEST_MISSING$'):
             backup.validate_archive(zip_package(include_manifest=False))

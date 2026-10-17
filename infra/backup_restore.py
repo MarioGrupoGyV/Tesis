@@ -40,6 +40,10 @@ def safe_member(name):
     return name
 
 
+# Cabeceras Alembic admitidas en respaldo/restauración (0005 = M1, 0006 = Bloque 1).
+SUPPORTED_MIGRATIONS=('0004_followup','0005_manual_academic','0006_manual_evaluable')
+
+
 def validate_archive(content):
     if len(content)>MAX_PACKAGE: raise RuntimeError('BACKUP_SIZE_LIMIT')
     try:
@@ -62,7 +66,7 @@ def validate_archive(content):
             if 'manifest.json' not in names: raise RuntimeError('BACKUP_MANIFEST_MISSING')
             manifest=json.loads(archive.read('manifest.json'))
             if not isinstance(manifest,dict): raise RuntimeError('BACKUP_MANIFEST_INVALID')
-            if manifest.get('version')!=1 or manifest.get('origin')!='SYNTHETIC' or manifest.get('migration')!='0004_followup':
+            if manifest.get('version')!=1 or manifest.get('origin')!='SYNTHETIC' or manifest.get('migration') not in SUPPORTED_MIGRATIONS:
                 raise RuntimeError('BACKUP_VERSION_INCOMPATIBLE')
             inventory=manifest.get('inventory',{})
             if not isinstance(inventory,dict): raise RuntimeError('BACKUP_INVENTORY_INVALID')
@@ -72,6 +76,7 @@ def validate_archive(content):
             database=manifest.get('database',{})
             if not isinstance(database,dict) or not isinstance(database.get('counts'),dict) or set(database['counts'])!=set(TABLES):
                 raise RuntimeError('BACKUP_DATABASE_COVERAGE_INVALID')
+            if database.get('alembic')!=[manifest['migration']]: raise RuntimeError('BACKUP_VERSION_INCOMPATIBLE')
             for item in members:
                 if item.filename=='manifest.json': continue
                 if not (item.filename=='database.dump' or item.filename.startswith(('config/','volumes/import_data/','volumes/ml_data/'))):
@@ -101,7 +106,7 @@ UNION ALL SELECT 'grant',table_schema||'.'||table_name,grantee,privilege_type FR
         '-c',sql),cwd=ROOT,capture_output=True,text=True)
     if result.returncode: raise RuntimeError('BACKUP_DATABASE_SNAPSHOT_FAILED')
     value=json.loads(result.stdout)
-    if value['alembic']!=['0004_followup'] or set(value['counts'])!=set(TABLES) or value['tables']!=sorted(TABLES):
+    if len(value['alembic'] or [])!=1 or value['alembic'][0] not in SUPPORTED_MIGRATIONS or set(value['counts'])!=set(TABLES) or value['tables']!=sorted(TABLES):
         raise RuntimeError('BACKUP_SCHEMA_INCOMPATIBLE')
     return value
 
@@ -242,7 +247,7 @@ def backup(target):
             recorded={k.removeprefix('volumes/'):{'size':len(v),'sha256':hashlib.sha256(v).hexdigest()}
                 for k,v in payloads.items() if k.startswith('volumes/')}
             if before!=after or check_files!=recorded: raise RuntimeError('BACKUP_STATE_CHANGED')
-            manifest={'version':1,'id':identifier,'origin':'SYNTHETIC','migration':'0004_followup',
+            manifest={'version':1,'id':identifier,'origin':'SYNTHETIC','migration':before['alembic'][0],
                 'private_data_scopes':['SYNTHETIC_STUDY'] + (['RETROSPECTIVE_EVALUATION'] if any(
                     k.startswith('volumes/ml_data/retrospective/') for k in payloads) else []),
                 'created_at':datetime.now(UTC).isoformat(),'window':{**window,'end':datetime.now(UTC).isoformat()},
