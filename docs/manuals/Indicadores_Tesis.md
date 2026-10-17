@@ -7,7 +7,7 @@ ni medida de eficacia escolar. Los periodos REAL siguen respondiendo
 Bloque 4; no se calcula aquí).
 
 - Pantalla: **Indicadores** (ADMIN, DIRECTOR, RESEARCHER; TUTOR solo sus secciones).
-- API: `GET /indicators/contexts`, `GET /indicators`, `GET /indicators/students`,
+- API: `GET /indicators/contexts`, `GET /indicators`, `GET /indicators/students`, `GET /indicators/interventions.csv`,
   `GET /indicators/export.csv` (`period_id`, `section_id` y `as_of` opcionales; `close_at` opcional).
 - CSV por estudiante con código anónimo; **nunca nombres**; celdas neutralizadas contra fórmulas.
 
@@ -41,7 +41,8 @@ CSV importado mediante los `bindings` del estudio. Por tanto:
 | **CRA** | cubiertos ÷ elegibles × 100 | elegibles con predicción vigente y, si el riesgo es MEDIUM/HIGH, alerta registrada (el reporte existe para toda matrícula autorizada) | estudiantes elegibles | predicciones, alertas |
 | **PDER** | detectados ÷ con referencia MEDIUM/HIGH × 100 | elegibles con referencia MEDIUM/HIGH y alerta abierta **antes del cierre** | elegibles con referencia MEDIUM/HIGH | referencia del estudio; `alerts.opened_at` |
 | **NIA** | intervenciones realizadas por estudiante | `DONE` con fecha efectiva ≤ `as_of` | elegibles (y, aparte, solo alertados) | `interventions` |
-| **Intervención oportuna** | oportunas ÷ con alerta × 100 | con ≥ 1 intervención realizada entre 0 y 14 días calendario (Lima) tras la alerta | elegibles con alerta | alertas, intervenciones |
+| **Intervención oportuna · por estudiante** | oportunas ÷ con alerta × 100 | con ≥ 1 intervención realizada entre 0 y 14 días calendario (Lima) tras la alerta | elegibles con alerta | alertas, intervenciones |
+| **Intervención oportuna · por intervención** | oportunas ÷ realizadas ligadas a alerta × 100 | intervenciones `DONE` con `performed_at` entre 0 y 14 días calendario (Lima) tras la apertura de la alerta de su caso | intervenciones `DONE` de estudiantes elegibles con `alert_id` ligado (las `DONE` sin alerta se cuentan aparte como `without_alert`) | alertas, intervenciones |
 | **Métricas del modelo** | matriz de confusión, precisión, sensibilidad, F1, exactitud, macro | pares (referencia, predicho) | elegibles evaluados con referencia | reutiliza `app.ml.evaluate.metrics` |
 | **Rendimiento** | n, media, DE, mediana, mín., máx. | promedio y asistencia del último corte | elegibles con dato | `academic_snapshots` |
 
@@ -64,6 +65,34 @@ Precisiones:
   Sin calibración ni evaluación prospectiva institucional.
 - **as_of**: filtra cortes, predicciones, alertas e intervenciones por su fecha de registro. El estado
   (p. ej. `DONE`) es el actual, no el histórico: reproducibilidad completa requeriría un historial de estados.
+
+### Intervención oportuna: por estudiante o por intervención
+
+Ambas versiones usan la misma regla temporal (`OPPORTUNE_WINDOW_DAYS = 14`, día 14 sí, día 15 no, medido en fechas
+calendario de America/Lima desde la apertura de la alerta) y cuentan solo intervenciones **realizadas**. Cambia la
+unidad de análisis:
+
+| Versión | Unidad | Cuándo usarla |
+|---|---|---|
+| **Por intervención** (`opportune_by_intervention`) | cada intervención realizada ligada a una alerta | Comparable con la **Tabla 6** de la tesis («% de intervención oportuna» junto al número de intervenciones, p. ej. 21 de 26 = 80,77 %). También el Excel real marca «oportuna sí/no» por intervención. |
+| **Por estudiante** (`opportune`) | cada estudiante con alerta: sí/no según su primera intervención | Insumo de la condición **dicotómica por estudiante** de la metodología (prueba de **McNemar**, antes/después). |
+
+Una proporción sobre intervenciones **no** es una proporción sobre estudiantes: un estudiante con dos intervenciones pesa
+dos veces en la primera y una sola vez en la segunda. No mezclar ambas en un mismo cuadro sin indicarlo. Reglas de la
+versión por intervención: las `DONE` sin alerta ligada no entran al denominador (`without_alert`); planificadas y
+canceladas no cuentan; las de estudiantes inelegibles quedan fuera; sin denominador el valor es `null` con motivo
+`NO_INTERVENTIONS_LINKED_TO_ALERT`, nunca 0 %. Una intervención anterior a la apertura de la alerta (días negativos)
+está en el denominador pero no es oportuna.
+
+Exportaciones: `GET /indicators/export.csv` (una fila por estudiante, versión por estudiante) y
+`GET /indicators/interventions.csv` (una fila por intervención realizada: periodo, código anónimo, sección, fecha de
+alerta, fecha de intervención, días, oportuna SI/NO; las sin alerta ligada llevan `alerta_vinculada = NO` y `oportuna`
+vacío). Ambas con solo códigos, fórmulas neutralizadas y registro de auditoría.
+
+Ejemplo (prueba `test_b2b_opportune_by_intervention.py`): el alumno *a* tiene dos realizadas (día 14 y día 15), *b* una
+(día 1), *c* ninguna, *d* una sin alerta, *e* solo una planificada y una cancelada, *f* es inelegible. Por intervención:
+**2 / 3 = 66,67 %** (a-día 14 y b sí; a-día 15 no) y `without_alert = 1`. Por estudiante: alertados *a, b, c, e* →
+**2 / 4 = 50 %**.
 
 ## Ejemplo numérico (prueba `test_b2_indicators.py`)
 

@@ -872,6 +872,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/indicators/interventions.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Interventions
+         * @description Cálculo con corte as_of explícito (reproducible). TUTOR solo ve sus secciones; sin riesgo de referencia almacenado el indicador es null con motivo REFERENCE_NOT_AVAILABLE. Solo códigos anónimos.
+         */
+        get: operations["exportInterventionsCsv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2902,6 +2922,7 @@ export interface components {
             pder: components["schemas"]["Ratio"];
             nia: components["schemas"]["Nia"];
             opportune: components["schemas"]["Opportune"];
+            opportune_by_intervention: components["schemas"]["OpportuneByIntervention"];
             performance: components["schemas"]["Performance"];
             model_metrics: components["schemas"]["ModelMetrics"] | null;
             /** Model Metrics Reason */
@@ -2938,6 +2959,24 @@ export interface components {
             is_locked: boolean;
             /** Sections */
             sections: components["schemas"]["ContextSection"][];
+        };
+        /**
+         * OpportuneByIntervention
+         * @description Por intervención (comparable con la Tabla 6): realizadas ligadas a alerta dentro de la ventana ÷ realizadas ligadas.
+         */
+        OpportuneByIntervention: {
+            /** Numerator */
+            numerator: number | null;
+            /** Denominator */
+            denominator: number | null;
+            /** Percent */
+            percent: number | null;
+            /** Reason */
+            reason?: string | null;
+            /** Window Days */
+            window_days: number;
+            /** Without Alert */
+            without_alert: number;
         };
     };
     responses: never;
@@ -6832,6 +6871,75 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["IndicatorContext"][];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol sin acceso */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Periodo o sección ajena o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description as_of futuro o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    exportInterventionsCsv: {
+        parameters: {
+            query: {
+                period_id: string;
+                section_id?: string | null;
+                as_of?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
                 };
             };
             /** @description Sesión requerida */

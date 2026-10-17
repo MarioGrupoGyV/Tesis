@@ -9,7 +9,7 @@ const reasons: Record<string, string> = {
   REFERENCE_NOT_AVAILABLE: 'Sin riesgo de referencia almacenado: no se calcula.', NO_REFERENCE_MEDIUM_OR_HIGH: 'No hay estudiantes con referencia media o alta.',
   NO_ELIGIBLE_STUDENTS: 'No hay estudiantes elegibles.', NO_ALERTS: 'Todavía no hay alertas.', NO_RECEIVED_RECORDS: 'No se han recibido registros.',
   PERIOD_LEVEL_ONLY: 'Solo disponible para el periodo completo y con acceso a todas las secciones.', STUDY_INTEGRITY_ERROR: 'No se pudo verificar la procedencia del estudio.',
-  STUDY_STORAGE_UNAVAILABLE: 'Almacenamiento del estudio no disponible.', NO_EVALUATED_STUDENTS_WITH_REFERENCE: 'Ningún estudiante evaluado tiene riesgo de referencia.', NO_DENOMINATOR: 'Sin denominador.' };
+  STUDY_STORAGE_UNAVAILABLE: 'Almacenamiento del estudio no disponible.', NO_EVALUATED_STUDENTS_WITH_REFERENCE: 'Ningún estudiante evaluado tiene riesgo de referencia.', NO_DENOMINATOR: 'Sin denominador.', NO_INTERVENTIONS_LINKED_TO_ALERT: 'Todavía no hay intervenciones realizadas ligadas a una alerta.' };
 const riskName: Record<string, string> = { LOW: 'Bajo', MEDIUM: 'Medio', HIGH: 'Alto' };
 const percent = (value: number | null | undefined) => value == null ? '—' : `${numberLabel(value)} %`;
 const ratioDetail = (r: IndicatorRatio) => r.numerator == null || r.denominator == null ? 'Numerador y denominador no disponibles' : `${numberLabel(r.numerator)} de ${numberLabel(r.denominator)}`;
@@ -33,19 +33,19 @@ export function IndicatorsPage({ user, initialPeriodId }: { user: User; initialP
   const activeSection = current?.sections.some(item => item.id === sectionId) ? sectionId : '';
   const params = current ? { period_id: current.period_id, section_id: activeSection || undefined } : null;
   const data = useQuery({ queryKey: [user.id, user.role, 'indicators', params], queryFn: ({ signal }) => api.indicators(params!, signal), enabled: !!params, retry: false });
-  async function download() {
+  async function download(kind: 'students' | 'interventions' = 'students') {
     if (!params || busy) return;
     setBusy(true); setDownloadError(null); setNotice('');
     try {
-      const blob = await api.exportIndicatorsCsv(params);
+      const blob = kind === 'students' ? await api.exportIndicatorsCsv(params) : await api.exportInterventionsCsv(params);
       if (!alive.current) return;
       const url = URL.createObjectURL(blob); const anchor = document.createElement('a');
-      anchor.href = url; anchor.download = 'seguimiento-escolar-indicadores.csv'; document.body.append(anchor); anchor.click(); anchor.remove(); setTimeout(() => URL.revokeObjectURL(url), 0);
+      anchor.href = url; anchor.download = kind === 'students' ? 'seguimiento-escolar-indicadores.csv' : 'seguimiento-escolar-intervenciones.csv'; document.body.append(anchor); anchor.click(); anchor.remove(); setTimeout(() => URL.revokeObjectURL(url), 0);
       setNotice('Respuesta CSV recibida. Contiene códigos anónimos, sin nombres.');
     } catch (error) { if (alive.current) setDownloadError(error); } finally { if (alive.current) setBusy(false); }
   }
   const header = <PageHeader title="Indicadores" eyebrow="INDICADORES DE LA TESIS" description="PRV, CRA, PDER, NIA e intervención oportuna por periodo y sección, calculados con los datos del sistema."
-    action={<button className="button primary" type="button" disabled={!params || busy || data.isPending || data.isError} aria-busy={busy} onClick={() => void download()}>{busy ? 'Obteniendo CSV…' : 'Descargar CSV'}</button>} />;
+    action={<div className="indicator-downloads"><button className="button primary" type="button" disabled={!params || busy || data.isPending || data.isError} aria-busy={busy} onClick={() => void download('students')}>{busy ? 'Obteniendo CSV…' : 'Descargar CSV'}</button><button className="button secondary" type="button" disabled={!params || busy || data.isPending || data.isError} onClick={() => void download('interventions')}>Descargar CSV por intervención</button></div>} />;
   if (contexts.isPending) return <div className="indicators-feature">{header}<LoadingState label="Cargando periodos autorizados…" /></div>;
   if (contexts.isError) return <div className="indicators-feature">{header}<ErrorState error={contexts.error} onRetry={() => void contexts.refetch()} /></div>;
   if (!current) return <div className="indicators-feature">{header}<EmptyState title="Todavía no hay indicadores"><p>No hay periodos de simulación disponibles para tu cuenta. Los periodos reales siguen bloqueados.</p></EmptyState></div>;
@@ -69,12 +69,13 @@ function Results({ data }: { data: IndicatorsResponse }) {
       <Card title="CRA · cobertura de reportes y alertas" value={percent(t.cra.percent)} detail={ratioDetail(t.cra)} reason={t.cra.reason} formula="Elegibles evaluados con reporte (y alerta si el riesgo es medio o alto) ÷ elegibles × 100." />
       <Card title="PDER · detección oportuna" value={percent(t.pder.percent)} detail={ratioDetail(t.pder)} reason={t.pder.reason} formula="Con riesgo de referencia medio/alto y alerta antes del cierre ÷ con riesgo de referencia medio/alto × 100." />
       <Card title="NIA · intervenciones realizadas por estudiante" value={t.nia.mean == null ? '—' : numberLabel(t.nia.mean)} detail={`${numberLabel(t.nia.total)} realizadas · ${numberLabel(t.nia.students)} elegibles`} reason={t.nia.reason} formula={`Solo intervenciones realizadas; las planificadas no cuentan. Entre alertados: media ${t.nia.mean_alerted == null ? '—' : numberLabel(t.nia.mean_alerted)}.`} />
-      <Card title="Intervención oportuna" value={percent(t.opportune.percent)} detail={ratioDetail(t.opportune)} reason={t.opportune.reason} formula={`Al menos una realizada en ≤ ${data.opportune_window_days} días de la alerta. Mediana alerta→primera: ${t.opportune.median_days_to_first == null ? '—' : numberLabel(t.opportune.median_days_to_first) + ' días'}.`} />
+      <Card title="Intervención oportuna · por estudiante" value={percent(t.opportune.percent)} detail={ratioDetail(t.opportune)} reason={t.opportune.reason} formula={`Al menos una realizada en ≤ ${data.opportune_window_days} días de la alerta. Mediana alerta→primera: ${t.opportune.median_days_to_first == null ? '—' : numberLabel(t.opportune.median_days_to_first) + ' días'}. Insumo de la prueba por estudiante (McNemar).`} />
+      <Card title="Intervención oportuna · por intervención" value={percent(t.opportune_by_intervention.percent)} detail={ratioDetail(t.opportune_by_intervention)} reason={t.opportune_by_intervention.reason} formula={`Intervenciones realizadas a ≤ ${data.opportune_window_days} días de la alerta de su caso ÷ realizadas ligadas a una alerta. Sin alerta ligada (aparte): ${numberLabel(t.opportune_by_intervention.without_alert)}. Comparable con la Tabla 6 de la tesis; la tarjeta anterior cuenta estudiantes, no intervenciones.`} />
     </section>
     {prv.received != null && <p className="muted report-note">PRV: recibidos {numberLabel(prv.received)}, válidos procesados {numberLabel(prv.valid_processed)}, rechazados {numberLabel(prv.rejected)}, válidos sin confirmar {numberLabel(prv.valid_not_committed)}, omitidos por inelegibilidad {numberLabel(prv.ineligible_omitted)}. Mediciones manuales aparte: {numberLabel(prv.manual_measurements)}.</p>}
     <section className="panel indicator-table" aria-labelledby="ind-sections-title"><h2 id="ind-sections-title">Por sección</h2>
       <div className="table-container" tabIndex={0} role="region" aria-label="Tabla de indicadores por sección; desplazamiento horizontal disponible"><table><caption>Indicadores por sección autorizada</caption>
-        <thead><tr><th scope="col">Sección</th><th scope="col">Elegibles</th><th scope="col">CRA</th><th scope="col">PDER</th><th scope="col">NIA medio</th><th scope="col">Oportuna</th></tr></thead>
+        <thead><tr><th scope="col">Sección</th><th scope="col">Elegibles</th><th scope="col">CRA</th><th scope="col">PDER</th><th scope="col">NIA medio</th><th scope="col">Oportuna (estudiantes)</th><th scope="col">Oportuna (intervenciones)</th></tr></thead>
         <tbody>{data.sections.map(row => <SectionRow key={row.section_id ?? 'total'} row={row} />)}</tbody></table></div></section>
     <section className="panel" aria-labelledby="ind-model-title"><h2 id="ind-model-title">Métricas del modelo frente al riesgo de referencia</h2>
       {t.model_metrics ? <Metrics metrics={t.model_metrics} /> : <p className="muted">No estimables: {reasons[t.model_metrics_reason ?? ''] ?? t.model_metrics_reason ?? 'sin datos'}</p>}</section>
@@ -86,7 +87,7 @@ function Results({ data }: { data: IndicatorsResponse }) {
 }
 
 function SectionRow({ row }: { row: IndicatorSummary }) {
-  return <tr><th scope="row">{row.grade}.º · {row.section_code}</th><td>{numberLabel(row.eligible_students)}</td><td>{percent(row.cra.percent)} <small>({ratioDetail(row.cra)})</small></td><td>{percent(row.pder.percent)} <small>({row.pder.reason ? reasons[row.pder.reason] ?? row.pder.reason : ratioDetail(row.pder)})</small></td><td>{row.nia.mean == null ? '—' : numberLabel(row.nia.mean)}</td><td>{percent(row.opportune.percent)} <small>({ratioDetail(row.opportune)})</small></td></tr>;
+  return <tr><th scope="row">{row.grade}.º · {row.section_code}</th><td>{numberLabel(row.eligible_students)}</td><td>{percent(row.cra.percent)} <small>({ratioDetail(row.cra)})</small></td><td>{percent(row.pder.percent)} <small>({row.pder.reason ? reasons[row.pder.reason] ?? row.pder.reason : ratioDetail(row.pder)})</small></td><td>{row.nia.mean == null ? '—' : numberLabel(row.nia.mean)}</td><td>{percent(row.opportune.percent)} <small>({ratioDetail(row.opportune)})</small></td><td>{percent(row.opportune_by_intervention.percent)} <small>({ratioDetail(row.opportune_by_intervention)})</small></td></tr>;
 }
 
 function Metrics({ metrics }: { metrics: NonNullable<IndicatorSummary['model_metrics']> }) {

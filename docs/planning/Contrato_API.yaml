@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.9.0
+  version: 0.9.1
   description: 'S6, M1 y Bloque 1 conservados. Bloque 2: indicadores de la tesis (PRV, CRA, PDER, NIA, intervención
     oportuna, métricas del modelo, rendimiento) por periodo y sección; solo lectura, SYNTHETIC. REAL continúa
     bloqueado con INSTITUTIONAL_PROCESSING_NOT_READY.'
@@ -3511,6 +3511,82 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: as_of futuro o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: B2
+      x-roles: *id024
+      security:
+      - sessionCookie: []
+      description: Cálculo con corte as_of explícito (reproducible). TUTOR solo ve sus secciones; sin riesgo
+        de referencia almacenado el indicador es null con motivo REFERENCE_NOT_AVAILABLE. Solo códigos anónimos.
+  /indicators/interventions.csv:
+    get:
+      tags:
+      - indicators
+      summary: Export Interventions
+      operationId: exportInterventionsCsv
+      parameters:
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
+      - name: section_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Section Id
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: As Of
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '422':
+          description: as_of futuro o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol sin acceso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Periodo o sección ajena o inexistente
           content:
             application/json:
               schema:
@@ -7146,6 +7222,8 @@ components:
           $ref: '#/components/schemas/Nia'
         opportune:
           $ref: '#/components/schemas/Opportune'
+        opportune_by_intervention:
+          $ref: '#/components/schemas/OpportuneByIntervention'
         performance:
           $ref: '#/components/schemas/Performance'
         model_metrics:
@@ -7170,6 +7248,7 @@ components:
       - pder
       - nia
       - opportune
+      - opportune_by_intervention
       - performance
       - model_metrics
       - exclusions
@@ -7223,4 +7302,43 @@ components:
       - sections
       title: IndicatorContext
       description: Periodo SYNTHETIC con estudio registrado y sus secciones autorizadas (incluye RESEARCHER).
+    OpportuneByIntervention:
+      properties:
+        numerator:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Numerator
+        denominator:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Denominator
+        percent:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Percent
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+        window_days:
+          type: integer
+          title: Window Days
+        without_alert:
+          type: integer
+          title: Without Alert
+      additionalProperties: false
+      type: object
+      required:
+      - numerator
+      - denominator
+      - percent
+      - window_days
+      - without_alert
+      title: OpportuneByIntervention
+      description: 'Por intervención (comparable con la Tabla 6): realizadas ligadas a alerta dentro de la
+        ventana ÷ realizadas ligadas.'
 x-current-sprint: S2.1

@@ -11,3 +11,4 @@
 .indicator-table table { min-width: 640px; }
 .indicator-matrix th, .indicator-matrix td { text-align: center; }
 @media (max-width: 480px) { .indicator-card .big { font-size: 26px; } }
+.indicator-downloads { display: flex; gap: 10px; flex-wrap: wrap; }

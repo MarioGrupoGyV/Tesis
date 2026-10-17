@@ -190,6 +190,7 @@ export const api = {
   updateIntervention: (id: string, input: InterventionPatch, signal?: AbortSignal) => write<InterventionView>(`/interventions/${encodeURIComponent(id)}`, input, signal, 'PATCH'),
   indicatorContexts: (signal?: AbortSignal) => request<IndicatorContext[]>('/indicators/contexts', { signal }),
   indicators: (params: { period_id: string; section_id?: string }, signal?: AbortSignal) => request<IndicatorsResponse>(`/indicators?${query(params)}`, { signal }),
+  exportInterventionsCsv: (params: { period_id: string; section_id?: string }, signal?: AbortSignal) => requestCsv(`/indicators/interventions.csv?${query(params)}`, signal),
   exportIndicatorsCsv: (params: { period_id: string; section_id?: string }, signal?: AbortSignal) => requestCsv(`/indicators/export.csv?${query(params)}`, signal),
   reportSummary: (filters: ReportFilters, signal?: AbortSignal) => request<ReportSummary>(`/reports/summary?${query(filters)}`, { signal }),
   exportReportCsv: (filters: Omit<ReportFilters, 'page' | 'page_size'>, signal?: AbortSignal) => requestCsv(`/reports/export.csv?${query(filters)}`, signal),
