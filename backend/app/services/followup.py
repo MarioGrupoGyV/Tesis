@@ -112,7 +112,7 @@ def sync_current(db,user,period_id,settings,request_id,prediction_ids=None):
             continue
         if requested is not None and str(prediction_id) not in requested:
             continue
-        if row['_model_id']!=model.id or row['_study_id']!=study.id or row['_batch_status']!='COMMITTED':
+        if row['_model_id']!=model.id or row['_study_id']!=study.id or row['_batch_status'] not in ('COMMITTED','MANUAL'):
             raise AppError(409,'STUDY_INTEGRITY_ERROR','La evaluación no pertenece al contexto registrado.')
         prior=repository.decision(db,prediction_id)
         if prior:

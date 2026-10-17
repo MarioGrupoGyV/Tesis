@@ -67,7 +67,10 @@ def persist_evaluated(db, *, snapshot_id, model_id, result, actor_id, request_id
         raise AppError(422,'ORIGIN_NOT_SUPPORTED','Corte y modelo deben conservar el mismo origen.')
     # La persistencia aislada prueba integridad con modelos inactivos. La selección
     # operativa exige protocolo + modelo aprobado/activo en run_period, sin bypass.
-    if model.feature_schema_version != 'ml-features-v1' or snapshot.schema_version != 'academic-v1':
+    manual = snapshot.entry_channel == 'MANUAL' and snapshot.schema_version == 'manual-v1'
+    if manual and (period.data_origin != 'SYNTHETIC' or snapshot.data_origin != 'SYNTHETIC'):
+        raise AppError(422,'INSTITUTIONAL_PROCESSING_NOT_READY','La evaluación de mediciones manuales solo está disponible en simulación.')
+    if model.feature_schema_version != 'ml-features-v1' or (snapshot.schema_version != 'academic-v1' and not manual):
         raise AppError(409,'MODEL_INCOMPATIBLE','El esquema del modelo no es compatible.')
     row,created = repository.insert_prediction(db,dict(id=uuid4(),enrollment_id=snapshot.enrollment_id,
         snapshot_id=snapshot.id,model_id=model.id,data_origin=snapshot.data_origin,risk_level=result.risk_level,
@@ -79,6 +82,34 @@ def persist_evaluated(db, *, snapshot_id, model_id, result, actor_id, request_id
             request_id=request_id,payload={'snapshot_id':str(snapshot.id),'model_id':str(model.id)}))
         db.flush()
     return row,created
+
+
+def observation_from_row(row, period, bundle):
+    """Observación del modelo. manual-v1 equivale semánticamente a academic-v1 (mismas cinco variables).
+
+    En MANUAL no existe fecha objetivo observada: el horizonte del modelo se deriva solo en
+    memoria (día de corte en America/Lima + horizon_days) y nunca se guarda en el corte.
+    """
+    from datetime import timedelta
+    from app.ml.features import LIMA, Observation
+    manual = row.get('entry_channel') == 'MANUAL'
+    available = {name:row['available_at'] for name in bundle.config.features}
+    target = row['target_date']
+    if manual:
+        stored = row.get('variable_available_at') or {}
+        for name in bundle.config.features:
+            if name in stored:
+                available[name] = datetime.fromisoformat(stored[name])
+        target = row['cutoff_at'].astimezone(LIMA).date() + timedelta(days=bundle.config.horizon_days)
+    return Observation(student_key=str(row['student_id']),snapshot_id=row['id'],
+        enrollment_id=row['enrollment_id'],period_id=period.id,data_origin=row['data_origin'],
+        schema_version='academic-v1',revision=row['revision'],supersedes_id=row['supersedes_id'],
+        window_start=row['window_start'],available_at=row['available_at'],cutoff_at=row['cutoff_at'],
+        target_date=target,created_at=row['created_at'],
+        eligible=bool(row['student_active'] and row['eligible_for_processing'] and
+            (row['data_origin']=='SYNTHETIC' or(row['consent_documented'] and row['assent_documented']))),
+        values={name:float(row[name]) if row[name] is not None else None for name in bundle.config.features},
+        feature_available_at=available,input_provenance='snapshot:'+str(row['id']))
 
 
 def infer_selected(db, user, period, as_of, model, bundle, request_id):
@@ -94,20 +125,7 @@ def infer_selected(db, user, period, as_of, model, bundle, request_id):
     created = reused = 0
     abstentions = []
     for row in selected:
-        if row.get('entry_channel') == 'MANUAL':
-            abstentions.append(schemas.Abstention(snapshot_id=row['id'],status='INCOMPATIBLE',
-                reason='La evaluación de mediciones manuales guardadas corresponde a una fase posterior a M1.'))
-            continue
-        observation = Observation(student_key=str(row['student_id']),snapshot_id=row['id'],
-            enrollment_id=row['enrollment_id'],period_id=period.id,data_origin=row['data_origin'],
-            schema_version=row['schema_version'],revision=row['revision'],supersedes_id=row['supersedes_id'],
-            window_start=row['window_start'],available_at=row['available_at'],cutoff_at=row['cutoff_at'],
-            target_date=row['target_date'],created_at=row['created_at'],
-            eligible=bool(row['student_active'] and row['eligible_for_processing'] and
-                (row['data_origin']=='SYNTHETIC' or(row['consent_documented'] and row['assent_documented']))),
-            values={name:float(row[name]) if row[name] is not None else None for name in bundle.config.features},
-            feature_available_at={name:row['available_at'] for name in bundle.config.features},
-            input_provenance='snapshot:'+str(row['id']))
+        observation = observation_from_row(row,period,bundle)
         result = predict_snapshot(observation,bundle)
         if result.status != 'EVALUATED':
             abstentions.append(schemas.Abstention(snapshot_id=row['id'],status=result.status,reason=result.reason))
@@ -121,27 +139,17 @@ def infer_selected(db, user, period, as_of, model, bundle, request_id):
         followup=FollowupResult(period_id=period.id))
 
 
-def run_period(db,user,payload,settings,request_id):
-    require_admin(user)
+def load_active_model(db,period,settings,as_of):
+    """Estudio SYNTHETIC registrado + modelo activo aprobado + artefacto verificado."""
     from app.services.synthetic_study import validate_registered
     from app.models.synthetic import SyntheticStudyRecord
-    period = db.scalar(select(AcademicPeriod).where(AcademicPeriod.id==payload.period_id).with_for_update(read=True)
-                       .execution_options(populate_existing=True))
-    if period is None:
-        raise AppError(404,'PERIOD_NOT_FOUND','El periodo no está disponible.')
-    if period.data_origin!='SYNTHETIC':
-        require_ml_protocol()
-    if period.is_locked:
-        raise AppError(409,'PERIOD_LOCKED','El periodo está bloqueado.')
-    if payload.as_of > datetime.now(UTC):
-        raise AppError(422,'AS_OF_IN_FUTURE','as_of no puede estar en el futuro.')
     study=db.scalar(select(SyntheticStudyRecord).where(SyntheticStudyRecord.period_id==period.id))
     if study is None:
         raise AppError(422,'SYNTHETIC_STUDY_NOT_PREPARED','El estudio sintético no está preparado.')
     validate_registered(db,settings,study)
     model = db.scalar(select(ModelVersion).where(ModelVersion.is_active.is_(True),ModelVersion.status=='APPROVED',
                         ModelVersion.data_origin==period.data_origin,ModelVersion.study_id==study.id,
-                        ModelVersion.created_at<=payload.as_of).with_for_update(read=True)
+                        ModelVersion.created_at<=as_of).with_for_update(read=True)
                         .execution_options(populate_existing=True))
     if model is None or settings.ml_storage_dir is None:
         raise AppError(409,'MODEL_NOT_AVAILABLE','Modelo no disponible.')
@@ -159,6 +167,22 @@ def run_period(db,user,payload,settings,request_id):
             raise MLDiagnostic('MODEL_HASH_MISMATCH')
     except MLDiagnostic:
         raise AppError(409,'MODEL_NOT_AVAILABLE','Modelo no disponible o incompatible.') from None
+    return study,model,bundle
+
+
+def run_period(db,user,payload,settings,request_id):
+    require_admin(user)
+    period = db.scalar(select(AcademicPeriod).where(AcademicPeriod.id==payload.period_id).with_for_update(read=True)
+                       .execution_options(populate_existing=True))
+    if period is None:
+        raise AppError(404,'PERIOD_NOT_FOUND','El periodo no está disponible.')
+    if period.data_origin!='SYNTHETIC':
+        require_ml_protocol()
+    if period.is_locked:
+        raise AppError(409,'PERIOD_LOCKED','El periodo está bloqueado.')
+    if payload.as_of > datetime.now(UTC):
+        raise AppError(422,'AS_OF_IN_FUTURE','as_of no puede estar en el futuro.')
+    study,model,bundle = load_active_model(db,period,settings,payload.as_of)
     try:
         # Orden común S5: periodo compartido → modelo compartido → matrículas UUID.
         # Importación toma las mismas matrículas antes de insertar otra revisión.
@@ -178,6 +202,64 @@ def run_period(db,user,payload,settings,request_id):
                                      prediction_ids=prediction_ids)
         db.commit()
         return result
+    except Exception:
+        db.rollback()
+        raise
+
+
+def evaluate_student(db,user,student_id,period_id,settings,request_id):
+    """Evalúa solo la última revisión de la matrícula y sincroniza su seguimiento; un solo commit."""
+    require_admin(user)
+    from sqlalchemy.exc import IntegrityError
+    from app.services.students import authorize_student
+    enrollment = authorize_student(db,user,student_id,period_id)
+    period = db.scalar(select(AcademicPeriod).where(AcademicPeriod.id==period_id).with_for_update(read=True)
+                       .execution_options(populate_existing=True))
+    if period.data_origin!='SYNTHETIC':
+        require_ml_protocol()
+    if period.is_locked:
+        raise AppError(409,'PERIOD_LOCKED','El periodo está bloqueado.')
+    now = datetime.now(UTC)
+    try:
+        study,model,bundle = load_active_model(db,period,settings,now)
+        db.get(EnrollmentRecord,enrollment.id,with_for_update=True,populate_existing=True)
+        rows = repository.select_snapshots(db,period.id,now,enrollment.id)
+        if not rows:
+            raise AppError(422,'NO_MEASUREMENT','Registra una medición antes de evaluar al estudiante.')
+        row = rows[0]
+        from app.ml.predict import predict_snapshot
+        result = predict_snapshot(observation_from_row(row,period,bundle),bundle)
+        base = dict(snapshot_id=row['id'])
+        if result.status == 'INELIGIBLE':
+            out = schemas.StudentEvaluation(status='NOT_ELIGIBLE',reason='El estudiante no está activo o no es elegible para la simulación.',**base)
+        elif result.status == 'INSUFFICIENT_DATA':
+            out = schemas.StudentEvaluation(status='INSUFFICIENT_DATA',
+                reason='Faltan datos para evaluar. No se asigna riesgo.',**base)
+        elif result.status != 'EVALUATED':
+            raise AppError(409,'MODEL_INCOMPATIBLE','El modelo activo no es compatible con esta medición.')
+        else:
+            prediction,created = persist_evaluated(db,snapshot_id=row['id'],model_id=model.id,result=result,
+                                                   actor_id=user.id,request_id=request_id)
+            from app.services.followup import sync_current
+            sync_current(db,user,period.id,settings,request_id,prediction_ids=[prediction.id])
+            decision = repository.decision_for(db,prediction.id)
+            action = 'NONE'
+            if decision is not None and decision.alert_id is not None:
+                action = {'CREATED':'CREATED','UPDATED':'UPDATED'}.get(decision.decision,'NONE')
+                if not created:
+                    action = 'REUSED'
+            out = schemas.StudentEvaluation(status='EVALUATED',risk_level=prediction.risk_level,
+                prediction_id=prediction.id,prediction_reused=not created,case_action=action,
+                alert_id=decision.alert_id if decision else None,**base)
+        db.add(AuditEvent(actor_id=user.id,entity_type='ENROLLMENT',entity_id=enrollment.id,
+            action='STUDENT_EVALUATION_REQUESTED',request_id=request_id,
+            payload={'snapshot_id':str(row['id']),'status':out.status,'model_id':str(model.id),
+                     'prediction_id':str(out.prediction_id) if out.prediction_id else None}))
+        db.commit()
+        return out
+    except IntegrityError:
+        db.rollback()
+        raise AppError(409,'EVALUATION_CONFLICT','La evaluación concurrente requiere reintento.') from None
     except Exception:
         db.rollback()
         raise

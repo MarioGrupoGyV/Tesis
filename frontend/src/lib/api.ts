@@ -23,6 +23,7 @@ export type TimelineEventPage = components['schemas']['TimelineEventPage'];
 export type Model = components['schemas']['Model'];
 export type ModelPage = components['schemas']['ModelPage'];
 export type Prediction = components['schemas']['Prediction'];
+export type StudentEvaluation = components['schemas']['StudentEvaluation'];
 export type PredictionRunResult = components['schemas']['PredictionRunResult'];
 export type ImportBatch = components['schemas']['ImportBatch'];
 export type ImportCommit = components['schemas']['ImportCommit'];
@@ -169,6 +170,7 @@ export const api = {
   retrospectivePartialPrediction: (input: RetrospectivePartialInput) => write<RetrospectivePartialResult>('/retrospective/partial-prediction', input),
   exportRetrospectiveCsv: (id: string) => requestCsv(`/retrospective/evaluations/${encodeURIComponent(id)}/report.csv`),
   prediction: (id: string, signal?: AbortSignal) => request<Prediction>(`/predictions/${encodeURIComponent(id)}`, { signal }),
+  evaluateStudent: (id: string, periodId: string, signal?: AbortSignal) => write<StudentEvaluation>(`/students/${encodeURIComponent(id)}/evaluate?${query({ period_id: periodId })}`, {}, signal),
   runPredictions: (input: components['schemas']['PredictionRunInput'], signal?: AbortSignal) => write<PredictionRunResult>('/predictions/run', input, signal),
   async previewImport(file: File, periodId: string, signal?: AbortSignal): Promise<ImportBatch> {
     const token = await csrf(signal); const body = new FormData(); body.append('file', file); body.append('period_id', periodId);

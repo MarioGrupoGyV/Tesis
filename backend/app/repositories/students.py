@@ -14,8 +14,10 @@ LEFT JOIN LATERAL (
 LEFT JOIN risk_school.import_batches ib ON ib.id=sn.import_batch_id
 LEFT JOIN LATERAL (
  SELECT m.* FROM risk_school.model_versions m WHERE m.is_active AND m.status='APPROVED'
- AND m.data_origin=e.data_origin AND (e.data_origin<>'SYNTHETIC' OR m.study_id=ib.study_id)
- AND m.created_at<=statement_timestamp() AND sn.entry_channel='CSV'
+ AND m.data_origin=e.data_origin AND (e.data_origin<>'SYNTHETIC' OR m.study_id=COALESCE(ib.study_id,
+   (SELECT st.id FROM risk_school.synthetic_studies st WHERE st.period_id=e.period_id AND st.data_origin='SYNTHETIC')))
+ AND m.created_at<=statement_timestamp()
+ AND (sn.entry_channel='CSV' OR (sn.entry_channel='MANUAL' AND e.data_origin='SYNTHETIC'))
  LIMIT 1
 ) current_model ON true
 LEFT JOIN LATERAL (
@@ -73,8 +75,12 @@ def public_student(db, enrollment_id):
 
 
 def selected_prediction(db, prediction_id):
-    return db.execute(text("""SELECT p.*,s.cutoff_at,s.target_date
+    # target_date es dato observado (CSV). Para MANUAL queda null; el horizonte del modelo se deriva.
+    return db.execute(text("""SELECT p.*,s.cutoff_at,s.target_date,
+        CASE WHEN s.target_date IS NULL THEN (s.cutoff_at AT TIME ZONE 'America/Lima')::date
+          + (m.manifest->>'horizon_days')::integer END AS model_horizon_date
         FROM risk_school.predictions p JOIN risk_school.academic_snapshots s ON s.id=p.snapshot_id
+        JOIN risk_school.model_versions m ON m.id=p.model_id
         WHERE p.id=:id"""), {'id': prediction_id}).mappings().first()
 
 

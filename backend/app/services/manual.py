@@ -1,4 +1,4 @@
-"""Registro local M1. No requiere ni habilita procesamiento predictivo."""
+"""Registro local M1. En SYNTHETIC el alumno queda elegible (Bloque 1); en REAL nunca."""
 from datetime import UTC, datetime
 from decimal import Decimal
 from hashlib import sha256
@@ -116,7 +116,7 @@ def create_student(db,user,payload,request_id):
     def change():
         period,_ = enrollment_context(db,payload.period_id,payload.section_id)
         student = StudentRecord(anon_code=payload.anon_code,full_name=payload.full_name,data_origin=period.data_origin,
-            eligible_for_processing=False,consent_documented=False,assent_documented=False)
+            eligible_for_processing=period.data_origin=='SYNTHETIC',consent_documented=False,assent_documented=False)
         db.add(student)
         db.flush()
         db.add(EnrollmentRecord(student_id=student.id,period_id=period.id,section_id=payload.section_id,data_origin=period.data_origin))
@@ -154,6 +154,9 @@ def enroll(db,user,payload,request_id):
         if student.data_origin!=period.data_origin:
             conflict('Alumno y periodo deben conservar el mismo origen.')
         row=EnrollmentRecord(student_id=student.id,period_id=period.id,section_id=payload.section_id,data_origin=period.data_origin)
+        if period.data_origin=='SYNTHETIC' and not student.eligible_for_processing:
+            student.eligible_for_processing=True
+            student.version+=1
         db.add(row)
         return row
     return command(db,user,payload,'M1_ENROLLMENT_CREATED',None,EnrollmentRecord,schema.EnrollmentView,request_id,change)

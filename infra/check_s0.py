@@ -51,7 +51,7 @@ def run():
     contract_path = ROOT / "docs/planning/Contrato_API.yaml"
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     validate(contract)
-    check(contract["info"]["version"] == "0.7.0", "OpenAPI 3.1 válido, versión 0.7.0 M1")
+    check(contract["info"]["version"] == "0.8.0", "OpenAPI 3.1 válido, versión 0.8.0 Bloque 1")
     operation_count = sum(method in ('get','post','patch','put','delete') for methods in contract['paths'].values() for method in methods)
     check(operation_count == 44, '44 operaciones: 32 conservadas y 12 M1')
     for path, methods in contract["paths"].items():

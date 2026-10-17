@@ -83,7 +83,9 @@ class Prediction(ContractModel):
     data_origin: Origin
     risk_level: Risk
     cutoff_at: datetime
-    target_date: date
+    target_date: date | None = None
+    # Solo MANUAL: horizonte del modelo derivado (no es una fecha objetivo observada).
+    model_horizon_date: date | None = None
     predicted_at: datetime
     probability_low: Number | None
     probability_medium: Number | None

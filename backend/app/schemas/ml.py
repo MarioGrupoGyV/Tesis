@@ -46,3 +46,15 @@ class PredictionRunResult(ContractModel):
     reused: int
     abstentions: list[Abstention]
     followup: FollowupResult
+
+
+class StudentEvaluation(ContractModel):
+    """Resultado de evaluar la última medición de una matrícula (simulación)."""
+    status: Literal['EVALUATED','INSUFFICIENT_DATA','NOT_ELIGIBLE','MODEL_NOT_AVAILABLE']
+    risk_level: Literal['LOW','MEDIUM','HIGH'] | None = None
+    reason: str | None = None
+    snapshot_id: UUID
+    prediction_id: UUID | None = None
+    prediction_reused: bool = False
+    case_action: Literal['CREATED','UPDATED','REUSED','NONE'] = 'NONE'
+    alert_id: UUID | None = None

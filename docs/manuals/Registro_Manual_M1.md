@@ -1,8 +1,11 @@
 # Registro manual M1
 
 Abrir Seguimiento Escolar con una cuenta autorizada. El registro académico local
-funciona sin modelo. Guardar no evalúa riesgo: M1 no crea predicciones, alertas,
-intervenciones ni reportes predictivos de las nuevas mediciones.
+funciona sin modelo. Guardar una medición no evalúa riesgo por sí solo.
+**Bloque 1 (2026-10-17):** en periodos SYNTHETIC con modelo técnico activo, ADMIN puede
+pulsar «Evaluar riesgo de este estudiante» en la ficha para evaluar la última revisión
+(simulación; sin valor de validación académica). REAL no se evalúa: sigue respondiendo
+`INSTITUTIONAL_PROCESSING_NOT_READY`. Guion: [Guion_Demo_Manual.md](Guion_Demo_Manual.md).
 
 1. **Preparar (ADMIN).** En Estudiantes → Periodos → Nuevo periodo, indicar
    código, año y fechas del mismo año, y escoger el origen efectivo REAL o

@@ -772,6 +772,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/students/{id}/evaluate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Evaluate
+         * @description Evalúa solo la última revisión de la medición de la matrícula con el modelo activo del estudio, persiste la predicción y sincroniza el seguimiento de esa predicción en una sola transacción. Idempotente por medición y modelo. El horizonte del modelo de una medición MANUAL se deriva y no se guarda como fecha objetivo.
+         */
+        post: operations["evaluateStudent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -952,45 +972,61 @@ export interface components {
                 [key: string]: string;
             };
         };
-        /** @description Probabilidades todas null o todas presentes; suma 1 con tolerancia 0.00001. Validar suma en servidor. calibrated true exige valores presentes. */
+        /** Prediction */
         Prediction: {
-            /** Format: uuid */
+            /**
+             * Id
+             * Format: uuid
+             */
             id: string;
-            /** Format: uuid */
+            /**
+             * Enrollment Id
+             * Format: uuid
+             */
             enrollment_id: string;
-            /** Format: uuid */
+            /**
+             * Snapshot Id
+             * Format: uuid
+             */
             snapshot_id: string;
-            /** Format: uuid */
+            /**
+             * Model Id
+             * Format: uuid
+             */
             model_id: string;
-            /** @enum {string} */
+            /**
+             * Data Origin
+             * @enum {string}
+             */
             data_origin: "REAL" | "SYNTHETIC";
-            /** @enum {string} */
+            /**
+             * Risk Level
+             * @enum {string}
+             */
             risk_level: "LOW" | "MEDIUM" | "HIGH";
             /**
+             * Cutoff At
              * Format: date-time
-             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
              */
             cutoff_at: string;
-            /** Format: date */
-            target_date: string;
+            /** Target Date */
+            target_date?: string | null;
+            /** Model Horizon Date */
+            model_horizon_date?: string | null;
             /**
+             * Predicted At
              * Format: date-time
-             * @description RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
              */
             predicted_at: string;
+            /** Probability Low */
             probability_low: number | null;
+            /** Probability Medium */
             probability_medium: number | null;
+            /** Probability High */
             probability_high: number | null;
+            /** Probabilities Calibrated */
             probabilities_calibrated: boolean;
-        } & (({
-            probability_low?: null;
-            probability_medium?: null;
-            probability_high?: null;
-        } | {
-            probability_low?: number;
-            probability_medium?: number;
-            probability_high?: number;
-        }) & unknown);
+        };
         /** Student */
         Student: {
             /**
@@ -2506,6 +2542,41 @@ export interface components {
             confirmed: boolean;
             /** Reason */
             reason: string;
+        };
+        /**
+         * StudentEvaluation
+         * @description Resultado de evaluar la última medición de una matrícula (simulación).
+         */
+        StudentEvaluation: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "EVALUATED" | "INSUFFICIENT_DATA" | "NOT_ELIGIBLE" | "MODEL_NOT_AVAILABLE";
+            /** Risk Level */
+            risk_level?: ("LOW" | "MEDIUM" | "HIGH") | null;
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Snapshot Id
+             * Format: uuid
+             */
+            snapshot_id: string;
+            /** Prediction Id */
+            prediction_id?: string | null;
+            /**
+             * Prediction Reused
+             * @default false
+             */
+            prediction_reused: boolean;
+            /**
+             * Case Action
+             * @default NONE
+             * @enum {string}
+             */
+            case_action: "CREATED" | "UPDATED" | "REUSED" | "NONE";
+            /** Alert Id */
+            alert_id?: string | null;
         };
     };
     responses: never;
@@ -6073,6 +6144,86 @@ export interface operations {
                 };
             };
             /** @description Campos, escalas, origen o fechas inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    evaluateStudent: {
+        parameters: {
+            query: {
+                period_id: string;
+            };
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentEvaluation"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol, CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Estudiante ajeno o inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Periodo bloqueado, modelo no disponible o conflicto de integridad */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Sin medición, estudio no preparado o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY) */
             422: {
                 headers: {
                     [name: string]: unknown;

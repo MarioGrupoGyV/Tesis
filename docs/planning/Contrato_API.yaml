@@ -1,9 +1,9 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.7.0
-  description: S6 conservado. M1 registro académico manual REAL/SYNTHETIC local. Inferencia e importación REAL
-    bloqueadas; sin integración predictiva de mediciones manuales.
+  version: 0.8.0
+  description: 'S6 y M1 conservados. Bloque 1: ADMIN evalúa la última medición de una matrícula SYNTHETIC con
+    el modelo activo del estudio (simulación). REAL continúa bloqueado con INSTITUTIONAL_PROCESSING_NOT_READY.'
 servers:
 - url: /api/v1
   description: Preferir proxy de mismo origen para cookies y CSRF
@@ -3119,6 +3119,84 @@ paths:
       - sessionCookie: []
       description: 'M1: permisos y contexto verificados en servidor. Escrituras atómicas con auditoría e idempotencia
         por actor; expected_version/expected_revision en cambios. Sin predicción.'
+  /students/{id}/evaluate:
+    post:
+      tags:
+      - students
+      summary: Evaluate
+      operationId: evaluateStudent
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentEvaluation'
+        '422':
+          description: Sin medición, estudio no preparado o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol, CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Estudiante ajeno o inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Periodo bloqueado, modelo no disponible o conflicto de integridad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: B1
+      x-roles:
+      - ADMIN
+      security:
+      - sessionCookie: []
+      description: Evalúa solo la última revisión de la medición de la matrícula con el modelo activo del estudio,
+        persiste la predicción y sincroniza el seguimiento de esa predicción en una sola transacción. Idempotente
+        por medición y modelo. El horizonte del modelo de una medición MANUAL se deriva y no se guarda como
+        fecha objetivo.
 components:
   securitySchemes:
     sessionCookie:
@@ -3458,48 +3536,76 @@ components:
       - missing_fraction
       title: Snapshot
     Prediction:
-      type: object
       properties:
-        id: *id024
-        enrollment_id: *id024
-        snapshot_id: *id024
-        model_id: *id024
-        data_origin: &id026
+        id:
+          type: string
+          format: uuid
+          title: Id
+        enrollment_id:
+          type: string
+          format: uuid
+          title: Enrollment Id
+        snapshot_id:
+          type: string
+          format: uuid
+          title: Snapshot Id
+        model_id:
+          type: string
+          format: uuid
+          title: Model Id
+        data_origin:
           type: string
           enum:
           - REAL
           - SYNTHETIC
+          title: Data Origin
         risk_level:
           type: string
           enum:
           - LOW
           - MEDIUM
           - HIGH
-        cutoff_at: *id025
-        target_date:
+          title: Risk Level
+        cutoff_at:
           type: string
-          format: date
-        predicted_at: *id025
+          format: date-time
+          title: Cutoff At
+        target_date:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Target Date
+        model_horizon_date:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Model Horizon Date
+        predicted_at:
+          type: string
+          format: date-time
+          title: Predicted At
         probability_low:
-          type:
-          - number
-          - 'null'
-          minimum: 0
-          maximum: 1
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Probability Low
         probability_medium:
-          type:
-          - number
-          - 'null'
-          minimum: 0
-          maximum: 1
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Probability Medium
         probability_high:
-          type:
-          - number
-          - 'null'
-          minimum: 0
-          maximum: 1
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Probability High
         probabilities_calibrated:
           type: boolean
+          title: Probabilities Calibrated
+      additionalProperties: false
+      type: object
       required:
       - id
       - enrollment_id
@@ -3508,39 +3614,12 @@ components:
       - data_origin
       - risk_level
       - cutoff_at
-      - target_date
       - predicted_at
-      - probabilities_calibrated
       - probability_low
       - probability_medium
       - probability_high
-      additionalProperties: false
-      description: Probabilidades todas null o todas presentes; suma 1 con tolerancia 0.00001. Validar suma
-        en servidor. calibrated true exige valores presentes.
-      allOf:
-      - oneOf:
-        - properties:
-            probability_low:
-              type: 'null'
-            probability_medium:
-              type: 'null'
-            probability_high:
-              type: 'null'
-        - properties:
-            probability_low:
-              type: number
-            probability_medium:
-              type: number
-            probability_high:
-              type: number
-      - if:
-          properties:
-            probabilities_calibrated:
-              const: true
-        then:
-          properties:
-            probability_low:
-              type: number
+      - probabilities_calibrated
+      title: Prediction
     Student:
       properties:
         id:
@@ -3723,7 +3802,11 @@ components:
       properties:
         id: *id024
         period_id: *id024
-        data_origin: *id026
+        data_origin: &id026
+          type: string
+          enum:
+          - REAL
+          - SYNTHETIC
         file_name:
           type: string
         file_sha256:
@@ -6094,4 +6177,64 @@ components:
       - confirmed
       - reason
       title: StudentPatch
+    StudentEvaluation:
+      properties:
+        status:
+          type: string
+          enum:
+          - EVALUATED
+          - INSUFFICIENT_DATA
+          - NOT_ELIGIBLE
+          - MODEL_NOT_AVAILABLE
+          title: Status
+        risk_level:
+          anyOf:
+          - type: string
+            enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+          - type: 'null'
+          title: Risk Level
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+        snapshot_id:
+          type: string
+          format: uuid
+          title: Snapshot Id
+        prediction_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Prediction Id
+        prediction_reused:
+          type: boolean
+          title: Prediction Reused
+          default: false
+        case_action:
+          type: string
+          enum:
+          - CREATED
+          - UPDATED
+          - REUSED
+          - NONE
+          title: Case Action
+          default: NONE
+        alert_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Alert Id
+      additionalProperties: false
+      type: object
+      required:
+      - status
+      - snapshot_id
+      title: StudentEvaluation
+      description: Resultado de evaluar la última medición de una matrícula (simulación).
 x-current-sprint: S2.1

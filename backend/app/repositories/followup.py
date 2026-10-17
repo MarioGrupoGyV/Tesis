@@ -45,7 +45,9 @@ def locked_intervention(db,id):
 
 def current_rows(db,period_id):
     return db.execute(text('SELECT '+STUDENT_COLUMNS+''',sn.id AS _snapshot_id,pred.id AS _prediction_id,
-        current_model.id AS _model_id,ib.study_id AS _study_id,ib.status AS _batch_status,
+        current_model.id AS _model_id,COALESCE(ib.study_id,(SELECT st.id FROM risk_school.synthetic_studies st
+          WHERE st.period_id=e.period_id AND st.data_origin='SYNTHETIC')) AS _study_id,
+        CASE WHEN sn.entry_channel='MANUAL' THEN 'MANUAL' ELSE ib.status END AS _batch_status,
         sn.revision AS _revision,g.tutor_id AS _tutor_id '''+FROM_STUDENTS+
         " WHERE e.period_id=:period AND e.data_origin='SYNTHETIC' ORDER BY e.id"),
         {'period':period_id}).mappings().all()

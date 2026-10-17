@@ -21,7 +21,7 @@ def accessible_prediction(db,user,id):
     return db.scalar(query)
 
 
-def select_snapshots(db,period_id,as_of):
+def select_snapshots(db,period_id,as_of,enrollment_id=None):
     # created_at es el instante de incorporación, distinto de disponibilidad declarada.
     return db.execute(text('''SELECT DISTINCT ON (sn.enrollment_id) sn.*,s.id AS student_id,
         s.eligible_for_processing,s.is_active AS student_active,s.consent_documented,s.assent_documented,g.grade
@@ -31,8 +31,14 @@ def select_snapshots(db,period_id,as_of):
         JOIN risk_school.grade_sections g ON g.id=e.section_id
         WHERE sn.period_id=:period AND sn.data_origin IN ('REAL','SYNTHETIC') AND sn.cutoff_at<=:as_of
           AND sn.available_at<=:as_of AND sn.created_at<=:as_of AND e.created_at<=:as_of AND s.created_at<=:as_of
+          AND (CAST(:enrollment AS uuid) IS NULL OR sn.enrollment_id=CAST(:enrollment AS uuid))
         ORDER BY sn.enrollment_id,sn.cutoff_at DESC,sn.revision DESC,sn.id'''),
-        {'period':period_id,'as_of':as_of}).mappings().all()
+        {'period':period_id,'as_of':as_of,'enrollment':enrollment_id}).mappings().all()
+
+
+def decision_for(db,prediction_id):
+    from app.models.followup import FollowupDecisionRecord
+    return db.scalar(select(FollowupDecisionRecord).where(FollowupDecisionRecord.prediction_id==prediction_id))
 
 
 def insert_prediction(db,values):

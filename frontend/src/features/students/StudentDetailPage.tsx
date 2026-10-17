@@ -5,6 +5,7 @@ import { dateLabel, numberLabel, timestampLabel } from '../../lib/format';
 import { EmptyState, ErrorState, EvaluationBadge, LoadingState, PageHeader, Pagination, RiskBadge } from '../../components/ui';
 import './features.css';
 import { Measurements, StudentAdministration } from './Measurements';
+import { EvaluateStudent } from './EvaluateStudent';
 import { AlertStatusBadge, InterventionStatusBadge, interventionKindLabels } from '../alerts/labels';
 import '../alerts/features.css';
 
@@ -40,6 +41,7 @@ function StudentRecord({ user, period, studentId, onNavigate }: Props & { period
         {prediction ? <PredictionFields prediction={prediction} /> : <p className="muted">{student.evaluation_status === 'INSUFFICIENT_DATA' ? 'Datos insuficientes para estimar el riesgo de este corte. Se conserva sin estimación.' : snapshot ? 'El corte actual está pendiente de evaluación. Una evaluación anterior no se aplica a esta revisión.' : 'Todavía no hay datos observados para evaluar este registro.'}</p>}
       </section>
     </div>
+    {user.role === 'ADMIN' && <EvaluateStudent student={student} period={period} hasSnapshot={!!snapshot} onNavigate={onNavigate} />}
     <Measurements student={student} period={period} user={user} />
     <section className="panel student-detail-panel" aria-labelledby="student-observed-title"><h2 id="student-observed-title">Última medición disponible</h2>{snapshot ? <>
       <dl className="student-data"><div><dt>Promedio</dt><dd>{numberLabel(snapshot.average_grade)}</dd></div><div><dt>Asistencia</dt><dd>{numberLabel(snapshot.attendance_pct, ' %')}</dd></div><div><dt>Actividades</dt><dd>{numberLabel(snapshot.activities_pct, ' %')}</dd></div><div><dt>Participación · categoría registrada</dt><dd>{numberLabel(snapshot.participation_level)}</dd></div><div><dt>Incidencias</dt><dd>{numberLabel(snapshot.behavior_incidents)}</dd></div><div><dt>Edad registrada</dt><dd>{numberLabel(snapshot.age_years, ' años')}</dd></div></dl>
@@ -53,7 +55,7 @@ function StudentRecord({ user, period, studentId, onNavigate }: Props & { period
 
 function PredictionFields({ prediction }: { prediction: Prediction }) {
   const calibrated = prediction.probabilities_calibrated && prediction.probability_low !== null && prediction.probability_medium !== null && prediction.probability_high !== null;
-  return <><dl className="student-data"><div><dt>Evaluación registrada</dt><dd>{timestampLabel(prediction.predicted_at)}</dd></div><div><dt>Corte evaluado</dt><dd>{timestampLabel(prediction.cutoff_at)}</dd></div><div><dt>Fecha objetivo</dt><dd>{dateLabel(prediction.target_date)}</dd></div></dl>
+  return <><dl className="student-data"><div><dt>Evaluación registrada</dt><dd>{timestampLabel(prediction.predicted_at)}</dd></div><div><dt>Corte evaluado</dt><dd>{timestampLabel(prediction.cutoff_at)}</dd></div><div>{prediction.target_date ? <><dt>Fecha objetivo</dt><dd>{dateLabel(prediction.target_date)}</dd></> : <><dt>Horizonte del modelo</dt><dd>{prediction.model_horizon_date ? dateLabel(prediction.model_horizon_date) : 'No disponible'}</dd></>}</div></dl>
     {calibrated ? <><h3>Probabilidades calibradas</h3><dl className="student-data"><div><dt>Bajo</dt><dd>{numberLabel(prediction.probability_low! * 100, ' %')}</dd></div><div><dt>Medio</dt><dd>{numberLabel(prediction.probability_medium! * 100, ' %')}</dd></div><div><dt>Alto</dt><dd>{numberLabel(prediction.probability_high! * 100, ' %')}</dd></div></dl></> : <p className="muted student-list-note">Esta evaluación no dispone de probabilidades calibradas. El nivel estimado no expresa un porcentaje de certeza.</p>}
   </>;
 }
