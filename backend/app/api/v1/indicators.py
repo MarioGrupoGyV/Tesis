@@ -3,10 +3,15 @@ from fastapi import APIRouter, Query, Request, Response
 from pydantic import AwareDatetime
 from app.api.v1.dependencies import AuthenticatedSession, DbSession
 from app.core.errors import request_id
-from app.schemas.indicators import IndicatorsResponse, StudentIndicatorPage
+from app.schemas.indicators import IndicatorContext, IndicatorsResponse, StudentIndicatorPage
 from app.services import indicators as service
 
 router = APIRouter(prefix='/indicators', tags=['indicators'])
+
+
+@router.get('/contexts', response_model=list[IndicatorContext], operation_id='indicatorContexts')
+def contexts(context: AuthenticatedSession, db: DbSession):
+    return service.contexts(db, context.user)
 
 
 @router.get('', response_model=IndicatorsResponse, operation_id='indicators')

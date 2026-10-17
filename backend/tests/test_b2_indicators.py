@@ -171,6 +171,16 @@ def test_exports_and_permissions(scenario):
         else:
             assert body['prv']['received'] is not None
         assert get(state, '/indicators/export.csv', period_id=str(state.period_id)).status_code == 200
+    # Contextos de la página: RESEARCHER los obtiene sin el catálogo general; TUTOR solo su sección; sin periodos REAL.
+    for role, expected in (('TUTOR', {str(state.section_id)}), ('RESEARCHER', None), ('DIRECTOR', None)):
+        login_as(state, role)
+        response = get(state, '/indicators/contexts')
+        assert response.status_code == 200, response.text
+        listed = {c['period_id']: c for c in response.json()}
+        assert str(state.period_id) in listed
+        ids = {s['id'] for s in listed[str(state.period_id)]['sections']}
+        assert (ids == expected) if expected else (str(foreign) in ids and str(state.section_id) in ids)
+    login_as(state, 'ADMIN')
     # Sin sesión.
     state.client.cookies.clear()
     assert get(state, '/indicators', period_id=str(state.period_id)).status_code == 401

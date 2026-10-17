@@ -61,6 +61,22 @@ def context(db, user, period_id, section_id):
     return period, allowed
 
 
+def contexts(db, user):
+    """Periodos y secciones que el rol puede consultar en indicadores; no depende del catálogo general."""
+    if user.role not in ('ADMIN', 'TUTOR', 'DIRECTOR', 'RESEARCHER'):
+        raise AppError(403, 'FORBIDDEN', 'Tu rol no tiene acceso a indicadores.')
+    periods = db.scalars(select(AcademicPeriod).join(SyntheticStudyRecord, SyntheticStudyRecord.period_id == AcademicPeriod.id)
+        .where(AcademicPeriod.data_origin == 'SYNTHETIC').order_by(AcademicPeriod.start_date.desc(), AcademicPeriod.id)).all()
+    result = []
+    for period in periods:
+        allowed = sections_for_period(db, period, user.id if user.role == 'TUTOR' else None)
+        if user.role == 'TUTOR' and not allowed:
+            continue
+        result.append(schemas.IndicatorContext(period_id=period.id, period_code=period.code, school_year=period.school_year,
+            is_locked=period.is_locked, sections=[schemas.ContextSection(id=s.id, code=s.code, grade=s.grade) for s in allowed]))
+    return result
+
+
 def reference_map(db, settings, period):
     """snapshot_id (BD) → riesgo de referencia, o (None, motivo) si el sistema no lo guarda."""
     study = db.scalar(select(SyntheticStudyRecord).where(SyntheticStudyRecord.period_id == period.id,

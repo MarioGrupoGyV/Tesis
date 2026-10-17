@@ -141,3 +141,18 @@ class StudentIndicatorPage(ContractModel):
     total: int
     page: int
     page_size: int
+
+
+class ContextSection(ContractModel):
+    id: UUID
+    code: str
+    grade: int
+
+
+class IndicatorContext(ContractModel):
+    """Periodo SYNTHETIC con estudio registrado y sus secciones autorizadas (incluye RESEARCHER)."""
+    period_id: UUID
+    period_code: str
+    school_year: int
+    is_locked: bool
+    sections: list[ContextSection]
