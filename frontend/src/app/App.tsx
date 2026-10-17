@@ -10,6 +10,7 @@ import { ModelDetailPage } from '../features/models/ModelDetailPage';
 import { AlertsPage } from '../features/alerts/AlertsPage';
 import { AlertDetailPage } from '../features/alerts/AlertDetailPage';
 import { ReportsPage } from '../features/reports/ReportsPage';
+import { IndicatorsPage } from '../features/indicators/IndicatorsPage';
 import { AppShell } from '../components/AppShell';
 import { EmptyState, ErrorState, LoadingState, PageHeader } from '../components/ui';
 import { api, ApiError, clearSessionMemory, errorMessage, SESSION_EXPIRED_EVENT, type User } from '../lib/api';
@@ -101,7 +102,7 @@ function AuthenticatedApp({ user, onLogout, onExpired, sessionError }: { user: U
   const studentMatch = pathname.match(/^\/estudiantes\/([^/]+)$/);
   const modelMatch = pathname.match(/^\/modelos\/([^/]+)$/);
   const alertMatch = pathname.match(/^\/alertas\/([^/]+)$/);
-  const forbidden = user.role === 'RESEARCHER' && pathname !== '/' || user.role !== 'ADMIN' && (pathname === '/datos' || pathname.startsWith('/modelos'));
+  const forbidden = user.role === 'RESEARCHER' && pathname !== '/' && pathname !== '/indicadores' || user.role !== 'ADMIN' && (pathname === '/datos' || pathname.startsWith('/modelos'));
   let page;
   if (forbidden) page = <><PageHeader title="Acceso no disponible" /><EmptyState title="Tu rol no permite abrir esta vista"><p>Vuelve a Inicio para conocer las consultas autorizadas.</p><button className="button secondary" type="button" onClick={() => go('/')}>Volver a Inicio</button></EmptyState></>;
   else if (pathname === '/' && schoolContext && (periods.isPending || period && sections.isPending)) page = <><PageHeader title="Inicio" /><LoadingState label="Cargando contexto autorizado…" /></>;
@@ -118,6 +119,7 @@ function AuthenticatedApp({ user, onLogout, onExpired, sessionError }: { user: U
   else if ((pathname === '/alertas' || pathname === '/reportes') && period && sections.isError) page = <ErrorState error={sections.error} onRetry={() => void sections.refetch()} />;
   else if (pathname === '/alertas') page = <AlertsPage key={periodId + validSection} user={user} period={period} sectionId={validSection} processing={processing} onNavigate={go} />;
   else if (alertMatch) page = <AlertDetailPage key={periodId + alertMatch[1]} user={user} period={period} processing={processing} alertId={alertMatch[1]} onNavigate={go} />;
+  else if (pathname === '/indicadores') page = <IndicatorsPage key={user.id} user={user} initialPeriodId={periodId} />;
   else if (pathname === '/reportes') page = <ReportsPage key={periodId + validSection} user={user} period={period} sectionId={validSection} processing={processing} onNavigate={go} />;
   else page = <><PageHeader title="Página no encontrada" /><EmptyState title="Esta dirección no está disponible"><button className="button secondary" type="button" onClick={() => go('/')}>Volver a Inicio</button></EmptyState></>;
   return <AppShell user={user} pathname={pathname} context={context} notice={notice} onNavigate={go} onLogout={onLogout}>{page}</AppShell>;
