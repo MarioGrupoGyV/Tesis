@@ -1,0 +1,97 @@
+[
+  {
+    "schema": "PredictionRunResult",
+    "body": {
+      "period_id": "ca10e4cd-0962-4c69-96ca-b4fcf522db5a",
+      "as_of": "2026-10-18T00:28:59.744942Z",
+      "model_id": "7df3f678-115a-49d8-a821-2a2898992265",
+      "selected": 1,
+      "created": 1,
+      "reused": 0,
+      "abstentions": [],
+      "followup": {
+        "policy_version": "followup-policy-v1",
+        "period_id": "ca10e4cd-0962-4c69-96ca-b4fcf522db5a",
+        "created": 0,
+        "updated": 0,
+        "retained_low": 0,
+        "no_alert": 0,
+        "reused": 0,
+        "ignored_stale": 0,
+        "skipped_missing": 0
+      }
+    }
+  },
+  {
+    "schema": "Prediction",
+    "body": {
+      "id": "87893dbf-4449-4f2e-98e7-469144d34394",
+      "enrollment_id": "17c44e63-76d0-47e9-8256-36db74f9a672",
+      "snapshot_id": "88c58bf0-7888-4bcf-b3b6-026b9863a4e6",
+      "model_id": "04bad4e3-cf13-4a60-b973-25947eda7948",
+      "data_origin": "REAL",
+      "risk_level": "HIGH",
+      "cutoff_at": "2026-05-02T04:30:00Z",
+      "target_date": "2026-05-02",
+      "model_horizon_date": null,
+      "predicted_at": "2026-10-18T00:29:00.300006Z",
+      "probability_low": null,
+      "probability_medium": null,
+      "probability_high": null,
+      "probabilities_calibrated": false
+    }
+  },
+  {
+    "schema": "Prediction",
+    "body": {
+      "id": "87893dbf-4449-4f2e-98e7-469144d34394",
+      "enrollment_id": "17c44e63-76d0-47e9-8256-36db74f9a672",
+      "snapshot_id": "88c58bf0-7888-4bcf-b3b6-026b9863a4e6",
+      "model_id": "04bad4e3-cf13-4a60-b973-25947eda7948",
+      "data_origin": "REAL",
+      "risk_level": "HIGH",
+      "cutoff_at": "2026-05-02T04:30:00Z",
+      "target_date": "2026-05-02",
+      "model_horizon_date": null,
+      "predicted_at": "2026-10-18T00:29:00.300006Z",
+      "probability_low": null,
+      "probability_medium": null,
+      "probability_high": null,
+      "probabilities_calibrated": false
+    }
+  },
+  {
+    "schema": "Prediction",
+    "body": {
+      "id": "87893dbf-4449-4f2e-98e7-469144d34394",
+      "enrollment_id": "17c44e63-76d0-47e9-8256-36db74f9a672",
+      "snapshot_id": "88c58bf0-7888-4bcf-b3b6-026b9863a4e6",
+      "model_id": "04bad4e3-cf13-4a60-b973-25947eda7948",
+      "data_origin": "REAL",
+      "risk_level": "HIGH",
+      "cutoff_at": "2026-05-02T04:30:00Z",
+      "target_date": "2026-05-02",
+      "model_horizon_date": null,
+      "predicted_at": "2026-10-18T00:29:00.300006Z",
+      "probability_low": null,
+      "probability_medium": null,
+      "probability_high": null,
+      "probabilities_calibrated": false
+    }
+  },
+  {
+    "schema": "Model",
+    "body": {
+      "id": "04bad4e3-cf13-4a60-b973-25947eda7948",
+      "name": "S2-a6f8a9fcf2c1",
+      "version": "fixture",
+      "algorithm": "DUMMY",
+      "data_origin": "REAL",
+      "feature_schema_version": "ml-features-v1",
+      "reference_criterion_version": "test-outcome-v1",
+      "status": "EVALUATED",
+      "is_active": false,
+      "created_at": "2026-10-18T00:29:00.288426Z"
+    }
+  }
+]
