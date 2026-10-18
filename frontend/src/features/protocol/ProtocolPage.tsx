@@ -10,7 +10,9 @@ type Props = { user: User; periods: Period[]; periodId: string };
 /** Página mínima del protocolo REAL (solo ADMIN): estado y confirmar/revocar. No guarda consentimientos ni documentos. */
 export function ProtocolPage({ user, periods, periodId }: Props) {
   const real = periods.filter(item => item.data_origin === 'REAL');
-  const [chosen, setChosen] = useState(real.find(item => item.id === periodId)?.id ?? real[0]?.id ?? '');
+  const [selected, setChosen] = useState('');
+  // Los periodos llegan después del primer render: el periodo elegido se deriva, no se congela en el estado inicial.
+  const chosen = real.some(item => item.id === selected) ? selected : real.find(item => item.id === periodId)?.id ?? real[0]?.id ?? '';
   const queryClient = useQueryClient();
   const protocol = useQuery({ queryKey: [user.id, user.role, 'protocol', chosen], queryFn: ({ signal }) => api.protocolByPeriod(chosen, signal), enabled: Boolean(chosen), retry: false });
   const [confirming, setConfirming] = useState<'confirm' | 'revoke' | null>(null);
