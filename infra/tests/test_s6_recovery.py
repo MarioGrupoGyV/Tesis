@@ -204,6 +204,66 @@ class ArchiveValidationTests(unittest.TestCase):
                 backup.validate_archive(content)
 
 
+class OriginLabelTests(unittest.TestCase):
+    """El paquete se etiqueta según los datos que contiene: con datos REAL nunca queda como SYNTHETIC."""
+    scopes = ['SYNTHETIC_STUDY', 'REAL_INSTITUTIONAL']
+
+    def package(self, origin, origins='absent', scopes=None):
+        values = package_payloads()
+        manifest = manifest_for(values)
+        manifest['origin'] = origin
+        if origins != 'absent':
+            manifest['data_origins'] = origins
+        if scopes is not None:
+            manifest['private_data_scopes'] = scopes
+        return zip_package(values, manifest)
+
+    def test_label_comes_from_the_origins_present_and_unknown_values_fail_closed(self):
+        self.assertEqual([backup.origin_label(origins) for origins in ([], ['SYNTHETIC'], ['REAL'], ['REAL', 'SYNTHETIC'])],
+                         ['SYNTHETIC', 'SYNTHETIC', 'REAL', 'MIXED'])
+        for origins in (['DEMO'], ['REAL', 'DEMO']):
+            with self.subTest(origins=origins), self.assertRaisesRegex(RuntimeError, '^BACKUP_DATA_ORIGIN_UNKNOWN$'):
+                backup.origin_label(origins)
+
+    def test_real_and_mixed_packages_validate_only_with_evidence_and_scope(self):
+        for origin, origins in (('REAL', ['REAL']), ('MIXED', ['REAL', 'SYNTHETIC'])):
+            with self.subTest(origin=origin):
+                self.assertEqual(backup.validate_archive(self.package(origin, origins, self.scopes))['origin'], origin)
+        rejected = (('REAL', 'absent', self.scopes),                          # sin evidencia de orígenes
+                    ('REAL', ['REAL'], ['SYNTHETIC_STUDY']),                  # sin el alcance REAL_INSTITUTIONAL
+                    ('SYNTHETIC', ['REAL'], self.scopes),                     # etiqueta que oculta datos reales
+                    ('REAL', ['REAL', 'SYNTHETIC'], self.scopes),             # etiqueta que no coincide
+                    ('SYNTHETIC', ['DEMO'], None), ('SYNTHETIC', 'REAL', None))
+        for origin, origins, scopes in rejected:
+            with self.subTest(origin=origin, origins=origins, scopes=scopes), self.assertRaisesRegex(RuntimeError, '^BACKUP_VERSION_INCOMPATIBLE$'):
+                backup.validate_archive(self.package(origin, origins, scopes))
+        # Paquetes anteriores (sin data_origins) y bases sin datos siguen siendo SYNTHETIC.
+        self.assertEqual(backup.validate_archive(self.package('SYNTHETIC'))['origin'], 'SYNTHETIC')
+        self.assertEqual(backup.validate_archive(self.package('SYNTHETIC', []))['origin'], 'SYNTHETIC')
+
+    def test_data_origins_reads_every_data_origin_column_and_reports_failures(self):
+        target = SimpleNamespace(database='riesgo_escolar', db_command=lambda *args: ['docker', 'exec', *args])
+        answers = [SimpleNamespace(returncode=0, stdout='SELECT 1 AS o UNION SELECT 2 AS o\n'), SimpleNamespace(returncode=0, stdout='REAL\nSYNTHETIC\n')]
+        with patch.object(backup.subprocess, 'run', side_effect=answers) as run:
+            self.assertEqual(backup.data_origins(target), ['REAL', 'SYNTHETIC'])
+        self.assertIn("column_name='data_origin'", run.call_args_list[0].args[0][-1])
+        self.assertIn('UNION', run.call_args_list[1].args[0][-1])
+        with patch.object(backup.subprocess, 'run', return_value=SimpleNamespace(returncode=0, stdout='\n')) as run:
+            self.assertEqual(backup.data_origins(target), [])
+        self.assertEqual(run.call_count, 1)
+        with patch.object(backup.subprocess, 'run', return_value=SimpleNamespace(returncode=1, stdout='')), \
+                self.assertRaisesRegex(RuntimeError, '^BACKUP_ORIGIN_QUERY_FAILED$'):
+            backup.data_origins(target)
+
+    def test_restoring_a_real_package_into_a_copy_needs_explicit_confirmation(self):
+        manifest = {**manifest_for(package_payloads()), 'origin': 'REAL', 'data_origins': ['REAL']}
+        with patch.object(backup, 'verified_content', return_value=(b'', manifest)), patch.object(backup, 'create', side_effect=AssertionError('no copy')):
+            with self.assertRaisesRegex(RuntimeError, '^RESTORE_REAL_REQUIRES_CONFIRMATION$'):
+                backup.restore_check(Path('paquete.sebackup'), Path('copia.json'), {'web': 1, 'api': 2, 'db': 3})
+            with patch.object(backup, 'code_identity', side_effect=RuntimeError('PAST_GATE')), self.assertRaisesRegex(RuntimeError, '^PAST_GATE$'):
+                backup.restore_check(Path('paquete.sebackup'), Path('copia.json'), {'web': 1, 'api': 2, 'db': 3}, allow_real=True)
+
+
 class TargetGuardTests(unittest.TestCase):
     scope = 'UNIT_TARGET_GUARDS_NO_DOCKER'
 

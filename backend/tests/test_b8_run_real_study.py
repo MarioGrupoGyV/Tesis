@@ -2,9 +2,12 @@
 
 Las entradas salen del conversor real aplicado al libro ficticio de las pruebas del Bloque 4: así los CSV, el resumen y los hashes son coherentes.
 """
+import contextlib
+from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 import pytest
 
@@ -56,7 +59,8 @@ class FakeGateway:
         if method == 'GET' and path.startswith('/sections'):
             return 200, s['sections']
         if method == 'POST' and path == '/sections':
-            self.write('section'); s['sections'].append({'id': 'sec-' + body['code'], 'code': body['code'], 'grade': body['grade']})
+            self.write('section'); s['sections'].append({'id': 'sec-' + body['code'], 'code': body['code'], 'grade': body['grade'],
+                                                         'tutor_id': body['tutor_id']})
             return 200, s['sections'][-1]
         if path == '/catalogs/tutors':
             return 200, [{'id': item} for item in self.tutors]
@@ -299,3 +303,118 @@ def test_protocol_is_derived_from_the_files_and_the_cli_has_no_password_option(f
     assert not {'consent', 'document', 'authorizer'} & {key for key in body}
     source = (Path(runner.__file__)).read_text(encoding='utf-8')
     assert "'--password'" not in source and 'getpass' not in source
+
+
+# ---------------------------------------------------------------- instalación activa (carga REAL con confirmación explícita y respaldo previo)
+def pre_backup_manifest(**changes):
+    manifest = {'id': 's6-20261018T071049Z-prueba', 'migration': '0008_real_chain', 'origin': 'SYNTHETIC', 'source': {'project': 'riesgo-escolar'},
+                'created_at': (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat()}
+    return {**manifest, **changes}
+
+
+def test_active_target_decides_the_tutor_before_writing_anything(folder, tmp_path):
+    inputs = runner.Inputs(folder)
+    gateway = FakeGateway(inputs, tutors=('tutor-1',))                              # un único tutor existente: fuera de la activa se elegiría solo
+    with pytest.raises(runner.StopRun) as error:
+        execute(folder, tmp_path, gateway=gateway, confirm_protocol=True, active=True)
+    assert error.value.code == 'ACTIVE_TUTOR_EXPLICIT_REQUIRED' and gateway.writes == []
+    with pytest.raises(runner.StopRun) as error:                                    # un solo tutor indicado no basta para dos secciones
+        execute(folder, tmp_path, gateway=FakeGateway(inputs), confirm_protocol=True, active=True, tutors=('tutor-a', None))
+    assert error.value.code == 'ACTIVE_TUTOR_EXPLICIT_REQUIRED'
+    off_active = FakeGateway(inputs, tutors=('tutor-1',))                           # el comportamiento fuera de la activa no cambia
+    execute(folder, tmp_path, gateway=off_active, confirm_protocol=True)
+    assert {item['tutor_id'] for item in off_active.s['sections']} == {'tutor-1'}
+
+
+def test_active_target_uses_the_locked_placeholder_or_the_tutors_given(folder, tmp_path):
+    inputs = runner.Inputs(folder)
+    locked = FakeGateway(inputs, tutors=('tutor-1',))                               # existe un tutor real, pero no se le asignan los datos REAL
+    execute(folder, tmp_path, gateway=locked, confirm_protocol=True, active=True, locked_tutor=True)
+    assert locked.writes.count('locked-tutor') == 1 and {item['tutor_id'] for item in locked.s['sections']} == {'locked-1'}
+    explicit = FakeGateway(inputs, tutors=('tutor-1',))
+    execute(folder, tmp_path, gateway=explicit, confirm_protocol=True, active=True, tutors=('tutor-a', 'tutor-b'))
+    assert 'locked-tutor' not in explicit.writes
+    assert [item['tutor_id'] for item in explicit.s['sections']] == ['tutor-a', 'tutor-b']
+
+
+def test_active_dry_run_reports_the_missing_tutor_decision_without_writing(folder, tmp_path):
+    inputs = runner.Inputs(folder)
+    gateway = FakeGateway(inputs, tutors=('tutor-1',))
+    gateway.s['period'] = {'id': 'period-1', 'code': 'REAL-2026', 'data_origin': 'REAL', 'school_year': 2026}
+    _, summary, lines, _ = execute(folder, tmp_path, gateway=gateway, dry_run=True, confirm_protocol=True, active=True)
+    assert gateway.writes == [] and summary is None
+    sections = next(json.loads(line) for line in lines if json.loads(line)['step'] == 'sections')
+    assert sections['status'] == 'PENDING' and sections['tutor'] == 'EXPLICIT_REQUIRED'
+
+
+def test_dry_run_with_locked_tutor_and_no_tutors_is_pending_not_an_error(folder, tmp_path):
+    inputs = runner.Inputs(folder)
+    gateway = FakeGateway(inputs, tutors=())
+    gateway.s['period'] = {'id': 'period-1', 'code': 'REAL-2026', 'data_origin': 'REAL', 'school_year': 2026}
+    _, _, lines, _ = execute(folder, tmp_path, gateway=gateway, dry_run=True, confirm_protocol=True, locked_tutor=True)
+    sections = next(json.loads(line) for line in lines if json.loads(line)['step'] == 'sections')
+    assert gateway.writes == [] and sections['status'] == 'PENDING' and sections['tutor'] == 'LOCKED_PLACEHOLDER'
+
+
+def test_pre_backup_must_be_this_installation_at_0008_and_recent():
+    now = datetime.now(timezone.utc)
+    assert runner.check_pre_backup(pre_backup_manifest(), 'riesgo-escolar') == 's6-20261018T071049Z-prueba'
+    cases = (({'source': {'project': 's6-install-0fe58a34e54f'}}, 'PRE_BACKUP_OTHER_INSTALLATION'),
+             ({'migration': '0004_followup'}, 'PRE_BACKUP_NOT_AT_0008'),
+             ({'created_at': (now - timedelta(hours=25)).isoformat()}, 'PRE_BACKUP_TOO_OLD'),
+             ({'created_at': (now + timedelta(hours=2)).isoformat()}, 'PRE_BACKUP_TOO_OLD'),
+             ({'created_at': now.replace(tzinfo=None).isoformat()}, 'PRE_BACKUP_DATE_INVALID'),
+             ({'created_at': 'ayer'}, 'PRE_BACKUP_DATE_INVALID'))
+    for change, code in cases:
+        with pytest.raises(runner.StopRun) as error:
+            runner.check_pre_backup(pre_backup_manifest(**change), 'riesgo-escolar')
+        assert error.value.code == code, change
+
+
+def test_active_confirmation_and_pre_backup_are_required_before_touching_credentials_or_the_server(folder, tmp_path, monkeypatch, capsys):
+    import runtime_target
+    monkeypatch.setattr(runtime_target.Target, 'load', classmethod(lambda cls, path: SimpleNamespace(kind='ACTIVE', project='riesgo-escolar')))
+    monkeypatch.setattr(runner, 'Live', lambda *a, **k: pytest.fail('La activa no debe abrirse sin confirmación y respaldo'))
+    monkeypatch.setattr('operator_profiles.admin_account', lambda *a, **k: pytest.fail('No se leen credenciales antes de las protecciones'))
+    base = ['--target', str(tmp_path / 'activa.json'), '--operator-profile', 'x', '--input', str(folder), '--results', str(tmp_path / 'res'),
+            '--confirm-protocol', '--locked-tutor']
+    assert runner.main(base) == 3
+    assert json.loads(capsys.readouterr().out)['code'] == 'ACTIVE_CONFIRMATION_REQUIRED'
+    assert runner.main(base + ['--confirm-active', 'otro-proyecto', '--pre-backup', str(tmp_path / 'r.sebackup')]) == 3
+    assert json.loads(capsys.readouterr().out)['code'] == 'ACTIVE_CONFIRMATION_REQUIRED'
+    assert runner.main(base + ['--confirm-active', 'riesgo-escolar']) == 3
+    assert json.loads(capsys.readouterr().out)['code'] == 'PRE_BACKUP_REQUIRED'
+    monkeypatch.setattr(runner, 'load_pre_backup', lambda path: pre_backup_manifest(migration='0004_followup'))
+    assert runner.main(base + ['--confirm-active', 'riesgo-escolar', '--pre-backup', str(tmp_path / 'r.sebackup')]) == 2
+    assert json.loads(capsys.readouterr().out)['code'] == 'PRE_BACKUP_NOT_AT_0008' and not (tmp_path / 'res').exists()
+
+
+def test_active_run_goes_ahead_with_confirmation_and_backup_and_reports_the_backup_without_paths(folder, tmp_path, monkeypatch, capsys):
+    import runtime_target
+    inputs = runner.Inputs(folder)
+    gateway = FakeGateway(inputs, tutors=('tutor-1',))
+    monkeypatch.setattr(runtime_target.Target, 'load', classmethod(lambda cls, path: SimpleNamespace(kind='ACTIVE', project='riesgo-escolar')))
+    monkeypatch.setattr('operator_profiles.admin_account', lambda *a, **k: {'email': 'admin@example.test', 'password': 'x'})
+    monkeypatch.setattr(runner, 'Live', lambda target, account: contextlib.nullcontext(gateway))
+    monkeypatch.setattr(runner, 'load_pre_backup', lambda path: pre_backup_manifest())
+    secret_name = 'respaldo-privado-no-debe-aparecer.sebackup'
+    code = runner.main(['--target', str(tmp_path / 'activa.json'), '--operator-profile', 'x', '--input', str(folder), '--results', str(tmp_path / 'res'),
+                        '--confirm-protocol', '--locked-tutor', '--confirm-active', 'riesgo-escolar', '--pre-backup', str(tmp_path / secret_name)])
+    output = capsys.readouterr().out
+    guard = json.loads(output.splitlines()[0])
+    assert code == 0 and guard == {'step': 'active_guard', 'status': 'OK', 'pre_backup_id': 's6-20261018T071049Z-prueba', 'pre_backup_origin': 'SYNTHETIC'}
+    assert secret_name not in output and 'locked-tutor' in gateway.writes
+    assert {item['tutor_id'] for item in gateway.s['sections']} == {'locked-1'}
+
+
+def test_dry_run_on_the_active_target_does_not_require_confirmation_or_backup(folder, tmp_path, monkeypatch, capsys):
+    import runtime_target
+    inputs = runner.Inputs(folder)
+    gateway = FakeGateway(inputs, tutors=('tutor-1',))
+    monkeypatch.setattr(runtime_target.Target, 'load', classmethod(lambda cls, path: SimpleNamespace(kind='ACTIVE', project='riesgo-escolar')))
+    monkeypatch.setattr('operator_profiles.admin_account', lambda *a, **k: {'email': 'admin@example.test', 'password': 'x'})
+    monkeypatch.setattr(runner, 'Live', lambda target, account: contextlib.nullcontext(gateway))
+    monkeypatch.setattr(runner, 'load_pre_backup', lambda path: pytest.fail('El simulacro no pide respaldo'))
+    assert runner.main(['--target', str(tmp_path / 'activa.json'), '--operator-profile', 'x', '--input', str(folder), '--results', str(tmp_path / 'res'),
+                        '--dry-run']) == 0
+    assert gateway.writes == [] and 'active_guard' not in capsys.readouterr().out

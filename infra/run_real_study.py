@@ -4,17 +4,20 @@ comparación de modelos, la activación, la evaluación retrospectiva y los indi
     py -3.12 infra/run_real_study.py --target <destino.json> --operator-profile <perfil> --input <carpeta de cortes.csv/cierres.csv>
                                      --results <carpeta de resultados FUERA de Git> [--dry-run] [--confirm-protocol]
                                      [--tutor-a <uuid>] [--tutor-b <uuid>] [--public-summary <archivo agregado>]
+                                     [--confirm-active riesgo-escolar --pre-backup <respaldo .sebackup>]   (solo destino ACTIVE)
 
 Pasos (cada uno reconoce su estado y no duplica): periodo → secciones → protocolo (confirmar solo con --confirm-protocol) → estudio institucional →
 importación (verificación de hash) → cierres (el backend calcula RIESGO_V1) → comprobaciones → comparación → registro y activación del modelo →
 evaluación retrospectiva de cada bimestre → indicadores y verificación SQL independiente. Imprime solo conteos y códigos de estado: nunca filas,
-códigos de alumno ni nombres. Todo lo que tiene filas por alumno va a `--results` (fuera de Git). Nunca actúa sobre el destino ACTIVE.
+códigos de alumno ni nombres. Todo lo que tiene filas por alumno va a `--results` (fuera de Git).
+Destino ACTIVE (la instalación de siempre): solo con --confirm-active <proyecto> y --pre-backup (respaldo S6 verificado de ese proyecto, en 0008 y de
+menos de 24 h); allí nunca se elige solo al único tutor existente (hay que indicar --tutor-a/--tutor-b o --locked-tutor). Con --dry-run no se exige.
 La contraseña del ADMIN sale del perfil Windows existente, jamás de argumentos.
 """
 import argparse
 import base64
 import csv
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 import hashlib
 import io
 import json
@@ -35,6 +38,8 @@ PARTICIPATION_LABELS = {'1': 'Nunca', '2': 'Rara vez', '3': 'A veces', '4': 'Fre
 LEVELS = ('LOW', 'MEDIUM', 'HIGH')
 ES = {'LOW': 'Bajo', 'MEDIUM': 'Medio', 'HIGH': 'Alto'}
 MODEL_NAMES = {'DUMMY': 'Dummy', 'RANDOM_FOREST': 'Random Forest', 'SVM': 'SVM', 'XGBOOST': 'XGBoost'}
+PRE_BACKUP_HEAD = '0008_real_chain'
+PRE_BACKUP_MAX_AGE_HOURS = 24
 
 
 class StopRun(Exception):
@@ -280,11 +285,53 @@ class Live:
 
 
 # ---------------------------------------------------------------- orquestación
+def check_pre_backup(manifest, project, now=None, max_age_hours=PRE_BACKUP_MAX_AGE_HOURS):
+    """El respaldo previo a cargar datos REAL en la instalación activa: de ese proyecto, en 0008 y reciente. Devuelve su identificador."""
+    if (manifest.get('source') or {}).get('project') != project:
+        raise StopRun('PRE_BACKUP_OTHER_INSTALLATION')
+    if manifest.get('migration') != PRE_BACKUP_HEAD:
+        raise StopRun('PRE_BACKUP_NOT_AT_0008')
+    try:
+        created = datetime.fromisoformat(manifest['created_at'])
+    except (KeyError, TypeError, ValueError):
+        raise StopRun('PRE_BACKUP_DATE_INVALID') from None
+    if created.tzinfo is None:
+        raise StopRun('PRE_BACKUP_DATE_INVALID')
+    age = (now or datetime.now(timezone.utc)) - created
+    if not timedelta(0) <= age <= timedelta(hours=max_age_hours):
+        raise StopRun('PRE_BACKUP_TOO_OLD', f'más de {max_age_hours} h o fecha futura')
+    return manifest['id']
+
+
+def load_pre_backup(path):
+    """Descifra (DPAPI) y valida el paquete propio; solo Windows. La importación es perezosa para no exigirla a quien no usa la activa."""
+    import backup_restore
+    try:
+        return backup_restore.verified_content(path)[1]
+    except RuntimeError as error:
+        code = str(error)
+        raise StopRun(code if re.fullmatch(r'[A-Z0-9_]{1,100}', code) else 'PRE_BACKUP_INVALID') from None
+
+
+def guard_active(project, confirm, pre_backup, emit=print, now=None):
+    """Condiciones para cargar datos REAL en la instalación de siempre: confirmación con su nombre y respaldo verificado reciente."""
+    if confirm != project:
+        raise StopRun('ACTIVE_CONFIRMATION_REQUIRED', f'Repite con --confirm-active {project} y --pre-backup <respaldo verificado>.', exit_code=3)
+    if pre_backup is None:
+        raise StopRun('PRE_BACKUP_REQUIRED', 'Crea y verifica un respaldo (backup_restore.py backup y verify) y pásalo con --pre-backup.', exit_code=3)
+    manifest = load_pre_backup(pre_backup)
+    backup_id = check_pre_backup(manifest, project, now)
+    emit(json.dumps({'step': 'active_guard', 'status': 'OK', 'pre_backup_id': backup_id, 'pre_backup_origin': manifest.get('origin')},
+                    ensure_ascii=True, sort_keys=True))
+    return backup_id
+
+
 class Runner:
-    def __init__(self, gateway, inputs, results, *, dry_run=False, confirm_protocol=False, tutors=(None, None), locked_tutor=False, emit=print):
+    def __init__(self, gateway, inputs, results, *, dry_run=False, confirm_protocol=False, tutors=(None, None), locked_tutor=False, active=False,
+                 emit=print):
         self.g, self.inputs, self.results = gateway, inputs, Path(results)
         self.dry_run, self.confirm, self.tutors, self.emit = dry_run, confirm_protocol, tutors, emit
-        self.locked_tutor = locked_tutor
+        self.locked_tutor, self.active = locked_tutor, active
         self.steps, self.state = [], {}
 
     def step(self, name, status, **counts):
@@ -298,9 +345,17 @@ class Runner:
         (self.results / name).write_bytes((content if isinstance(content, str) else json.dumps(content, ensure_ascii=True, indent=2, sort_keys=True) + '\n').encode('utf-8'))
 
     # 0
+    def tutor_decided(self):
+        """Hay decisión explícita sobre el tutor: relleno bloqueado o un tutor indicado para cada sección."""
+        paired = dict(zip(self.inputs.sections, self.tutors))
+        return bool(self.locked_tutor or (len(paired) == len(self.inputs.sections) and all(paired.values())))
+
     def preflight(self):
         if self.g.head() != '0008_real_chain':
             raise StopRun('TARGET_NOT_AT_0008')
+        if self.active and not self.dry_run and not self.tutor_decided():
+            # Antes de escribir nada: en la activa no se elige solo al único tutor existente.
+            raise StopRun('ACTIVE_TUTOR_EXPLICIT_REQUIRED', 'En la instalación activa indica --tutor-a y --tutor-b, o usa --locked-tutor.')
         self.step('preflight', 'OK', input_hashes='VERIFIED', rows=len(self.inputs.cut_rows), students=len(self.inputs.codes),
                   bimesters=len(self.inputs.calendar))
 
@@ -333,11 +388,21 @@ class Runner:
             return self.step('sections', 'REUSED', sections=len(have))
         tutor_by_section = dict(zip(self.inputs.sections, self.tutors))
         if any(tutor_by_section.get(code) is None for code in missing):
-            _, tutors = self.g.api('GET', '/catalogs/tutors')
-            ids = [item['id'] for item in tutors]
+            if self.active:
+                # Instalación activa: nunca se asigna por defecto al único tutor existente (ganaría acceso a datos REAL sin que se decida).
+                if not self.locked_tutor:
+                    if self.dry_run:
+                        return self.step('sections', 'PENDING', missing=len(missing), tutor='EXPLICIT_REQUIRED')
+                    raise StopRun('ACTIVE_TUTOR_EXPLICIT_REQUIRED', 'En la instalación activa indica --tutor-a y --tutor-b, o usa --locked-tutor.')
+                ids = []
+            else:
+                _, tutors = self.g.api('GET', '/catalogs/tutors')
+                ids = [item['id'] for item in tutors]
             if len(ids) == 1:
                 tutor_by_section = {code: ids[0] for code in self.inputs.sections}
-            elif len(ids) < 1 and self.locked_tutor and not self.dry_run:
+            elif len(ids) < 1 and self.locked_tutor:
+                if self.dry_run:
+                    return self.step('sections', 'PENDING', missing=len(missing), tutor='LOCKED_PLACEHOLDER')
                 placeholder = self.g.create_locked_tutor()
                 tutor_by_section = {code: placeholder for code in self.inputs.sections}
             elif len(ids) < 1:
@@ -613,7 +678,10 @@ def main(argv=None):
     parser.add_argument('--dry-run', action='store_true', help='Valida archivos y destino sin escribir nada')
     parser.add_argument('--confirm-protocol', action='store_true', help='Confirma el protocolo REAL si aún no lo está (acción de ADMIN)')
     parser.add_argument('--tutor-a'); parser.add_argument('--tutor-b')
-    parser.add_argument('--locked-tutor', action='store_true', help='Si no hay tutores, crea una cuenta TUTOR de relleno sin acceso (contraseña aleatoria desconocida)')
+    parser.add_argument('--locked-tutor', action='store_true', help='Si no hay tutores (en la activa: siempre, salvo --tutor-a/--tutor-b), crea una cuenta TUTOR '
+                        'de relleno sin acceso (contraseña aleatoria desconocida)')
+    parser.add_argument('--confirm-active', help='Solo destino ACTIVE: repite aquí el nombre del proyecto (riesgo-escolar) para autorizar la carga REAL sobre él')
+    parser.add_argument('--pre-backup', type=Path, help='Solo destino ACTIVE: respaldo S6 verificado (.sebackup) de ese proyecto, en 0008 y de menos de 24 h')
     parser.add_argument('--public-summary', type=Path, help='Copia el resumen agregado (sin códigos) a este archivo')
     args = parser.parse_args(argv)
     try:
@@ -623,12 +691,13 @@ def main(argv=None):
         from operator_profiles import admin_account
         from runtime_target import Target
         target = Target.load(args.target)
-        if target.kind == 'ACTIVE':
-            raise StopRun('ACTIVE_TARGET_FORBIDDEN')
+        active = target.kind == 'ACTIVE'
+        if active and not args.dry_run:
+            guard_active(target.project, args.confirm_active, args.pre_backup)
         account = admin_account(target, operator_profile=args.operator_profile)
         with Live(target, account) as gateway:
             summary = Runner(gateway, inputs, args.results, dry_run=args.dry_run, confirm_protocol=args.confirm_protocol,
-                             tutors=(args.tutor_a, args.tutor_b), locked_tutor=args.locked_tutor).run()
+                             tutors=(args.tutor_a, args.tutor_b), locked_tutor=args.locked_tutor, active=active).run()
         if summary is not None and args.public_summary and not args.dry_run:
             args.public_summary.write_text(json.dumps(summary, ensure_ascii=True, indent=2, sort_keys=True) + '\n', encoding='utf-8')
     except StopRun as stop:

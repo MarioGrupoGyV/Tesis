@@ -49,6 +49,39 @@ def tables_for(head):
     return TABLES if head in ('0007_real_protocol','0008_real_chain') else LEGACY_TABLES
 
 
+def origin_label(origins):
+    """Etiqueta del paquete según los orígenes de datos que contiene. Un valor desconocido falla cerrado."""
+    found=set(origins)
+    if found<={'SYNTHETIC'}: return 'SYNTHETIC'
+    if found=={'REAL'}: return 'REAL'
+    if found=={'REAL','SYNTHETIC'}: return 'MIXED'
+    raise RuntimeError('BACKUP_DATA_ORIGIN_UNKNOWN')
+
+
+def declared_origin_is_consistent(manifest):
+    """El origen declarado debe salir de los orígenes presentes; sin `data_origins` (paquetes anteriores) solo vale SYNTHETIC.
+    Un paquete REAL/MIXED debe declarar además el alcance REAL_INSTITUTIONAL."""
+    origins=manifest.get('data_origins',['SYNTHETIC'])
+    if not isinstance(origins,list) or not all(isinstance(item,str) for item in origins): return False
+    try: label=origin_label(origins)
+    except RuntimeError: return False
+    if manifest.get('origin')!=label: return False
+    return label=='SYNTHETIC' or 'REAL_INSTITUTIONAL' in (manifest.get('private_data_scopes') or [])
+
+
+def data_origins(target):
+    """Orígenes presentes en la base: valores distintos de toda columna `data_origin` del esquema de la aplicación (se descubren, no se listan)."""
+    def run(sql):
+        result=subprocess.run(target.db_command('psql','-XqAt','-v','ON_ERROR_STOP=1','-U','riesgo_owner','-d',target.database,'-c',sql),
+            cwd=ROOT,capture_output=True,text=True)
+        if result.returncode: raise RuntimeError('BACKUP_ORIGIN_QUERY_FAILED')
+        return result.stdout.strip()
+    union=run("SELECT string_agg(format('SELECT DISTINCT data_origin::text AS o FROM risk_school.%I',table_name),' UNION ') "
+        "FROM information_schema.columns WHERE table_schema='risk_school' AND column_name='data_origin'")
+    if not union: return []
+    return sorted(run('SELECT DISTINCT o FROM ('+union+') x WHERE o IS NOT NULL ORDER BY o').split())
+
+
 def validate_archive(content):
     if len(content)>MAX_PACKAGE: raise RuntimeError('BACKUP_SIZE_LIMIT')
     try:
@@ -71,7 +104,7 @@ def validate_archive(content):
             if 'manifest.json' not in names: raise RuntimeError('BACKUP_MANIFEST_MISSING')
             manifest=json.loads(archive.read('manifest.json'))
             if not isinstance(manifest,dict): raise RuntimeError('BACKUP_MANIFEST_INVALID')
-            if manifest.get('version')!=1 or manifest.get('origin')!='SYNTHETIC' or manifest.get('migration') not in SUPPORTED_MIGRATIONS:
+            if manifest.get('version')!=1 or not declared_origin_is_consistent(manifest) or manifest.get('migration') not in SUPPORTED_MIGRATIONS:
                 raise RuntimeError('BACKUP_VERSION_INCOMPATIBLE')
             inventory=manifest.get('inventory',{})
             if not isinstance(inventory,dict): raise RuntimeError('BACKUP_INVENTORY_INVALID')
@@ -244,6 +277,8 @@ def backup(target):
     try:
         with consistent_window(target) as window:
             before=db_snapshot(target)
+            origins=data_origins(target)
+            label=origin_label(origins)
             dump=work/'database.dump'
             with open(dump,'xb') as handle:
                 result=subprocess.run(target.db_command('pg_dump','-U','riesgo_owner','-d',target.database,
@@ -259,13 +294,16 @@ def backup(target):
                 if path.is_symlink() or not path.is_file(): raise RuntimeError('BACKUP_CONFIG_MISSING')
                 payloads['config/'+name]=path.read_bytes()
             after=db_snapshot(target)
+            origins_after=data_origins(target)
             check_files=file_inventory(target,work)
             recorded={k.removeprefix('volumes/'):{'size':len(v),'sha256':hashlib.sha256(v).hexdigest()}
                 for k,v in payloads.items() if k.startswith('volumes/')}
-            if before!=after or check_files!=recorded: raise RuntimeError('BACKUP_STATE_CHANGED')
-            manifest={'version':1,'id':identifier,'origin':'SYNTHETIC','migration':before['alembic'][0],
+            if before!=after or origins!=origins_after or check_files!=recorded: raise RuntimeError('BACKUP_STATE_CHANGED')
+            # `origin` sale de los datos presentes: un paquete con datos REAL nunca se etiqueta SYNTHETIC.
+            manifest={'version':1,'id':identifier,'origin':label,'data_origins':origins,'migration':before['alembic'][0],
                 'private_data_scopes':['SYNTHETIC_STUDY'] + (['RETROSPECTIVE_EVALUATION'] if any(
-                    k.startswith('volumes/ml_data/retrospective/') for k in payloads) else []),
+                    k.startswith('volumes/ml_data/retrospective/') for k in payloads) else [])
+                    + (['REAL_INSTITUTIONAL'] if 'REAL' in origins else []),
                 'created_at':datetime.now(UTC).isoformat(),'window':{**window,'end':datetime.now(UTC).isoformat()},
                 'source':{k:target.data[k] for k in ('kind','project','database','volumes','ports','images')},
                 'code':code_identity(),'database':before,'inventory':
@@ -285,7 +323,7 @@ def backup(target):
         attempt.update(status='COMPROBADO',finished_at=datetime.now(UTC).isoformat())
         report={'status':'COMPROBADO','backup_id':identifier,'backup_file':final.name,
             'private_data_scopes':manifest['private_data_scopes'],
-            'cipher_sha256':record['cipher_sha256'],'bytes':record['bytes'],'origin':'SYNTHETIC',
+            'cipher_sha256':record['cipher_sha256'],'bytes':record['bytes'],'origin':manifest['origin'],'data_origins':manifest['data_origins'],
             'source':manifest['source'],'window':manifest['window'],'database':before,
             'private_file_count':len(recorded),'file_inventory_sha256':hashlib.sha256(json.dumps(recorded,sort_keys=True).encode()).hexdigest(),
             'code':manifest['code'],'dpapi_round_trip':True,'writers_resumed':True}
@@ -379,8 +417,10 @@ print(json.dumps(out))
 '''
 
 
-def restore_check(path,output,ports):
+def restore_check(path,output,ports,*,allow_real=False):
     content,manifest=verified_content(path)
+    # Copiar datos REAL a otro destino es una decisión explícita (--confirm-real-copy), no un efecto lateral de la comprobación.
+    if manifest['origin']!='SYNTHETIC' and not allow_real: raise RuntimeError('RESTORE_REAL_REQUIRES_CONFIRMATION')
     current=code_identity()
     if manifest['code']['locks']!=current['locks']:
         raise RuntimeError('RESTORE_LOCKS_INCOMPATIBLE')
@@ -413,7 +453,7 @@ def restore_check(path,output,ports):
         trust=target.api_python(TRUST_PROBE)
         return {'status':'COMPROBADO','kind':target.kind,'target_id':target.target_id,'project':target.project,
             'database_name':target.database,'ports':target.data['ports'],'volumes':target.data['volumes'],
-            'backup_id':manifest['id'],'before_login_exact_all_tables':True,'before_login_exact_all_files':True,
+            'backup_id':manifest['id'],'origin':manifest['origin'],'before_login_exact_all_tables':True,'before_login_exact_all_files':True,
             'database':restored,'private_file_count':len(files),'trust':trust,
             'code':current,'target_descriptor':str(target.path)}
     except Exception:
@@ -432,6 +472,7 @@ def main(argv=None):
     parser.add_argument('--backup',type=Path)
     parser.add_argument('--output',type=Path)
     parser.add_argument('--report',type=Path,required=True)
+    parser.add_argument('--confirm-real-copy',action='store_true',help='Solo restore-check de un paquete REAL/MIXED: autoriza crear otra copia local con esos datos')
     parser.add_argument('--web-port',type=int,default=15274)
     parser.add_argument('--api-port',type=int,default=18101)
     parser.add_argument('--db-port',type=int,default=55463)
@@ -445,10 +486,10 @@ def main(argv=None):
             if not args.backup: parser.error('--backup requerido')
             if args.command=='restore-check':
                 if not args.output: parser.error('--output descriptor privado nuevo requerido')
-                report=restore_check(args.backup,args.output,{'web':args.web_port,'api':args.api_port,'db':args.db_port})
+                report=restore_check(args.backup,args.output,{'web':args.web_port,'api':args.api_port,'db':args.db_port},allow_real=args.confirm_real_copy)
             else:
                 _,m=verified_content(args.backup)
-                report={'status':'COMPROBADO','backup_id':m['id'],'inventory_verified':True,
+                report={'status':'COMPROBADO','backup_id':m['id'],'origin':m['origin'],'data_origins':m.get('data_origins',['SYNTHETIC']),'inventory_verified':True,
                     'members':len(m['inventory']),'database':m['database'],'dpapi_decrypted':True}
         write_new(args.report,json.dumps(report,indent=2).encode())
         print(json.dumps({k:v for k,v in report.items() if k in ('status','backup_id','backup_file','project','database_name','private_file_count')}))

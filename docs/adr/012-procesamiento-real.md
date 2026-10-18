@@ -364,6 +364,13 @@ Cohen en la comparación. Limitaciones vigentes: (1) **no existe respaldo ni res
 (`RECEPTION_PROVENANCE_UNCONFIRMED`). El destino `real-tesis` publica su web en el puerto 5173 (a pedido del usuario; la instalación de siempre queda en el 15173). Hallazgo corregido: la partición agrupada usaba el UUID interno del estudiante y repetir la corrida podía cambiar el modelo ganador; ahora usa el código y un orden canónico, y la
 repetición desde cero (dos corridas) da resultados idénticos.
 
+**Preparación de la carga en la instalación de siempre (2026-10-18).** A pedido del usuario, la instalación activa `riesgo-escolar` se respaldó (paquetes `s6-20261018T064030Z-eb9fcb51e7c6`, en 0004,
+y `s6-20261018T071049Z-ed8e6d82abf0`, en 0008), se verificó el primero con `restore-check` y se migró de 0004 a 0008 (ensayada antes en una copia restaurada; sus 4 usuarios, 389 eventos de auditoría y
+107 sesiones quedaron idénticos). Aún **no se ha cargado ningún dato** en ella. Cambios de código para poder hacerlo con confirmación explícita: `run_real_study.py` acepta el destino ACTIVE solo con
+`--confirm-active <proyecto>` y `--pre-backup` (respaldo verificado de ese proyecto, en 0008 y de menos de 24 h), exige decidir el tutor antes de escribir (nunca asigna por defecto al único tutor existente)
+y el respaldo S6 etiqueta `origin`/`data_origins` (`SYNTHETIC`, `REAL` o `MIXED`) según los datos presentes, con restauración REAL a otra copia solo con `--confirm-real-copy`. Decisiones del usuario aún
+pendientes: tutor de las secciones REAL (relleno bloqueado o un TUTOR existente) y cuándo ejecutar la carga. `load_identities.py` sigue sin actuar sobre la activa.
+
 Resueltas el 2026-10-17 (sección 2b): plazos de oportunidad (decisión 3), participación fuera de las características (4), corte = disponibilidad de la última fuente con horizonte de 17 días (4),
 un solo periodo 2026 (4), B2 «con sistema» como simulación retrospectiva (2) y nombres solo en la ficha desde archivo local (5).
 

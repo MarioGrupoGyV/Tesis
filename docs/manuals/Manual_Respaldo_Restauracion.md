@@ -51,6 +51,12 @@ Alembic, definición de esquema/grants y roles; todos los archivos import_data/m
 Los hashes de contraseñas permanecen dentro del dump cifrado; no se publican por usuario.
 No se archivan el checkout, todo `.local`, Credential Manager ni la antigua DEMO.
 
+**Etiqueta de origen.** El paquete declara `origin` y `data_origins` según los valores distintos de toda columna `data_origin` del esquema de la aplicación, leídos dentro de
+la misma ventana consistente: `SYNTHETIC` (también una base sin datos escolares), `REAL` o `MIXED`. Un paquete con datos REAL nunca queda como `SYNTHETIC`: el validador
+rechaza un origen que no salga de `data_origins` y exige el alcance `REAL_INSTITUTIONAL` en los paquetes REAL/MIXED; un valor de origen desconocido detiene el respaldo.
+Los paquetes anteriores, sin `data_origins`, se leen como `SYNTHETIC`. `restore-check` de un paquete REAL/MIXED exige `--confirm-real-copy`: crea otra copia local con
+esos datos. Esa restauración todavía no se ha ejecutado con datos REAL; solo se probó la validación del paquete.
+
 ## Recuperar en una copia nueva
 
 Los puertos del ejemplo deben estar libres; los binds siempre son 127.0.0.1.

@@ -2,7 +2,7 @@
 
 Carga los datos reales ya convertidos ([Conversor_Excel_Real.md](Conversor_Excel_Real.md)) en un destino **aislado** `real-tesis` y ejecuta dentro del
 sistema la comparación de modelos, la activación del modelo, la evaluación **retrospectiva** de B1 y B2 y los indicadores. No toca la instalación
-activa ni otros destinos. Todo lo que tiene filas por alumno vive fuera del repositorio; al repo solo entra el resumen agregado
+activa ni otros destinos, salvo que el usuario lo pida expresamente (ver «Cargar en la instalación de siempre»). Todo lo que tiene filas por alumno vive fuera del repositorio; al repo solo entra el resumen agregado
 (`tests/evidence/mejoras-05-resumen-agregado.json`: conteos y métricas globales, sin códigos ni nombres).
 
 **Lectura correcta de los resultados:** simulación retrospectiva con datos reales del colegio; **no mide impacto del sistema**. Las alertas se
@@ -59,6 +59,33 @@ generaron ahora, con un modelo ajustado con los mismos estudiantes, sobre cortes
    Todo o nada; rechaza códigos desconocidos; la auditoría guarda solo conteos. En periodos REAL el nombre solo se muestra en la **ficha** del estudiante:
    la lista y el buscador de Estudiantes (que busca solo por código), la búsqueda de identidades, Alertas, Indicadores, Reportes y Modelos no lo muestran.
 
+## Cargar en la instalación de siempre (riesgo-escolar)
+
+Es una decisión aparte del usuario: pone datos de menores en la base de la instalación activa. `run_real_study.py` rechaza ese destino salvo que se
+cumplan las dos protecciones siguientes (con `--dry-run` no se exigen). Requisitos previos: la instalación ya migrada a 0008 (`infra/manage.py migrate`)
+y el perfil de operador del ADMIN real de esa instalación.
+
+1. **Descriptor y respaldo previo** (el respaldo debe ser de `riesgo-escolar`, estar en 0008 y tener menos de 24 h):
+
+   ```powershell
+   $s6 = "$env:LOCALAPPDATA\SeguimientoEscolar\S6"; $run = Get-Date -Format yyyyMMdd-HHmmss
+   backend\.venv\Scripts\python.exe infra\runtime_target.py active --output "$s6\active-$run.json"
+   backend\.venv\Scripts\python.exe infra\backup_restore.py backup --target "$s6\active-$run.json" --report "$s6\antes-de-cargar-$run-backup.json"
+   backend\.venv\Scripts\python.exe infra\backup_restore.py verify --backup "$env:LOCALAPPDATA\SeguimientoEscolar\Backups\<NOMBRE>.sebackup" --report "$s6\antes-de-cargar-$run-verify.json"
+   ```
+
+2. **Perfil del ADMIN** (la contraseña se escribe en el terminal): `operator_profiles.py register-profile --target "$s6\active-$run.json" --name riesgo-escolar`.
+3. **Simulacro** (inicia sesión, no escribe datos): la misma orden de «Corrida» con `--dry-run`, `--target "$s6\active-$run.json"` y `--operator-profile riesgo-escolar`.
+4. **Corrida real**: la orden de «Corrida» con `--target "$s6\active-$run.json"`, `--operator-profile riesgo-escolar`, `--confirm-protocol`, la decisión sobre el tutor (abajo) y las dos protecciones:
+   `--confirm-active riesgo-escolar --pre-backup "$env:LOCALAPPDATA\SeguimientoEscolar\Backups\<NOMBRE>.sebackup"`.
+
+- **Tutor.** En la activa nunca se asigna por defecto al único tutor existente, y la decisión se exige antes de escribir nada. `--locked-tutor` crea la cuenta
+  `tutor-bloqueado@example.com` sin acceso posible (añade una cuenta más a las cuatro); `--tutor-a/--tutor-b` da a esos TUTOR acceso a los datos REAL de sus secciones.
+- **Respaldo con datos REAL.** Desde esta carga el respaldo S6 de la activa se etiqueta según lo que contiene (`origin` y `data_origins`: `REAL` o `MIXED`, con el alcance
+  `REAL_INSTITUTIONAL`); nunca queda como `SYNTHETIC`. `restore-check` de un paquete REAL/MIXED exige `--confirm-real-copy`, porque crea otra copia local con esos datos.
+- `load_identities.py` (nombres en la ficha) sigue sin actuar sobre la activa; los cierres los carga el propio orquestador.
+- Cada corrida posterior (aunque no escriba nada) vuelve a pedir un respaldo de menos de 24 h.
+
 ## Dónde queda cada cosa
 
 | Qué | Dónde |
@@ -77,8 +104,9 @@ encender: `... up --target "$d\destino.json"`. Dirección local: <http://localho
 
 ## Limitaciones (obligatorias en cualquier uso de los resultados)
 
-1. **No existe respaldo ni restauración de datos REAL.** Los datos viven solo en el volumen del destino `real-tesis` y en los archivos originales;
-   si se borra el destino se rehacen desde `cortes.csv` y `cierres.csv`. La corrida es **reproducible**: repetida desde cero da las mismas métricas, el mismo modelo ganador y las mismas alertas (la partición usa el código del estudiante, no identificadores internos).
+1. **En `real-tesis` no existe respaldo ni restauración.** El respaldo S6 solo parte de la instalación activa; allí los datos viven solo en el volumen del destino y en
+   los archivos originales, y si se borra el destino se rehacen desde `cortes.csv` y `cierres.csv`. En la activa sí hay respaldo (etiquetado REAL/MIXED, ver arriba), pero su
+   restauración solo se ha comprobado con paquetes sin datos REAL. La corrida es **reproducible**: repetida desde cero da las mismas métricas, el mismo modelo ganador y las mismas alertas (la partición usa el código del estudiante, no identificadores internos).
 2. **NIA e intervención oportuna reales no se calculan** sin registros reales de intervenciones: quedan `null` con `NO_REAL_INTERVENTIONS`.
 3. PRV: el sistema solo ve el CSV ya filtrado (120 de 120); la recepción real (126) no tiene procedencia confirmada, así que **no se informa** en periodos REAL
    (`RECEPTION_PROVENANCE_UNCONFIRMED`, también en pantalla).
