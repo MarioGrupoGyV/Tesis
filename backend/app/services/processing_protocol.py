@@ -1,0 +1,136 @@
+"""Protocolo REAL (ADR 012): interruptor técnico de ADMIN. No guarda consentimientos, documentos,
+autorizadores ni fechas de permiso. En 3B-1 NO está conectado a los guards existentes: toda operación REAL
+sigue bloqueada, incluso con el protocolo confirmado."""
+from datetime import UTC, datetime
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from app.core.errors import AppError
+from app.models.protocol import ProcessingProtocolRecord
+from app.models.s1 import AcademicPeriod, AuditEvent
+from app.schemas.protocol import Protocol, ProtocolCreate, ProtocolParams
+
+PARAM_FIELDS = ('school_label', 'cohort_label', 'grade_scale_min', 'grade_scale_max', 'participation_min',
+                'participation_max', 'participation_labels', 'bimesters', 'source_label', 'quality_rules',
+                'eligibility_rules', 'risk_rule', 'opportune_windows')
+
+
+def require_admin(user):
+    if user.role != 'ADMIN':
+        raise AppError(403, 'FORBIDDEN', 'Solo ADMIN administra el protocolo de procesamiento REAL.')
+
+
+def plain(value):
+    if hasattr(value, 'model_dump'):
+        return value.model_dump(mode='json')
+    if isinstance(value, list):
+        return [plain(item) for item in value]
+    return value
+
+
+def params_of(source) -> dict:
+    """Parámetros normalizados (para comparar); funciona con un registro o con una entrada."""
+    return ProtocolParams.model_validate({field: plain(getattr(source, field)) for field in PARAM_FIELDS}).model_dump(mode='json')
+
+
+def view(record) -> Protocol:
+    values = {field: getattr(record, field) for field in PARAM_FIELDS}
+    values.update(id=record.id, period_id=record.period_id, version=record.version, created_at=record.created_at,
+                  authorization_confirmed_by_admin=record.authorization_confirmed_by_admin,
+                  confirmed_by=record.confirmed_by, confirmed_at=record.confirmed_at)
+    return Protocol.model_validate(values)
+
+
+def audit(db, user, record, action, request_id):
+    # Solo identificadores: ni parámetros ni datos personales en el payload.
+    db.add(AuditEvent(actor_id=user.id, entity_type='PROCESSING_PROTOCOL', entity_id=record.id, action=action,
+                      request_id=request_id, recorded_at=datetime.now(UTC),
+                      payload={'protocol_id': str(record.id), 'period_id': str(record.period_id)}))
+
+
+def locked(db, id):
+    record = db.scalar(select(ProcessingProtocolRecord).where(ProcessingProtocolRecord.id == id).with_for_update())
+    if record is None:
+        raise AppError(404, 'PROTOCOL_NOT_FOUND', 'El protocolo no está disponible.')
+    return record
+
+
+def create(db, user, payload: ProtocolCreate, request_id):
+    require_admin(user)
+    period = db.scalar(select(AcademicPeriod).where(AcademicPeriod.id == payload.period_id).with_for_update())
+    if period is None:
+        raise AppError(404, 'PERIOD_NOT_FOUND', 'El periodo no está disponible.')
+    if period.data_origin != 'REAL':
+        raise AppError(422, 'PROTOCOL_PERIOD_NOT_REAL', 'El protocolo solo se registra para un periodo REAL.')
+    for item in payload.bimesters:
+        if not period.start_date <= item.start_date or item.close_date > period.end_date:
+            raise AppError(422, 'PROTOCOL_OUTSIDE_PERIOD', 'Los bimestres deben quedar dentro del periodo.')
+    existing = db.scalar(select(ProcessingProtocolRecord).where(ProcessingProtocolRecord.period_id == period.id)
+                         .with_for_update())
+    if existing is not None:
+        if params_of(existing) != params_of(payload):
+            raise AppError(409, 'PROTOCOL_EXISTS', 'El periodo ya tiene un protocolo con otros parámetros.')
+        return view(existing), False
+    values = {field: plain(getattr(payload, field)) for field in PARAM_FIELDS}
+    record = ProcessingProtocolRecord(period_id=period.id, created_by=user.id, **values)
+    try:
+        db.add(record)
+        db.flush()
+        audit(db, user, record, 'PROTOCOL_CREATED', request_id)
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise AppError(409, 'PROTOCOL_CONFLICT', 'No se pudo registrar el protocolo; revisa los parámetros.') from None
+    db.refresh(record)
+    return view(record), True
+
+
+def by_period(db, user, period_id):
+    require_admin(user)
+    record = db.scalar(select(ProcessingProtocolRecord).where(ProcessingProtocolRecord.period_id == period_id))
+    if record is None:
+        raise AppError(404, 'PROTOCOL_NOT_FOUND', 'El periodo no tiene protocolo registrado.')
+    return view(record)
+
+
+def set_authorization(db, user, id, confirmed: bool, request_id):
+    """Confirmar o revocar; idempotente: repetir el mismo estado no cambia nada ni audita."""
+    require_admin(user)
+    record = locked(db, id)
+    if record.authorization_confirmed_by_admin == confirmed:
+        return view(record), False
+    period = db.get(AcademicPeriod, record.period_id)
+    if period is None or period.data_origin != 'REAL':
+        raise AppError(409, 'PROTOCOL_PERIOD_NOT_REAL', 'El periodo del protocolo ya no es REAL.')
+    now = datetime.now(UTC)
+    record.authorization_confirmed_by_admin = confirmed
+    record.confirmed_by = user.id if confirmed else None
+    record.confirmed_at = now if confirmed else None
+    record.version += 1
+    audit(db, user, record, 'PROTOCOL_AUTHORIZATION_CONFIRMED' if confirmed else 'PROTOCOL_AUTHORIZATION_REVOKED', request_id)
+    db.commit()
+    db.refresh(record)
+    return view(record), True
+
+
+def require_real_protocol(db, period):
+    """Devuelve el protocolo si está confirmado y cubre el periodo REAL; si no, el bloqueo vigente.
+
+    NO se usa todavía en los guards existentes (3B-2): preparada y probada, sin efecto sobre los flujos."""
+    if period is not None and period.data_origin == 'REAL':
+        record = db.scalar(select(ProcessingProtocolRecord).where(ProcessingProtocolRecord.period_id == period.id,
+            ProcessingProtocolRecord.authorization_confirmed_by_admin.is_(True)))
+        if record is not None:
+            return record
+    raise AppError(422, 'INSTITUTIONAL_PROCESSING_NOT_READY',
+        'El procesamiento institucional requiere un protocolo REAL confirmado por un administrador para este periodo.')
+
+
+def real_student_processable(*, data_origin, is_active, eligible_flag, consent_documented, assent_documented,
+                             protocol_confirmed_for_enrollment) -> bool:
+    """Regla futura (3B-2), SIN uso en los flujos: SYNTHETIC como hasta ahora; REAL elegible solo si hay protocolo
+    confirmado que cubre la matrícula. Los consentimientos dejan de ser requisito dentro del sistema (D4)."""
+    if not (is_active and eligible_flag):
+        return False
+    if data_origin == 'REAL':
+        return bool(protocol_confirmed_for_enrollment)
+    return True
