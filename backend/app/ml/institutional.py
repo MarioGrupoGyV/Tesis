@@ -3,6 +3,8 @@
 Unidad = estudiante (B1 y B2 del mismo estudiante siempre juntos). Las etiquetas vienen del dataset (construido desde
 `risk_references`), nunca de las características. Resultados exploratorios: no demuestran eficacia escolar ni validan la tesis.
 """
+from collections.abc import Callable
+from copy import deepcopy
 from dataclasses import dataclass
 import hashlib
 import json
@@ -155,6 +157,26 @@ class InstitutionalComparison:
     training_dataset: Dataset
 
 
+@dataclass(frozen=True, eq=False)
+class RepetitionRecord:
+    """Lo que ya calcula una repetición de un algoritmo, entregado a un colector opcional (exportación para SPSS, Bloque 7).
+
+    `predictions[i]` y `reference[i]` corresponden a `keys[i]` = (código del estudiante, corte) y a `bimesters[i]`, en el orden canónico de la
+    comparación (el mismo de `InstitutionalComparison.training_dataset.observations`). Clases 0 = Bajo, 1 = Medio, 2 = Alto. Son copias:
+    el colector no puede alterar los resultados de la comparación.
+    """
+    repetition: int                      # base 0
+    seed: int
+    algorithm: str
+    metrics: dict                        # la misma salida de `metrics()` que alimenta `per_repetition`
+    kappa: float | None                  # `cohen_kappa` de la matriz de confusión de esta repetición
+    detection: dict                      # {'TOTAL': conteos, 'B1': conteos, …} (igual que `detection_per_repetition`)
+    predictions: np.ndarray
+    reference: np.ndarray
+    keys: tuple
+    bimesters: tuple
+
+
 def selection_key(summaries):
     def key(name):
         f1, balanced = summaries[name]['macro']['f1']['mean'], summaries[name]['balanced_accuracy']['mean']
@@ -163,7 +185,9 @@ def selection_key(summaries):
 
 
 def compare_institutional(dataset: Dataset, *, seed: int, study_id, repetitions: int = DEFAULT_REPETITIONS,
-                          requested_folds: int = 5, leave_one_student_out: bool = False, bimesters=None) -> InstitutionalComparison:
+                          requested_folds: int = 5, leave_one_student_out: bool = False, bimesters=None,
+                          collector: Callable[[RepetitionRecord], None] | None = None) -> InstitutionalComparison:
+    """`collector` (opcional) recibe un `RepetitionRecord` por repetición y algoritmo; no cambia semillas, particiones ni resultados."""
     if dataset.scope != 'INSTITUTIONAL':
         raise MLDiagnostic('INSTITUTIONAL_SCOPE_REQUIRED')
     if not 0 <= seed < 2**32 or not 2 <= requested_folds <= 5 or repetitions < MIN_REPETITIONS:
@@ -191,6 +215,7 @@ def compare_institutional(dataset: Dataset, *, seed: int, study_id, repetitions:
     scopes = {'TOTAL': np.ones(len(y), dtype=bool), **{code: np.array([item == code for item in codes]) for code in sorted(set(codes))}}
     detection_per_repetition = {name: [] for name in ALGORITHMS}
     first = {}
+    collected_keys, collected_codes = tuple((row.student_key, row.cutoff_at) for row in rows), tuple(codes)
     with threadpool_limits(limits=1):
         for repetition, (splits, strategy) in enumerate(plans):
             for algorithm in ALGORITHMS:
@@ -208,6 +233,10 @@ def compare_institutional(dataset: Dataset, *, seed: int, study_id, repetitions:
                 # Solo predicciones de validación: cada observación se predice una vez por repetición, con el estudiante fuera del entrenamiento.
                 detection_per_repetition[algorithm].append({scope: detection_counts(y, predictions, mask) for scope, mask in scopes.items()})
                 pooled[algorithm] += np.array(score['confusion_matrix'])
+                if collector is not None:
+                    collector(RepetitionRecord(repetition=repetition, seed=seeds[repetition], algorithm=algorithm, metrics=deepcopy(score),
+                        kappa=cohen_kappa(score['confusion_matrix']), detection=deepcopy(detection_per_repetition[algorithm][-1]),
+                        predictions=predictions.copy(), reference=y.copy(), keys=collected_keys, bimesters=collected_codes))
                 if repetition == 0:
                     first[algorithm] = (predictions, fold_scores)
         summaries = {name: summarize(per_repetition[name], pooled[name]) for name in ALGORITHMS}
