@@ -360,8 +360,9 @@ nombres a la ficha (bloques siguientes).
 modelo activo Random Forest (`LOCAL_EXPLORATORY`) por la regla del sistema (F1 macro medio, luego exactitud balanceada), evaluación retrospectiva de B1 y B2 con relojes simulados y verificación SQL
 independiente de PDER y CRA. Resumen agregado sin códigos en `tests/evidence/mejoras-05-resumen-agregado.json`. Se añadieron la carga de identidades a la ficha (`load_identities.py`) y el kappa de
 Cohen en la comparación. Limitaciones vigentes: (1) **no existe respaldo ni restauración de datos REAL**: los datos viven solo en el volumen de `real-tesis` y en los archivos originales;
-(2) **NIA e intervención oportuna reales no se calculan** sin registros reales (`NO_REAL_INTERVENTIONS`). Pendiente de decisión del usuario: ocultar el nombre en la lista y búsqueda de Estudiantes
-(decisión 5 del ADR) y la cifra interna de PRV en la pantalla Indicadores.
+(2) **NIA e intervención oportuna reales no se calculan** sin registros reales (`NO_REAL_INTERVENTIONS`). Por decisión del usuario, en periodos REAL el nombre solo aparece en la ficha (lista, buscador e identidades muestran códigos) y PRV no se informa
+(`RECEPTION_PROVENANCE_UNCONFIRMED`). Hallazgo corregido: la partición agrupada usaba el UUID interno del estudiante y repetir la corrida podía cambiar el modelo ganador; ahora usa el código y un orden canónico, y la
+repetición desde cero (dos corridas) da resultados idénticos.
 
 Resueltas el 2026-10-17 (sección 2b): plazos de oportunidad (decisión 3), participación fuera de las características (4), corte = disponibilidad de la última fuente con horizonte de 17 días (4),
 un solo periodo 2026 (4), B2 «con sistema» como simulación retrospectiva (2) y nombres solo en la ficha desde archivo local (5).

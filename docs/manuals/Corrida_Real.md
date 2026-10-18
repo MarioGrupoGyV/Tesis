@@ -56,8 +56,8 @@ generaron ahora, con un modelo ajustado con los mismos estudiantes, sobre cortes
    backend\.venv\Scripts\python.exe infra\load_identities.py --target "$d\destino.json" --operator-profile real-tesis --csv "<carpeta>\identidades.local.csv"
    ```
 
-   Todo o nada; rechaza códigos desconocidos; la auditoría guarda solo conteos. **Aviso:** hoy la pantalla Estudiantes (lista, búsqueda y ficha)
-   muestra el nombre; Alertas, Indicadores, Reportes y Modelos no.
+   Todo o nada; rechaza códigos desconocidos; la auditoría guarda solo conteos. En periodos REAL el nombre solo se muestra en la **ficha** del estudiante:
+   la lista y el buscador de Estudiantes (que busca solo por código), la búsqueda de identidades, Alertas, Indicadores, Reportes y Modelos no lo muestran.
 
 ## Dónde queda cada cosa
 
@@ -78,9 +78,9 @@ encender: `... up --target "$d\destino.json"`. Dirección local: <http://localho
 ## Limitaciones (obligatorias en cualquier uso de los resultados)
 
 1. **No existe respaldo ni restauración de datos REAL.** Los datos viven solo en el volumen del destino `real-tesis` y en los archivos originales;
-   si se borra el destino se rehacen desde `cortes.csv` y `cierres.csv`.
+   si se borra el destino se rehacen desde `cortes.csv` y `cierres.csv`. La corrida es **reproducible**: repetida desde cero da las mismas métricas, el mismo modelo ganador y las mismas alertas (la partición usa el código del estudiante, no identificadores internos).
 2. **NIA e intervención oportuna reales no se calculan** sin registros reales de intervenciones: quedan `null` con `NO_REAL_INTERVENTIONS`.
-3. PRV: el sistema solo ve el CSV ya filtrado (120 de 120); la recepción real (126) no tiene procedencia confirmada, así que **no se informa** (`RECEPTION_PROVENANCE_UNCONFIRMED`),
-   aunque la pantalla Indicadores aún muestra su cifra interna.
+3. PRV: el sistema solo ve el CSV ya filtrado (120 de 120); la recepción real (126) no tiene procedencia confirmada, así que **no se informa** en periodos REAL
+   (`RECEPTION_PROVENANCE_UNCONFIRMED`, también en pantalla).
 4. La matriz «predicho frente a referencia» de la evaluación retrospectiva es **en muestra** (el modelo se ajustó con esos mismos estudiantes): las
    cifras válidas son las de validación cruzada (fuera de muestra). Con 60 estudiantes la incertidumbre es alta y no sustituye una validación externa.
