@@ -1,0 +1,133 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.demo.config.ts",
+      "demo-manual.spec.ts"
+    ],
+    "configFile": "C:\\Users\\mario\\OneDrive\\Escritorio\\tesis-riesgo-escolar\\playwright.demo.config.ts",
+    "rootDir": "C:/Users/mario/OneDrive/Escritorio/tesis-riesgo-escolar/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/mario/OneDrive/Escritorio/tesis-riesgo-escolar/.local/demo-playwright",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/mario/OneDrive/Escritorio/tesis-riesgo-escolar/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "demo-manual.spec.ts",
+          "indicators.spec.ts"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "tests/evidence/mejoras-06-e2e.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "demo-manual.spec.ts",
+      "file": "demo-manual.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "B1: crear alumno, medir, evaluar, abrir alerta, planificar actividad y ver reporte",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [
+                {
+                  "type": "tiempos-segundos",
+                  "description": "{\"pasos\":[{\"step\":\"iniciar sesión\",\"seconds\":10.9},{\"step\":\"registrar estudiante 1 (riesgo alto)\",\"seconds\":2.9},{\"step\":\"registrar medición 1\",\"seconds\":1.1},{\"step\":\"evaluar riesgo (estudiante 1)\",\"seconds\":2.5},{\"step\":\"abrir el caso y planificar la actividad\",\"seconds\":6.4},{\"step\":\"registrar estudiante 2 (riesgo bajo)\",\"seconds\":3.1},{\"step\":\"registrar medición 2\",\"seconds\":2},{\"step\":\"evaluar riesgo (estudiante 2, bajo)\",\"seconds\":1.1},{\"step\":\"abrir el reporte\",\"seconds\":2.5}],\"total_recorrido\":21.6,\"real_2026_sin_cambios\":true}"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 43946,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "TIEMPOS {\"pasos\":[{\"step\":\"iniciar sesión\",\"seconds\":10.9},{\"step\":\"registrar estudiante 1 (riesgo alto)\",\"seconds\":2.9},{\"step\":\"registrar medición 1\",\"seconds\":1.1},{\"step\":\"evaluar riesgo (estudiante 1)\",\"seconds\":2.5},{\"step\":\"abrir el caso y planificar la actividad\",\"seconds\":6.4},{\"step\":\"registrar estudiante 2 (riesgo bajo)\",\"seconds\":3.1},{\"step\":\"registrar medición 2\",\"seconds\":2},{\"step\":\"evaluar riesgo (estudiante 2, bajo)\",\"seconds\":1.1},{\"step\":\"abrir el reporte\",\"seconds\":2.5}],\"total_recorrido\":21.6}\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T09:54:15.369Z",
+                  "annotations": [
+                    {
+                      "type": "tiempos-segundos",
+                      "description": "{\"pasos\":[{\"step\":\"iniciar sesión\",\"seconds\":10.9},{\"step\":\"registrar estudiante 1 (riesgo alto)\",\"seconds\":2.9},{\"step\":\"registrar medición 1\",\"seconds\":1.1},{\"step\":\"evaluar riesgo (estudiante 1)\",\"seconds\":2.5},{\"step\":\"abrir el caso y planificar la actividad\",\"seconds\":6.4},{\"step\":\"registrar estudiante 2 (riesgo bajo)\",\"seconds\":3.1},{\"step\":\"registrar medición 2\",\"seconds\":2},{\"step\":\"evaluar riesgo (estudiante 2, bajo)\",\"seconds\":1.1},{\"step\":\"abrir el reporte\",\"seconds\":2.5}],\"total_recorrido\":21.6,\"real_2026_sin_cambios\":true}"
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "69ff5884573f9a51a025-728048a8c2bd209afc1b",
+          "file": "demo-manual.spec.ts",
+          "line": 94,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T09:54:13.152Z",
+    "duration": 49249.169,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

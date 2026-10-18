@@ -403,6 +403,10 @@ inventados cargados en la copia aparecen solo en la ficha; recorrido en vivo (re
 (la activa actual es anterior al bloque 5.1). Manuales: [Procedimiento_Preparar_Activa.md](../manuals/Procedimiento_Preparar_Activa.md), [Guion_Demo_Manual.md](../manuals/Guion_Demo_Manual.md), [Lista_Dia_Sustentacion.md](../manuals/Lista_Dia_Sustentacion.md).
 Limitaciones vigentes: NIA e intervención oportuna reales no calculables; PRV (126 recibidas, 6 rechazadas, 113 de 120 reportes) sin procedencia confirmada; modelo `LOCAL_EXPLORATORY` con 60 estudiantes; alertas retrospectivas; el periodo de demostración es un registro de prueba en una
 instalación aparte; la restauración de datos reales no se ha ejecutado sobre la activa.
+*Corrección de evidencia (Bloques 5.1 y 6):* `docker compose run` no reconstruye la imagen de pruebas, y la que se usó se construyó antes de que existieran las pruebas del 5.1 y de este bloque. Por eso `tests/evidence/mejoras-051-backend.xml`
+(476 pruebas) **no incluye** `test_b9_*` ni el código final del 5.1; esas pruebas sí se habían ejecutado una a una y pasaban (el lanzador rápido monta los archivos actuales). La suite completa sobre el código final es
+`tests/evidence/mejoras-06-backend.xml`: **505 pruebas, 0 fallos, 0 errores, 11 omitidas**, con la imagen reconstruida (`docker compose -f infra/compose.test.yaml build tester`) y con las pruebas de detección, periodo de demostración y puntos de entrada.
+Antes de una suite completa hay que reconstruir esa imagen.
 
 Resueltas el 2026-10-17 (sección 2b): plazos de oportunidad (decisión 3), participación fuera de las características (4), corte = disponibilidad de la última fuente con horizonte de 17 días (4),
 un solo periodo 2026 (4), B2 «con sistema» como simulación retrospectiva (2) y nombres solo en la ficha desde archivo local (5).

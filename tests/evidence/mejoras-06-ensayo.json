@@ -1,0 +1,58 @@
+{
+  "alcance": "Ensayo del Bloque 6 en copias aisladas de la instalación activa; la activa no se tocó. Solo agregados: sin códigos de estudiantes ni nombres.",
+  "fecha": "2026-10-18",
+  "decision_paso_0": "Diseño B (periodo REAL de demostración evaluado por el modelo REAL) descartado: exige migración 0009 que reemplaza 3 reglas de integridad y unos 25 archivos. Elegida la instalación hermana con periodo sintético rotulado.",
+  "imagenes": {"api_final": "riesgo-escolar-api:b62 (= b61)", "web_final": "riesgo-escolar-web:b62", "nota": "La activa actual corre un código anterior al bloque 5.1: hay que reconstruir sus imágenes antes de cargar."},
+  "identidad_con_real_tesis": {
+    "referencia": "tests/evidence/mejoras-051-resumen-agregado.json",
+    "copia_de_la_activa_corrida_real": {"resultado": "IDENTICOS", "segundos": 511},
+    "instalacion_hermana_corrida_real": {"resultado": "IDENTICOS"},
+    "copia_restaurada_desde_respaldo": {
+      "resultado": "DIFIEREN en 22 rutas, todas contabilidad de la primera corrida",
+      "rutas": "indicators.B1/B2.run.* (creadas/reutilizadas frente a REUSED) y active_model.id / is_active",
+      "doce_pasos_reconocidos_como_hechos": true
+    },
+    "informe_completo_de_comparacion": {
+      "metricas_identicas": true,
+      "rutas_que_difieren": ["study_id", "source_dataset_hash", "report_sha256"],
+      "causa": "identificadores derivados del UUID del periodo, propios de cada instalación"
+    },
+    "conteos": {"periodos_REAL": 1, "estudiantes": 60, "estudiantes_con_nombre": 0, "cortes": 120, "referencias": 120, "predicciones": 120, "alertas": 45, "intervenciones": 0, "modelo_activo": "RANDOM_FOREST/REAL", "protocolos_confirmados": 1, "migracion": "0008_real_chain"},
+    "metricas_publicadas": {"exactitud": "0,863 ± 0,014", "f1_macro": 0.848, "kappa": 0.790, "deteccion_validada_total": "92,9 % ± 1,4", "B1": "87,3 % ± 2,4", "B2": "100 % ± 0"}
+  },
+  "respaldo_con_datos_reales": {
+    "copia_real": [
+      {"id": "s6-20261018T090005Z-a0a957946fd0", "origin": "REAL", "data_origins": ["REAL"], "alcances": ["SYNTHETIC_STUDY", "REAL_INSTITUTIONAL"], "kb": 328, "archivos_privados": 16, "segundos": 137, "nota": "alcance SYNTHETIC_STUDY sobrante, corregido después"},
+      {"id": "s6-20261018T093143Z-53e18f562278", "origin": "REAL", "data_origins": ["REAL"], "alcances": ["REAL_INSTITUTIONAL"], "archivos_privados": 16, "segundos": 119}
+    ],
+    "instalacion_mixta": {"id": "s6-20261018T094059Z-61f0acce0d0a", "origin": "MIXED", "data_origins": ["REAL", "SYNTHETIC"], "alcances": ["SYNTHETIC_STUDY", "REAL_INSTITUTIONAL"], "kb": 616, "archivos_privados": 31, "segundos": 104},
+    "verify": "COMPROBADO en los tres paquetes",
+    "restore_check": {
+      "sin_confirmacion": "RESTORE_REAL_REQUIRES_CONFIRMATION (salida 2)",
+      "copia_real_con_confirmacion": {"resultado": "COMPROBADO", "segundos": 65, "modelo_verificado": ["RANDOM_FOREST"]},
+      "mixta_con_confirmacion": {"resultado": "COMPROBADO", "segundos": 97, "modelos_verificados": ["RANDOM_FOREST/REAL", "SVM/SYNTHETIC"]}
+    },
+    "falla_encontrada": "La verificación de confianza tomaba un solo modelo activo; corregida para verificar todos (commit 6796636).",
+    "limite": "No ejecutado sobre la activa con datos reales; la restauración se ensayó en copias."
+  },
+  "persistencia": {"copia_real_reinicio_segundos": 55, "copia_real_diferencias_de_conteos": 0, "mixta_reinicio_segundos": 39, "mixta_diferencias_de_conteos": 0, "volumenes_borrados": 0},
+  "nombres_en_la_ficha": {
+    "cargados": 60,
+    "solo_en_la_ficha": true,
+    "ausente_en": ["lista de estudiantes", "búsqueda por nombre", "búsqueda de identidades", "alertas", "indicadores", "indicadores por alumno", "resumen de reportes", "CSV de indicadores", "CSV de intervenciones", "CSV de reportes"],
+    "auditoria_con_nombres": 0,
+    "auditoria_payload": {"rows": 60, "updated": 60, "unchanged": 0, "data_origin": "REAL"},
+    "nota": "Nombres inventados; el archivo real de identidades no se generó ni se cargó."
+  },
+  "recorrido_en_vivo_en_copia_con_real_y_demostracion": {
+    "niveles_del_modelo_de_la_demostracion": {"ALTO 7/50/40/1/8": "HIGH, caso creado", "BAJO 18/98/95/3/0": "LOW, sin caso", "MEDIO 12/75/70/2/4": "MEDIUM, caso creado", "MEDIO 15/90/85/2/1": "MEDIUM, caso creado", "10/65/60/2/5": "HIGH (no usar como medio)"},
+    "tiempos_automaticos_total_recorrido_segundos": [17.0, 25.6, 21.6],
+    "real_2026_sin_cambios_antes_y_despues": true,
+    "real_2026_alertas_predicciones_intervenciones": {"alertas": 45, "predicciones": 120, "intervenciones": 0},
+    "nia_e_intervencion_oportuna_reales": "null con NO_REAL_INTERVENTIONS",
+    "capturas_revisadas_una_por_una": 12
+  },
+  "instalacion_hermana": {"corrida_real_minutos": 10.8, "periodo_de_demostracion_minutos": 3.8, "periodo": "DEMO-VIVO", "modelo_de_la_demostracion": "SVM / TECHNICAL_SIMULATION", "estudiantes_sinteticos_del_generador": 60},
+  "hallazgo_corregido": {"que": "app.synthetic_cli generate fallaba en un proceso nuevo con NoReferencedTableError (modelos sin importar las tablas que referencian)", "desde": "3B-1 (protocol_id en synthetic_studies)", "commit": "c321468", "prueba": "backend/tests/test_b9_entrypoints.py (10 puntos de entrada en intérprete limpio)"},
+  "espacio": {"volumen_base_real_mb": 51, "disco_libre_gb": 118.8}
+}
