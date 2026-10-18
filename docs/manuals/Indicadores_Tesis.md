@@ -190,3 +190,7 @@ optimista; no hay validación externa ni prospectiva; la desviación entre repet
 Un 100 % ± 0 en un bimestre (en la corrida real, B2 con los cuatro modelos) significa que ninguna de las 20 repeticiones dejó escapar un caso de ese bimestre; no es un error,
 pero se lee con cautela: RIESGO_V1 se calcula con los insumos de cierre del mismo bimestre (nota, asistencia, actividades, participación, incidencias), cercanos a las
 variables del corte, así que parte de la separación puede ser estructural y no prueba capacidad predictiva a futuro.
+
+## Exportación para SPSS (Bloque 7)
+
+Las métricas por repetición (HE2) y las predicciones fuera de muestra por estudiante y bimestre (HE3) del estudio REAL se exportan a CSV y `.sav` para SPSS 26 sin cambiar ningún resultado; ver `docs/manuals/Exportacion_SPSS.md` (cómo ejecutarlo, contenido de cada archivo, definición de la clase modal y por qué su detección puede diferir de la media por repetición).
