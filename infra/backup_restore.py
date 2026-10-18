@@ -400,7 +400,7 @@ def restore_files(target,archive,volume,work):
     if result.returncode: raise RuntimeError('RESTORE_VOLUME_FAILED')
 
 
-# Confianza del modelo activo tras restaurar. Sin modelo activo no hay nada que verificar: se registra como no aplicable
+# Confianza de los modelos activos tras restaurar (uno por origen: en una instalación mixta se verifican ambos). Sin modelo activo no hay nada que verificar: se registra como no aplicable
 # (nunca como verificado) y se deja el total de modelos para que se vea que no se ocultó ninguno.
 TRUST_PROBE='''import json
 from sqlalchemy import func,select
@@ -412,16 +412,20 @@ from app.services.synthetic_study import compatible_model,selected_artifact
 from app.ml.artifacts import ArtifactStore
 s=Settings();d=Database(s)
 with d.session_factory() as c:
- m=c.scalar(select(ModelVersion).where(ModelVersion.is_active.is_(True)))
- if m is None:
+ active=c.scalars(select(ModelVersion).where(ModelVersion.is_active.is_(True)).order_by(ModelVersion.data_origin)).all()
+ if not active:
   out={'applicable':False,'reason':'NO_ACTIVE_MODEL','model_versions_total':c.scalar(select(func.count()).select_from(ModelVersion)),
    'hmac_verified':None,'model_compatible':None,'algorithm':None,'regenerated':False}
  else:
-  st=c.get(SyntheticStudyRecord,m.study_id)
-  compatible_model(s,st,m)
-  manifest,key=selected_artifact(s,st)
-  ArtifactStore(s.ml_storage_dir).load(key)
-  out={'hmac_verified':True,'model_compatible':True,'algorithm':m.algorithm,'regenerated':False}
+  verified=[]
+  for m in active:
+   st=c.get(SyntheticStudyRecord,m.study_id)
+   compatible_model(s,st,m)
+   manifest,key=selected_artifact(s,st)
+   ArtifactStore(s.ml_storage_dir).load(key)
+   verified.append({'algorithm':m.algorithm,'data_origin':m.data_origin})
+  out={'hmac_verified':True,'model_compatible':True,'algorithm':active[0].algorithm,'regenerated':False}
+  if len(verified)>1: out['models']=verified
 print(json.dumps(out))
 '''
 
