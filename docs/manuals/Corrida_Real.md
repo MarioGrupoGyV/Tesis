@@ -120,3 +120,10 @@ encender: `... up --target "$d\destino.json"`. Dirección local: <http://localho
    (`RECEPTION_PROVENANCE_UNCONFIRMED`, también en pantalla).
 4. La matriz «predicho frente a referencia» de la evaluación retrospectiva es **en muestra** (el modelo se ajustó con esos mismos estudiantes): las
    cifras válidas son las de validación cruzada (fuera de muestra). Con 60 estudiantes la incertidumbre es alta y no sustituye una validación externa.
+
+## Ensayo en una copia de la activa y procedimiento (Bloque 6)
+
+El procedimiento completo y cronometrado para cargar los datos reales en `riesgo-escolar` está en [Procedimiento_Preparar_Activa.md](Procedimiento_Preparar_Activa.md). Se ensayó íntegro en una copia restaurada de la activa
+(`--explicit-tutor` aplica allí la misma regla de tutor que la activa): el resumen agregado salió **idéntico** al de `real-tesis`, y también el de la copia restaurada desde su respaldo y el de una instalación hermana. En el informe
+completo solo difieren tres identificadores propios de cada instalación (`study_id`, `source_dataset_hash` y `report_sha256`, que salen del UUID del periodo); todas las métricas son iguales.
+`infra/compare_real_summaries.py <referencia> <nuevo>` hace esa comprobación. Registro en vivo de la sustentación: [Guion_Demo_Manual.md](Guion_Demo_Manual.md).

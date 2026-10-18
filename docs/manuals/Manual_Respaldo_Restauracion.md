@@ -126,3 +126,19 @@ del diario y ejecuciones. El campo histórico `origin=SYNTHETIC` describe la DB;
 retrospectiva autorizada. La recuperación debe ser en un destino nuevo y conservar
 los bytes/firma sin regeneración ni entrenamiento. El Excel con nombres permanece
 en su ubicación original y no se copia al volumen ni al repositorio.
+
+## Ensayo del respaldo con datos reales (Bloque 6)
+
+Se ejecutó por primera vez el respaldo y la restauración **con datos reales**, siempre en copias aisladas (nunca sobre la activa):
+
+- **Fuente aislada.** `backup_restore.py backup --isolated-source` respalda un destino aislado (INSTALL o RESTORE) en lugar de la instalación activa; sin esa opción solo se respalda la activa. Se usó para ensayar con una copia
+  de la activa con la corrida real cargada (REAL) y con una instalación con datos reales y sintéticos (MIXED).
+- **Restaurar sobre el código nuevo.** `restore-check --image-tag <etiqueta>` restaura los datos sobre las imágenes `api`/`web` construidas con esa etiqueta (conserva la imagen de la base del paquete).
+- **Etiquetas.** Copia con la corrida real: `origin = REAL`, `data_origins = REAL`, alcance `REAL_INSTITUTIONAL` (≈ 0,3 MB, 16 archivos privados, ≈ 1–2 min). Instalación con real y sintético:
+  `origin = MIXED`, `data_origins = REAL,SYNTHETIC`, alcances `SYNTHETIC_STUDY` y `REAL_INSTITUTIONAL` (≈ 0,6 MB, 31 archivos, ≈ 1,7 min). Un paquete solo REAL ya no declara `SYNTHETIC_STUDY`.
+- **Restauración.** `restore-check` sin `--confirm-real-copy` se niega (`RESTORE_REAL_REQUIRES_CONFIRMATION`); con la confirmación restaura en ≈ 1–1,6 min, y las tablas y los archivos privados quedan exactos antes de cualquier inicio de sesión.
+  La verificación de confianza comprueba firma, compatibilidad y artefacto de **cada** modelo activo (uno por origen): en la copia mixta, Random Forest REAL y SVM SYNTHETIC.
+- **Qué se comprobó en la copia restaurada.** Conteos iguales (60 estudiantes, 120 cortes, 120 referencias, 120 predicciones, 45 alertas, 0 intervenciones), modelo activo Random Forest REAL, protocolo confirmado, 0 nombres,
+  y la corrida real sobre la copia reconoce los doce pasos como ya hechos y reproduce el resumen agregado (solo difieren los contadores «creadas/reutilizadas» de la primera corrida y el identificador del modelo).
+  Reinicio sin borrar volúmenes: 0 diferencias.
+- **Límite.** No se ha ejecutado sobre la activa con datos reales. Los paquetes siguen protegidos con DPAPI: solo se abren con el mismo usuario de Windows en el mismo equipo.

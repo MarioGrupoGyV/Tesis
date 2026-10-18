@@ -385,6 +385,25 @@ comprobado recomparando en el destino aislado nuevo `real-tesis-051` y reconstru
 con los cuatro modelos; RIESGO_V1 se calcula con los insumos de cierre del mismo bimestre (nota, asistencia, actividades, participación, incidencias), cercanos a las variables del corte, así que parte
 de la separación puede ser estructural. Con n = 60 y sin validación externa no demuestra capacidad predictiva a futuro. Manual: [Indicadores_Tesis.md](../manuals/Indicadores_Tesis.md).
 
+**Estado del Bloque 6 (2026-10-18): instalación de siempre lista para cargar solo datos reales y demostración en una instalación hermana.** Decisión del usuario: `riesgo-escolar` tendrá solo datos reales
+(60 estudiantes, B1 y B2, modelo REAL) y en la sustentación se registrará en vivo un estudiante nuevo. *Paso 0 (diseño B, periodo REAL «Demostración en vivo» evaluado por el modelo REAL activo):* inviable sin una
+migración 0009 que reemplace tres reglas de integridad de la base (`deny_manual_prediction`, `check_prediction_study` y `check_followup_provenance`, que hoy exigen que el modelo pertenezca al estudio del periodo del corte y que
+una medición manual solo se evalúe en SYNTHETIC), más resolución de estudio por periodo en los servicios (`study_for_period`, `load_active_model`, seguimiento) y cambios de interfaz: unos 25 archivos y volver a migrar la activa.
+Se detuvo el diseño, se expusieron alternativas y el usuario eligió la **instalación hermana de demostración** (`demo-vivo`: mismos datos reales y un periodo sintético rotulado `DEMO-VIVO`, con el flujo ya validado; REAL y SYNTHETIC
+conviven en una base). Consecuencia que debe decirse: la evaluación en vivo la hace el modelo técnico sintético (SVM) del periodo `DEMO-VIVO`, no el Random Forest de los datos reales. Hoy un REAL-2026 con estudio todavía admitiría alta y medición
+manual (M1); bloquearlo queda como endurecimiento opcional.
+*Implementado:* `infra/prepare_demo_period.py` (idempotente, `--dry-run`, nunca sobre la activa, exige `--confirm-demo-target`), rótulo «Registro de demostración, no es dato del colegio» en la barra de contexto de todo periodo sintético, modelo visible
+en la evaluación, `run_real_study.py --explicit-tutor`, `backup_restore.py backup --isolated-source` y `restore-check --image-tag` (más verificación de **todos** los modelos activos y alcances según el origen), `load_identities.py` sobre la activa con las
+mismas protecciones que la corrida real y `infra/compare_real_summaries.py`. *Hallazgo corregido:* `app.synthetic_cli generate` fallaba en su propio proceso con `NoReferencedTableError` desde que el estudio ganó `protocol_id` (3B-1); las pruebas no lo veían
+porque importan toda la aplicación. Ahora cada modelo importa las tablas que referencia y hay una prueba por punto de entrada en un intérprete limpio.
+*Ensayos en copias aisladas (la activa no se tocó):* la corrida real sobre una copia restaurada de la activa dio un resumen agregado **idéntico** al de `real-tesis` (también la copia restaurada desde su respaldo y la instalación hermana; en el informe completo
+solo difieren `study_id`, `source_dataset_hash` y `report_sha256`, propios de cada instalación); primer respaldo con datos reales (REAL y MIXED) y `restore-check` con `--confirm-real-copy`, ambos `COMPROBADO`; reinicio sin borrar volúmenes sin diferencias; nombres
+inventados cargados en la copia aparecen solo en la ficha; recorrido en vivo (registro, medición, evaluación, alerta, actividad, reporte) con los números de REAL-2026 idénticos antes y después, NIA e intervención oportuna en `null`; recorrido automático ≈ 20–26 s.
+*Pendiente (decisiones del usuario):* tutor de las secciones reales (A: cuenta de relleno sin inicio de sesión, recomendada; B: un TUTOR existente), cuándo cargar los nombres reales y la ejecución del procedimiento sobre la activa, que necesita reconstruir sus imágenes antes de cargar
+(la activa actual es anterior al bloque 5.1). Manuales: [Procedimiento_Preparar_Activa.md](../manuals/Procedimiento_Preparar_Activa.md), [Guion_Demo_Manual.md](../manuals/Guion_Demo_Manual.md), [Lista_Dia_Sustentacion.md](../manuals/Lista_Dia_Sustentacion.md).
+Limitaciones vigentes: NIA e intervención oportuna reales no calculables; PRV (126 recibidas, 6 rechazadas, 113 de 120 reportes) sin procedencia confirmada; modelo `LOCAL_EXPLORATORY` con 60 estudiantes; alertas retrospectivas; el periodo de demostración es un registro de prueba en una
+instalación aparte; la restauración de datos reales no se ha ejecutado sobre la activa.
+
 Resueltas el 2026-10-17 (sección 2b): plazos de oportunidad (decisión 3), participación fuera de las características (4), corte = disponibilidad de la última fuente con horizonte de 17 días (4),
 un solo periodo 2026 (4), B2 «con sistema» como simulación retrospectiva (2) y nombres solo en la ficha desde archivo local (5).
 
