@@ -41,6 +41,7 @@ export type FollowupResult = components['schemas']['FollowupResult'];
 export type ReportSummary = components['schemas']['ReportSummary'];
 export type IndicatorsResponse = components['schemas']['IndicatorsResponse'];
 export type IndicatorSummary = components['schemas']['Summary'];
+export type ValidatedDetection = components['schemas']['ValidatedDetection'];
 export type IndicatorContext = components['schemas']['IndicatorContext'];
 export type IndicatorRatio = components['schemas']['Ratio'];
 export type Protocol = components['schemas']['Protocol'];

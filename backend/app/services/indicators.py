@@ -37,7 +37,8 @@ NOTICE = ('Indicadores calculados sobre un estudio con datos sintéticos (simula
 CSV_HEADERS = ('origen', 'alcance', 'periodo', 'as_of_utc', 'codigo_anonimo', 'grado', 'seccion', 'elegible',
     'promedio', 'asistencia', 'riesgo_referencia', 'riesgo_predicho', 'fecha_alerta_utc', 'alerta_antes_cierre',
     'nia', 'intervencion_oportuna', 'dias_hasta_intervencion', 'motivo_exclusion', 'fecha_deteccion_utc',
-    'simulacion_retrospectiva', 'metric_basis')
+    'simulacion_retrospectiva', 'metric_basis', 'deteccion_validada_pct', 'deteccion_validada_sd_pct', 'deteccion_validada_repeticiones',
+    'deteccion_validada_metric_basis')
 
 
 def pct(numerator, denominator, reason='NO_DENOMINATOR'):
@@ -171,7 +172,8 @@ def intervention_records(db, allowed_ids, period, as_of, window=OPPORTUNE_WINDOW
     return records
 
 
-def summarize(rows, section=None, reference_reason=None, interventions=(), window=OPPORTUNE_WINDOW_DAYS, no_interventions=False, oof=None):
+def summarize(rows, section=None, reference_reason=None, interventions=(), window=OPPORTUNE_WINDOW_DAYS, no_interventions=False, oof=None,
+              detection=None):
     eligible = [r for r in rows if r['eligible']]
     # CRA por corte: predicción baja, o media/alta que el seguimiento dejó reflejada en una alerta (decisión CREATED/UPDATED).
     covered = sum(1 for r in eligible if r['predicted_risk'] is not None and r['covered'])
@@ -230,6 +232,10 @@ def summarize(rows, section=None, reference_reason=None, interventions=(), windo
         metrics, metrics_reason = oof if section is None else (None, 'PERIOD_LEVEL_ONLY')
         basis = 'OUT_OF_FOLD' if metrics else 'IN_SAMPLE' if in_sample else None
         label = OOF_LABEL if metrics else IN_SAMPLE_LABEL if in_sample else None
+    validated, validated_reason = None, None
+    if detection is not None:
+        # REAL: la detección validada es del periodo completo; el PDER del sistema (en memoria) se conserva aparte como dato de funcionamiento.
+        validated, validated_reason = detection if section is None else (None, 'PERIOD_LEVEL_ONLY')
     exclusions = schemas.Exclusions(ineligible=sum(1 for r in rows if not r['eligible']),
         no_snapshot=sum(1 for r in eligible if r['snapshot_id'] is None),
         no_reference=sum(1 for r in eligible if r['snapshot_id'] is not None and r['reference'] is None),
@@ -238,7 +244,7 @@ def summarize(rows, section=None, reference_reason=None, interventions=(), windo
         grade=section.grade if section else None, eligible_students=len(eligible), cra=cra, pder=pder, nia=nia,
         opportune=opportune, opportune_by_intervention=opportune_by_intervention, performance=performance, model_metrics=metrics, model_metrics_reason=metrics_reason,
         metric_basis=basis, metric_label=label, in_sample_metrics=in_sample,
-        exclusions=exclusions)
+        validated_detection=validated, validated_detection_reason=validated_reason, exclusions=exclusions)
 
 
 def prv(db, user, period, as_of, section_id):
@@ -264,15 +270,45 @@ def resolve_as_of(as_of):
     return as_of
 
 
-def out_of_fold_metrics(db, period):
-    """Métricas validadas (CV agrupada por estudiante) del informe de comparación del modelo REAL activo.
-
-    Devuelve (ModelMetrics | None, motivo). Sin modelo activo o sin informe: null con NO_OUT_OF_SAMPLE_REPORT."""
+def active_comparison(db, period):
+    """(modelo REAL activo, informe de comparación de su estudio); (None, {}) si no hay estudio o modelo activo."""
     from app.models.ml import ModelVersion
     study = db.scalar(select(SyntheticStudyRecord).where(SyntheticStudyRecord.period_id == period.id))
     model = db.scalar(select(ModelVersion).where(ModelVersion.study_id == study.id, ModelVersion.is_active.is_(True),
                                                  ModelVersion.status == 'APPROVED', ModelVersion.data_origin == 'REAL')) if study else None
     report = ((study.comparison or {}).get('report') or {}) if study else {}
+    return model, report
+
+
+DETECTION_LABEL = 'detección validada: validación cruzada (fuera de muestra)'
+
+
+def percent_spread(item):
+    """Media y desviación de una tasa (0–1) como porcentaje."""
+    mean_, sd = item.get('mean'), item.get('sd')
+    return schemas.Spread(mean=None if mean_ is None else round(100.0 * mean_, 4), sd=None if sd is None else round(100.0 * sd, 4))
+
+
+def out_of_fold_detection(db, period, bimester=None):
+    """Detección validada del modelo REAL activo (total o de un bimestre), del informe de comparación.
+
+    Devuelve (ValidatedDetection | None, motivo). Sin modelo, sin informe o sin ese dato: null con NO_OUT_OF_SAMPLE_REPORT."""
+    model, report = active_comparison(db, period)
+    block = ((report.get('algorithms') or {}).get(model.algorithm) or {}).get('detection') if model else None
+    scope = None if not block else block.get('total') if bimester is None else (block.get('by_bimester') or {}).get(bimester)
+    if not scope:
+        return None, 'NO_OUT_OF_SAMPLE_REPORT'
+    return schemas.ValidatedDetection(bimester=bimester, repetitions=scope['repetitions'],
+        reference_at_risk_per_repetition=scope['reference_at_risk_per_repetition'],
+        **{key: percent_spread(scope[key]) for key in ('detection', 'medium_detected', 'high_detected', 'high_as_low', 'low_flagged')},
+        pooled=schemas.DetectionCounts(**scope['pooled']), metric_label=DETECTION_LABEL, note=block['note']), None
+
+
+def out_of_fold_metrics(db, period):
+    """Métricas validadas (CV agrupada por estudiante) del informe de comparación del modelo REAL activo.
+
+    Devuelve (ModelMetrics | None, motivo). Sin modelo activo o sin informe: null con NO_OUT_OF_SAMPLE_REPORT."""
+    model, report = active_comparison(db, period)
     summary = ((report.get('algorithms') or {}).get(model.algorithm) or {}).get('repeated_cv') if model else None
     if not summary:
         return None, 'NO_OUT_OF_SAMPLE_REPORT'
@@ -314,7 +350,8 @@ def compute(db, user, settings, period_id, section_id, as_of, close_at, bimester
         r['nia'] for r in records) and not repository.intervention_rows(db, period.id, as_of, [s.id for s in chosen], 'REAL')
     return SimpleNamespace(period=period, allowed=allowed, chosen=chosen, as_of=as_of, close=close, records=records,
         reference_reason=reference_reason, window=window, bimester=bimester, no_interventions=no_interventions,
-        oof=out_of_fold_metrics(db, period) if period.data_origin == 'REAL' else None)
+        oof=out_of_fold_metrics(db, period) if period.data_origin == 'REAL' else None,
+        detection=out_of_fold_detection(db, period, bimester) if period.data_origin == 'REAL' else None)
 
 
 def indicators(db, user, settings, period_id, section_id, as_of, close_at, bimester=None):
@@ -322,7 +359,8 @@ def indicators(db, user, settings, period_id, section_id, as_of, close_at, bimes
     period = run.period
     events = intervention_records(db, [s.id for s in run.chosen], period, run.as_of, run.window)
     sections = [summarize([r for r in run.records if r['section_id'] == s.id], s, run.reference_reason,
-                          [i for i in events if i['section_id'] == s.id], run.window, run.no_interventions, run.oof) for s in run.chosen]
+                          [i for i in events if i['section_id'] == s.id], run.window, run.no_interventions, run.oof, run.detection)
+                for s in run.chosen]
     real = period.data_origin == 'REAL'
     return schemas.IndicatorsResponse(period_id=period.id, period_code=period.code, data_origin=period.data_origin,
         is_simulation=not real, notice=NOTICE_REAL if real else NOTICE, bimester=run.bimester,
@@ -330,7 +368,8 @@ def indicators(db, user, settings, period_id, section_id, as_of, close_at, bimes
         as_of=run.as_of, close_at=run.close, opportune_window_days=run.window,
         section_id=section_id, authorized_section_ids=[s.id for s in run.allowed],
         prv=prv(db, user, period, run.as_of, section_id),
-        total=summarize(run.records, None, run.reference_reason, events, run.window, run.no_interventions, run.oof), sections=sections)
+        total=summarize(run.records, None, run.reference_reason, events, run.window, run.no_interventions, run.oof, run.detection),
+        sections=sections)
 
 
 def student_item(record):
@@ -369,6 +408,9 @@ def export_csv(db, user, settings, request_id, period_id, section_id, as_of, clo
         content = io.StringIO(newline='')
         writer = csv.writer(content, lineterminator='\r\n', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(CSV_HEADERS)
+        # Detección validada del periodo (REAL, modelo activo): misma cifra en cada fila, rotulada con su base; vacía si no hay informe.
+        validated = run.detection[0] if run.detection else None
+        validated_values = (validated.detection.mean, validated.detection.sd, validated.repetitions, validated.metric_basis) if validated else (None,) * 4
         for record in records:
             item = student_item(record)
             values = (period.data_origin, SCOPE[period.data_origin], period.code, as_of.astimezone(UTC).isoformat(), item.anon_code,
@@ -378,7 +420,7 @@ def export_csv(db, user, settings, request_id, period_id, section_id, as_of, clo
                 yes_no(item.alert_before_close), item.nia, yes_no(item.opportune), item.days_to_first_intervention,
                 item.exclusion_reason,
                 item.alert_detected_at.astimezone(UTC).isoformat() if item.alert_detected_at else None,
-                yes_no(item.retrospective) if item.alert_opened_at else None, metric_basis(run))
+                yes_no(item.retrospective) if item.alert_opened_at else None, metric_basis(run), *validated_values)
             writer.writerow([safe_csv_text(value) for value in values])
         db.add(AuditEvent(id=uuid4(), actor_id=user.id, entity_type='REPORT', entity_id=period.id,
             action='INDICATORS_EXPORT_REQUESTED', request_id=request_id, recorded_at=datetime.now(UTC),

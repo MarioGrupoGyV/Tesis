@@ -1,14 +1,16 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.12.0
-  description: 'S6, M1, Bloques 1–3B-1 conservados. Bloque 3B-3: PDER y CRA por corte (predicción de cada bimestre),
-    métricas REAL fuera de muestra (validación cruzada del informe del modelo activo; `metric_basis`). Bloque
-    3B-2: cadena REAL local. Con un protocolo REAL confirmado que cubra el periodo se habilitan importación
-    del CSV canónico, comparación exploratoria, evaluación retrospectiva, alertas, reportes e indicadores por
-    bimestre; sin protocolo todo REAL sigue con INSTITUTIONAL_PROCESSING_NOT_READY. Los datos REAL son análisis
-    exploratorio local: no demuestran eficacia escolar. El estudio institucional, su comparación y la activación
-    del modelo se administran por CLI.'
+  version: 0.13.0
+  description: 'S6, M1, Bloques 1–3B-1 conservados. Bloque 5.1: detección validada (fuera de muestra) del modelo
+    activo, por bimestre y total, con media y desviación entre repeticiones (`validated_detection`; `NO_OUT_OF_SAMPLE_REPORT`
+    si falta). Bloque 3B-3: PDER y CRA por corte (predicción de cada bimestre), métricas REAL fuera de muestra
+    (validación cruzada del informe del modelo activo; `metric_basis`). Bloque 3B-2: cadena REAL local. Con
+    un protocolo REAL confirmado que cubra el periodo se habilitan importación del CSV canónico, comparación
+    exploratoria, evaluación retrospectiva, alertas, reportes e indicadores por bimestre; sin protocolo todo
+    REAL sigue con INSTITUTIONAL_PROCESSING_NOT_READY. Los datos REAL son análisis exploratorio local: no demuestran
+    eficacia escolar. El estudio institucional, su comparación y la activación del modelo se administran por
+    CLI.'
 servers:
 - url: /api/v1
   description: Preferir proxy de mismo origen para cookies y CSRF
@@ -7641,6 +7643,15 @@ components:
           anyOf:
           - $ref: '#/components/schemas/ModelMetrics'
           - type: 'null'
+        validated_detection:
+          anyOf:
+          - $ref: '#/components/schemas/ValidatedDetection'
+          - type: 'null'
+        validated_detection_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Validated Detection Reason
         exclusions:
           $ref: '#/components/schemas/Exclusions'
       additionalProperties: false
@@ -8048,4 +8059,121 @@ components:
       required:
       - version
       title: RiskRule
+    ValidatedDetection:
+      properties:
+        bimester:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bimester
+        repetitions:
+          type: integer
+          title: Repetitions
+        reference_at_risk_per_repetition:
+          type: integer
+          title: Reference At Risk Per Repetition
+        detection:
+          $ref: '#/components/schemas/Spread'
+        medium_detected:
+          $ref: '#/components/schemas/Spread'
+        high_detected:
+          $ref: '#/components/schemas/Spread'
+        high_as_low:
+          $ref: '#/components/schemas/Spread'
+        low_flagged:
+          $ref: '#/components/schemas/Spread'
+        pooled:
+          $ref: '#/components/schemas/DetectionCounts'
+        metric_basis:
+          type: string
+          const: OUT_OF_FOLD
+          title: Metric Basis
+          default: OUT_OF_FOLD
+        metric_label:
+          type: string
+          title: Metric Label
+        note:
+          type: string
+          title: Note
+      additionalProperties: false
+      type: object
+      required:
+      - repetitions
+      - reference_at_risk_per_repetition
+      - detection
+      - medium_detected
+      - high_detected
+      - high_as_low
+      - low_flagged
+      - pooled
+      - metric_label
+      - note
+      title: ValidatedDetection
+      description: 'Detección fuera de muestra: de las observaciones de referencia Medio/Alto, proporción que
+        el modelo marcó Medio/Alto
+
+        cuando el estudiante estaba en el pliegue de validación. `low_flagged` es la falsa alarma (Bajo marcado
+        Medio/Alto).'
+    Spread:
+      properties:
+        mean:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Mean
+        sd:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Sd
+      additionalProperties: false
+      type: object
+      required:
+      - mean
+      - sd
+      title: Spread
+      description: Media y desviación entre las repeticiones de la validación cruzada, en porcentaje.
+    DetectionCounts:
+      properties:
+        reference_at_risk:
+          type: integer
+          title: Reference At Risk
+        detected:
+          type: integer
+          title: Detected
+        reference_low:
+          type: integer
+          title: Reference Low
+        low_flagged:
+          type: integer
+          title: Low Flagged
+        reference_medium:
+          type: integer
+          title: Reference Medium
+        medium_flagged:
+          type: integer
+          title: Medium Flagged
+        reference_high:
+          type: integer
+          title: Reference High
+        high_flagged:
+          type: integer
+          title: High Flagged
+        high_as_low:
+          type: integer
+          title: High As Low
+      additionalProperties: false
+      type: object
+      required:
+      - reference_at_risk
+      - detected
+      - reference_low
+      - low_flagged
+      - reference_medium
+      - medium_flagged
+      - reference_high
+      - high_flagged
+      - high_as_low
+      title: DetectionCounts
+      description: Conteos sumados de todas las repeticiones (cada observación se valida una vez por repetición).
 x-current-sprint: S2.1

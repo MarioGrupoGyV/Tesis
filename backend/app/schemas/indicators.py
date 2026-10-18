@@ -88,6 +88,42 @@ class ModelMetrics(ContractModel):
     macro_sd: dict[str, float | None] | None = None
 
 
+class Spread(ContractModel):
+    """Media y desviación entre las repeticiones de la validación cruzada, en porcentaje."""
+    mean: float | None
+    sd: float | None
+
+
+class DetectionCounts(ContractModel):
+    """Conteos sumados de todas las repeticiones (cada observación se valida una vez por repetición)."""
+    reference_at_risk: int
+    detected: int
+    reference_low: int
+    low_flagged: int
+    reference_medium: int
+    medium_flagged: int
+    reference_high: int
+    high_flagged: int
+    high_as_low: int
+
+
+class ValidatedDetection(ContractModel):
+    """Detección fuera de muestra: de las observaciones de referencia Medio/Alto, proporción que el modelo marcó Medio/Alto
+    cuando el estudiante estaba en el pliegue de validación. `low_flagged` es la falsa alarma (Bajo marcado Medio/Alto)."""
+    bimester: str | None = None
+    repetitions: int
+    reference_at_risk_per_repetition: int
+    detection: Spread
+    medium_detected: Spread
+    high_detected: Spread
+    high_as_low: Spread
+    low_flagged: Spread
+    pooled: DetectionCounts
+    metric_basis: Literal['OUT_OF_FOLD'] = 'OUT_OF_FOLD'
+    metric_label: str
+    note: str
+
+
 class Exclusions(ContractModel):
     ineligible: int
     no_snapshot: int
@@ -112,6 +148,9 @@ class Summary(ContractModel):
     metric_basis: Literal['OUT_OF_FOLD', 'IN_SAMPLE'] | None = None
     metric_label: str | None = None
     in_sample_metrics: ModelMetrics | None = None
+    # REAL: detección validada del modelo activo (solo periodo completo). null con motivo si no hay informe fuera de muestra.
+    validated_detection: ValidatedDetection | None = None
+    validated_detection_reason: str | None = None
     exclusions: Exclusions
 
 

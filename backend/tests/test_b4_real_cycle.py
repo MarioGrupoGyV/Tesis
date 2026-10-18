@@ -213,12 +213,27 @@ def test_full_real_cycle_with_fictitious_data(demo):
         assert sum(map(sum, in_sample['confusion_matrix'])) <= STUDENTS + 1          # el corte del bimestre, en memoria
         assert in_sample['confusion_matrix'] != metrics['confusion_matrix']
         assert all(row['model_metrics'] is None and row['model_metrics_reason'] == 'PERIOD_LEVEL_ONLY' for row in data['sections'])
+        # Bloque 5.1: detección validada (fuera de muestra) del modelo activo, por bimestre y rotulada; el PDER en memoria se conserva aparte.
+        detection = total['validated_detection']
+        expected = report['algorithms'][report['selected_algorithm']]['detection']['by_bimester'][bimester]
+        assert total['validated_detection_reason'] is None and detection['bimester'] == bimester
+        assert detection['metric_basis'] == 'OUT_OF_FOLD' and detection['repetitions'] == 20 and 'fuera de muestra' in detection['metric_label']
+        assert detection['detection']['mean'] == pytest.approx(100 * expected['detection']['mean']) and detection['detection']['sd'] is not None
+        assert detection['pooled'] == {key: expected['pooled'][key] for key in detection['pooled']}
+        assert detection['pooled']['reference_at_risk'] == 20 * detection['reference_at_risk_per_repetition']
+        assert all(row['validated_detection'] is None and row['validated_detection_reason'] == 'PERIOD_LEVEL_ONLY' for row in data['sections'])
+    whole = call(state, 'get', f"/indicators?period_id={period['id']}").json()['total']['validated_detection']
+    whole_expected = report['algorithms'][report['selected_algorithm']]['detection']['total']
+    assert whole['bimester'] is None and whole['pooled']['reference_at_risk'] == whole_expected['pooled']['reference_at_risk']
+    assert whole['pooled']['reference_at_risk'] == sum(report['algorithms'][report['selected_algorithm']]['detection']['by_bimester'][code]['pooled']['reference_at_risk']
+                                                        for code in BIMESTERS)
     assert 'OUT_OF_FOLD' in csv_basis(state, period['id']) and 'IN_SAMPLE' not in csv_basis(state, period['id'])
     other_period, _ = real_setup(state, 'REAL')                                    # sin estudio ni informe: null con motivo
     with state.app.state.database.session_factory() as db:
         from app.models.s1 import AcademicPeriod
         from app.services import indicators as indicator_service
         assert indicator_service.out_of_fold_metrics(db, db.get(AcademicPeriod, UUID(other_period['id']))) == (None, 'NO_OUT_OF_SAMPLE_REPORT')
+        assert indicator_service.out_of_fold_detection(db, db.get(AcademicPeriod, UUID(other_period['id']))) == (None, 'NO_OUT_OF_SAMPLE_REPORT')
     # PDER por corte contra la base: predicción media/alta de ese corte, emitida antes del cierre menos el margen (3 días).
     for bimester, spec in BIMESTERS.items():
         close_instant = datetime.fromisoformat(spec['target']).replace(tzinfo=UTC) + timedelta(days=1, hours=5)
@@ -242,8 +257,10 @@ def test_full_real_cycle_with_fictitious_data(demo):
         assert 'Zzxqwv' not in text_ and 'Apellidoz' not in text_ and 'Alumno' not in text_      # solo códigos, nunca nombres
     from test_b5_protocol_audit import name_findings
     assert all(name_findings(item) == [] for item in csv_texts)                          # búsqueda automática: sin cabeceras ni celdas con aspecto de nombre
-    assert csv_texts[0].splitlines()[0].endswith('fecha_deteccion_utc,simulacion_retrospectiva,metric_basis')
+    assert csv_texts[0].splitlines()[0].endswith('fecha_deteccion_utc,simulacion_retrospectiva,metric_basis,deteccion_validada_pct,'
+                                                 'deteccion_validada_sd_pct,deteccion_validada_repeticiones,deteccion_validada_metric_basis')
     assert csv_texts[0].splitlines()[1].startswith('REAL,INSTITUTIONAL_STUDY,')
+    assert csv_texts[0].splitlines()[1].split(',')[-3:][1:] == ['20', 'OUT_OF_FOLD'] and csv_texts[0].splitlines()[1].split(',')[-4] != ''
     # Lista y detalle de alertas / resumen funcionan para REAL con los permisos habituales.
     assert call(state, 'get', f"/alerts?period_id={period['id']}").status_code == 200
     summary = call(state, 'get', f"/reports/summary?period_id={period['id']}")

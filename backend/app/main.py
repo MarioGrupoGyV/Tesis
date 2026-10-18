@@ -29,7 +29,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     application = FastAPI(
         title="Seguimiento Escolar",
-        version="0.12.0",
+        version="0.13.0",
         lifespan=lifespan,
         docs_url=None,
         redoc_url=None,

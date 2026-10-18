@@ -3032,6 +3032,9 @@ export interface components {
             /** Metric Label */
             metric_label?: string | null;
             in_sample_metrics?: components["schemas"]["ModelMetrics"] | null;
+            validated_detection?: components["schemas"]["ValidatedDetection"] | null;
+            /** Validated Detection Reason */
+            validated_detection_reason?: string | null;
             exclusions: components["schemas"]["Exclusions"];
         };
         /** ContextSection */
@@ -3235,6 +3238,69 @@ export interface components {
              * @constant
              */
             version: "RIESGO_V1";
+        };
+        /**
+         * ValidatedDetection
+         * @description Detección fuera de muestra: de las observaciones de referencia Medio/Alto, proporción que el modelo marcó Medio/Alto
+         *     cuando el estudiante estaba en el pliegue de validación. `low_flagged` es la falsa alarma (Bajo marcado Medio/Alto).
+         */
+        ValidatedDetection: {
+            /** Bimester */
+            bimester?: string | null;
+            /** Repetitions */
+            repetitions: number;
+            /** Reference At Risk Per Repetition */
+            reference_at_risk_per_repetition: number;
+            detection: components["schemas"]["Spread"];
+            medium_detected: components["schemas"]["Spread"];
+            high_detected: components["schemas"]["Spread"];
+            high_as_low: components["schemas"]["Spread"];
+            low_flagged: components["schemas"]["Spread"];
+            pooled: components["schemas"]["DetectionCounts"];
+            /**
+             * Metric Basis
+             * @default OUT_OF_FOLD
+             * @constant
+             */
+            metric_basis: "OUT_OF_FOLD";
+            /** Metric Label */
+            metric_label: string;
+            /** Note */
+            note: string;
+        };
+        /**
+         * Spread
+         * @description Media y desviación entre las repeticiones de la validación cruzada, en porcentaje.
+         */
+        Spread: {
+            /** Mean */
+            mean: number | null;
+            /** Sd */
+            sd: number | null;
+        };
+        /**
+         * DetectionCounts
+         * @description Conteos sumados de todas las repeticiones (cada observación se valida una vez por repetición).
+         */
+        DetectionCounts: {
+            /** Reference At Risk */
+            reference_at_risk: number;
+            /** Detected */
+            detected: number;
+            /** Reference Low */
+            reference_low: number;
+            /** Low Flagged */
+            low_flagged: number;
+            /** Reference Medium */
+            reference_medium: number;
+            /** Medium Flagged */
+            medium_flagged: number;
+            /** Reference High */
+            reference_high: number;
+            /** High Flagged */
+            high_flagged: number;
+            /** High As Low */
+            high_as_low: number;
         };
     };
     responses: never;
