@@ -355,6 +355,14 @@ repositorio, con lector `.xlsx` propio (sin red ni base de datos), salidas deter
 disponibilidad de la última fuente de toda la cohorte (21-04 y 30-06) y los insumos de cierre usan la media de las seis notas finales. Pendiente: importar (registro de estudio, carga de cierres) y cargar
 nombres a la ficha (bloques siguientes).
 
+**Estado del Bloque 5 (2026-10-17).** Corrida real ejecutada en el destino aislado `real-tesis` con `infra/run_real_study.py` (manual: [Corrida_Real.md](../manuals/Corrida_Real.md)):
+120 cortes, 60 estudiantes, 120 referencias RIESGO_V1 (B1 15/21/24 y B2 25/11/24), comparación con validación cruzada agrupada (RF, SVM, XGBoost y Dummy; 20 repeticiones, semilla fija, LOSO),
+modelo activo Random Forest (`LOCAL_EXPLORATORY`) por la regla del sistema (F1 macro medio, luego exactitud balanceada), evaluación retrospectiva de B1 y B2 con relojes simulados y verificación SQL
+independiente de PDER y CRA. Resumen agregado sin códigos en `tests/evidence/mejoras-05-resumen-agregado.json`. Se añadieron la carga de identidades a la ficha (`load_identities.py`) y el kappa de
+Cohen en la comparación. Limitaciones vigentes: (1) **no existe respaldo ni restauración de datos REAL**: los datos viven solo en el volumen de `real-tesis` y en los archivos originales;
+(2) **NIA e intervención oportuna reales no se calculan** sin registros reales (`NO_REAL_INTERVENTIONS`). Pendiente de decisión del usuario: ocultar el nombre en la lista y búsqueda de Estudiantes
+(decisión 5 del ADR) y la cifra interna de PRV en la pantalla Indicadores.
+
 Resueltas el 2026-10-17 (sección 2b): plazos de oportunidad (decisión 3), participación fuera de las características (4), corte = disponibilidad de la última fuente con horizonte de 17 días (4),
 un solo periodo 2026 (4), B2 «con sistema» como simulación retrospectiva (2) y nombres solo en la ficha desde archivo local (5).
 
