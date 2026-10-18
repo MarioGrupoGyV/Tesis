@@ -140,3 +140,17 @@ de ese bimestre). Rótulo obligatorio: «Datos reales locales — análisis expl
 - **Métricas del modelo:** evaluación retrospectiva con un modelo ajustado con los mismos estudiantes; son descriptivas, no una validación.
 - **CSV:** solo códigos anónimos; columnas adicionales `fecha_deteccion_utc` y `simulacion_retrospectiva`.
 - Los indicadores REAL no están disponibles para el rol Investigador.
+
+## PDER, CRA y métricas por corte (Bloque 3B-3)
+
+- **PDER:** para cada alumno y cada corte, *detectado* significa que **la predicción de ese corte** fue media o alta y se emitió antes del cierre
+  del bimestre menos `detection_days` (instante `COALESCE(as_of_at, predicted_at)`). PDER = detectados ÷ alumnos con referencia media o alta
+  en ese bimestre. La alerta única de la matrícula no se hereda de un bimestre a otro: un alumno con alerta en B1 y predicción baja en B2 no
+  cuenta como detectado en B2, y uno bajo en B1 y alto en B2 no cuenta en B1.
+- **CRA:** *cubierto* = predicción baja, o media/alta que el seguimiento reflejó en una alerta con **decisión propia** (`CREATED` o `UPDATED`
+  en `followup_decisions`). Una alerta heredada de un corte anterior no cubre. No requiere migración.
+- **NIA e intervención oportuna:** siguen anclados a la alerta real (`opened_at`); no cambian.
+- **Métricas del modelo (REAL):** cifra principal = validación cruzada (fuera de muestra) del informe de comparación del modelo activo, con
+  media, DE de F1 macro y número de repeticiones; solo a nivel de periodo. Si el modelo activo no trae informe: `null` con motivo
+  `NO_OUT_OF_SAMPLE_REPORT`. El cálculo en memoria (`in_sample_metrics`) se conserva solo como dato interno rotulado «en memoria, no valida el
+  modelo». Los CSV traen `metric_basis` (`OUT_OF_FOLD` o `IN_SAMPLE`). SYNTHETIC conserva sus métricas, con base `IN_SAMPLE`.

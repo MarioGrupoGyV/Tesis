@@ -9,7 +9,7 @@ os.environ.update(APP_ENV='test',DATABASE_URL='postgresql+psycopg://unused:unuse
     CSRF_SECRET='contract-generation-only-not-a-runtime-secret')
 from app.main import app
 
-SCHEMAS=('Period','Model','ProcessingStatus','Nia','IndicatorsResponse','StudentIndicator','IndicatorContext','ReportSummary')
+SCHEMAS=('Period','Model','ProcessingStatus','Nia','IndicatorsResponse','StudentIndicator','IndicatorContext','ReportSummary','Summary','ModelMetrics')
 # Contrato endurecido a mano (p. ej. probabilidades solo null): solo se añaden las propiedades nuevas, sin reemplazar el resto.
 MERGE=('Prediction','AlertCase')
 OPERATIONS=('indicators','indicatorStudents','exportIndicatorsCsv')
@@ -20,7 +20,8 @@ def main():
     contract=yaml.safe_load(path.read_text(encoding='utf-8'))
     runtime=app.openapi()
     contract['info']['version']=runtime['info']['version']
-    contract['info']['description']=('S6, M1, Bloques 1–3B-1 conservados. Bloque 3B-2: cadena REAL local. Con un protocolo REAL confirmado que cubra el '
+    contract['info']['description']=('S6, M1, Bloques 1–3B-1 conservados. Bloque 3B-3: PDER y CRA por corte (predicción de cada bimestre), métricas REAL fuera de muestra '
+        '(validación cruzada del informe del modelo activo; `metric_basis`). Bloque 3B-2: cadena REAL local. Con un protocolo REAL confirmado que cubra el '
         'periodo se habilitan importación del CSV canónico, comparación exploratoria, evaluación retrospectiva, alertas, reportes e '
         'indicadores por bimestre; sin protocolo todo REAL sigue con INSTITUTIONAL_PROCESSING_NOT_READY. Los datos REAL son análisis '
         'exploratorio local: no demuestran eficacia escolar. El estudio institucional, su comparación y la activación del modelo se '

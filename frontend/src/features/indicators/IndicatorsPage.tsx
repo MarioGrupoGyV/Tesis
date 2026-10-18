@@ -11,6 +11,7 @@ const reasons: Record<string, string> = {
   NO_ELIGIBLE_STUDENTS: 'No hay estudiantes elegibles.', NO_ALERTS: 'Todavía no hay alertas.', NO_RECEIVED_RECORDS: 'No se han recibido registros.',
   PERIOD_LEVEL_ONLY: 'Solo disponible para el periodo completo y con acceso a todas las secciones.', STUDY_INTEGRITY_ERROR: 'No se pudo verificar la procedencia del estudio.',
   STUDY_STORAGE_UNAVAILABLE: 'Almacenamiento del estudio no disponible.', NO_EVALUATED_STUDENTS_WITH_REFERENCE: 'Ningún estudiante evaluado tiene riesgo de referencia.', NO_DENOMINATOR: 'Sin denominador.', NO_INTERVENTIONS_LINKED_TO_ALERT: 'Todavía no hay intervenciones realizadas ligadas a una alerta.',
+  NO_OUT_OF_SAMPLE_REPORT: 'El modelo activo no trae informe de validación cruzada: no hay métricas fuera de muestra.',
   NO_REAL_INTERVENTIONS: 'Todavía no hay intervenciones reales registradas: no se estima ni se rellena con ceros.' };
 const riskName: Record<string, string> = { LOW: 'Bajo', MEDIUM: 'Medio', HIGH: 'Alto' };
 const percent = (value: number | null | undefined) => value == null ? '—' : `${numberLabel(value)} %`;
@@ -86,7 +87,7 @@ function Results({ data }: { data: IndicatorsResponse }) {
         <thead><tr><th scope="col">Sección</th><th scope="col">Elegibles</th><th scope="col">CRA</th><th scope="col">PDER</th><th scope="col">NIA medio</th><th scope="col">Oportuna (estudiantes)</th><th scope="col">Oportuna (intervenciones)</th></tr></thead>
         <tbody>{data.sections.map(row => <SectionRow key={row.section_id ?? 'total'} row={row} />)}</tbody></table></div></section>
     <section className="panel" aria-labelledby="ind-model-title"><h2 id="ind-model-title">Métricas del modelo frente al riesgo de referencia</h2>
-      {t.model_metrics ? <Metrics metrics={t.model_metrics} real={real} /> : <p className="muted">No estimables: {reasons[t.model_metrics_reason ?? ''] ?? t.model_metrics_reason ?? 'sin datos'}</p>}</section>
+      {t.model_metrics ? <Metrics metrics={t.model_metrics} basis={t.metric_label ?? null} /> : <p className="muted">No estimables: {reasons[t.model_metrics_reason ?? ''] ?? t.model_metrics_reason ?? 'sin datos'}</p>}</section>
     <section className="panel" aria-labelledby="ind-performance-title"><h2 id="ind-performance-title">Rendimiento (último corte de cada estudiante elegible)</h2>
       <div className="table-container" tabIndex={0} role="region" aria-label="Estadísticos descriptivos"><table><caption>Estadísticos descriptivos</caption><thead><tr><th scope="col">Variable</th><th scope="col">n</th><th scope="col">Media</th><th scope="col">DE</th><th scope="col">Mediana</th><th scope="col">Mín.</th><th scope="col">Máx.</th></tr></thead>
         <tbody>{([['Promedio', t.performance.average_grade], ['Asistencia %', t.performance.attendance_pct]] as const).map(([name, d]) => <tr key={name}><th scope="row">{name}</th><td>{d.n}</td><td>{numberLabel(d.mean)}</td><td>{numberLabel(d.sd)}</td><td>{numberLabel(d.median)}</td><td>{numberLabel(d.minimum)}</td><td>{numberLabel(d.maximum)}</td></tr>)}</tbody></table></div></section>
@@ -98,13 +99,14 @@ function SectionRow({ row }: { row: IndicatorSummary }) {
   return <tr><th scope="row">{row.grade}.º · {row.section_code}</th><td>{numberLabel(row.eligible_students)}</td><td>{percent(row.cra.percent)} <small>({ratioDetail(row.cra)})</small></td><td>{percent(row.pder.percent)} <small>({row.pder.reason ? reasons[row.pder.reason] ?? row.pder.reason : ratioDetail(row.pder)})</small></td><td>{row.nia.mean == null ? '—' : numberLabel(row.nia.mean)}</td><td>{percent(row.opportune.percent)} <small>({ratioDetail(row.opportune)})</small></td><td>{percent(row.opportune_by_intervention.percent)} <small>({ratioDetail(row.opportune_by_intervention)})</small></td></tr>;
 }
 
-function Metrics({ metrics, real }: { metrics: NonNullable<IndicatorSummary['model_metrics']>; real: boolean }) {
-  return <><p className="muted">n = {metrics.n} estudiantes evaluados con riesgo de referencia. Exactitud: {percent(metrics.accuracy == null ? null : metrics.accuracy * 100)}.</p>
+function Metrics({ metrics, basis }: { metrics: NonNullable<IndicatorSummary['model_metrics']>; basis: string | null }) {
+  const cv = metrics.repetitions != null;
+  return <><p className="muted">{basis && <strong>{basis}. </strong>}{cv ? `Media de ${metrics.repetitions} repeticiones de validación cruzada agrupada por estudiante (F1 macro: DE ${numberLabel(metrics.macro_sd?.f1 ?? null)}). La matriz suma todas las repeticiones.` : `n = ${metrics.n} estudiantes evaluados con riesgo de referencia.`} Exactitud: {percent(metrics.accuracy == null ? null : metrics.accuracy * 100)}.</p>
     <div className="table-container indicator-matrix" tabIndex={0} role="region" aria-label="Matriz de confusión"><table><caption>Matriz de confusión: filas = referencia, columnas = predicho</caption>
       <thead><tr><th scope="col">Referencia \ Predicho</th>{metrics.class_order.map(name => <th key={name} scope="col">{riskName[name]}</th>)}</tr></thead>
       <tbody>{metrics.confusion_matrix.map((cells, index) => <tr key={index}><th scope="row">{riskName[metrics.class_order[index]]}</th>{cells.map((value, column) => <td key={column}>{value}</td>)}</tr>)}</tbody></table></div>
     <div className="table-container" tabIndex={0} role="region" aria-label="Métricas por clase"><table><caption>Precisión, sensibilidad y F1 por clase</caption><thead><tr><th scope="col">Clase</th><th scope="col">Soporte</th><th scope="col">Precisión</th><th scope="col">Sensibilidad</th><th scope="col">F1</th></tr></thead>
       <tbody>{metrics.class_order.map(name => { const m = metrics.per_class[name]; return <tr key={name}><th scope="row">{riskName[name]}</th><td>{m.support}</td><td>{numberLabel(m.precision)}</td><td>{numberLabel(m.recall)}</td><td>{numberLabel(m.f1)}</td></tr>; })}
         <tr><th scope="row">Promedio macro</th><td>—</td><td>{numberLabel(metrics.macro.precision)}</td><td>{numberLabel(metrics.macro.recall)}</td><td>{numberLabel(metrics.macro.f1)}</td></tr></tbody></table></div>
-    <p className="muted student-list-note">«Sin dato» significa no estimable (sin soporte). Sin calibración ni evaluación prospectiva institucional.</p>{real && <p className="notice" role="status">Datos reales locales: el modelo se ajustó con los mismos estudiantes que ahora se evalúan (evaluación retrospectiva). Las métricas son descriptivas y no constituyen una validación del modelo.</p>}</>;
+    <p className="muted student-list-note">«Sin dato» significa no estimable (sin soporte). Sin calibración ni evaluación prospectiva institucional.</p>{cv && <p className="notice" role="status">Datos reales locales: cifras fuera de muestra del informe de comparación del modelo activo. Con n pequeño tienen alta incertidumbre y no sustituyen una validación externa.</p>}</>;
 }

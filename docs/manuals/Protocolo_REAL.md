@@ -98,8 +98,8 @@ nombres de menores no se importan ni salen de la ficha del estudiante.
    intervención oportuna son `null` con motivo `NO_REAL_INTERVENTIONS` mientras no haya intervenciones reales registradas por el flujo
    existente. Los CSV llevan solo códigos.
 
-**Revocar** el protocolo bloquea de inmediato todo lo anterior y conserva lo ya guardado (estudio, referencias, predicciones, alertas).
+**Revocar** el protocolo bloquea de inmediato todo lo anterior, retira la elegibilidad de los alumnos REAL del periodo y conserva lo ya guardado (estudio, referencias, predicciones, alertas). Confirmar de nuevo los habilita otra vez. La auditoría guarda solo quién (actor) y cuándo (UTC), con identificadores.
 
 Límites vigentes: cohorte única (60 estudiantes, dos bimestres de las mismas personas: la unidad de partición es el estudiante); una sola
-alerta activa por matrícula (la alerta de B1 se actualiza en B2); sin calibración; sin validación externa; la procedencia de los
+alerta activa por matrícula (la alerta de B1 se actualiza en B2, pero PDER y CRA se calculan con la predicción de cada corte); sin calibración; sin validación externa; la procedencia de los
 reportes PRV 120/126 y 113/120 no está confirmada y no se importa.

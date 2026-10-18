@@ -317,6 +317,18 @@ configurables (4 en REAL, sin participación); `compare_institutional` (CV agrup
 comparación y la activación se operan por CLI (`infra/study.py`), no por API; la alerta de B1 se actualiza en B2 (una alerta activa por
 matrícula), de modo que el PDER de B2 hereda la detección de B1. La carga de nombres y el conversor del Excel siguen en el Bloque 4.
 
+### Estado de implementación 3B-3 (2026-10-18)
+
+Corrige las desviaciones de 3B-2. **Alerta única por matrícula:** el índice `ux_active_alert_enrollment` se conserva (una alerta activa por
+matrícula, que se actualiza al apuntar a la predicción más reciente), pero PDER y CRA dejaron de leerla. Para cada corte se usa **la predicción de
+ese corte**: *detectado* = predicción media/alta cuyo instante (`COALESCE(as_of_at, predicted_at)`) es anterior al cierre menos `detection_days`;
+PDER = detectados ÷ alumnos con referencia media/alta en ese bimestre. *Cubierto* (CRA) = predicción baja, o media/alta con decisión de
+seguimiento propia `CREATED`/`UPDATED` (`followup_decisions` liga cada predicción con la alerta que la reflejó); una alerta heredada de un corte
+anterior no cubre. No hizo falta migración. NIA e intervención oportuna siguen anclados a la alerta real (`opened_at`). **Métricas REAL:** la cifra
+principal es la validación cruzada agrupada por estudiante del informe de comparación del modelo activo (media, DE, repeticiones,
+`metric_basis=OUT_OF_FOLD`); el cálculo en memoria queda como `in_sample_metrics` rotulado «en memoria, no valida el modelo». Sin informe:
+`null` con `NO_OUT_OF_SAMPLE_REPORT`. Revocar el protocolo ahora también retira la elegibilidad de los alumnos REAL del periodo.
+
 ## 12. Criterios de aceptación (medibles)
 
 **3B:** (1) las 338 pruebas existentes siguen pasando y se añaden las nuevas; (2) 0007 se aplica en base limpia y sobre una base 0006 conservando los resúmenes de todas las tablas previas (como

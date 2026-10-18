@@ -2861,6 +2861,12 @@ export interface components {
             not_estimable_reasons: {
                 [key: string]: string;
             };
+            /** Repetitions */
+            repetitions?: number | null;
+            /** Macro Sd */
+            macro_sd?: {
+                [key: string]: number | null;
+            } | null;
         };
         /** Nia */
         Nia: {
@@ -3021,6 +3027,11 @@ export interface components {
             model_metrics: components["schemas"]["ModelMetrics"] | null;
             /** Model Metrics Reason */
             model_metrics_reason?: string | null;
+            /** Metric Basis */
+            metric_basis?: ("OUT_OF_FOLD" | "IN_SAMPLE") | null;
+            /** Metric Label */
+            metric_label?: string | null;
+            in_sample_metrics?: components["schemas"]["ModelMetrics"] | null;
             exclusions: components["schemas"]["Exclusions"];
         };
         /** ContextSection */
