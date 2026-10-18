@@ -348,6 +348,13 @@ Abiertas:
    un piloto o registros reales; hasta entonces NIA e intervención oportuna reales no se calculan para esta cohorte y la simulación retrospectiva los rotula como tales.
 2. **Procedencia del PRV 120/126 y de los reportes 113/120 del Excel** (decisión 6): por confirmar con la fuente; no se crean `reception_log` ni `report_log` mientras tanto.
 
+**Estado del Bloque 4 (2026-10-18).** `infra/convert_real_excel.py` está implementado y probado con libros ficticios (`backend/tests/test_b6_convert_excel.py`); manual en
+[Conversor_Excel_Real.md](../manuals/Conversor_Excel_Real.md). Genera `cortes.csv`, `cierres.csv` y `resumen_conversion.json` (más `identidades.local.csv` bajo `--identities`) fuera del
+repositorio, con lector `.xlsx` propio (sin red ni base de datos), salidas deterministas y verificación local de RIESGO_V1. Ejecutado sobre el Excel real en el equipo del usuario:
+126 recibidas, 120 aceptadas, 6 rechazadas (una por cada causa), RIESGO_V1 120/120 y horizonte de 17 días; no se importó nada. Decisiones de diseño: el corte de cada bimestre es la
+disponibilidad de la última fuente de toda la cohorte (21-04 y 30-06) y los insumos de cierre usan la media de las seis notas finales. Pendiente: importar (registro de estudio, carga de cierres) y cargar
+nombres a la ficha (bloques siguientes).
+
 Resueltas el 2026-10-17 (sección 2b): plazos de oportunidad (decisión 3), participación fuera de las características (4), corte = disponibilidad de la última fuente con horizonte de 17 días (4),
 un solo periodo 2026 (4), B2 «con sistema» como simulación retrospectiva (2) y nombres solo en la ficha desde archivo local (5).
 

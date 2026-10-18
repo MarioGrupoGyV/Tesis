@@ -123,3 +123,4 @@ Esfuerzo: **S** (≤ unas líneas, una prueba), **M** (función o consulta nueva
   la tabla de referencia de riesgo, los dos triggers de procedencia, el conjunto de variables configurable y la comparación institucional.
 - Las pruebas existentes cubren el camino sintético; los cambios P deben conservar el valor por defecto actual para que sigan pasando sin modificar sus datos.
 - Estimación para el Bloque 3B: ~35 archivos de aplicación y ~12 de pruebas; para el Bloque 5: ~20 más. Las cifras son orientativas.
+- Bloque 4 (conversor del Excel): no altera ninguna fila del mapa; es un programa local nuevo (`infra/convert_real_excel.py`) que solo escribe archivos fuera del repositorio.
