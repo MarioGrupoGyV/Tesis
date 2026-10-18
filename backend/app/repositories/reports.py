@@ -14,7 +14,7 @@ INTERVENTION_COUNTS='''
 
 
 def rows(db,user,period_id,section_id=None,search=None,risk_level=None,evaluation_status=None,alert_status=None,authorized_section_ids=None):
-    clauses=["e.period_id=:period","e.data_origin='SYNTHETIC'"]
+    clauses=["e.period_id=:period","e.data_origin IN ('SYNTHETIC','REAL')"]
     params={'period':period_id}
     if authorized_section_ids is not None:
         clauses.append('e.section_id=ANY(CAST(:authorized_section_ids AS uuid[]))')

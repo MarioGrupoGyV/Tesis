@@ -21,6 +21,34 @@ def require_processing_protocol():
         'La importación institucional está pendiente de autorización de procedencia, escala, periodo, ventanas temporales y reglas de calidad. No se guardó el archivo.')
 
 
+def study_for_period(db, period):
+    """Punto único para resolver el contexto de procesamiento de un periodo (ADR 012, Mapa de impacto).
+
+    SYNTHETIC: estudio sintético registrado (puede ser None si no se preparó). REAL: exige un protocolo confirmado
+    que cubra el periodo (si no, INSTITUTIONAL_PROCESSING_NOT_READY como siempre) y devuelve el estudio institucional.
+    Devuelve (estudio | None, protocolo | None)."""
+    from sqlalchemy import select
+    from app.models.synthetic import SyntheticStudyRecord
+    from app.services.processing_protocol import require_real_protocol
+    if period.data_origin == 'REAL':
+        protocol = require_real_protocol(db, period)
+    elif period.data_origin == 'SYNTHETIC':
+        protocol = None
+    else:
+        raise AppError(422, 'ORIGIN_NOT_SUPPORTED', 'Origen no admitido en este entorno.')
+    study = db.scalar(select(SyntheticStudyRecord).where(SyntheticStudyRecord.period_id == period.id,
+                                                          SyntheticStudyRecord.data_origin == period.data_origin))
+    return study, protocol
+
+
+def require_study(study, period):
+    if study is None:
+        if period.data_origin == 'REAL':
+            raise AppError(422, 'INSTITUTIONAL_STUDY_NOT_PREPARED', 'El estudio institucional del periodo no está registrado.')
+        raise AppError(422, 'SYNTHETIC_STUDY_NOT_PREPARED', 'El estudio sintético no está preparado.')
+    return study
+
+
 def synthetic_studies(db):
     from sqlalchemy import select
     from app.models.synthetic import SyntheticStudyRecord
@@ -33,7 +61,8 @@ def processing_status(db,user,settings):
     from app.models.s1 import AcademicPeriod
     from app.services.synthetic_study import validate_registered
     from app.schemas.processing import ProcessingStatus
-    studies = synthetic_studies(db)
+    all_studies = synthetic_studies(db)
+    studies = [s for s in all_studies if s.kind!='INSTITUTIONAL_STUDY']
     valid = []
     for study in studies:
         try:
@@ -53,6 +82,21 @@ def processing_status(db,user,settings):
                 compared=True
             except (AppError,ValueError):
                 continue
+    # Modelo REAL activo y compatible con un estudio institucional vigente (protocolo confirmado): inferencia local exploratoria.
+    institutional_ready=False
+    from app.services.institutional_study import compatible_model as institutional_compatible, validate_institutional
+    for study in all_studies:
+        if study.kind!='INSTITUTIONAL_STUDY':
+            continue
+        try:
+            validate_institutional(db,settings,study)
+            active_real=db.scalar(select(ModelVersion).where(ModelVersion.study_id==study.id,ModelVersion.is_active.is_(True),
+                ModelVersion.status=='APPROVED',ModelVersion.data_origin=='REAL'))
+            if active_real is not None:
+                institutional_compatible(settings,study,active_real)
+                institutional_ready=True
+        except (AppError,ValueError,OSError):
+            continue
     models=db.scalars(select(ModelVersion).where(ModelVersion.status=='APPROVED',ModelVersion.data_origin=='SYNTHETIC',
         ModelVersion.study_id.in_([s.id for s in writable]))).all()
     compatible=[]
@@ -76,8 +120,8 @@ def processing_status(db,user,settings):
     from app.repositories.s1 import institutional_periods
     academic_readable = user.role in ('ADMIN','DIRECTOR') or user.role=='TUTOR' and bool(institutional_periods(db,user.id))
     return ProcessingStatus.model_validate({'scope':'SYNTHETIC_STUDY',
-        'notice':'Registro académico local disponible según rol y origen. Inferencia institucional pendiente de protocolo.',
-        'institutional_ready':False,'synthetic_ready':prepared,
+        'notice':'Registro académico local disponible según rol y origen. '+('Inferencia local exploratoria con protocolo REAL confirmado; no sustituye validación externa.' if institutional_ready else 'Inferencia institucional pendiente de protocolo.'),
+        'institutional_ready':institutional_ready,'synthetic_ready':prepared,
         'operations':{'import':op(admin,bool(writable),'SYNTHETIC_STUDY_NOT_PREPARED_OR_LOCKED'),
           'compare':op(admin,committed,'SYNTHETIC_IMPORT_REQUIRED'),
           'register':op(admin,compared,'SYNTHETIC_COMPARISON_REQUIRED'),

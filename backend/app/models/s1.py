@@ -3,7 +3,8 @@
 from datetime import date, datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import Boolean, CHAR, Date, DateTime, ForeignKey, Integer, SmallInteger, Text, func
+from sqlalchemy import Boolean, CHAR, Date, DateTime, ForeignKey, Integer, SmallInteger, Text, func, text
+from sqlalchemy.orm import object_session
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -46,6 +47,14 @@ class AcademicPeriod(Base):
     is_locked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     version: Mapped[int] = mapped_column(Integer, default=1)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    @property
+    def real_processing_enabled(self) -> bool:
+        """Solo informativo para la interfaz: periodo REAL cuyo protocolo está confirmado (el servidor decide cada operación)."""
+        session = object_session(self)
+        if self.data_origin != 'REAL' or session is None:
+            return False
+        return bool(session.scalar(text('SELECT risk_school.real_protocol_covers_period(:period)'), {'period': self.id}))
 
 
 class GradeSection(Base):

@@ -87,6 +87,9 @@ class Prediction(ContractModel):
     # Solo MANUAL: horizonte del modelo derivado (no es una fecha objetivo observada).
     model_horizon_date: date | None = None
     predicted_at: datetime
+    # Evaluación retrospectiva: as_of_at simula el instante de la evaluación; `retrospective` = «simulación retrospectiva».
+    as_of_at: datetime | None = None
+    retrospective: bool = False
     probability_low: Number | None
     probability_medium: Number | None
     probability_high: Number | None

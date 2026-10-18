@@ -70,7 +70,12 @@ def row_hash(row):
     return hashlib.sha256(canonical.encode()).hexdigest()
 
 
-def parse_csv(content: bytes, period) -> ParsedCSV:
+DEFAULT_SCALES = {"participation": (1, 3), "grade": (0, 20)}
+
+
+def parse_csv(content: bytes, period, scales=None) -> ParsedCSV:
+    """`scales`: escalas del protocolo (REAL: participación 1–5); el estudio sintético conserva participación 1–3."""
+    scales = {**DEFAULT_SCALES, **(scales or {})}
     if len(content) > MAX_BYTES:
         raise file_error("CSV_TOO_LARGE", "Reduce el archivo a un máximo de 5 MiB.")
     try:
@@ -113,9 +118,10 @@ def parse_csv(content: bytes, period) -> ParsedCSV:
                     elif key == "grade":
                         row[key] = number(value, 1, 5)
                     elif key in FEATURES[:3]:
-                        row[key] = number(value, 0, 20 if key == "average_grade" else 100, True, True)
+                        low, high = scales["grade"] if key == "average_grade" else (0, 100)
+                        row[key] = number(value, low, high, True, True)
                     else:
-                        low, high = {"participation_level": (1, 3), "behavior_incidents": (0, 2147483647), "age_years": (5, 25)}[key]
+                        low, high = {"participation_level": tuple(scales["participation"]), "behavior_incidents": (0, 2147483647), "age_years": (5, 25)}[key]
                         row[key] = number(value, low, high, optional=True)
                 except ValueError as exc:
                     errors.append(issue(source, key, str(exc)))

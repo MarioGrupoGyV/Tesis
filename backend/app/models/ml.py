@@ -45,3 +45,5 @@ class PredictionRecord(Base):
     probability_high: Mapped[Decimal | None] = mapped_column(Numeric(8,7))
     probabilities_calibrated: Mapped[bool] = mapped_column(Boolean,default=False)
     predicted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),server_default=func.now())
+    # Instante que simula la evaluación (retrospectiva); en corridas normales = predicted_at (0007).
+    as_of_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

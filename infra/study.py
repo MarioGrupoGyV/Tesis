@@ -157,8 +157,8 @@ def run_predictions(account,period_id,as_of=None,*,target):
 
 
 def main(argv=None):
-    parser=argparse.ArgumentParser(description='Estudio con datos sintéticos; REAL permanece bloqueado.')
-    parser.add_argument('command',choices=['generate','import','compare','register','activate','run','status','export-csv'])
+    parser=argparse.ArgumentParser(description='Estudio sintético o institucional local (REAL solo con protocolo confirmado que cubra el periodo).')
+    parser.add_argument('command',choices=['generate','import','compare','register','activate','run','status','export-csv','register-study'])
     parser.add_argument('--target',type=Path,required=True,help='Descriptor privado del destino identificado; sin fallback al activo')
     access=parser.add_mutually_exclusive_group(required=True)
     access.add_argument('--admin-credential',choices=['ADMIN'],help='Leer SOLO ADMIN de las cuentas locales S2.2')
@@ -168,6 +168,8 @@ def main(argv=None):
     parser.add_argument('--tutor-id'); parser.add_argument('--config',type=Path)
     parser.add_argument('--algorithm',choices=['DUMMY','RANDOM_FOREST','SVM','XGBOOST'])
     parser.add_argument('--as-of')
+    parser.add_argument('--protocol-id'); parser.add_argument('--csv', type=Path, help='CSV canónico de cortes (solo códigos) para register-study')
+    parser.add_argument('--repetitions', type=int); parser.add_argument('--loso', action='store_true', help='Sensibilidad opcional leave-one-student-out')
     parser.add_argument('--output',type=Path,help='CSV nuevo: ruta absoluta fuera de Git, directorio existente')
     args=parser.parse_args(argv)
     if args.command=='export-csv' and (not args.study_id or args.output is None):
@@ -184,6 +186,11 @@ def main(argv=None):
             result=internal('generate',account,target=target,seed=args.seed,student_count=args.students,tutor_id=args.tutor_id,config=config)
         elif args.command=='status':
             result=internal('status',account,target=target)
+        elif args.command=='register-study':
+            if not args.protocol_id or args.csv is None: parser.error('register-study requiere --protocol-id y --csv')
+            if not args.csv.is_file() or args.csv.stat().st_size > 5*1024*1024: raise RuntimeError('STUDY_CSV_UNAVAILABLE')
+            result=internal('register-study',account,target=target,protocol_id=args.protocol_id,
+                csv_base64=base64.b64encode(args.csv.read_bytes()).decode())
         elif args.command=='export-csv':
             result=export_csv(account,args.study_id,args.output,target=target)
         elif args.command=='import':
@@ -197,7 +204,8 @@ def main(argv=None):
             result=internal('activate',account,target=target,model_id=args.model_id)
         else:
             if not args.study_id: parser.error('compare/register requiere --study-id')
-            result=internal(args.command,account,target=target,study_id=args.study_id,algorithm=args.algorithm)
+            extra={'repetitions':args.repetitions,'leave_one_student_out':args.loso} if args.command=='compare' else {}
+            result=internal(args.command,account,target=target,study_id=args.study_id,algorithm=args.algorithm,**extra)
         print(json.dumps(result,ensure_ascii=True,indent=2,allow_nan=False))
     except (RuntimeError,OSError,ValueError) as error:
         code=str(error)

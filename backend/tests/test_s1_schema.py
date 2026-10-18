@@ -81,7 +81,7 @@ def test_processing_migration_preserves_institutional_block_and_historical_origi
     # DEMO remains a historical value, never an accepted new processing context.
     assert db.scalar(text("SELECT count(*) FROM pg_constraint WHERE conname='processing_origin' AND convalidated")) == 9
     assert_sqlstate(db, "INSERT INTO risk_school.academic_periods(code,school_year,start_date,end_date,data_origin) VALUES (:code,2026,'2026-01-01','2026-12-31','DEMO')", {'code':uuid4().hex}, '23514')
-    assert db.scalar(text("SELECT count(*) FROM pg_constraint WHERE conname='synthetic_only_active_model'")) == 1
+    assert db.scalar(text("SELECT count(*) FROM pg_constraint WHERE conname='active_model_scope'")) == 1
     assert db.scalar(text("SELECT count(*) FROM pg_constraint WHERE conname IN ('model_activation_pending','demo_only_active_model','institutional_origin')")) == 0
 
 

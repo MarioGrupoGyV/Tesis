@@ -110,7 +110,7 @@ def test_migration_0006_in_clean_database_keeps_real_blocked(database_urls):
     assert result.returncode == 0, 'Isolated 0006 upgrade failed'
     engine = create_engine(owner.set(database=name), hide_parameters=True)
     with engine.connect() as db:
-        assert db.scalar(text('SELECT version_num FROM alembic_version')) in ('0006_manual_evaluable', '0007_real_protocol')
+        assert db.scalar(text('SELECT version_num FROM alembic_version')) in ('0006_manual_evaluable', '0007_real_protocol', '0008_real_chain')
         body = db.scalar(text("SELECT prosrc FROM pg_proc WHERE proname='deny_manual_prediction'"))
         assert "'SYNTHETIC'" in body and 'requires a SYNTHETIC period and model' in body
         assert db.scalar(text("SELECT has_function_privilege('riesgo_app','risk_school.deny_manual_prediction()','EXECUTE')"))

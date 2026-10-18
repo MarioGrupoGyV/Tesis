@@ -22,4 +22,6 @@ class SyntheticStudyRecord(Base):
     bindings: Mapped[list] = mapped_column(JSONB, default=list)
     comparison: Mapped[dict | None] = mapped_column(JSONB(none_as_null=True))
     created_by: Mapped[UUID] = mapped_column(ForeignKey('risk_school.app_users.id'))
+    kind: Mapped[str] = mapped_column(Text, default='SYNTHETIC_STUDY')
+    protocol_id: Mapped[UUID | None] = mapped_column(ForeignKey('risk_school.processing_protocols.id'))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

@@ -15,7 +15,8 @@ from app.repositories import followup as repository
 from app.repositories.s1 import sections_for_period
 from app.repositories import students as students_repository
 from app.schemas import s5, s2
-from app.services.processing_policy import require_processing_protocol
+from app.services.processing_policy import require_study, study_for_period
+from app.services.simulated_clock import is_retrospective
 from app.services.students import projection
 
 POLICY='followup-policy-v1'
@@ -45,14 +46,10 @@ def context_period(db,user,period_id,settings,section_id=None,write=False):
     period=db.scalar(query)
     if period is None:
         raise AppError(404,'PERIOD_NOT_FOUND','El periodo no está disponible.')
-    if period.data_origin!='SYNTHETIC':
-        require_processing_protocol()
+    study,_=study_for_period(db,period)  # REAL: exige protocolo confirmado (INSTITUTIONAL_PROCESSING_NOT_READY si no)
     if write and period.is_locked:
         raise AppError(409,'PERIOD_LOCKED','El periodo está bloqueado y no admite cambios de seguimiento.')
-    study=db.scalar(select(SyntheticStudyRecord).where(SyntheticStudyRecord.period_id==period.id,
-        SyntheticStudyRecord.data_origin=='SYNTHETIC'))
-    if study is None:
-        raise AppError(422,'SYNTHETIC_STUDY_NOT_PREPARED','El estudio sintético no está preparado.')
+    require_study(study,period)
     from app.services.synthetic_study import validate_registered
     try:
         validate_registered(db,settings,study)
@@ -70,11 +67,18 @@ def context_period(db,user,period_id,settings,section_id=None,write=False):
 
 def event(db,user,record,entity_type,action,request_id,**payload):
     db.add(AuditEvent(actor_id=user.id,entity_type=entity_type,entity_id=record.id,
-        action=action,request_id=request_id,recorded_at=datetime.now(UTC),payload={'data_origin':'SYNTHETIC',
+        action=action,request_id=request_id,recorded_at=datetime.now(UTC),payload={'data_origin':getattr(record,'data_origin',None) or 'SYNTHETIC',
         'enrollment_id':str(record.enrollment_id),**payload}))
 
 
-def sync_current(db,user,period_id,settings,request_id,prediction_ids=None):
+def detected_at_of(db,prediction_id):
+    """Instante simulado de detección: el as_of de la predicción (retrospectiva) o, en corridas normales, su instante real."""
+    from app.models.ml import PredictionRecord
+    prediction=db.get(PredictionRecord,prediction_id)
+    return prediction.as_of_at or prediction.predicted_at
+
+
+def sync_current(db,user,period_id,settings,request_id,prediction_ids=None,as_of=None):
     """Sin commit: el llamador confirma predicción, decisión/caso y auditoría juntos.
 
     Bloquea periodo/modelo/matrículas antes de decidir. Solo el conjunto actual
@@ -84,7 +88,7 @@ def sync_current(db,user,period_id,settings,request_id,prediction_ids=None):
     period,study,allowed=context_period(db,user,period_id,settings,write=True)
     model=db.scalar(select(ModelVersion).where(ModelVersion.study_id==study.id,
         ModelVersion.is_active.is_(True),ModelVersion.status=='APPROVED',
-        ModelVersion.data_origin=='SYNTHETIC').with_for_update(read=True)
+        ModelVersion.data_origin==period.data_origin).with_for_update(read=True)
         .execution_options(populate_existing=True))
     if model is None:
         raise AppError(409,'MODEL_NOT_AVAILABLE','Modelo no disponible para actualizar alertas.')
@@ -96,7 +100,8 @@ def sync_current(db,user,period_id,settings,request_id,prediction_ids=None):
     except OSError:
         raise AppError(503,'MODEL_STORAGE_UNAVAILABLE','Almacenamiento del modelo no disponible.') from None
     repository.lock_enrollments(db,period.id)
-    rows=repository.current_rows(db,period.id)
+    # Retrospectiva (solo REAL): el corte vigente es el disponible en as_of; si no, el vigente ahora.
+    rows=repository.current_rows(db,period.id,as_of if period.data_origin=='REAL' else None)
     allowed_ids={section.id for section in allowed}
     if any(row['section_id'] not in allowed_ids for row in rows):
         raise AppError(409,'STUDY_INTEGRITY_ERROR','Una matrícula no pertenece a las secciones del contexto registrado.')
@@ -130,7 +135,8 @@ def sync_current(db,user,period_id,settings,request_id,prediction_ids=None):
                 tutor=db.get(AppUser,row['_tutor_id']) if row['_tutor_id'] else None
                 assigned=tutor.id if tutor and tutor.is_active and tutor.role=='TUTOR' else None
                 active=AlertRecord(id=uuid4(),enrollment_id=row['enrollment_id'],prediction_id=prediction_id,
-                    data_origin='SYNTHETIC',assigned_to=assigned,severity=row['risk_level'],status='OPEN',version=1)
+                    data_origin=period.data_origin,assigned_to=assigned,severity=row['risk_level'],status='OPEN',version=1,
+                    detected_at=detected_at_of(db,prediction_id))
                 db.add(active);db.flush()
                 decision='CREATED';result.created+=1
                 event(db,user,active,'ALERT','ALERT_CREATED',request_id,prediction_id=str(prediction_id),
@@ -155,12 +161,12 @@ def sync_current(db,user,period_id,settings,request_id,prediction_ids=None):
         else:
             raise AppError(409,'FOLLOWUP_INTEGRITY_ERROR','La clase de evaluación no está admitida.')
         record=FollowupDecisionRecord(id=uuid4(),prediction_id=prediction_id,enrollment_id=row['enrollment_id'],
-            data_origin='SYNTHETIC',study_id=study.id,alert_id=active.id if active else None,
+            data_origin=period.data_origin,study_id=study.id,alert_id=active.id if active else None,
             decision=decision,policy_version=POLICY,recorded_at=datetime.now(UTC))
         db.add(record)
         db.add(AuditEvent(actor_id=user.id,entity_type='FOLLOWUP_DECISION',entity_id=record.id,
             action='FOLLOWUP_DECISION_RECORDED',request_id=request_id,recorded_at=datetime.now(UTC),payload={
-                'data_origin':'SYNTHETIC','prediction_id':str(prediction_id),
+                'data_origin':period.data_origin,'prediction_id':str(prediction_id),
                 'alert_id':str(active.id) if active else None,'decision':decision,'policy_version':POLICY}))
         db.flush()
     return result
@@ -189,8 +195,9 @@ def capabilities(user,period,status):
 
 def public_case(db,user,row):
     period=db.get(AcademicPeriod,row['period_id'])
-    values={key:row[key] for key in s5.AlertCase.model_fields if key!='capabilities'}
+    values={key:row[key] for key in s5.AlertCase.model_fields if key not in ('capabilities','retrospective')}
     values['capabilities']=capabilities(user,period,row['status'])
+    values['retrospective']=is_retrospective(row['detected_at'],row['opened_at'])
     return s5.AlertCase.model_validate(values)
 
 
@@ -293,7 +300,7 @@ def create_intervention(db,user,payload,settings,request_id):
         if alert.status not in ACTIVE:
             raise AppError(409,'ALERT_CLOSED','No puedes planificar actividades nuevas en un caso cerrado.')
         record=InterventionRecord(id=uuid4(),enrollment_id=alert.enrollment_id,alert_id=alert.id,
-            data_origin='SYNTHETIC',created_by=user.id,kind=payload.kind,objective=payload.objective,
+            data_origin=alert.data_origin,created_by=user.id,kind=payload.kind,objective=payload.objective,
             scheduled_at=payload.scheduled_at.astimezone(UTC),notes=payload.notes,status='PLANNED',
             performed_at=None,version=1,creation_key=payload.creation_key,creation_payload_sha256=digest)
         db.add(record);db.flush()

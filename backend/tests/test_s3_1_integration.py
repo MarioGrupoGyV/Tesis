@@ -464,7 +464,7 @@ def test_database_origin_links_and_exact_registered_hash(study_env):
             {'period': state.period_id, 'actor': state.context['accounts']['ADMIN']['id'], 'study': state.study_id}, '23503')
         assert_sqlstate(db,
             "INSERT INTO risk_school.model_versions(name,version,algorithm,data_origin,dataset_hash,artifact_sha256,artifact_key,feature_schema_version,reference_criterion_version,status,parameters,metrics,manifest,study_id) VALUES(:name,'fixture','DUMMY','REAL',repeat('0',64),repeat('0',64),'fixture','ml-features-v1','fixture','EVALUATED','{}','{}','{}',:study)",
-            {'name': str(uuid4()), 'study': state.study_id}, '23514')
+            {'name': str(uuid4()), 'study': state.study_id}, '23503')   # 0008: un modelo REAL no puede apuntar a un estudio SYNTHETIC (FK compuesta)
 
 
 def inactive_model(state, db, *, origin='SYNTHETIC', study_id=None, manifest=None):

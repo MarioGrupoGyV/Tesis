@@ -156,8 +156,8 @@ def test_read_scopes_and_public_model_projection(ml_db):
         if response.status_code==200:
             SAMPLES.append({'schema':'Prediction','body':response.json()})
             assert set(response.json())=={'id','enrollment_id','snapshot_id','model_id','data_origin',
-                'risk_level','cutoff_at','target_date','model_horizon_date','predicted_at','probability_low','probability_medium',
-                'probability_high','probabilities_calibrated'}
+                'risk_level','cutoff_at','target_date','model_horizon_date','predicted_at','as_of_at','retrospective','probability_low',
+                'probability_medium','probability_high','probabilities_calibrated'}
     with env.app.state.database.session_factory() as db:
         from app.models.s1 import GradeSection
         section=db.get(GradeSection,env.context['sections'][0]['id']); section.tutor_id=None; db.commit()

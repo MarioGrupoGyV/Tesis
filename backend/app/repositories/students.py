@@ -14,8 +14,9 @@ LEFT JOIN LATERAL (
 LEFT JOIN risk_school.import_batches ib ON ib.id=sn.import_batch_id
 LEFT JOIN LATERAL (
  SELECT m.* FROM risk_school.model_versions m WHERE m.is_active AND m.status='APPROVED'
- AND m.data_origin=e.data_origin AND (e.data_origin<>'SYNTHETIC' OR m.study_id=COALESCE(ib.study_id,
-   (SELECT st.id FROM risk_school.synthetic_studies st WHERE st.period_id=e.period_id AND st.data_origin='SYNTHETIC')))
+ AND m.data_origin=e.data_origin AND m.study_id=COALESCE(ib.study_id,
+   (SELECT st.id FROM risk_school.synthetic_studies st WHERE st.period_id=e.period_id AND st.data_origin=e.data_origin))
+ AND (e.data_origin<>'REAL' OR risk_school.real_protocol_covers_period(e.period_id))
  AND m.created_at<=statement_timestamp()
  AND (sn.entry_channel='CSV' OR (sn.entry_channel='MANUAL' AND e.data_origin='SYNTHETIC'))
  LIMIT 1
@@ -29,13 +30,23 @@ LEFT JOIN LATERAL (
 ) pred ON true
 LEFT JOIN risk_school.alerts a ON a.enrollment_id=e.id AND a.status IN ('OPEN','IN_REVIEW')
 """
+# Variante para la evaluación retrospectiva: el «corte vigente» es el disponible en `as_of` (no en el instante real).
+# La incorporación (created_at) no se exige: los datos REAL se cargan después de los hechos.
+FROM_STUDENTS_AT = FROM_STUDENTS.replace(
+    "AND sn.cutoff_at<=statement_timestamp()\n AND sn.available_at<=statement_timestamp() AND sn.created_at<=statement_timestamp()",
+    "AND sn.cutoff_at<=:as_of\n AND sn.available_at<=:as_of")
+assert FROM_STUDENTS_AT != FROM_STUDENTS
+# Fracción de variables ausentes del corte según las variables base del modelo vigente (cinco por defecto; REAL usa cuatro).
+DEFAULT_FEATURES_JSON = '["average_grade","attendance_pct","activities_pct","participation_level","behavior_incidents"]'
+FEATURES_OF_MODEL = ("COALESCE(current_model.manifest->'feature_schema'->'base_features','" + DEFAULT_FEATURES_JSON + "'::jsonb)")
+MISSING_FRACTION_SQL = ("(SELECT count(*) FILTER (WHERE to_jsonb(sn)->f.name='null'::jsonb) FROM jsonb_array_elements_text(" + FEATURES_OF_MODEL +
+    ") f(name))::numeric / jsonb_array_length(" + FEATURES_OF_MODEL + ")")
 STUDENT_COLUMNS = """s.id,s.anon_code,s.full_name,s.is_active,s.version,e.version AS enrollment_version,e.id AS enrollment_id,e.period_id,e.section_id,
 g.code AS section_code,g.grade,e.data_origin,sn.average_grade,sn.attendance_pct,
 sn.cutoff_at AS latest_cutoff_at,pred.risk_level,
 CASE WHEN pred.id IS NOT NULL THEN 'EVALUATED'
  WHEN current_model.id IS NOT NULL AND sn.id IS NOT NULL AND (
-   ((sn.average_grade IS NULL)::int+(sn.attendance_pct IS NULL)::int+(sn.activities_pct IS NULL)::int+
-    (sn.participation_level IS NULL)::int+(sn.behavior_incidents IS NULL)::int)/5.0 >
+   """ + MISSING_FRACTION_SQL + """ >
      (current_model.manifest->'feature_schema'->>'inference_max_missing_fraction')::numeric
    OR EXISTS(SELECT 1 FROM jsonb_array_elements_text(current_model.manifest->'feature_schema'->'required_features') required(name)
       WHERE to_jsonb(sn)->required.name='null'::jsonb)) THEN 'INSUFFICIENT_DATA'
@@ -76,12 +87,14 @@ def public_student(db, enrollment_id):
 
 def selected_prediction(db, prediction_id):
     # target_date es dato observado (CSV). Para MANUAL queda null; el horizonte del modelo se deriva.
+    from app.services.simulated_clock import TOLERANCE
     return db.execute(text("""SELECT p.*,s.cutoff_at,s.target_date,
         CASE WHEN s.target_date IS NULL THEN (s.cutoff_at AT TIME ZONE 'America/Lima')::date
-          + (m.manifest->>'horizon_days')::integer END AS model_horizon_date
+          + (m.manifest->>'horizon_days')::integer END AS model_horizon_date,
+        (p.as_of_at IS NOT NULL AND p.predicted_at-p.as_of_at>make_interval(secs=>:tolerance)) AS retrospective
         FROM risk_school.predictions p JOIN risk_school.academic_snapshots s ON s.id=p.snapshot_id
         JOIN risk_school.model_versions m ON m.id=p.model_id
-        WHERE p.id=:id"""), {'id': prediction_id}).mappings().first()
+        WHERE p.id=:id"""), {'id': prediction_id, 'tolerance': TOLERANCE.total_seconds()}).mappings().first()
 
 
 def followup(db, enrollment_id):

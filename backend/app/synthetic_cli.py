@@ -18,7 +18,7 @@ from app.ml.features import MLDiagnostic
 
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('command',choices=['generate','compare','register','activate','export-csv','status'])
+    parser.add_argument('command',choices=['generate','compare','register','activate','export-csv','status','register-study'])
     args=parser.parse_args()
     settings=Settings()
     database=Database(settings)
@@ -41,13 +41,21 @@ def main():
                     UUID(payload['tutor_id']) if payload.get('tutor_id') else None,request_id)
                 result={'study_id':str(record.id),'period_id':str(record.period_id),'data_origin':'SYNTHETIC',
                     'scope':'SYNTHETIC_STUDY','csv_sha256':record.csv_sha256,'manifest':service.public_generation(record.manifest),'reused':reused}
+            elif args.command=='register-study':
+                # Estudio institucional (REAL, local): exige protocolo REAL confirmado que cubra el periodo.
+                from app.services.institutional_study import register_study
+                record,reused=register_study(db,actor,settings,UUID(payload['protocol_id']),
+                    base64.b64decode(payload['csv_base64'],validate=True),request_id)
+                result={'study_id':str(record.id),'period_id':str(record.period_id),'data_origin':'REAL',
+                    'scope':'INSTITUTIONAL_STUDY','csv_sha256':record.csv_sha256,'rows':record.manifest['rows'],
+                    'students':record.manifest['students'],'horizon_days':record.manifest['horizon_days'],'reused':reused}
             elif args.command=='status':
                 from app.services.processing_policy import processing_status
                 result=processing_status(db,actor,settings).model_dump(mode='json',by_alias=True)
             elif args.command=='activate':
                 record,reused=service.activate_model(db,actor,settings,UUID(payload['model_id']),request_id)
                 result={'model_id':str(record.id),'data_origin':record.data_origin,'is_active':record.is_active,
-                    'approval_kind':'TECHNICAL_SIMULATION','reused':reused}
+                    'approval_kind':'LOCAL_EXPLORATORY' if record.data_origin=='REAL' else 'TECHNICAL_SIMULATION','reused':reused}
             else:
                 study_id=UUID(payload['study_id'])
                 if args.command=='export-csv':
@@ -56,11 +64,14 @@ def main():
                     result={'period_id':str(study.period_id),'csv_sha256':study.csv_sha256,
                         'csv_base64':base64.b64encode(content).decode()}
                 elif args.command=='compare':
-                    result=service.compare_registered(db,actor,settings,study_id,request_id)
+                    options={key:value for key,value in (('repetitions',payload.get('repetitions')),
+                        ('leave_one_student_out',payload.get('leave_one_student_out'))) if value}
+                    result=service.compare_registered(db,actor,settings,study_id,request_id,**options)
                 else:
                     record,reused=service.register_model(db,actor,settings,study_id,payload.get('algorithm'),request_id)
                     result={'model_id':str(record.id),'algorithm':record.algorithm,'status':record.status,
-                        'data_origin':record.data_origin,'is_active':record.is_active,'approval_kind':'TECHNICAL_SIMULATION','reused':reused}
+                        'data_origin':record.data_origin,'is_active':record.is_active,
+                        'approval_kind':'LOCAL_EXPLORATORY' if record.data_origin=='REAL' else 'TECHNICAL_SIMULATION','reused':reused}
             print(json.dumps(result,ensure_ascii=True,allow_nan=False))
     except AppError as error:
         print(json.dumps({'code':error.code,'message':error.message})); return 2

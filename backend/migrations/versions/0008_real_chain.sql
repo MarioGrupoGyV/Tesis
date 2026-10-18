@@ -134,6 +134,12 @@ CREATE TRIGGER students_real_eligibility_update BEFORE UPDATE OF eligible_for_pr
  FOR EACH ROW WHEN (NEW.data_origin='REAL' AND NEW.eligible_for_processing AND NOT OLD.eligible_for_processing)
  EXECUTE FUNCTION risk_school.check_real_student_eligibility();
 
+-- 8. Escala de participación por origen: SYNTHETIC por CSV conserva 1–3; REAL y las mediciones MANUAL admiten 1–5
+--    (la escala efectiva de un periodo REAL la fija su protocolo, validada en la importación).
+ALTER TABLE risk_school.academic_snapshots DROP CONSTRAINT snapshot_participation_scale;
+ALTER TABLE risk_school.academic_snapshots ADD CONSTRAINT snapshot_participation_scale CHECK
+ (participation_level BETWEEN 1 AND CASE WHEN entry_channel='MANUAL' OR data_origin='REAL' THEN 5 ELSE 3 END);
+
 REVOKE ALL ON FUNCTION risk_school.check_prediction_study(),risk_school.check_followup_provenance(uuid,text,uuid),
  risk_school.check_real_student_eligibility() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION risk_school.check_prediction_study(),risk_school.check_followup_provenance(uuid,text,uuid),

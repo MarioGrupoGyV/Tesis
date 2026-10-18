@@ -43,6 +43,8 @@ class Period(ContractModel):
     data_origin: Literal["REAL", "SYNTHETIC"]
     is_locked: bool
     version: int = 1
+    # REAL con protocolo confirmado (informativo; cada operación se valida en el servidor). SYNTHETIC: siempre false.
+    real_processing_enabled: bool = False
 
 
 class Section(ContractModel):

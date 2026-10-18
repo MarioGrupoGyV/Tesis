@@ -97,11 +97,26 @@ def precheck(db):
 
 
 def registered_source(db,settings,period,content):
-    if period.data_origin=='REAL':
-        require_processing_protocol()
-        return None  # Solo pruebas históricas del motor sustituyen esta función bloqueante.
+    # SYNTHETIC: CSV del generador local; REAL: CSV canónico del estudio institucional (requiere protocolo confirmado).
     from app.services.synthetic_study import verified_csv
+    if period.data_origin=='REAL':
+        from sqlalchemy import select
+        from app.models.synthetic import SyntheticStudyRecord
+        from app.services.processing_protocol import protocol_confirms_period
+        if db.scalar(select(SyntheticStudyRecord.id).where(SyntheticStudyRecord.period_id==period.id)) is None:
+            if protocol_confirms_period(db,period.id):
+                raise AppError(422,'INSTITUTIONAL_STUDY_NOT_PREPARED','El estudio institucional del periodo no está registrado. No se guardó el archivo.')
+            require_processing_protocol()  # sin protocolo: bloqueo vigente (las pruebas históricas aisladas lo sustituyen)
+            return None
     return verified_csv(db,settings,period,content)
+
+
+def scales_of(study):
+    """Escalas del protocolo para REAL (participación 1–5); el estudio sintético conserva 1–3."""
+    if study is not None and getattr(study,'kind',None)=='INSTITUTIONAL_STUDY':
+        from app.services.institutional_study import csv_scales
+        return csv_scales(study.config['protocol'])
+    return None
 
 
 def preview(db, user, settings, period_id, content, filename, request_id):
@@ -115,7 +130,7 @@ def preview(db, user, settings, period_id, content, filename, request_id):
     if batch and batch.status == "COMMITTED":
         return ImportBatch.model_validate(batch), False
     writable(period)
-    parsed = parse_csv(content, period)
+    parsed = parse_csv(content, period, scales_of(study))
     observed, errors, counts = observed_plan(db, period, parsed)
     storage = ImportStorage(settings.import_storage_dir)
     created = batch is None
@@ -183,6 +198,13 @@ def insert_snapshots(db, batch, rows, observed):
     db.flush()
     enrollment_ids = {code: UUID(state['enrollment_id']) if state['enrollment_id'] else enrollments[code].id
                       for code, state in by_code.items()}
+    if batch.data_origin == 'REAL':
+        # Elegibilidad por protocolo confirmado que cubre el periodo; nunca fabrica consentimientos.
+        from app.models.s1 import AcademicPeriod
+        from app.services.processing_protocol import mark_eligible_if_covered
+        period = db.get(AcademicPeriod, batch.period_id)
+        for student_id in student_ids.values():
+            mark_eligible_if_covered(db, db.get(StudentRecord, student_id), period)
     snapshots = []
     for row, state in zip(rows, observed, strict=True):
         code = row["student_code"]
@@ -203,8 +225,6 @@ def commit(db, user, settings, batch_id, expected_version, request_id):
     initial = get_batch(db, user, batch_id)
     period = repository.locked_period(db, initial.period_id)
     institutional_period(period)
-    if period.data_origin=='REAL':
-        require_processing_protocol()
     batch = repository.locked_batch(db, period.id, initial.file_sha256)
     if batch.status == "COMMITTED":
         return committed_result(db, batch, True)
@@ -216,7 +236,7 @@ def commit(db, user, settings, batch_id, expected_version, request_id):
     content = ImportStorage(settings.import_storage_dir).read(batch.storage_key, batch.file_sha256)
     study = registered_source(db,settings,period,content)
     try:
-        parsed = parse_csv(content, period)
+        parsed = parse_csv(content, period, scales_of(study))
         observed, errors, counts = observed_plan(db, period, parsed)
     except AppError as exc:
         if exc.code == "ORIGIN_NOT_SUPPORTED":
@@ -226,7 +246,10 @@ def commit(db, user, settings, batch_id, expected_version, request_id):
         raise stale()
     try:
         insert_snapshots(db, batch, parsed.rows, observed)
-        if study:
+        if study and study.kind=='INSTITUTIONAL_STUDY':
+            from app.services.institutional_study import bind_batch
+            bind_batch(db,study,batch)
+        elif study:
             from app.services.synthetic_study import bind_imported
             bind_imported(db,study,batch,parsed.rows,settings)
         batch.status, batch.committed_at = "COMMITTED", datetime.now(UTC)

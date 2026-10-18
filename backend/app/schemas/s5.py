@@ -37,6 +37,8 @@ class AlertCase(Alert):
     current_risk_level: Literal['LOW','MEDIUM','HIGH'] | None
     current_evaluation_status: EvaluationStatus
     latest_cutoff_at: datetime | None
+    detected_at: datetime | None = None
+    retrospective: bool = False
     capabilities: CaseCapabilities
 
 class AlertPage(ContractModel):
@@ -164,8 +166,8 @@ class ReportSummary(ContractModel):
     period_code: str
     section_id: UUID | None
     authorized_section_ids: list[UUID]
-    scope: Literal['SYNTHETIC_STUDY'] = 'SYNTHETIC_STUDY'
-    data_origin: Literal['SYNTHETIC'] = 'SYNTHETIC'
+    scope: Literal['SYNTHETIC_STUDY','INSTITUTIONAL_STUDY'] = 'SYNTHETIC_STUDY'
+    data_origin: Literal['SYNTHETIC','REAL'] = 'SYNTHETIC'
     notice: str
     generated_at: datetime
     cutoff_min: datetime | None

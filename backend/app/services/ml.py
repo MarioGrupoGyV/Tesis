@@ -10,7 +10,9 @@ from app.repositories.students import selected_prediction
 from app.schemas import ml as schemas
 from app.schemas.s5 import FollowupResult
 from app.schemas.s2 import Prediction
-from app.services.processing_policy import require_ml_protocol
+from app.services.simulated_clock import simulated_instant
+from app.services.processing_policy import require_ml_protocol, require_study, study_for_period
+from app.services.processing_protocol import protocol_confirms_period, real_student_processable
 from app.services.students import projection
 
 
@@ -19,10 +21,23 @@ def require_admin(user):
         raise AppError(403,'FORBIDDEN','Solo el administrador puede consultar modelos o solicitar inferencia.')
 
 
+def public_model(db,row):
+    """Modelo con alcance, tipo de aprobación y advertencias de n pequeño (REAL: solo exploratorio local)."""
+    from app.models.synthetic import SyntheticStudyRecord
+    manifest = row.manifest or {}
+    warnings = []
+    if row.data_origin == 'REAL' and row.study_id is not None:
+        study = db.get(SyntheticStudyRecord,row.study_id)
+        warnings = list(((study.comparison or {}).get('report') or {}).get('warnings') or []) if study else []
+    return schemas.Model.model_validate({**{k:getattr(row,k) for k in ('id','name','version','algorithm','data_origin',
+        'feature_schema_version','reference_criterion_version','status','is_active','created_at')},
+        'scope':manifest.get('scope'),'approval_kind':manifest.get('approval_kind'),'warnings':warnings})
+
+
 def list_models(db,user,page,page_size):
     require_admin(user)
     rows,total = repository.models(db,page,page_size)
-    return schemas.ModelPage(items=[schemas.Model.model_validate(r) for r in rows],total=total,page=page,page_size=page_size)
+    return schemas.ModelPage(items=[public_model(db,r) for r in rows],total=total,page=page,page_size=page_size)
 
 
 def model_detail(db,user,id):
@@ -30,7 +45,7 @@ def model_detail(db,user,id):
     row = db.get(ModelVersion,id)
     if row is None or row.data_origin not in ('REAL','SYNTHETIC'):
         raise AppError(404,'MODEL_NOT_FOUND','El modelo no está disponible.')
-    return schemas.Model.model_validate(row)
+    return public_model(db,row)
 
 
 def prediction_detail(db,user,id):
@@ -43,7 +58,7 @@ def prediction_detail(db,user,id):
     return projection(Prediction,selected_prediction(db,row.id))
 
 
-def persist_evaluated(db, *, snapshot_id, model_id, result, actor_id, request_id):
+def persist_evaluated(db, *, snapshot_id, model_id, result, actor_id, request_id, as_of=None):
     """Núcleo transaccional interno; el llamador confirma también auditoría. No activa modelos."""
     if result.status != 'EVALUATED' or result.risk_level not in ('LOW','MEDIUM','HIGH'):
         return None,False
@@ -60,8 +75,10 @@ def persist_evaluated(db, *, snapshot_id, model_id, result, actor_id, request_id
         raise AppError(409,'PERIOD_LOCKED','El periodo está bloqueado.')
     enrollment = db.get(EnrollmentRecord,snapshot.enrollment_id)
     student = db.get(StudentRecord,enrollment.student_id)
-    if not (student.is_active and student.eligible_for_processing and
-            (student.data_origin=='SYNTHETIC' or(student.consent_documented and student.assent_documented))):
+    if not real_student_processable(data_origin=student.data_origin,is_active=student.is_active,
+            eligible_flag=student.eligible_for_processing,consent_documented=student.consent_documented,
+            assent_documented=student.assent_documented,
+            protocol_confirmed_for_enrollment=protocol_confirms_period(db,snapshot.period_id)):
         raise AppError(422,'NOT_ELIGIBLE','El corte no es elegible para inferencia.')
     if snapshot.data_origin != model.data_origin or snapshot.data_origin not in ('REAL','SYNTHETIC'):
         raise AppError(422,'ORIGIN_NOT_SUPPORTED','Corte y modelo deben conservar el mismo origen.')
@@ -74,7 +91,8 @@ def persist_evaluated(db, *, snapshot_id, model_id, result, actor_id, request_id
         raise AppError(409,'MODEL_INCOMPATIBLE','El esquema del modelo no es compatible.')
     row,created = repository.insert_prediction(db,dict(id=uuid4(),enrollment_id=snapshot.enrollment_id,
         snapshot_id=snapshot.id,model_id=model.id,data_origin=snapshot.data_origin,risk_level=result.risk_level,
-        probabilities_calibrated=False,probability_low=None,probability_medium=None,probability_high=None))
+        probabilities_calibrated=False,probability_low=None,probability_medium=None,probability_high=None,
+        as_of_at=simulated_instant(as_of)))
     if row is None:
         raise AppError(409,'PREDICTION_CONFLICT','La evaluación concurrente requiere reintento.')
     if created:
@@ -106,8 +124,10 @@ def observation_from_row(row, period, bundle):
         schema_version='academic-v1',revision=row['revision'],supersedes_id=row['supersedes_id'],
         window_start=row['window_start'],available_at=row['available_at'],cutoff_at=row['cutoff_at'],
         target_date=target,created_at=row['created_at'],
-        eligible=bool(row['student_active'] and row['eligible_for_processing'] and
-            (row['data_origin']=='SYNTHETIC' or(row['consent_documented'] and row['assent_documented']))),
+        eligible=real_student_processable(data_origin=row['data_origin'],is_active=bool(row['student_active']),
+            eligible_flag=bool(row['eligible_for_processing']),consent_documented=bool(row['consent_documented']),
+            assent_documented=bool(row['assent_documented']),
+            protocol_confirmed_for_enrollment=bool(row.get('protocol_confirmed'))),
         values={name:float(row[name]) if row[name] is not None else None for name in bundle.config.features},
         feature_available_at=available,input_provenance='snapshot:'+str(row['id']))
 
@@ -121,17 +141,21 @@ def infer_selected(db, user, period, as_of, model, bundle, request_id):
             or bundle.config.criterion_version != model.reference_criterion_version
             or bundle.manifest['data_origin'] != model.data_origin or model.data_origin != period.data_origin):
         raise AppError(409,'MODEL_INCOMPATIBLE','El modelo y su artefacto no son compatibles.')
-    selected = repository.select_snapshots(db,period.id,as_of)
+    selected = repository.select_snapshots(db,period.id,as_of,strict_incorporation=period.data_origin=='SYNTHETIC')
     created = reused = 0
     abstentions = []
     for row in selected:
+        if row.get('entry_channel')=='MANUAL' and period.data_origin!='SYNTHETIC':
+            # Las mediciones manuales REAL (M1) no se evalúan: no hay fecha objetivo observada ni cierre de referencia.
+            abstentions.append(schemas.Abstention(snapshot_id=row['id'],status='INELIGIBLE',reason='MANUAL_REAL_NOT_EVALUABLE'))
+            continue
         observation = observation_from_row(row,period,bundle)
         result = predict_snapshot(observation,bundle)
         if result.status != 'EVALUATED':
             abstentions.append(schemas.Abstention(snapshot_id=row['id'],status=result.status,reason=result.reason))
             continue
         _,is_new = persist_evaluated(db,snapshot_id=row['id'],model_id=model.id,result=result,
-                                    actor_id=user.id,request_id=request_id)
+                                    actor_id=user.id,request_id=request_id,as_of=as_of)
         created += is_new
         reused += not is_new
     return schemas.PredictionRunResult(period_id=period.id,as_of=as_of,model_id=model.id,
@@ -139,29 +163,30 @@ def infer_selected(db, user, period, as_of, model, bundle, request_id):
         followup=FollowupResult(period_id=period.id))
 
 
+APPROVAL_BY_ORIGIN = {'SYNTHETIC':('SYNTHETIC_STUDY','TECHNICAL_SIMULATION'),'REAL':('INSTITUTIONAL_STUDY','LOCAL_EXPLORATORY')}
+
+
 def load_active_model(db,period,settings,as_of):
-    """Estudio SYNTHETIC registrado + modelo activo aprobado + artefacto verificado."""
-    from app.services.synthetic_study import validate_registered
-    from app.models.synthetic import SyntheticStudyRecord
-    study=db.scalar(select(SyntheticStudyRecord).where(SyntheticStudyRecord.period_id==period.id))
-    if study is None:
-        raise AppError(422,'SYNTHETIC_STUDY_NOT_PREPARED','El estudio sintético no está preparado.')
+    """Estudio del origen del periodo (REAL exige protocolo confirmado) + modelo activo aprobado + artefacto verificado."""
+    from app.services.synthetic_study import compatible_model, validate_registered
+    study,_ = study_for_period(db,period)
+    require_study(study,period)
     validate_registered(db,settings,study)
     model = db.scalar(select(ModelVersion).where(ModelVersion.is_active.is_(True),ModelVersion.status=='APPROVED',
                         ModelVersion.data_origin==period.data_origin,ModelVersion.study_id==study.id,
-                        ModelVersion.created_at<=as_of).with_for_update(read=True)
+                        ModelVersion.created_at<=(as_of if period.data_origin=='SYNTHETIC' else datetime.now(UTC))).with_for_update(read=True)
                         .execution_options(populate_existing=True))
     if model is None or settings.ml_storage_dir is None:
         raise AppError(409,'MODEL_NOT_AVAILABLE','Modelo no disponible.')
     from app.ml.artifacts import ArtifactStore
     from app.ml.features import MLDiagnostic
+    scope,approval = APPROVAL_BY_ORIGIN[period.data_origin]
     try:
-        from app.services.synthetic_study import compatible_model
         compatible_model(settings,study,model)
         bundle = ArtifactStore(settings.ml_storage_dir).load(model.artifact_key)
-        # Solo simulación registrada; una firma nunca habilita REAL.
-        if (bundle.manifest['scope']!='SYNTHETIC_STUDY' or str(bundle.manifest['study_id'])!=str(study.id)
-            or model.manifest.get('approval_kind')!='TECHNICAL_SIMULATION'):
+        # Un modelo solo evalúa su propio origen y alcance; una firma nunca habilita otro.
+        if (bundle.manifest['scope']!=scope or str(bundle.manifest['study_id'])!=str(study.id)
+            or model.manifest.get('approval_kind')!=approval):
             raise MLDiagnostic('MODEL_NOT_APPROVED')
         if bundle.manifest['artifact_sha256'] != model.artifact_sha256 or bundle.manifest['dataset_hash'] != model.dataset_hash:
             raise MLDiagnostic('MODEL_HASH_MISMATCH')
@@ -176,8 +201,7 @@ def run_period(db,user,payload,settings,request_id):
                        .execution_options(populate_existing=True))
     if period is None:
         raise AppError(404,'PERIOD_NOT_FOUND','El periodo no está disponible.')
-    if period.data_origin!='SYNTHETIC':
-        require_ml_protocol()
+    study_for_period(db,period)  # REAL: sin protocolo confirmado → INSTITUTIONAL_PROCESSING_NOT_READY
     if period.is_locked:
         raise AppError(409,'PERIOD_LOCKED','El periodo está bloqueado.')
     if payload.as_of > datetime.now(UTC):
@@ -194,12 +218,12 @@ def run_period(db,user,payload,settings,request_id):
         from app.services.followup import sync_current
         # Solo predicciones elegidas por as_of; sync descarta aquellas que ya no
         # coinciden con la revisión/modelo actuales. Sin commit intermedio.
-        chosen = repository.select_snapshots(db,period.id,payload.as_of)
+        chosen = repository.select_snapshots(db,period.id,payload.as_of,strict_incorporation=period.data_origin=='SYNTHETIC')
         prediction_ids = db.scalars(select(PredictionRecord.id).where(
             PredictionRecord.model_id==model.id,
             PredictionRecord.snapshot_id.in_([row['id'] for row in chosen]))).all()
         result.followup = sync_current(db,user,period.id,settings,request_id,
-                                     prediction_ids=prediction_ids)
+                                     prediction_ids=prediction_ids,as_of=payload.as_of)
         db.commit()
         return result
     except Exception:
@@ -233,15 +257,14 @@ def evaluate_student(db,user,student_id,period_id,settings,request_id):
     enrollment = authorize_student(db,user,student_id,period_id)
     period = db.scalar(select(AcademicPeriod).where(AcademicPeriod.id==period_id).with_for_update(read=True)
                        .execution_options(populate_existing=True))
-    if period.data_origin!='SYNTHETIC':
-        require_ml_protocol()
+    study_for_period(db,period)
     if period.is_locked:
         raise AppError(409,'PERIOD_LOCKED','El periodo está bloqueado.')
     now = datetime.now(UTC)
     try:
         study,model,bundle = load_active_model(db,period,settings,now)
         db.get(EnrollmentRecord,enrollment.id,with_for_update=True,populate_existing=True)
-        rows = repository.select_snapshots(db,period.id,now,enrollment.id)
+        rows = repository.select_snapshots(db,period.id,now,enrollment.id,strict_incorporation=period.data_origin=='SYNTHETIC')
         if not rows:
             raise AppError(422,'NO_MEASUREMENT','Registra una medición antes de evaluar al estudiante.')
         row = rows[0]

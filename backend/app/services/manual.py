@@ -120,6 +120,9 @@ def create_student(db,user,payload,request_id):
         db.add(student)
         db.flush()
         db.add(EnrollmentRecord(student_id=student.id,period_id=period.id,section_id=payload.section_id,data_origin=period.data_origin))
+        db.flush()
+        from app.services.processing_protocol import mark_eligible_if_covered
+        mark_eligible_if_covered(db,student,period)  # REAL: solo con protocolo confirmado que cubre el periodo
         return student
     return command(db,user,payload,'M1_STUDENT_CREATED',None,StudentRecord,schema.Identity,request_id,change)
 
@@ -158,6 +161,9 @@ def enroll(db,user,payload,request_id):
             student.eligible_for_processing=True
             student.version+=1
         db.add(row)
+        db.flush()
+        from app.services.processing_protocol import mark_eligible_if_covered
+        mark_eligible_if_covered(db,student,period)
         return row
     return command(db,user,payload,'M1_ENROLLMENT_CREATED',None,EnrollmentRecord,schema.EnrollmentView,request_id,change)
 

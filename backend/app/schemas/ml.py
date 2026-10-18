@@ -17,6 +17,10 @@ class Model(ContractModel):
     status: Literal['DRAFT','EVALUATED','APPROVED','RETIRED']
     is_active: bool
     created_at: datetime
+    # Alcance y aprobación: SYNTHETIC_STUDY/TECHNICAL_SIMULATION o INSTITUTIONAL_STUDY/LOCAL_EXPLORATORY (sin validación externa).
+    scope: str | None = None
+    approval_kind: str | None = None
+    warnings: list[str] = []
 
 
 class ModelPage(ContractModel):

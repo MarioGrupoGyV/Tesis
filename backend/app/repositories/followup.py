@@ -2,13 +2,15 @@
 from sqlalchemy import select, text
 from app.models.followup import AlertRecord, InterventionRecord, FollowupDecisionRecord
 from app.models.s2 import EnrollmentRecord
-from app.repositories.students import FROM_STUDENTS, STUDENT_COLUMNS, TIMELINE
+from app.repositories.students import FROM_STUDENTS, FROM_STUDENTS_AT, MISSING_FRACTION_SQL, STUDENT_COLUMNS, TIMELINE
 
-REGISTERED_SECTION='''AND EXISTS(SELECT 1 FROM risk_school.synthetic_studies ctx,
+# SYNTHETIC: secciones del manifiesto del estudio; REAL: secciones registradas con origen REAL.
+REGISTERED_SECTION='''AND ((e.data_origin='SYNTHETIC' AND EXISTS(SELECT 1 FROM risk_school.synthetic_studies ctx,
     jsonb_array_elements(ctx.manifest->'context'->'sections') registered
     WHERE ctx.period_id=e.period_id AND ctx.data_origin='SYNTHETIC'
       AND (ctx.config->>'school_year')::integer=g.school_year
-      AND registered->>'code'=g.code AND (registered->>'grade')::integer=g.grade)'''
+      AND registered->>'code'=g.code AND (registered->>'grade')::integer=g.grade))
+    OR (e.data_origin='REAL' AND g.data_origin='REAL'))'''
 
 
 def scope(user, prefix='g'):
@@ -21,12 +23,11 @@ def resource(db,user,id,kind='alert'):
     return db.execute(text(f'''SELECT r.id,r.enrollment_id,e.period_id,e.section_id
         FROM risk_school.{table} r JOIN risk_school.enrollments e ON e.id=r.enrollment_id
         JOIN risk_school.grade_sections g ON g.id=e.section_id
-        WHERE r.id=:id AND r.data_origin='SYNTHETIC' {REGISTERED_SECTION} {suffix}'''),{**params,'id':id}).mappings().first()
+        WHERE r.id=:id AND r.data_origin IN ('SYNTHETIC','REAL') {REGISTERED_SECTION} {suffix}'''),{**params,'id':id}).mappings().first()
 
 
 def lock_enrollments(db,period_id,ids=None):
-    query=select(EnrollmentRecord).where(EnrollmentRecord.period_id==period_id,
-        EnrollmentRecord.data_origin=='SYNTHETIC')
+    query=select(EnrollmentRecord).where(EnrollmentRecord.period_id==period_id)
     if ids is not None:
         query=query.where(EnrollmentRecord.id.in_(ids))
     return list(db.scalars(query.order_by(EnrollmentRecord.id).with_for_update()
@@ -43,14 +44,16 @@ def locked_intervention(db,id):
         .execution_options(populate_existing=True))
 
 
-def current_rows(db,period_id):
+def current_rows(db,period_id,as_of=None):
+    """Filas vigentes por matrícula. Con `as_of` (evaluación retrospectiva REAL) el corte vigente es el disponible en esa fecha."""
+    source=FROM_STUDENTS_AT if as_of is not None else FROM_STUDENTS
+    params={'period':period_id,**({'as_of':as_of} if as_of is not None else {})}
     return db.execute(text('SELECT '+STUDENT_COLUMNS+''',sn.id AS _snapshot_id,pred.id AS _prediction_id,
         current_model.id AS _model_id,COALESCE(ib.study_id,(SELECT st.id FROM risk_school.synthetic_studies st
-          WHERE st.period_id=e.period_id AND st.data_origin='SYNTHETIC')) AS _study_id,
+          WHERE st.period_id=e.period_id AND st.data_origin=e.data_origin)) AS _study_id,
         CASE WHEN sn.entry_channel='MANUAL' THEN 'MANUAL' ELSE ib.status END AS _batch_status,
-        sn.revision AS _revision,g.tutor_id AS _tutor_id '''+FROM_STUDENTS+
-        " WHERE e.period_id=:period AND e.data_origin='SYNTHETIC' ORDER BY e.id"),
-        {'period':period_id}).mappings().all()
+        sn.revision AS _revision,g.tutor_id AS _tutor_id '''+source+
+        " WHERE e.period_id=:period AND e.data_origin IN ('SYNTHETIC','REAL') ORDER BY e.id"),params).mappings().all()
 
 
 def decision(db,prediction_id):
@@ -72,8 +75,7 @@ CASE_COLUMNS='''ca.*,e.student_id,s.anon_code,e.period_id,e.section_id,g.code AS
     u.display_name AS assigned_display_name,pred.risk_level AS current_risk_level,
     CASE WHEN pred.id IS NOT NULL THEN 'EVALUATED'
       WHEN current_model.id IS NOT NULL AND sn.id IS NOT NULL AND (
-       ((sn.average_grade IS NULL)::int+(sn.attendance_pct IS NULL)::int+(sn.activities_pct IS NULL)::int+
-       (sn.participation_level IS NULL)::int+(sn.behavior_incidents IS NULL)::int)/5.0 >
+       '''+MISSING_FRACTION_SQL+''' >
         (current_model.manifest->'feature_schema'->>'inference_max_missing_fraction')::numeric
        OR EXISTS(SELECT 1 FROM jsonb_array_elements_text(current_model.manifest->'feature_schema'->'required_features') required(name)
         WHERE to_jsonb(sn)->required.name='null'::jsonb)) THEN 'INSUFFICIENT_DATA'
@@ -88,7 +90,7 @@ SORTS={'anon_code':'s.anon_code,s.id,ca.id',
 
 def filter_clauses(user,period_id,section_id=None,status=None,severity=None,search=None):
     suffix,params=scope(user)
-    clauses=["e.period_id=:period","ca.data_origin='SYNTHETIC'"]
+    clauses=["e.period_id=:period","ca.data_origin IN ('SYNTHETIC','REAL')"]
     params.update(period=period_id)
     for key,value,column in (('section',section_id,'e.section_id'),('status',status,'ca.status'),('severity',severity,'ca.severity')):
         if value is not None:
@@ -115,7 +117,7 @@ def list_alerts(db,user,period_id,section_id,status,severity,search,sort,page,pa
 def public_alert(db,user,id):
     suffix,params=scope(user)
     return db.execute(text('SELECT '+CASE_COLUMNS+CASE_SOURCE+
-        " WHERE ca.id=:id AND ca.data_origin='SYNTHETIC' "+REGISTERED_SECTION+suffix),{**params,'id':id}).mappings().first()
+        " WHERE ca.id=:id AND ca.data_origin IN ('SYNTHETIC','REAL') "+REGISTERED_SECTION+suffix),{**params,'id':id}).mappings().first()
 
 
 def case_interventions(db,alert_id):

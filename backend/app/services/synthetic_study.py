@@ -43,15 +43,26 @@ def get_study(db,study_id,lock=False):
     return study
 
 
+def is_institutional(study):
+    return getattr(study,'kind','SYNTHETIC_STUDY')=='INSTITUTIONAL_STUDY'
+
+
 def writable_study(db,study):
     period=db.scalar(select(AcademicPeriod).where(AcademicPeriod.id==study.period_id).with_for_update(read=True))
-    if period is None or period.data_origin!='SYNTHETIC':
+    expected='REAL' if is_institutional(study) else 'SYNTHETIC'
+    if period is None or period.data_origin!=expected or study.data_origin!=expected:
         raise AppError(409,'STUDY_INTEGRITY_ERROR','El contexto del estudio es incompatible.')
+    if expected=='REAL':
+        from app.services.processing_protocol import require_real_protocol
+        require_real_protocol(db,period)
     if period.is_locked:
         raise AppError(409,'PERIOD_LOCKED','El periodo está bloqueado.')
 
 
 def validate_registered(db,settings,study):
+    if is_institutional(study):
+        from app.services.institutional_study import validate_institutional
+        return validate_institutional(db,settings,study)
     from app.ml.synthetic import SyntheticStudyConfig
     config=SyntheticStudyConfig.model_validate(study.config)
     period=db.get(AcademicPeriod,study.period_id)
@@ -72,6 +83,9 @@ def validate_registered(db,settings,study):
 
 
 def verified_csv(db,settings,period,content):
+    if period.data_origin=='REAL':
+        from app.services.institutional_study import verified_csv as institutional_csv
+        return institutional_csv(db,settings,period,content)
     if period.data_origin!='SYNTHETIC':
         from app.services.processing_policy import require_processing_protocol
         require_processing_protocol()
@@ -182,6 +196,9 @@ def public_generation(manifest):
 
 
 def selected_artifact(settings,study):
+    if is_institutional(study):
+        from app.services.institutional_study import selected_artifact as institutional
+        return institutional(settings,study)
     from app.ml.artifacts import ArtifactStore
     from app.ml.synthetic import SyntheticStudyConfig
     if not study.comparison or not study.bindings:
@@ -202,6 +219,9 @@ def selected_artifact(settings,study):
 
 
 def compatible_model(settings,study,model):
+    if is_institutional(study):
+        from app.services.institutional_study import compatible_model as institutional
+        return institutional(settings,study,model)
     manifest,key=selected_artifact(settings,study)
     from app.ml.synthetic import SyntheticStudyConfig
     config=SyntheticStudyConfig.model_validate(study.config)
@@ -222,10 +242,13 @@ def compatible_model(settings,study,model):
     return manifest
 
 
-def compare_registered(db,user,settings,study_id,request_id):
+def compare_registered(db,user,settings,study_id,request_id,repetitions=None,leave_one_student_out=False):
     require_admin(user)
     study=get_study(db,study_id,lock=True)
     writable_study(db,study)
+    if is_institutional(study):
+        from app.services.institutional_study import compare_registered as institutional
+        return institutional(db,user,settings,study,request_id,repetitions,leave_one_student_out)
     config,payload,_=validate_registered(db,settings,study)
     if not study.bindings:
         raise AppError(409,'SYNTHETIC_IMPORT_REQUIRED','Confirma primero el CSV registrado mediante la API.')
@@ -255,6 +278,9 @@ def register_model(db,user,settings,study_id,algorithm,request_id):
     require_admin(user)
     study=get_study(db,study_id,lock=True)
     writable_study(db,study)
+    if is_institutional(study):
+        from app.services.institutional_study import register_model as institutional
+        return institutional(db,user,settings,study,algorithm,request_id)
     config,_,_=validate_registered(db,settings,study)
     if not study.comparison or not study.bindings:
         raise AppError(409,'SYNTHETIC_COMPARISON_REQUIRED','Compara primero los modelos del estudio importado.')
@@ -288,11 +314,16 @@ def register_model(db,user,settings,study_id,algorithm,request_id):
 
 def activate_model(db,user,settings,model_id,request_id):
     require_admin(user)
-    advisory_lock(db,'active-model:SYNTHETIC')
+    origin=db.scalar(select(ModelVersion.data_origin).where(ModelVersion.id==model_id))
+    if origin is None:
+        raise AppError(404,'MODEL_NOT_FOUND','El modelo no está disponible.')
+    # Un modelo activo por origen; los bloqueos son independientes (un REAL nunca desactiva un SYNTHETIC).
+    advisory_lock(db,'active-model:'+origin)
     model=db.scalar(select(ModelVersion).where(ModelVersion.id==model_id).with_for_update())
     if model is None:
         raise AppError(404,'MODEL_NOT_FOUND','El modelo no está disponible.')
-    if model.data_origin!='SYNTHETIC':
+    if model.study_id is None:
+        # Un modelo sin estudio de procedencia (p. ej. REAL histórico aislado) nunca se activa desde la aplicación.
         from app.services.processing_policy import require_ml_protocol
         require_ml_protocol()
     study=get_study(db,model.study_id,lock=True)
@@ -305,12 +336,17 @@ def activate_model(db,user,settings,model_id,request_id):
     ArtifactStore(settings.ml_storage_dir).load(model.artifact_key)
     if model.is_active:
         return model,True
+    approval='LOCAL_EXPLORATORY' if model.data_origin=='REAL' else 'TECHNICAL_SIMULATION'
     try:
-        for current in db.scalars(select(ModelVersion).where(ModelVersion.is_active.is_(True),ModelVersion.data_origin=='SYNTHETIC').with_for_update()):
+        for current in db.scalars(select(ModelVersion).where(ModelVersion.is_active.is_(True),ModelVersion.data_origin==model.data_origin).with_for_update()):
             current.is_active=False
         db.flush()
         model.is_active=True
-        event(db,user,study,'SYNTHETIC_MODEL_ACTIVATED',request_id,model_id=str(model.id),approval_kind='TECHNICAL_SIMULATION')
+        if model.data_origin=='REAL':
+            from app.services.institutional_study import event as institutional_event
+            institutional_event(db,user,study,'INSTITUTIONAL_MODEL_ACTIVATED',request_id,model_id=str(model.id),approval_kind=approval)
+        else:
+            event(db,user,study,'SYNTHETIC_MODEL_ACTIVATED',request_id,model_id=str(model.id),approval_kind=approval)
         db.commit()
         return model,False
     except Exception:

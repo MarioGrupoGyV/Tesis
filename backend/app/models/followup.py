@@ -21,6 +21,8 @@ class AlertRecord(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     version: Mapped[int] = mapped_column(Integer, default=1)
+    # Instante que simula la detección (evaluación retrospectiva); en corridas normales = opened_at (0007).
+    detected_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class InterventionRecord(Base):

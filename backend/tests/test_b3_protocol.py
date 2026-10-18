@@ -157,31 +157,49 @@ def test_require_real_protocol_returns_only_confirmed_covering_protocol(demo):
     check(False)                                                      # revocado
 
 
-def test_real_endpoints_stay_blocked_even_with_confirmed_protocol(demo):
+def test_real_endpoints_are_blocked_without_protocol_and_need_a_study_with_it(demo):
+    """Desde 0008/3B-2 el protocolo confirmado habilita REAL, pero cada operación sigue exigiendo su estudio institucional."""
     state = demo
     period, section = real_period(state)
     student = write(state, '/students', dict(creation_key=str(uuid4()), anon_code='B3R-' + uuid4().hex[:10], full_name='Alumno de Prueba',
                                               period_id=period['id'], section_id=section['id'])).json()
     protocol = call(state, 'post', '/processing-protocols', body(period['id'])).json()
-    assert call(state, 'post', f"/processing-protocols/{protocol['id']}/confirm").json()['authorization_confirmed_by_admin'] is True
     pid = period['id']
     now = datetime.now(UTC).isoformat()
-    attempts = {
-        'GET /alerts': call(state, 'get', f'/alerts?period_id={pid}'),
-        'POST /alerts/sync': call(state, 'post', '/alerts/sync', {'period_id': pid}),
-        'GET /reports/summary': call(state, 'get', f'/reports/summary?period_id={pid}'),
-        'GET /reports/export.csv': call(state, 'get', f'/reports/export.csv?period_id={pid}'),
-        'GET /indicators': call(state, 'get', f'/indicators?period_id={pid}'),
-        'GET /indicators/students': call(state, 'get', f'/indicators/students?period_id={pid}'),
-        'GET /indicators/export.csv': call(state, 'get', f'/indicators/export.csv?period_id={pid}'),
-        'GET /indicators/interventions.csv': call(state, 'get', f'/indicators/interventions.csv?period_id={pid}'),
-        'POST /predictions/run': call(state, 'post', '/predictions/run', {'period_id': pid, 'as_of': now}),
-        f"POST /students/{{id}}/evaluate": call(state, 'post', f"/students/{student['id']}/evaluate?period_id={pid}"),
-        'POST /imports/preview': state.client.post(API + '/imports/preview', data={'period_id': pid},
-            files={'file': ('x.csv', b'student_code\n', 'text/csv')}, headers={'X-CSRF-Token': state.csrf, **ORIGIN}),
-    }
-    for name, response in attempts.items():
+
+    def attempts():
+        return {
+            'GET /alerts': call(state, 'get', f'/alerts?period_id={pid}'),
+            'POST /alerts/sync': call(state, 'post', '/alerts/sync', {'period_id': pid}),
+            'GET /reports/summary': call(state, 'get', f'/reports/summary?period_id={pid}'),
+            'GET /reports/export.csv': call(state, 'get', f'/reports/export.csv?period_id={pid}'),
+            'GET /indicators': call(state, 'get', f'/indicators?period_id={pid}'),
+            'GET /indicators/students': call(state, 'get', f'/indicators/students?period_id={pid}'),
+            'GET /indicators/export.csv': call(state, 'get', f'/indicators/export.csv?period_id={pid}'),
+            'GET /indicators/interventions.csv': call(state, 'get', f'/indicators/interventions.csv?period_id={pid}'),
+            'POST /predictions/run': call(state, 'post', '/predictions/run', {'period_id': pid, 'as_of': now}),
+            'POST /students/{id}/evaluate': call(state, 'post', f"/students/{student['id']}/evaluate?period_id={pid}"),
+            'POST /imports/preview': state.client.post(API + '/imports/preview', data={'period_id': pid},
+                files={'file': ('x.csv', b'student_code\n', 'text/csv')}, headers={'X-CSRF-Token': state.csrf, **ORIGIN}),
+        }
+    # Sin confirmar: todo bloqueado.
+    for name, response in attempts().items():
         assert response.status_code == 422 and response.json()['code'] == BLOCKED, (name, response.status_code, response.text[:120])
+    assert call(state, 'post', f"/processing-protocols/{protocol['id']}/confirm").json()['authorization_confirmed_by_admin'] is True
+    # Confirmado pero sin estudio institucional: el bloqueo del protocolo desaparece y lo reemplaza el requisito del estudio.
+    expected = {'GET /indicators': 200, 'GET /indicators/students': 200, 'GET /indicators/export.csv': 200,
+                'GET /indicators/interventions.csv': 200}
+    for name, response in attempts().items():
+        if name in expected:
+            assert response.status_code == expected[name], (name, response.text[:120])
+        elif name == 'POST /imports/preview':
+            assert response.status_code == 422 and response.json()['code'] == 'INSTITUTIONAL_STUDY_NOT_PREPARED', response.text[:120]
+        else:
+            assert response.status_code == 422 and response.json()['code'] == 'INSTITUTIONAL_STUDY_NOT_PREPARED', (name, response.text[:120])
+    # Revocar vuelve a bloquear.
+    call(state, 'post', f"/processing-protocols/{protocol['id']}/revoke")
+    for name, response in attempts().items():
+        assert response.status_code == 422 and response.json()['code'] == BLOCKED, (name, response.status_code)
     # Lo que ya funcionaba con REAL (M1) no cambia: listar estudiantes del periodo REAL sigue permitido.
     assert call(state, 'get', f'/students?period_id={pid}').status_code == 200
 
@@ -236,10 +254,11 @@ def test_retrospective_clocks_default_to_real_instants_and_change_nothing_public
         constraints = {row[0] for row in conn.execute(text("SELECT conname FROM pg_constraint WHERE conname IN ('alert_detected_not_after_opened','prediction_as_of_not_after_predicted','study_kind_origin_protocol')"))}
     assert prediction.as_of_at == prediction.predicted_at and alert.detected_at == alert.opened_at   # corridas normales
     assert constraints == {'alert_detected_not_after_opened', 'prediction_as_of_not_after_predicted', 'study_kind_origin_protocol'}
-    # Contratos públicos sin campos nuevos.
+    # Desde 3B-2 los relojes son públicos: en una corrida normal no hay "simulación retrospectiva".
     detail = state.client.get(API + f"/alerts/{out['alert_id']}").json()
-    assert 'detected_at' not in detail['alert'] and 'as_of_at' not in detail['source_prediction']
-    assert 'as_of_at' not in state.client.get(API + f"/predictions/{out['prediction_id']}").json()
+    assert detail['alert']['retrospective'] is False and detail['source_prediction']['retrospective'] is False
+    assert detail['alert']['detected_at'] is not None and detail['source_prediction']['as_of_at'] is not None
+    assert state.client.get(API + f"/predictions/{out['prediction_id']}").json()['retrospective'] is False
     # kind/protocolo: los estudios existentes siguen siendo sintéticos y sin protocolo.
     with state.owner.connect() as conn:
         assert conn.execute(text('SELECT DISTINCT kind,data_origin,protocol_id IS NULL FROM risk_school.synthetic_studies')).all() == [('SYNTHETIC_STUDY', 'SYNTHETIC', True)]

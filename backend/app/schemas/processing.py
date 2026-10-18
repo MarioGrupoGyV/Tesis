@@ -28,6 +28,6 @@ class ProcessingOperations(ContractModel):
 class ProcessingStatus(ContractModel):
     scope: Literal['SYNTHETIC_STUDY']
     notice: str
-    institutional_ready: Literal[False]
+    institutional_ready: bool
     synthetic_ready: bool
     operations: ProcessingOperations
