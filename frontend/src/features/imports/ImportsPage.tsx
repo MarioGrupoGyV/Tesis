@@ -1,3 +1,4 @@
+import { periodOperation, processingOpen } from '../../lib/origin';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError, errorMessage, type ImportBatch, type ImportCommit, type Period, type ProcessingStatus, type User } from '../../lib/api';
@@ -108,10 +109,10 @@ export function ImportsPage({ user, period, status, statusLoading, statusError, 
   const busy = previewMutation.isPending || commitMutation.isPending;
   const blocked = !admin ? 'Solo una cuenta administradora puede importar.'
     : statusLoading ? 'Estamos comprobando si la importación está disponible.'
-      : statusError || !status ? 'No se pudo comprobar la disponibilidad. Vuelve a intentarlo antes de importar.'
-        : !status.operations.import.available ? reasonLabel(status.operations.import.reason)
+      : (statusError || !status) && period?.data_origin !== 'REAL' ? 'No se pudo comprobar la disponibilidad. Vuelve a intentarlo antes de importar.'
+        : period && !periodOperation(period, status, 'import', user).available ? reasonLabel(periodOperation(period, status, 'import', user).reason)
           : !period ? 'Selecciona un periodo autorizado para preparar el archivo.'
-            : period.data_origin !== 'SYNTHETIC' ? 'Este periodo corresponde a datos institucionales. Su procesamiento permanece bloqueado.'
+            : !processingOpen(period) ? 'Este periodo corresponde a datos reales. Su procesamiento permanece bloqueado hasta confirmar el protocolo REAL.'
               : period.is_locked ? 'El periodo está bloqueado y no admite nuevas importaciones.' : '';
   const canCommit = !blocked && !busy && !stale && !uncertain && !detail.isFetching && !detail.error
     && batch?.status === 'READY' && batch.invalid_rows === 0 && batch.errors.length === 0 && confirmed;

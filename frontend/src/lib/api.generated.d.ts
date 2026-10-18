@@ -1032,6 +1032,11 @@ export interface components {
              * @default 1
              */
             version: number;
+            /**
+             * Real Processing Enabled
+             * @default false
+             */
+            real_processing_enabled: boolean;
         };
         /** Section */
         Section: {
@@ -1174,6 +1179,13 @@ export interface components {
              * @description Solo MANUAL: corte (America/Lima) + horizonte del modelo; derivado, no es un dato observado.
              */
             model_horizon_date?: string | null;
+            /** As Of At */
+            as_of_at?: string | null;
+            /**
+             * Retrospective
+             * @default false
+             */
+            retrospective: boolean;
         } & (({
             probability_low?: null;
             probability_medium?: null;
@@ -1436,6 +1448,15 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /** Scope */
+            scope?: string | null;
+            /** Approval Kind */
+            approval_kind?: string | null;
+            /**
+             * Warnings
+             * @default []
+             */
+            warnings: string[];
         };
         /** ModelPage */
         ModelPage: {
@@ -1534,11 +1555,8 @@ export interface components {
             scope: "SYNTHETIC_STUDY";
             /** Notice */
             notice: string;
-            /**
-             * Institutional Ready
-             * @constant
-             */
-            institutional_ready: false;
+            /** Institutional Ready */
+            institutional_ready: boolean;
             /** Synthetic Ready */
             synthetic_ready: boolean;
             operations: components["schemas"]["ProcessingOperations"];
@@ -1647,6 +1665,13 @@ export interface components {
              */
             latest_cutoff_at: string | null;
             capabilities: components["schemas"]["CaseCapabilities"];
+            /** Detected At */
+            detected_at?: string | null;
+            /**
+             * Retrospective
+             * @default false
+             */
+            retrospective: boolean;
         };
         /** InterventionView */
         InterventionView: {
@@ -1980,25 +2005,22 @@ export interface components {
             period_id: string;
             /** Period Code */
             period_code: string;
-            /**
-             * Section Id
-             * Format: uuid
-             */
+            /** Section Id */
             section_id: string | null;
             /** Authorized Section Ids */
             authorized_section_ids: string[];
             /**
              * Scope
              * @default SYNTHETIC_STUDY
-             * @constant
+             * @enum {string}
              */
-            scope: "SYNTHETIC_STUDY";
+            scope: "SYNTHETIC_STUDY" | "INSTITUTIONAL_STUDY";
             /**
              * Data Origin
              * @default SYNTHETIC
-             * @constant
+             * @enum {string}
              */
-            data_origin: "SYNTHETIC";
+            data_origin: "SYNTHETIC" | "REAL";
             /** Notice */
             notice: string;
             /**
@@ -2006,15 +2028,9 @@ export interface components {
              * Format: date-time
              */
             generated_at: string;
-            /**
-             * Cutoff Min
-             * Format: date-time
-             */
+            /** Cutoff Min */
             cutoff_min: string | null;
-            /**
-             * Cutoff Max
-             * Format: date-time
-             */
+            /** Cutoff Max */
             cutoff_max: string | null;
             /** Total */
             total: number;
@@ -2782,13 +2798,20 @@ export interface components {
             period_code: string;
             /**
              * Data Origin
-             * @constant
+             * @enum {string}
              */
-            data_origin: "SYNTHETIC";
+            data_origin: "SYNTHETIC" | "REAL";
             /** Is Simulation */
             is_simulation: boolean;
             /** Notice */
             notice: string;
+            /** Bimester */
+            bimester?: string | null;
+            /**
+             * Retrospective Alerts
+             * @default 0
+             */
+            retrospective_alerts: number;
             /**
              * As Of
              * Format: date-time
@@ -2842,15 +2865,15 @@ export interface components {
         /** Nia */
         Nia: {
             /** Total */
-            total: number;
+            total: number | null;
             /** Students */
-            students: number;
+            students: number | null;
             /** Mean */
             mean: number | null;
             /** Median */
             median: number | null;
             /** Alerted Students */
-            alerted_students: number;
+            alerted_students: number | null;
             /** Mean Alerted */
             mean_alerted: number | null;
             /** Median Alerted */
@@ -2940,6 +2963,13 @@ export interface components {
             predicted_risk: ("LOW" | "MEDIUM" | "HIGH") | null;
             /** Alert Opened At */
             alert_opened_at: string | null;
+            /** Alert Detected At */
+            alert_detected_at?: string | null;
+            /**
+             * Retrospective
+             * @default false
+             */
+            retrospective: boolean;
             /** Alert Before Close */
             alert_before_close: boolean | null;
             /** Nia */
@@ -3007,7 +3037,7 @@ export interface components {
         };
         /**
          * IndicatorContext
-         * @description Periodo SYNTHETIC con estudio registrado y sus secciones autorizadas (incluye RESEARCHER).
+         * @description Periodo con estudio registrado (SYNTHETIC; REAL solo con protocolo confirmado) y sus secciones autorizadas.
          */
         IndicatorContext: {
             /**
@@ -3021,6 +3051,17 @@ export interface components {
             school_year: number;
             /** Is Locked */
             is_locked: boolean;
+            /**
+             * Data Origin
+             * @default SYNTHETIC
+             * @enum {string}
+             */
+            data_origin: "SYNTHETIC" | "REAL";
+            /**
+             * Bimesters
+             * @default []
+             */
+            bimesters: string[];
             /** Sections */
             sections: components["schemas"]["ContextSection"][];
         };
@@ -6856,6 +6897,8 @@ export interface operations {
                 section_id?: string | null;
                 as_of?: string | null;
                 close_at?: string | null;
+                /** @description Código de bimestre del protocolo REAL; solo aplica a periodos REAL. */
+                bimester?: string | null;
             };
             header?: never;
             path?: never;
@@ -6928,6 +6971,8 @@ export interface operations {
                 close_at?: string | null;
                 page?: number;
                 page_size?: number;
+                /** @description Código de bimestre del protocolo REAL; solo aplica a periodos REAL. */
+                bimester?: string | null;
             };
             header?: never;
             path?: never;
@@ -6998,6 +7043,8 @@ export interface operations {
                 section_id?: string | null;
                 as_of?: string | null;
                 close_at?: string | null;
+                /** @description Código de bimestre del protocolo REAL; solo aplica a periodos REAL. */
+                bimester?: string | null;
             };
             header?: never;
             path?: never;

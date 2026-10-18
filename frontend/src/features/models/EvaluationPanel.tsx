@@ -1,3 +1,4 @@
+import { processingOpen, periodOperation } from '../../lib/origin';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError, currentEvaluationInstant, type Period, type ProcessingStatus, type User } from '../../lib/api';
@@ -25,8 +26,8 @@ function PeriodEvaluation({ user, period, processing, onNavigate }: Props) {
     mounted.current = true;
     return () => { mounted.current = false; requestController.current?.abort(); };
   }, []);
-  const operation = processing?.operations.predict;
-  const available = user.role === 'ADMIN' && Boolean(operation?.available) && period?.data_origin === 'SYNTHETIC' && !period.is_locked;
+  const operation = period ? periodOperation(period, processing, 'predict', user) : null;
+  const available = user.role === 'ADMIN' && Boolean(operation?.available) && processingOpen(period) && !period?.is_locked;
   const mutation = useMutation({ mutationFn: (asOf: string) => {
     requestController.current?.abort();
     const controller = new AbortController(); requestController.current = controller;
@@ -38,9 +39,9 @@ function PeriodEvaluation({ user, period, processing, onNavigate }: Props) {
   useEffect(() => { if (mutation.isSuccess || mutation.isError) responseSummary.current?.focus(); }, [mutation.isSuccess, mutation.isError]);
   let blocked: string | null = null;
   if (!period) blocked = 'Selecciona el periodo que deseas evaluar.';
-  else if (period.data_origin !== 'SYNTHETIC') blocked = reasonLabel('INSTITUTIONAL_PROCESSING_NOT_READY');
+  else if (!processingOpen(period)) blocked = reasonLabel('INSTITUTIONAL_PROCESSING_NOT_READY');
   else if (period.is_locked) blocked = reasonLabel('PERIOD_LOCKED');
-  else if (!processing) blocked = 'No pudimos comprobar la preparación del módulo. La evaluación permanecerá deshabilitada hasta consultar su estado.';
+  else if (period.data_origin === 'SYNTHETIC' && !processing) blocked = 'No pudimos comprobar la preparación del módulo. La evaluación permanecerá deshabilitada hasta consultar su estado.';
   else if (!operation?.available) blocked = reasonLabel(operation?.reason);
   else if (user.role !== 'ADMIN') blocked = reasonLabel('FORBIDDEN');
 

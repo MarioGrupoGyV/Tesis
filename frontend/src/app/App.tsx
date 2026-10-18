@@ -11,6 +11,7 @@ import { AlertsPage } from '../features/alerts/AlertsPage';
 import { AlertDetailPage } from '../features/alerts/AlertDetailPage';
 import { ReportsPage } from '../features/reports/ReportsPage';
 import { IndicatorsPage } from '../features/indicators/IndicatorsPage';
+import { ProtocolPage } from '../features/protocol/ProtocolPage';
 import { AppShell } from '../components/AppShell';
 import { EmptyState, ErrorState, LoadingState, PageHeader } from '../components/ui';
 import { api, ApiError, clearSessionMemory, errorMessage, SESSION_EXPIRED_EVENT, type User } from '../lib/api';
@@ -94,7 +95,7 @@ function AuthenticatedApp({ user, onLogout, onExpired, sessionError }: { user: U
     navigate(path + '?' + next.toString());
   }
   const context = !schoolContext ? null : <section className="context-bar" aria-label="Contexto de consulta">
-    {periods.isPending ? <LoadingState label="Cargando periodos autorizados…" /> : periods.isError ? <ErrorState error={periods.error} onRetry={() => void periods.refetch()} /> : periods.data.length === 0 ? <p className="muted">No hay periodos configurados para tu cuenta.</p> : <><div className="context-field"><label htmlFor="period">Periodo de consulta</label><select id="period" value={periodId} onChange={(event) => changePeriod(event.target.value)}><option value="" disabled>Selecciona un periodo</option>{periods.data.map((item) => <option key={item.id} value={item.id}>{item.code} · {item.school_year}</option>)}</select></div><div className="context-field"><label htmlFor="section">Sección autorizada</label><select id="section" value={validSection} disabled={!period || sections.isPending || sections.isError} onChange={(event) => changeSection(event.target.value)}><option value="">Todas las autorizadas</option>{sections.data?.map((item) => <option key={item.id} value={item.id}>{item.grade}.º · {item.code}</option>)}</select></div><span className={`badge ${period?.is_locked ? 'locked' : ''}`}>{period?.data_origin === 'SYNTHETIC' ? 'Datos sintéticos' : 'Registro real local'}{period?.is_locked && ' · Bloqueado'}</span></>}
+    {periods.isPending ? <LoadingState label="Cargando periodos autorizados…" /> : periods.isError ? <ErrorState error={periods.error} onRetry={() => void periods.refetch()} /> : periods.data.length === 0 ? <p className="muted">No hay periodos configurados para tu cuenta.</p> : <><div className="context-field"><label htmlFor="period">Periodo de consulta</label><select id="period" value={periodId} onChange={(event) => changePeriod(event.target.value)}><option value="" disabled>Selecciona un periodo</option>{periods.data.map((item) => <option key={item.id} value={item.id}>{item.code} · {item.school_year}</option>)}</select></div><div className="context-field"><label htmlFor="section">Sección autorizada</label><select id="section" value={validSection} disabled={!period || sections.isPending || sections.isError} onChange={(event) => changeSection(event.target.value)}><option value="">Todas las autorizadas</option>{sections.data?.map((item) => <option key={item.id} value={item.id}>{item.grade}.º · {item.code}</option>)}</select></div><span className={`badge ${period?.is_locked ? 'locked' : ''}`}>{period?.data_origin === 'SYNTHETIC' ? 'Datos sintéticos' : period?.real_processing_enabled ? 'Datos reales locales · protocolo confirmado' : 'Registro real local · procesamiento bloqueado'}{period?.is_locked && ' · Bloqueado'}</span></>}
     {sections.isError && <ErrorState error={sections.error} onRetry={() => void sections.refetch()} />}
   </section>;
   const notice = <>{sessionError && <ErrorState error={sessionError} />}{status.isPending ? <LoadingState label="Consultando el alcance del sistema…" /> : status.isError ? <div className="processing-warning"><p className="notice">No pudimos consultar el estado de procesamiento. Las acciones sensibles permanecen deshabilitadas.</p><ErrorState error={status.error} onRetry={() => void status.refetch()} /></div> : null}</>;
@@ -102,7 +103,7 @@ function AuthenticatedApp({ user, onLogout, onExpired, sessionError }: { user: U
   const studentMatch = pathname.match(/^\/estudiantes\/([^/]+)$/);
   const modelMatch = pathname.match(/^\/modelos\/([^/]+)$/);
   const alertMatch = pathname.match(/^\/alertas\/([^/]+)$/);
-  const forbidden = user.role === 'RESEARCHER' && pathname !== '/' && pathname !== '/indicadores' || user.role !== 'ADMIN' && (pathname === '/datos' || pathname.startsWith('/modelos'));
+  const forbidden = user.role === 'RESEARCHER' && pathname !== '/' && pathname !== '/indicadores' || user.role !== 'ADMIN' && (pathname === '/datos' || pathname.startsWith('/modelos') || pathname === '/protocolo');
   let page;
   if (forbidden) page = <><PageHeader title="Acceso no disponible" /><EmptyState title="Tu rol no permite abrir esta vista"><p>Vuelve a Inicio para conocer las consultas autorizadas.</p><button className="button secondary" type="button" onClick={() => go('/')}>Volver a Inicio</button></EmptyState></>;
   else if (pathname === '/' && schoolContext && (periods.isPending || period && sections.isPending)) page = <><PageHeader title="Inicio" /><LoadingState label="Cargando contexto autorizado…" /></>;
@@ -113,6 +114,7 @@ function AuthenticatedApp({ user, onLogout, onExpired, sessionError }: { user: U
   else if (pathname === '/estudiantes') page = <StudentsPage key={periodId + validSection} user={user} period={period} sectionId={validSection} onNavigate={go} />;
   else if (studentMatch) page = <StudentDetailPage key={periodId + studentMatch[1]} user={user} period={period} studentId={studentMatch[1]} onNavigate={go} />;
   else if (pathname === '/datos') page = <ImportsPage user={user} period={period} status={processing} statusLoading={status.isPending} statusError={status.isError ? errorMessage(status.error) : ''} onRetryStatus={() => void status.refetch()} onUnauthorized={onExpired} onCommitted={(id) => navigate('/estudiantes?' + new URLSearchParams({ period_id: id }))} onViewStudents={(id) => navigate('/estudiantes?' + new URLSearchParams({ period_id: id }))} />;
+  else if (pathname === '/protocolo') page = <ProtocolPage user={user} periods={periods.data ?? []} periodId={periodId} />;
   else if (pathname === '/modelos') page = <ModelsPage user={user} period={period} processing={processing} onNavigate={go} />;
   else if (modelMatch) page = <ModelDetailPage user={user} period={period} processing={processing} modelId={modelMatch[1]} onNavigate={go} />;
   else if ((pathname === '/alertas' || pathname === '/reportes') && period && sections.isPending) page = <LoadingState label="Cargando secciones autorizadas…" />;

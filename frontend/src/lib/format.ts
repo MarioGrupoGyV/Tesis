@@ -13,7 +13,13 @@ export function numberLabel(value: number | null | undefined, suffix = ''): stri
 export function reasonLabel(code: string | null | undefined): string {
   const labels: Record<string, string> = {
     FORBIDDEN: 'Esta acción no está disponible para tu rol.',
-    INSTITUTIONAL_PROCESSING_NOT_READY: 'El procesamiento de información real permanece bloqueado.',
+    INSTITUTIONAL_PROCESSING_NOT_READY: 'El procesamiento de información real permanece bloqueado hasta que el administrador confirme el protocolo REAL del periodo.',
+    INSTITUTIONAL_STUDY_NOT_PREPARED: 'El protocolo está confirmado, pero falta registrar el estudio institucional del periodo (procedimiento administrativo).',
+    INSTITUTIONAL_COMPARISON_REQUIRED: 'Falta comparar los modelos del estudio institucional mediante el procedimiento administrativo.',
+    INSTITUTIONAL_IMPORT_REQUIRED: 'Primero debe importarse el CSV canónico registrado del estudio institucional.',
+    UNREGISTERED_INSTITUTIONAL_FILE: 'El archivo no coincide con el CSV canónico registrado para este periodo.',
+    BIMESTER_NOT_FOUND: 'El bimestre no existe en el protocolo del periodo.',
+    MANUAL_REAL_NOT_EVALUABLE: 'Las mediciones manuales de datos reales no se evalúan.',
     SYNTHETIC_STUDY_NOT_READY: 'El administrador debe preparar el estudio sintético autorizado.',
     SYNTHETIC_IMPORT_REQUIRED: 'Primero debe completarse la importación del archivo registrado.',
     SYNTHETIC_COMPARISON_REQUIRED: 'Falta completar la comparación técnica mediante el procedimiento administrativo.',

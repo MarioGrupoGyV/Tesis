@@ -3,19 +3,21 @@ import { useQuery } from '@tanstack/react-query';
 import { api, type IndicatorRatio, type IndicatorSummary, type IndicatorsResponse, type User } from '../../lib/api';
 import { EmptyState, ErrorState, LoadingState, PageHeader } from '../../components/ui';
 import { numberLabel, timestampLabel } from '../../lib/format';
+import { RETROSPECTIVE_LABEL } from '../../lib/origin';
 import './features.css';
 
 const reasons: Record<string, string> = {
   REFERENCE_NOT_AVAILABLE: 'Sin riesgo de referencia almacenado: no se calcula.', NO_REFERENCE_MEDIUM_OR_HIGH: 'No hay estudiantes con referencia media o alta.',
   NO_ELIGIBLE_STUDENTS: 'No hay estudiantes elegibles.', NO_ALERTS: 'Todavía no hay alertas.', NO_RECEIVED_RECORDS: 'No se han recibido registros.',
   PERIOD_LEVEL_ONLY: 'Solo disponible para el periodo completo y con acceso a todas las secciones.', STUDY_INTEGRITY_ERROR: 'No se pudo verificar la procedencia del estudio.',
-  STUDY_STORAGE_UNAVAILABLE: 'Almacenamiento del estudio no disponible.', NO_EVALUATED_STUDENTS_WITH_REFERENCE: 'Ningún estudiante evaluado tiene riesgo de referencia.', NO_DENOMINATOR: 'Sin denominador.', NO_INTERVENTIONS_LINKED_TO_ALERT: 'Todavía no hay intervenciones realizadas ligadas a una alerta.' };
+  STUDY_STORAGE_UNAVAILABLE: 'Almacenamiento del estudio no disponible.', NO_EVALUATED_STUDENTS_WITH_REFERENCE: 'Ningún estudiante evaluado tiene riesgo de referencia.', NO_DENOMINATOR: 'Sin denominador.', NO_INTERVENTIONS_LINKED_TO_ALERT: 'Todavía no hay intervenciones realizadas ligadas a una alerta.',
+  NO_REAL_INTERVENTIONS: 'Todavía no hay intervenciones reales registradas: no se estima ni se rellena con ceros.' };
 const riskName: Record<string, string> = { LOW: 'Bajo', MEDIUM: 'Medio', HIGH: 'Alto' };
 const percent = (value: number | null | undefined) => value == null ? '—' : `${numberLabel(value)} %`;
 const ratioDetail = (r: IndicatorRatio) => r.numerator == null || r.denominator == null ? 'Numerador y denominador no disponibles' : `${numberLabel(r.numerator)} de ${numberLabel(r.denominator)}`;
 
-function Card({ title, value, detail, reason, formula }: { title: string; value: string; detail: string; reason?: string | null; formula: string }) {
-  return <article className="indicator-card" aria-label={title}><h3>{title}</h3><span className="indicator-sim">Simulación</span><p className="big">{value}</p><p className="frac">{detail}</p>
+function Card({ title, value, detail, reason, formula, tag }: { title: string; value: string; detail: string; reason?: string | null; formula: string; tag: string }) {
+  return <article className="indicator-card" aria-label={title}><h3>{title}</h3><span className="indicator-sim">{tag}</span><p className="big">{value}</p><p className="frac">{detail}</p>
     {reason && <p className="reason">{reasons[reason] ?? reason}</p>}<p className="muted student-list-note">{formula}</p></article>;
 }
 
@@ -23,6 +25,7 @@ export function IndicatorsPage({ user, initialPeriodId }: { user: User; initialP
   const contexts = useQuery({ queryKey: [user.id, user.role, 'indicator-contexts'], queryFn: ({ signal }) => api.indicatorContexts(signal), retry: false });
   const [periodId, setPeriodId] = useState(initialPeriodId);
   const [sectionId, setSectionId] = useState('');
+  const [bimester, setBimester] = useState('');
   const [busy, setBusy] = useState(false);
   const [downloadError, setDownloadError] = useState<unknown>(null);
   const [notice, setNotice] = useState('');
@@ -31,7 +34,8 @@ export function IndicatorsPage({ user, initialPeriodId }: { user: User; initialP
   const list = contexts.data ?? [];
   const current = list.find(item => item.period_id === periodId) ?? list[0] ?? null;
   const activeSection = current?.sections.some(item => item.id === sectionId) ? sectionId : '';
-  const params = current ? { period_id: current.period_id, section_id: activeSection || undefined } : null;
+  const activeBimester = current?.bimesters?.includes(bimester) ? bimester : '';
+  const params = current ? { period_id: current.period_id, section_id: activeSection || undefined, bimester: activeBimester || undefined } : null;
   const data = useQuery({ queryKey: [user.id, user.role, 'indicators', params], queryFn: ({ signal }) => api.indicators(params!, signal), enabled: !!params, retry: false });
   async function download(kind: 'students' | 'interventions' = 'students') {
     if (!params || busy) return;
@@ -48,10 +52,11 @@ export function IndicatorsPage({ user, initialPeriodId }: { user: User; initialP
     action={<div className="indicator-downloads"><button className="button primary" type="button" disabled={!params || busy || data.isPending || data.isError} aria-busy={busy} onClick={() => void download('students')}>{busy ? 'Obteniendo CSV…' : 'Descargar CSV'}</button><button className="button secondary" type="button" disabled={!params || busy || data.isPending || data.isError} onClick={() => void download('interventions')}>Descargar CSV por intervención</button></div>} />;
   if (contexts.isPending) return <div className="indicators-feature">{header}<LoadingState label="Cargando periodos autorizados…" /></div>;
   if (contexts.isError) return <div className="indicators-feature">{header}<ErrorState error={contexts.error} onRetry={() => void contexts.refetch()} /></div>;
-  if (!current) return <div className="indicators-feature">{header}<EmptyState title="Todavía no hay indicadores"><p>No hay periodos de simulación disponibles para tu cuenta. Los periodos reales siguen bloqueados.</p></EmptyState></div>;
+  if (!current) return <div className="indicators-feature">{header}<EmptyState title="Todavía no hay indicadores"><p>No hay periodos con indicadores disponibles para tu cuenta. Un periodo real aparece cuando su protocolo está confirmado.</p></EmptyState></div>;
   return <div className="indicators-feature">{header}
     <section className="panel" aria-label="Filtros de indicadores"><div className="indicator-filters">
-      <div><label htmlFor="ind-period">Periodo</label><select id="ind-period" value={current.period_id} onChange={event => { setPeriodId(event.target.value); setSectionId(''); }}>{list.map(item => <option key={item.period_id} value={item.period_id}>{item.period_code} · {item.school_year}</option>)}</select></div>
+      <div><label htmlFor="ind-period">Periodo</label><select id="ind-period" value={current.period_id} onChange={event => { setPeriodId(event.target.value); setSectionId(''); setBimester(''); }}>{list.map(item => <option key={item.period_id} value={item.period_id}>{item.period_code} · {item.school_year} · {item.data_origin === 'REAL' ? 'datos reales locales' : 'sintético'}</option>)}</select></div>
+      {current.bimesters && current.bimesters.length > 0 && <div><label htmlFor="ind-bimester">Bimestre</label><select id="ind-bimester" value={activeBimester} onChange={event => setBimester(event.target.value)}><option value="">Último corte disponible</option>{current.bimesters.map(code => <option key={code} value={code}>{code}</option>)}</select></div>}
       <div><label htmlFor="ind-section">Sección</label><select id="ind-section" value={activeSection} onChange={event => setSectionId(event.target.value)}><option value="">Todas las autorizadas</option>{current.sections.map(item => <option key={item.id} value={item.id}>{item.grade}.º · {item.code}</option>)}</select></div>
     </div></section>
     {notice && <p className="notice" role="status">{notice}</p>}{downloadError != null && <ErrorState error={downloadError} />}
@@ -62,15 +67,18 @@ export function IndicatorsPage({ user, initialPeriodId }: { user: User; initialP
 function Results({ data }: { data: IndicatorsResponse }) {
   const t = data.total;
   const prv = data.prv;
+  const real = data.data_origin === 'REAL';
+  const tag = real ? 'Exploratorio local' : 'Simulación';
   return <>
-    <p className="notice" role="status">{data.notice} Corte: {timestampLabel(data.as_of)}. Cierre considerado: {timestampLabel(data.close_at)}. Ventana de intervención oportuna: {data.opportune_window_days} días.</p>
+    <p className="notice" role="status">{data.notice} Corte: {timestampLabel(data.as_of)}. Cierre considerado: {timestampLabel(data.close_at)}. Ventana de intervención oportuna: {data.opportune_window_days} días.{data.bimester ? ` Bimestre: ${data.bimester}.` : ''}</p>
+    {real && data.retrospective_alerts > 0 && <p className="notice" role="status">{data.retrospective_alerts} alertas son {RETROSPECTIVE_LABEL}: el modelo las generó ahora sobre cortes pasados, no se emitieron en su momento. La detección se mide en la fecha simulada; la intervención oportuna usa el instante real de la alerta.</p>}
     <section className="indicator-cards" aria-label="Indicadores principales">
-      <Card title="PRV · registros válidos procesados" value={percent(prv.percent)} detail={prv.received == null ? ratioDetail(prv) : `${numberLabel(prv.numerator)} de ${numberLabel(prv.received)} recibidos`} reason={prv.reason} formula="Válidos procesados ÷ registros recibidos × 100 (lotes CSV; los omitidos por inelegibilidad se informan aparte)." />
-      <Card title="CRA · cobertura de reportes y alertas" value={percent(t.cra.percent)} detail={ratioDetail(t.cra)} reason={t.cra.reason} formula="Elegibles evaluados con reporte (y alerta si el riesgo es medio o alto) ÷ elegibles × 100." />
-      <Card title="PDER · detección oportuna" value={percent(t.pder.percent)} detail={ratioDetail(t.pder)} reason={t.pder.reason} formula="Con riesgo de referencia medio/alto y alerta antes del cierre ÷ con riesgo de referencia medio/alto × 100." />
-      <Card title="NIA · intervenciones realizadas por estudiante" value={t.nia.mean == null ? '—' : numberLabel(t.nia.mean)} detail={`${numberLabel(t.nia.total)} realizadas · ${numberLabel(t.nia.students)} elegibles`} reason={t.nia.reason} formula={`Solo intervenciones realizadas; las planificadas no cuentan. Entre alertados: media ${t.nia.mean_alerted == null ? '—' : numberLabel(t.nia.mean_alerted)}.`} />
-      <Card title="Intervención oportuna · por estudiante" value={percent(t.opportune.percent)} detail={ratioDetail(t.opportune)} reason={t.opportune.reason} formula={`Al menos una realizada en ≤ ${data.opportune_window_days} días de la alerta. Mediana alerta→primera: ${t.opportune.median_days_to_first == null ? '—' : numberLabel(t.opportune.median_days_to_first) + ' días'}. Insumo de la prueba por estudiante (McNemar).`} />
-      <Card title="Intervención oportuna · por intervención" value={percent(t.opportune_by_intervention.percent)} detail={ratioDetail(t.opportune_by_intervention)} reason={t.opportune_by_intervention.reason} formula={`Intervenciones realizadas a ≤ ${data.opportune_window_days} días de la alerta de su caso ÷ realizadas ligadas a una alerta. Sin alerta ligada (aparte): ${numberLabel(t.opportune_by_intervention.without_alert)}. Comparable con la Tabla 6 de la tesis; la tarjeta anterior cuenta estudiantes, no intervenciones.`} />
+      <Card title="PRV · registros válidos procesados" tag={tag} value={percent(prv.percent)} detail={prv.received == null ? ratioDetail(prv) : `${numberLabel(prv.numerator)} de ${numberLabel(prv.received)} recibidos`} reason={prv.reason} formula="Válidos procesados ÷ registros recibidos × 100 (lotes CSV; los omitidos por inelegibilidad se informan aparte)." />
+      <Card title="CRA · cobertura de reportes y alertas" tag={tag} value={percent(t.cra.percent)} detail={ratioDetail(t.cra)} reason={t.cra.reason} formula="Elegibles evaluados con reporte (y alerta si el riesgo es medio o alto) ÷ elegibles × 100." />
+      <Card title="PDER · detección oportuna" tag={tag} value={percent(t.pder.percent)} detail={ratioDetail(t.pder)} reason={t.pder.reason} formula="Con riesgo de referencia medio/alto y alerta antes del cierre ÷ con riesgo de referencia medio/alto × 100." />
+      <Card title="NIA · intervenciones realizadas por estudiante" tag={tag} value={t.nia.mean == null ? '—' : numberLabel(t.nia.mean)} detail={`${numberLabel(t.nia.total)} realizadas · ${numberLabel(t.nia.students)} elegibles`} reason={t.nia.reason} formula={`Solo intervenciones realizadas; las planificadas no cuentan. Entre alertados: media ${t.nia.mean_alerted == null ? '—' : numberLabel(t.nia.mean_alerted)}.`} />
+      <Card title="Intervención oportuna · por estudiante" tag={tag} value={percent(t.opportune.percent)} detail={ratioDetail(t.opportune)} reason={t.opportune.reason} formula={`Al menos una realizada en ≤ ${data.opportune_window_days} días de la alerta. Mediana alerta→primera: ${t.opportune.median_days_to_first == null ? '—' : numberLabel(t.opportune.median_days_to_first) + ' días'}. Insumo de la prueba por estudiante (McNemar).`} />
+      <Card title="Intervención oportuna · por intervención" tag={tag} value={percent(t.opportune_by_intervention.percent)} detail={ratioDetail(t.opportune_by_intervention)} reason={t.opportune_by_intervention.reason} formula={`Intervenciones realizadas a ≤ ${data.opportune_window_days} días de la alerta de su caso ÷ realizadas ligadas a una alerta. Sin alerta ligada (aparte): ${numberLabel(t.opportune_by_intervention.without_alert)}. Comparable con la Tabla 6 de la tesis; la tarjeta anterior cuenta estudiantes, no intervenciones.`} />
     </section>
     {prv.received != null && <p className="muted report-note">PRV: recibidos {numberLabel(prv.received)}, válidos procesados {numberLabel(prv.valid_processed)}, rechazados {numberLabel(prv.rejected)}, válidos sin confirmar {numberLabel(prv.valid_not_committed)}, omitidos por inelegibilidad {numberLabel(prv.ineligible_omitted)}. Mediciones manuales aparte: {numberLabel(prv.manual_measurements)}.</p>}
     <section className="panel indicator-table" aria-labelledby="ind-sections-title"><h2 id="ind-sections-title">Por sección</h2>
@@ -82,7 +90,7 @@ function Results({ data }: { data: IndicatorsResponse }) {
     <section className="panel" aria-labelledby="ind-performance-title"><h2 id="ind-performance-title">Rendimiento (último corte de cada estudiante elegible)</h2>
       <div className="table-container" tabIndex={0} role="region" aria-label="Estadísticos descriptivos"><table><caption>Estadísticos descriptivos</caption><thead><tr><th scope="col">Variable</th><th scope="col">n</th><th scope="col">Media</th><th scope="col">DE</th><th scope="col">Mediana</th><th scope="col">Mín.</th><th scope="col">Máx.</th></tr></thead>
         <tbody>{([['Promedio', t.performance.average_grade], ['Asistencia %', t.performance.attendance_pct]] as const).map(([name, d]) => <tr key={name}><th scope="row">{name}</th><td>{d.n}</td><td>{numberLabel(d.mean)}</td><td>{numberLabel(d.sd)}</td><td>{numberLabel(d.median)}</td><td>{numberLabel(d.minimum)}</td><td>{numberLabel(d.maximum)}</td></tr>)}</tbody></table></div></section>
-    <p className="muted report-note">Excluidos: {numberLabel(t.exclusions.ineligible)} no elegibles; {numberLabel(t.exclusions.no_snapshot)} sin medición; {numberLabel(t.exclusions.no_reference)} sin riesgo de referencia{t.exclusions.reference_reason ? ` (${reasons[t.exclusions.reference_reason] ?? t.exclusions.reference_reason})` : ''}. Un estudiante sin riesgo de referencia no entra al denominador de PDER ni a las métricas. Los indicadores de este periodo son una simulación y no corresponden a resultados del colegio.</p>
+    <p className="muted report-note">Excluidos: {numberLabel(t.exclusions.ineligible)} no elegibles; {numberLabel(t.exclusions.no_snapshot)} sin medición; {numberLabel(t.exclusions.no_reference)} sin riesgo de referencia{t.exclusions.reference_reason ? ` (${reasons[t.exclusions.reference_reason] ?? t.exclusions.reference_reason})` : ''}. Un estudiante sin riesgo de referencia no entra al denominador de PDER ni a las métricas. {real ? 'Datos reales locales: análisis exploratorio que no demuestra eficacia escolar.' : 'Los indicadores de este periodo son una simulación y no corresponden a resultados del colegio.'}</p>
   </>;
 }
 
