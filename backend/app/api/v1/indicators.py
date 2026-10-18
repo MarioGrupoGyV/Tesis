@@ -16,24 +16,27 @@ def contexts(context: AuthenticatedSession, db: DbSession):
 
 @router.get('', response_model=IndicatorsResponse, operation_id='indicators')
 def indicators(request: Request, context: AuthenticatedSession, db: DbSession, period_id: UUID,
-               section_id: UUID | None = None, as_of: AwareDatetime | None = None, close_at: AwareDatetime | None = None):
-    return service.indicators(db, context.user, request.app.state.settings, period_id, section_id, as_of, close_at)
+               section_id: UUID | None = None, as_of: AwareDatetime | None = None, close_at: AwareDatetime | None = None,
+               bimester: str | None = Query(None, pattern=r'^[A-Za-z0-9_-]{1,20}$')):
+    return service.indicators(db, context.user, request.app.state.settings, period_id, section_id, as_of, close_at, bimester)
 
 
 @router.get('/students', response_model=StudentIndicatorPage, operation_id='indicatorStudents')
 def students(request: Request, context: AuthenticatedSession, db: DbSession, period_id: UUID,
              section_id: UUID | None = None, as_of: AwareDatetime | None = None, close_at: AwareDatetime | None = None,
-             page: int = Query(1, ge=1, le=10000), page_size: int = Query(20, ge=1, le=100)):
+             page: int = Query(1, ge=1, le=10000), page_size: int = Query(20, ge=1, le=100),
+             bimester: str | None = Query(None, pattern=r'^[A-Za-z0-9_-]{1,20}$')):
     return service.students(db, context.user, request.app.state.settings, period_id, section_id, as_of, close_at,
-                            page, page_size)
+                            page, page_size, bimester)
 
 
 @router.get('/export.csv', response_class=Response, operation_id='exportIndicatorsCsv',
             responses={200: {'content': {'text/csv': {'schema': {'type': 'string', 'format': 'binary'}}}}})
 def export(request: Request, context: AuthenticatedSession, db: DbSession, period_id: UUID,
-           section_id: UUID | None = None, as_of: AwareDatetime | None = None, close_at: AwareDatetime | None = None):
+           section_id: UUID | None = None, as_of: AwareDatetime | None = None, close_at: AwareDatetime | None = None,
+           bimester: str | None = Query(None, pattern=r'^[A-Za-z0-9_-]{1,20}$')):
     body = service.export_csv(db, context.user, request.app.state.settings, request_id(request), period_id,
-                              section_id, as_of, close_at)
+                              section_id, as_of, close_at, bimester)
     return Response(content=body, media_type='text/csv; charset=utf-8', headers={
         'Content-Disposition': 'attachment; filename="seguimiento-escolar-indicadores.csv"',
         'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff'})

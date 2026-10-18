@@ -10,6 +10,8 @@ from app.schemas import s5
 from app.services.followup import context_period
 
 NOTICE='Estado operativo de un estudio con datos sintéticos. No mide eficacia escolar ni resultados de la tesis.'
+NOTICE_REAL='Datos reales locales — análisis exploratorio, no demuestra eficacia escolar. Las alertas sobre cortes pasados son simulación retrospectiva.'
+SCOPE={'SYNTHETIC':'SYNTHETIC_STUDY','REAL':'INSTITUTIONAL_STUDY'}
 CSV_HEADERS=('origen','alcance','periodo','generado_en_utc','codigo_sintetico','grado','seccion',
     'ultimo_corte_utc','estado_evaluacion','riesgo_actual','caso_activo','estado_caso_activo',
     'casos_abiertos','casos_en_revision','casos_concluidos','casos_descartados',
@@ -44,7 +46,8 @@ def summary(db,user,settings,**filters):
         for level in ('LOW','MEDIUM','HIGH')}
     cuts=[row.latest_cutoff_at for row in items if row.latest_cutoff_at is not None]
     return s5.ReportSummary(period_id=period.id,period_code=period.code,
-        section_id=filters.get('section_id'),authorized_section_ids=allowed,notice=NOTICE,
+        section_id=filters.get('section_id'),authorized_section_ids=allowed,
+        scope=SCOPE[period.data_origin],data_origin=period.data_origin,notice=NOTICE_REAL if period.data_origin=='REAL' else NOTICE,
         generated_at=generated,cutoff_min=min(cuts) if cuts else None,cutoff_max=max(cuts) if cuts else None,
         total=len(items),evaluations=evaluations,
         risks=s5.RiskCounts(**{level.lower():percentage(count,evaluated) for level,count in levels.items()}),
@@ -77,7 +80,7 @@ def export_csv(db,user,settings,request_id,**filters):
         writer=csv.writer(content,lineterminator='\r\n',quoting=csv.QUOTE_MINIMAL)
         writer.writerow(CSV_HEADERS)
         for row in items:
-            values=('SYNTHETIC','SYNTHETIC_STUDY',period.code,generated.isoformat(),row.anon_code,row.grade,row.section_code,
+            values=(period.data_origin,SCOPE[period.data_origin],period.code,generated.isoformat(),row.anon_code,row.grade,row.section_code,
                 row.latest_cutoff_at.isoformat() if row.latest_cutoff_at else None,row.evaluation_status,row.risk_level,
                 'SI' if row.active_alert_id else 'NO',row.active_alert_status,row.cases_open,row.cases_in_review,
                 row.cases_resolved,row.cases_dismissed,row.interventions_planned,row.interventions_done,row.interventions_cancelled)
@@ -86,7 +89,7 @@ def export_csv(db,user,settings,request_id,**filters):
         public_filters={key:str(value) if value is not None else None for key,value in filters.items()}
         db.add(AuditEvent(id=uuid4(),actor_id=user.id,entity_type='REPORT',entity_id=period.id,
             action='REPORT_EXPORT_REQUESTED',request_id=request_id,recorded_at=datetime.now(UTC),payload={
-                'scope':'SYNTHETIC_STUDY','data_origin':'SYNTHETIC','filters':public_filters,
+                'scope':SCOPE[period.data_origin],'data_origin':period.data_origin,'filters':public_filters,
                 'authorized_section_ids':[str(id) for id in allowed],'generated_at':generated.isoformat(),
                 'enrollment_count':len(items)}))
         db.flush();db.commit()

@@ -5,7 +5,7 @@ El riesgo de referencia solo existe hoy en la carga privada del estudio sintéti
 vinculados a los cortes CSV importados); sin él los indicadores dependientes se informan como null.
 """
 import csv
-from datetime import UTC, datetime, time, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 import io
 from statistics import mean, median, stdev
 from uuid import uuid4
@@ -17,17 +17,25 @@ from app.models.synthetic import SyntheticStudyRecord
 from app.repositories import indicators as repository
 from app.repositories.s1 import sections_for_period
 from app.schemas import indicators as schemas
-from app.services.processing_policy import require_processing_protocol
+from types import SimpleNamespace
+from app.services import risk_reference_store
+from app.services.processing_policy import study_for_period
+from app.services.processing_protocol import protocol_confirms_period
 from app.services.reports import safe_csv_text
+from app.services.simulated_clock import is_retrospective
 
 LIMA = ZoneInfo('America/Lima')
 OPPORTUNE_WINDOW_DAYS = 14  # la tesis: «dos semanas» desde la emisión de la alerta
 CLASSES = ('LOW', 'MEDIUM', 'HIGH')
+NOTICE_REAL = ('Datos reales locales — análisis exploratorio, no demuestra eficacia escolar. Las alertas marcadas como '
+               'simulación retrospectiva las generó el modelo ahora sobre cortes pasados: no son alertas emitidas en su momento.')
+SCOPE = {'SYNTHETIC': 'SYNTHETIC_STUDY', 'REAL': 'INSTITUTIONAL_STUDY'}
 NOTICE = ('Indicadores calculados sobre un estudio con datos sintéticos (simulación). No son resultados del colegio '
           'ni miden eficacia escolar.')
 CSV_HEADERS = ('origen', 'alcance', 'periodo', 'as_of_utc', 'codigo_anonimo', 'grado', 'seccion', 'elegible',
     'promedio', 'asistencia', 'riesgo_referencia', 'riesgo_predicho', 'fecha_alerta_utc', 'alerta_antes_cierre',
-    'nia', 'intervencion_oportuna', 'dias_hasta_intervencion', 'motivo_exclusion')
+    'nia', 'intervencion_oportuna', 'dias_hasta_intervencion', 'motivo_exclusion', 'fecha_deteccion_utc',
+    'simulacion_retrospectiva')
 
 
 def pct(numerator, denominator, reason='NO_DENOMINATOR'):
@@ -51,14 +59,19 @@ def context(db, user, period_id, section_id):
     period = db.get(AcademicPeriod, period_id)
     if period is None:
         raise AppError(404, 'PERIOD_NOT_FOUND', 'El periodo no está disponible.')
-    if period.data_origin != 'SYNTHETIC':
-        require_processing_protocol()
+    protocol = None
+    if period.data_origin == 'REAL':
+        _, protocol = study_for_period(db, period)  # sin protocolo confirmado: INSTITUTIONAL_PROCESSING_NOT_READY
+        if user.role == 'RESEARCHER':
+            raise AppError(403, 'FORBIDDEN', 'Los indicadores con datos reales no están disponibles para este rol.')
+    elif period.data_origin != 'SYNTHETIC':
+        raise AppError(422, 'ORIGIN_NOT_SUPPORTED', 'Origen no admitido en este entorno.')
     allowed = sections_for_period(db, period, user.id if user.role == 'TUTOR' else None)
     if user.role == 'TUTOR' and not allowed:
         raise AppError(403, 'FORBIDDEN', 'No tienes secciones asignadas en este periodo.')
     if section_id is not None and section_id not in {s.id for s in allowed}:
         raise AppError(404, 'SECTION_NOT_FOUND', 'La sección no está disponible en este periodo.')
-    return period, allowed
+    return period, allowed, protocol
 
 
 def contexts(db, user):
@@ -66,19 +79,28 @@ def contexts(db, user):
     if user.role not in ('ADMIN', 'TUTOR', 'DIRECTOR', 'RESEARCHER'):
         raise AppError(403, 'FORBIDDEN', 'Tu rol no tiene acceso a indicadores.')
     periods = db.scalars(select(AcademicPeriod).join(SyntheticStudyRecord, SyntheticStudyRecord.period_id == AcademicPeriod.id)
-        .where(AcademicPeriod.data_origin == 'SYNTHETIC').order_by(AcademicPeriod.start_date.desc(), AcademicPeriod.id)).all()
+        .where(AcademicPeriod.data_origin.in_(('SYNTHETIC', 'REAL'))).order_by(AcademicPeriod.start_date.desc(), AcademicPeriod.id)).all()
     result = []
     for period in periods:
+        study = db.scalar(select(SyntheticStudyRecord).where(SyntheticStudyRecord.period_id == period.id))
+        if period.data_origin == 'REAL' and (user.role == 'RESEARCHER' or not protocol_confirms_period(db, period.id)):
+            continue
         allowed = sections_for_period(db, period, user.id if user.role == 'TUTOR' else None)
         if user.role == 'TUTOR' and not allowed:
             continue
         result.append(schemas.IndicatorContext(period_id=period.id, period_code=period.code, school_year=period.school_year,
-            is_locked=period.is_locked, sections=[schemas.ContextSection(id=s.id, code=s.code, grade=s.grade) for s in allowed]))
+            is_locked=period.is_locked, data_origin=period.data_origin,
+            bimesters=[b['code'] for b in study.config['protocol']['bimesters']] if period.data_origin == 'REAL' else [],
+            sections=[schemas.ContextSection(id=s.id, code=s.code, grade=s.grade) for s in allowed]))
     return result
 
 
 def reference_map(db, settings, period):
     """snapshot_id (BD) → riesgo de referencia, o (None, motivo) si el sistema no lo guarda."""
+    if period.data_origin == 'REAL':
+        # REAL: referencias RIESGO_V1 calculadas por el backend con insumos de cierre (risk_references, insert-only).
+        found = risk_reference_store.latest_by_snapshot(db, period.id)
+        return ({str(key): item.risk_level for key, item in found.items()}, None) if found else (None, 'REFERENCE_NOT_AVAILABLE')
     study = db.scalar(select(SyntheticStudyRecord).where(SyntheticStudyRecord.period_id == period.id,
                                                           SyntheticStudyRecord.data_origin == 'SYNTHETIC'))
     if study is None or not study.bindings:
@@ -101,14 +123,16 @@ def close_instant(period, close_at):
     return datetime.combine(period.end_date + timedelta(days=1), time.min, tzinfo=LIMA).astimezone(UTC)
 
 
-def student_records(db, settings, period, allowed_ids, as_of, close_at):
-    rows = repository.student_rows(db, period.id, as_of, allowed_ids)
+def student_records(db, settings, period, allowed_ids, as_of, close_at, window=OPPORTUNE_WINDOW_DAYS, lead_days=0,
+                    target_date=None):
+    rows = repository.student_rows(db, period.id, as_of, allowed_ids, period.data_origin, target_date)
     references, reference_reason = reference_map(db, settings, period)
     records = []
     for row in rows:
         eligible = bool(row['is_active'] and row['eligible_for_processing'])
         reference = references.get(str(row['snapshot_id'])) if references is not None and row['snapshot_id'] else None
         opened = row['alert_opened_at']
+        detected = row['alert_detected_at'] or opened
         first_done = row['first_done_after_alert']
         days = (first_done.astimezone(LIMA).date() - opened.astimezone(LIMA).date()).days if opened and first_done else None
         reason = None
@@ -119,22 +143,25 @@ def student_records(db, settings, period, allowed_ids, as_of, close_at):
         elif reference is None:
             reason = reference_reason or 'NO_REFERENCE_FOR_LATEST_SNAPSHOT'
         records.append(dict(row, eligible=eligible, reference=reference, days=days, exclusion=reason,
-            before_close=(opened < close_at) if opened else False,
-            opportune=(days is not None and days <= OPPORTUNE_WINDOW_DAYS) if opened else None))
+            # PDER: la detección (simulada en retrospectiva) llega antes del cierre; la oportunidad de intervención
+            # usa el instante real de la alerta, porque las intervenciones reales ocurren después de ella.
+            before_close=(detected < close_at - timedelta(days=lead_days)) if opened else False,
+            retrospective=is_retrospective(detected, opened) if opened else False, detected=detected,
+            opportune=(days is not None and days <= window) if opened else None))
     return records, reference_reason
 
 
-def intervention_records(db, allowed_ids, period, as_of):
+def intervention_records(db, allowed_ids, period, as_of, window=OPPORTUNE_WINDOW_DAYS):
     """Una fila por intervención realizada. Días = diferencia de fechas calendario en Lima desde la apertura de la alerta."""
     records = []
-    for row in repository.intervention_rows(db, period.id, as_of, allowed_ids):
+    for row in repository.intervention_rows(db, period.id, as_of, allowed_ids, period.data_origin):
         opened, performed = row['alert_opened_at'], row['performed_at']
         days = (performed.astimezone(LIMA).date() - opened.astimezone(LIMA).date()).days if opened else None
-        records.append(dict(row, days=days, opportune=(0 <= days <= OPPORTUNE_WINDOW_DAYS) if days is not None else None))
+        records.append(dict(row, days=days, opportune=(0 <= days <= window) if days is not None else None))
     return records
 
 
-def summarize(rows, section=None, reference_reason=None, interventions=()):
+def summarize(rows, section=None, reference_reason=None, interventions=(), window=OPPORTUNE_WINDOW_DAYS, no_interventions=False):
     eligible = [r for r in rows if r['eligible']]
     covered = sum(1 for r in eligible if r['predicted_risk'] is not None and
                   (r['predicted_risk'] == 'LOW' or r['alert_id'] is not None))
@@ -154,13 +181,21 @@ def summarize(rows, section=None, reference_reason=None, interventions=()):
     with_alert = [r for r in eligible if r['alert_id'] is not None]
     ratio = pct(sum(1 for r in with_alert if r['opportune']), len(with_alert), 'NO_ALERTS')
     first_days = [r['days'] for r in with_alert if r['days'] is not None]
-    opportune = schemas.Opportune(**ratio.model_dump(), window_days=OPPORTUNE_WINDOW_DAYS,
+    opportune = schemas.Opportune(**ratio.model_dump(), window_days=window,
         median_days_to_first=float(median(first_days)) if first_days else None,
         students_with_first_intervention=len(first_days))
     linked = [i for i in interventions if i['alert_opened_at'] is not None]
     by_intervention = pct(sum(1 for i in linked if i['opportune']), len(linked), 'NO_INTERVENTIONS_LINKED_TO_ALERT')
-    opportune_by_intervention = schemas.OpportuneByIntervention(**by_intervention.model_dump(), window_days=OPPORTUNE_WINDOW_DAYS,
+    opportune_by_intervention = schemas.OpportuneByIntervention(**by_intervention.model_dump(), window_days=window,
         without_alert=sum(1 for i in interventions if i['alert_opened_at'] is None))
+    if no_interventions:
+        # REAL sin intervenciones registradas: NIA y oportunidad no se inventan ni se rellenan con ceros.
+        reason = 'NO_REAL_INTERVENTIONS'
+        nia = schemas.Nia(total=None, students=None, mean=None, median=None, alerted_students=None, mean_alerted=None,
+                          median_alerted=None, reason=reason)
+        opportune = schemas.Opportune(numerator=None, denominator=None, percent=None, reason=reason, window_days=window)
+        opportune_by_intervention = schemas.OpportuneByIntervention(numerator=None, denominator=None, percent=None,
+                                                                    reason=reason, window_days=window, without_alert=0)
     performance = schemas.Performance(average_grade=describe(r['average_grade'] for r in eligible),
         attendance_pct=describe(r['attendance_pct'] for r in eligible))
     pairs = [(r['reference'], r['predicted_risk']) for r in eligible if r['reference'] and r['predicted_risk']]
@@ -190,7 +225,7 @@ def summarize(rows, section=None, reference_reason=None, interventions=()):
 def prv(db, user, period, as_of, section_id):
     if user.role == 'TUTOR' or section_id is not None:
         return schemas.Prv(numerator=None, denominator=None, percent=None, reason='PERIOD_LEVEL_ONLY')
-    batches, processed, manual = repository.batch_totals(db, period.id, as_of)
+    batches, processed, manual = repository.batch_totals(db, period.id, as_of, period.data_origin)
     received, valid_processed = int(batches['received']), int(processed['eligible'])
     ratio = pct(valid_processed, received, 'NO_RECEIVED_RECORDS')
     return schemas.Prv(**ratio.model_dump(), received=received, valid_processed=valid_processed,
@@ -207,25 +242,50 @@ def resolve_as_of(as_of):
     return as_of
 
 
-def compute(db, user, settings, period_id, section_id, as_of, close_at):
-    period, allowed = context(db, user, period_id, section_id)
+def bimester_of(protocol, code):
+    if protocol is None:
+        raise AppError(422, 'BIMESTER_NOT_APPLICABLE', 'El filtro por bimestre solo aplica a periodos con protocolo REAL.')
+    for item in protocol.bimesters:
+        if item['code'] == code:
+            return item
+    raise AppError(404, 'BIMESTER_NOT_FOUND', 'El bimestre no existe en el protocolo del periodo.')
+
+
+def compute(db, user, settings, period_id, section_id, as_of, close_at, bimester=None):
+    period, allowed, protocol = context(db, user, period_id, section_id)
     as_of = resolve_as_of(as_of)
     chosen = [s for s in allowed if section_id is None or s.id == section_id]
+    window, lead, target = OPPORTUNE_WINDOW_DAYS, 0, None
+    if protocol is not None:
+        windows = protocol.opportune_windows
+        window, lead = windows['intervention_days'], windows['detection_days']
+    if bimester is not None:
+        item = bimester_of(protocol, bimester)
+        target = date.fromisoformat(item['close_date']) if isinstance(item['close_date'], str) else item['close_date']
+        if close_at is None:
+            close_at = datetime.combine(target + timedelta(days=1), time.min, tzinfo=LIMA).astimezone(UTC)
     close = close_instant(period, close_at)
-    records, reference_reason = student_records(db, settings, period, [s.id for s in chosen], as_of, close)
-    return period, allowed, chosen, as_of, close, records, reference_reason
+    records, reference_reason = student_records(db, settings, period, [s.id for s in chosen], as_of, close, window, lead, target)
+    no_interventions = period.data_origin == 'REAL' and not any(
+        r['nia'] for r in records) and not repository.intervention_rows(db, period.id, as_of, [s.id for s in chosen], 'REAL')
+    return SimpleNamespace(period=period, allowed=allowed, chosen=chosen, as_of=as_of, close=close, records=records,
+        reference_reason=reference_reason, window=window, bimester=bimester, no_interventions=no_interventions)
 
 
-def indicators(db, user, settings, period_id, section_id, as_of, close_at):
-    period, allowed, chosen, as_of, close, records, reference_reason = compute(
-        db, user, settings, period_id, section_id, as_of, close_at)
-    events = intervention_records(db, [s.id for s in chosen], period, as_of)
-    sections = [summarize([r for r in records if r['section_id'] == s.id], s, reference_reason,
-                          [i for i in events if i['section_id'] == s.id]) for s in chosen]
-    return schemas.IndicatorsResponse(period_id=period.id, period_code=period.code, data_origin='SYNTHETIC',
-        is_simulation=True, notice=NOTICE, as_of=as_of, close_at=close, opportune_window_days=OPPORTUNE_WINDOW_DAYS,
-        section_id=section_id, authorized_section_ids=[s.id for s in allowed],
-        prv=prv(db, user, period, as_of, section_id), total=summarize(records, None, reference_reason, events), sections=sections)
+def indicators(db, user, settings, period_id, section_id, as_of, close_at, bimester=None):
+    run = compute(db, user, settings, period_id, section_id, as_of, close_at, bimester)
+    period = run.period
+    events = intervention_records(db, [s.id for s in run.chosen], period, run.as_of, run.window)
+    sections = [summarize([r for r in run.records if r['section_id'] == s.id], s, run.reference_reason,
+                          [i for i in events if i['section_id'] == s.id], run.window, run.no_interventions) for s in run.chosen]
+    real = period.data_origin == 'REAL'
+    return schemas.IndicatorsResponse(period_id=period.id, period_code=period.code, data_origin=period.data_origin,
+        is_simulation=not real, notice=NOTICE_REAL if real else NOTICE, bimester=run.bimester,
+        retrospective_alerts=sum(1 for r in run.records if r['retrospective']),
+        as_of=run.as_of, close_at=run.close, opportune_window_days=run.window,
+        section_id=section_id, authorized_section_ids=[s.id for s in run.allowed],
+        prv=prv(db, user, period, run.as_of, section_id),
+        total=summarize(run.records, None, run.reference_reason, events, run.window, run.no_interventions), sections=sections)
 
 
 def student_item(record):
@@ -235,15 +295,16 @@ def student_item(record):
         average_grade=float(record['average_grade']) if record['average_grade'] is not None else None,
         attendance_pct=float(record['attendance_pct']) if record['attendance_pct'] is not None else None,
         reference_risk=record['reference'], predicted_risk=record['predicted_risk'],
-        alert_opened_at=record['alert_opened_at'], alert_before_close=record['before_close'] if risky else None,
+        alert_opened_at=record['alert_opened_at'], alert_detected_at=record['detected'] if record['alert_opened_at'] else None,
+        retrospective=record['retrospective'], alert_before_close=record['before_close'] if risky else None,
         nia=record['nia'], opportune=record['opportune'], days_to_first_intervention=record['days'],
         exclusion_reason=record['exclusion'])
 
 
-def students(db, user, settings, period_id, section_id, as_of, close_at, page, page_size):
-    period, _, _, as_of, _, records, _ = compute(db, user, settings, period_id, section_id, as_of, close_at)
-    items = [student_item(r) for r in records[(page - 1) * page_size: page * page_size]]
-    return schemas.StudentIndicatorPage(period_id=period.id, as_of=as_of, items=items, total=len(records),
+def students(db, user, settings, period_id, section_id, as_of, close_at, page, page_size, bimester=None):
+    run = compute(db, user, settings, period_id, section_id, as_of, close_at, bimester)
+    items = [student_item(r) for r in run.records[(page - 1) * page_size: page * page_size]]
+    return schemas.StudentIndicatorPage(period_id=run.period.id, as_of=run.as_of, items=items, total=len(run.records),
         page=page, page_size=page_size)
 
 
@@ -251,24 +312,27 @@ def yes_no(value):
     return '' if value is None else 'SI' if value else 'NO'
 
 
-def export_csv(db, user, settings, request_id, period_id, section_id, as_of, close_at):
+def export_csv(db, user, settings, request_id, period_id, section_id, as_of, close_at, bimester=None):
     try:
-        period, allowed, _, as_of, _, records, _ = compute(db, user, settings, period_id, section_id, as_of, close_at)
+        run = compute(db, user, settings, period_id, section_id, as_of, close_at, bimester)
+        period, allowed, as_of, records = run.period, run.allowed, run.as_of, run.records
         content = io.StringIO(newline='')
         writer = csv.writer(content, lineterminator='\r\n', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(CSV_HEADERS)
         for record in records:
             item = student_item(record)
-            values = ('SYNTHETIC', 'SYNTHETIC_STUDY', period.code, as_of.astimezone(UTC).isoformat(), item.anon_code,
+            values = (period.data_origin, SCOPE[period.data_origin], period.code, as_of.astimezone(UTC).isoformat(), item.anon_code,
                 item.grade, item.section_code, 'SI' if item.eligible else 'NO', item.average_grade, item.attendance_pct,
                 item.reference_risk, item.predicted_risk,
                 item.alert_opened_at.astimezone(UTC).isoformat() if item.alert_opened_at else None,
                 yes_no(item.alert_before_close), item.nia, yes_no(item.opportune), item.days_to_first_intervention,
-                item.exclusion_reason)
+                item.exclusion_reason,
+                item.alert_detected_at.astimezone(UTC).isoformat() if item.alert_detected_at else None,
+                yes_no(item.retrospective) if item.alert_opened_at else None)
             writer.writerow([safe_csv_text(value) for value in values])
         db.add(AuditEvent(id=uuid4(), actor_id=user.id, entity_type='REPORT', entity_id=period.id,
             action='INDICATORS_EXPORT_REQUESTED', request_id=request_id, recorded_at=datetime.now(UTC),
-            payload={'scope': 'SYNTHETIC_STUDY', 'data_origin': 'SYNTHETIC', 'as_of': as_of.isoformat(),
+            payload={'scope': SCOPE[period.data_origin], 'data_origin': period.data_origin, 'as_of': as_of.isoformat(),
                      'section_id': str(section_id) if section_id else None, 'enrollment_count': len(records),
                      'authorized_section_ids': [str(s.id) for s in allowed]}))
         db.flush()
@@ -291,21 +355,22 @@ def intervention_item(record):
 
 def export_interventions_csv(db, user, settings, request_id, period_id, section_id, as_of):
     try:
-        period, allowed, chosen, as_of, _, _, _ = compute(db, user, settings, period_id, section_id, as_of, None)
-        records = intervention_records(db, [s.id for s in chosen], period, as_of)
+        run = compute(db, user, settings, period_id, section_id, as_of, None)
+        period, allowed, as_of = run.period, run.allowed, run.as_of
+        records = intervention_records(db, [s.id for s in run.chosen], period, as_of, run.window)
         content = io.StringIO(newline='')
         writer = csv.writer(content, lineterminator='\r\n', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(INTERVENTION_CSV_HEADERS)
         for record in records:
             item = intervention_item(record)
-            values = ('SYNTHETIC', 'SYNTHETIC_STUDY', period.code, as_of.astimezone(UTC).isoformat(), item.anon_code,
+            values = (period.data_origin, SCOPE[period.data_origin], period.code, as_of.astimezone(UTC).isoformat(), item.anon_code,
                 item.grade, item.section_code, 'SI' if item.alert_opened_at else 'NO',
                 item.alert_opened_at.astimezone(UTC).isoformat() if item.alert_opened_at else None,
                 item.performed_at.astimezone(UTC).isoformat(), item.days_since_alert, yes_no(item.opportune))
             writer.writerow([safe_csv_text(value) for value in values])
         db.add(AuditEvent(id=uuid4(), actor_id=user.id, entity_type='REPORT', entity_id=period.id,
             action='INDICATORS_INTERVENTIONS_EXPORT_REQUESTED', request_id=request_id, recorded_at=datetime.now(UTC),
-            payload={'scope': 'SYNTHETIC_STUDY', 'data_origin': 'SYNTHETIC', 'as_of': as_of.isoformat(),
+            payload={'scope': SCOPE[period.data_origin], 'data_origin': period.data_origin, 'as_of': as_of.isoformat(),
                      'section_id': str(section_id) if section_id else None, 'intervention_count': len(records),
                      'authorized_section_ids': [str(s.id) for s in allowed]}))
         db.flush()

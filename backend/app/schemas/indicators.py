@@ -26,11 +26,11 @@ class Prv(Ratio):
 
 
 class Nia(ContractModel):
-    total: int
-    students: int
+    total: int | None
+    students: int | None
     mean: float | None
     median: float | None
-    alerted_students: int
+    alerted_students: int | None
     mean_alerted: float | None
     median_alerted: float | None
     reason: str | None = None
@@ -111,9 +111,11 @@ class Summary(ContractModel):
 class IndicatorsResponse(ContractModel):
     period_id: UUID
     period_code: str
-    data_origin: Literal['SYNTHETIC']
+    data_origin: Literal['SYNTHETIC', 'REAL']
     is_simulation: bool
     notice: str
+    bimester: str | None = None
+    retrospective_alerts: int = 0
     as_of: AwareDatetime
     close_at: AwareDatetime
     opportune_window_days: int
@@ -134,6 +136,8 @@ class StudentIndicator(ContractModel):
     reference_risk: Risk | None
     predicted_risk: Risk | None
     alert_opened_at: datetime | None
+    alert_detected_at: datetime | None = None
+    retrospective: bool = False
     alert_before_close: bool | None
     nia: int
     opportune: bool | None
@@ -157,11 +161,13 @@ class ContextSection(ContractModel):
 
 
 class IndicatorContext(ContractModel):
-    """Periodo SYNTHETIC con estudio registrado y sus secciones autorizadas (incluye RESEARCHER)."""
+    """Periodo con estudio registrado (SYNTHETIC; REAL solo con protocolo confirmado) y sus secciones autorizadas."""
     period_id: UUID
     period_code: str
     school_year: int
     is_locked: bool
+    data_origin: Literal['SYNTHETIC', 'REAL'] = 'SYNTHETIC'
+    bimesters: list[str] = []
     sections: list[ContextSection]
 
 
