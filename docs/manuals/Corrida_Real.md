@@ -10,13 +10,13 @@ generaron ahora, con un modelo ajustado con los mismos estudiantes, sobre cortes
 
 ## Pasos (PowerShell, desde la raíz del repositorio)
 
-1. **Imágenes y destino** (una vez):
+1. **Imágenes y destino** (una vez). El destino publica la web en el **5173**: antes hay que cerrar el servidor de desarrollo de Vite (`npm run dev`), que usa ese mismo puerto; la instalación de siempre sigue en el 15173:
 
    ```powershell
    docker build -t riesgo-escolar-api:b5 -f infra/docker/api.Dockerfile .
    docker build -t riesgo-escolar-web:b5 -f infra/docker/web.Dockerfile .
    $d = "$env:LOCALAPPDATA\SeguimientoEscolar\Instalaciones\real-tesis"; New-Item -ItemType Directory -Force $d
-   backend\.venv\Scripts\python.exe infra\runtime_target.py create --output "$d\destino.json" --web-port 15490 --api-port 18320 --db-port 55680 --image-tag b5
+   backend\.venv\Scripts\python.exe infra\runtime_target.py create --output "$d\destino.json" --web-port 5173 --api-port 18320 --db-port 55680 --image-tag b5
    backend\.venv\Scripts\python.exe infra\runtime_target.py up --target "$d\destino.json"
    ```
 
@@ -73,7 +73,7 @@ generaron ahora, con un modelo ajustado con los mismos estudiantes, sobre cortes
 Solo se borra el destino `real-tesis` (nunca la instalación activa ni otros destinos): `runtime_target.py stop` y luego `runtime_target.py cleanup` sobre
 su `destino.json`; después se repite desde el paso 1 (el perfil `real-tesis` apunta al destino anterior: bórralo del Administrador de credenciales de
 Windows o usa otro nombre). Detener sin borrar: `backend\.venv\Scripts\python.exe infra\runtime_target.py stop --target "$d\destino.json"`; volver a
-encender: `... up --target "$d\destino.json"`. Dirección local: <http://localhost:15490>.
+encender: `... up --target "$d\destino.json"`. Dirección local: <http://localhost:5173>.
 
 ## Limitaciones (obligatorias en cualquier uso de los resultados)
 

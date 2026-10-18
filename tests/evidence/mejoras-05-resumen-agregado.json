@@ -1,9 +1,7 @@
 {
   "active_model": {
     "algorithm": "RANDOM_FOREST",
-    "approval_kind": "LOCAL_EXPLORATORY",
-    "id": "a4d9853c-f4e6-4986-a8c7-ccfe0c60b6c3",
-    "is_active": true
+    "approval_kind": "LOCAL_EXPLORATORY"
   },
   "comparison": {
     "approval_kind": "LOCAL_EXPLORATORY",
@@ -54,52 +52,8 @@
       },
       "RANDOM_FOREST": {
         "accuracy": {
-          "mean": 0.8629166666666667,
-          "sd": 0.016551134658371075
-        },
-        "aggregated_confusion_matrix": [
-          [
-            714,
-            86,
-            0
-          ],
-          [
-            112,
-            451,
-            77
-          ],
-          [
-            0,
-            54,
-            906
-          ]
-        ],
-        "balanced_accuracy": {
-          "mean": 0.8469791666666666,
-          "sd": 0.017068848456708377
-        },
-        "cohen_kappa": {
-          "mean": 0.7909887738863851,
-          "sd": 0.02493861476304986
-        },
-        "leave_one_student_out": {
-          "accuracy": 0.8583333333333333,
-          "macro_f1": 0.8414281721593717,
-          "recall_high": 0.9583333333333334
-        },
-        "macro_f1": {
-          "mean": 0.8478241018974924,
-          "sd": 0.017366725260121302
-        },
-        "recall_high": {
-          "mean": 0.9437499999999999,
-          "sd": 0.013686389277745572
-        }
-      },
-      "SVM": {
-        "accuracy": {
-          "mean": 0.8566666666666667,
-          "sd": 0.009970717360268645
+          "mean": 0.8625,
+          "sd": 0.014178271820390023
         },
         "aggregated_confusion_matrix": [
           [
@@ -108,23 +62,67 @@
             0
           ],
           [
+            114,
+            455,
+            71
+          ],
+          [
+            0,
+            55,
+            905
+          ]
+        ],
+        "balanced_accuracy": {
+          "mean": 0.8470486111111111,
+          "sd": 0.014965364699683795
+        },
+        "cohen_kappa": {
+          "mean": 0.7904808765558867,
+          "sd": 0.02147769659770139
+        },
+        "leave_one_student_out": {
+          "accuracy": 0.875,
+          "macro_f1": 0.8605875865829028,
+          "recall_high": 0.9583333333333334
+        },
+        "macro_f1": {
+          "mean": 0.8476276458378106,
+          "sd": 0.015328852376346139
+        },
+        "recall_high": {
+          "mean": 0.9427083333333334,
+          "sd": 0.022290078234929976
+        }
+      },
+      "SVM": {
+        "accuracy": {
+          "mean": 0.8570833333333333,
+          "sd": 0.010215156151752086
+        },
+        "aggregated_confusion_matrix": [
+          [
+            716,
             84,
-            448,
+            0
+          ],
+          [
+            88,
+            444,
             108
           ],
           [
             0,
-            62,
-            898
+            63,
+            897
           ]
         ],
         "balanced_accuracy": {
-          "mean": 0.8409722222222221,
-          "sd": 0.010634897255551067
+          "mean": 0.8410416666666667,
+          "sd": 0.011192819088830824
         },
         "cohen_kappa": {
-          "mean": 0.7813049239110444,
-          "sd": 0.015137866679736767
+          "mean": 0.7818627404427462,
+          "sd": 0.015586302638367645
         },
         "leave_one_student_out": {
           "accuracy": 0.8583333333333333,
@@ -132,43 +130,43 @@
           "recall_high": 0.9375
         },
         "macro_f1": {
-          "mean": 0.842291304628722,
-          "sd": 0.010946471711431358
+          "mean": 0.8423436716689711,
+          "sd": 0.011465254840982013
         },
         "recall_high": {
-          "mean": 0.9354166666666668,
-          "sd": 0.011510546905272572
+          "mean": 0.9343750000000002,
+          "sd": 0.010195010102699869
         }
       },
       "XGBOOST": {
         "accuracy": {
-          "mean": 0.8366666666666666,
-          "sd": 0.022360679774997876
+          "mean": 0.8400000000000001,
+          "sd": 0.01825741858350553
         },
         "aggregated_confusion_matrix": [
           [
-            687,
-            113,
+            693,
+            107,
             0
           ],
           [
             122,
-            425,
-            93
+            433,
+            85
           ],
           [
             0,
-            64,
-            896
+            70,
+            890
           ]
         ],
         "balanced_accuracy": {
-          "mean": 0.8187152777777778,
-          "sd": 0.021920321101132127
+          "mean": 0.823298611111111,
+          "sd": 0.018992068286880073
         },
         "cohen_kappa": {
-          "mean": 0.7510658443485935,
-          "sd": 0.03340462156399271
+          "mean": 0.756328008444467,
+          "sd": 0.02749811009609471
         },
         "leave_one_student_out": {
           "accuracy": 0.825,
@@ -176,12 +174,12 @@
           "recall_high": 0.9166666666666666
         },
         "macro_f1": {
-          "mean": 0.819137643148815,
-          "sd": 0.02246853418713851
+          "mean": 0.8235028354971796,
+          "sd": 0.019421205935386383
         },
         "recall_high": {
-          "mean": 0.9333333333333333,
-          "sd": 0.032132993009772404
+          "mean": 0.9270833333333334,
+          "sd": 0.02389747227818351
         }
       }
     },
@@ -256,13 +254,19 @@
       "out_of_fold_basis": "OUT_OF_FOLD",
       "prv": {
         "percent": null,
-        "reason": "RECEPTION_PROVENANCE_UNCONFIRMED",
-        "system_csv_rows": 120
+        "reason": "RECEPTION_PROVENANCE_UNCONFIRMED"
       },
       "retrospective_alerts": 45,
       "run": {
-        "predictions": 60,
-        "status": "REUSED"
+        "abstentions": 0,
+        "alerts_created": 45,
+        "alerts_updated": 0,
+        "created": 60,
+        "no_alert": 15,
+        "retained_low": 0,
+        "reused": 0,
+        "selected": 60,
+        "status": "DONE"
       },
       "sql": {
         "cra": [
@@ -290,9 +294,9 @@
       "eligible": 60,
       "matrix_reference_by_predicted": {
         "HIGH": {
-          "HIGH": 24,
+          "HIGH": 23,
           "LOW": 0,
-          "MEDIUM": 0,
+          "MEDIUM": 1,
           "NONE": 0
         },
         "LOW": {
@@ -319,13 +323,19 @@
       "out_of_fold_basis": "OUT_OF_FOLD",
       "prv": {
         "percent": null,
-        "reason": "RECEPTION_PROVENANCE_UNCONFIRMED",
-        "system_csv_rows": 120
+        "reason": "RECEPTION_PROVENANCE_UNCONFIRMED"
       },
       "retrospective_alerts": 45,
       "run": {
-        "predictions": 60,
-        "status": "REUSED"
+        "abstentions": 0,
+        "alerts_created": 0,
+        "alerts_updated": 35,
+        "created": 60,
+        "no_alert": 15,
+        "retained_low": 10,
+        "reused": 0,
+        "selected": 60,
+        "status": "DONE"
       },
       "sql": {
         "cra": [
