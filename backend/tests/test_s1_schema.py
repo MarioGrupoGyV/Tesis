@@ -11,7 +11,7 @@ TABLES = {
     "enrollments", "import_batches", "academic_snapshots", "model_versions",
     "predictions", "alerts", "interventions", "audit_events",
     "synthetic_studies",
-    "followup_decisions",
+    "followup_decisions", "processing_protocols", "risk_references",
 }
 
 
