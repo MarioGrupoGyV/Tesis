@@ -103,6 +103,10 @@ test('B1: crear alumno, medir, evaluar, abrir alerta, planificar actividad y ver
   await page.goto('/estudiantes');
   await selectPeriod(page);
   await expect(page.getByRole('button', { name: 'Nuevo estudiante', exact: true })).toBeVisible();
+  // Se captura con la lista ya cargada (no con los indicadores de carga).
+  await expect(page.getByText(/registros en este contexto/)).toBeVisible();
+  await expect(page.getByText('Consultando el alcance del sistema')).toHaveCount(0);
+  await expect(page.getByText('Consultando registros')).toHaveCount(0);
   await shot(page, 'periodo-demostracion');
   lapStart = Date.now();
 
@@ -111,6 +115,7 @@ test('B1: crear alumno, medir, evaluar, abrir alerta, planificar actividad y ver
   await expect(page.getByText('Evaluación registrada.', { exact: true })).toBeVisible();
   await expect(page.getByText(/Modelo que hizo la evaluación:/)).toBeVisible();          // la evaluación dice qué modelo la hizo
   lap('evaluar riesgo (estudiante 1)');
+  await expect(page.getByText('Horizonte del modelo')).toBeVisible();                    // la ficha ya refleja la evaluación nueva
   await shot(page, 'evaluacion-alto');
   const caseLink = page.getByRole('link', { name: /Abrir el caso de seguimiento/ });
   await expect(caseLink).toBeVisible();
@@ -120,7 +125,9 @@ test('B1: crear alumno, medir, evaluar, abrir alerta, planificar actividad y ver
   await page.getByLabel('Objetivo', { exact: true }).fill('Demostración: tutoría de refuerzo simulada');
   await page.getByLabel('Fecha y hora programadas (Lima)').fill('2025-05-05T14:00');
   await page.getByRole('button', { name: 'Planificar actividad', exact: true }).click();
-  await expect(page.getByText('Demostración: tutoría de refuerzo simulada')).toBeVisible();
+  // La actividad debe aparecer en la lista del caso (el texto del propio formulario no cuenta): contador «1 registradas» y botón de nuevo libre.
+  await expect(page.getByText(/1 registrada/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Planificar actividad', exact: true })).toBeEnabled();
   lap('abrir el caso y planificar la actividad');
   await shot(page, 'caso-actividad');
 

@@ -5,7 +5,8 @@
                                           [--tutor-id <uuid> | --locked-tutor] [--dry-run]
 
 Genera el estudio sintético, importa su CSV exacto, compara, registra y activa el modelo sintético y renombra el periodo (solo su código visible).
-Es idempotente: cada paso reconoce su estado y no se repite. NO crea estudiantes: el estudiante lo registra el usuario en vivo.
+Es idempotente: cada paso reconoce su estado y no se repite. El periodo trae los estudiantes SINTÉTICOS del generador (los necesita el modelo);
+no crea ningún otro: el estudiante de la demostración lo registra el usuario en vivo.
 Nunca actúa sobre el destino ACTIVE (la instalación de siempre solo tiene datos reales) y exige repetir el nombre del proyecto del destino
 (`--confirm-demo-target`) para escribir; con `--dry-run` no escribe nada. Imprime solo estados y conteos: nunca filas ni códigos de alumno.
 La contraseña del ADMIN sale del perfil Windows existente, jamás de argumentos.
@@ -97,7 +98,7 @@ class DemoRunner:
             return self.step('study', 'PENDING')
         result = self.g.internal('generate', {'seed': self.seed, 'student_count': self.students, 'tutor_id': self.state.get('tutor')})
         self.state['study'] = {'id': result['study_id'], 'period_id': result['period_id'], 'bound': 0, 'compared': False}
-        self.step('study', 'DONE', manifest_students=(result.get('manifest') or {}).get('students'))
+        self.step('study', 'DONE')
 
     # 3
     def importing(self):

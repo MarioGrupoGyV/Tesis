@@ -50,7 +50,7 @@ class FakeGateway:
             self.study = {'id': 'study-1', 'period_id': 'demo-period', 'bound': 0, 'compared': False}
             self.periods.append({'id': 'demo-period', 'code': 'SYN-0123456789ab', 'school_year': 2025, 'start_date': '2025-01-01',
                                  'end_date': '2025-12-31', 'data_origin': 'SYNTHETIC', 'is_locked': False, 'version': 1})
-            return {'study_id': 'study-1', 'period_id': 'demo-period', 'manifest': {'students': 240}}
+            return {'study_id': 'study-1', 'period_id': 'demo-period'}
         if command == 'compare':
             self.study['compared'] = True
             return {'selected_algorithm': 'SVM'}
@@ -76,7 +76,7 @@ class FakeGateway:
         if name == 'models':
             return [dict(item) for item in self.models]
         if name == 'students':
-            return [{'n': 0}]
+            return [{'n': 60 if self.study and self.study['bound'] else 0}]       # los estudiantes sintéticos del generador
         raise AssertionError(name)
 
 
@@ -92,7 +92,8 @@ def test_full_run_creates_the_labelled_demo_period_in_order_and_no_students():
     assert gateway.writes == ['internal:generate', 'preview', 'commit', 'internal:compare', 'internal:register', 'internal:activate', 'rename']
     assert {item['step']: item['status'] for item in lines} == {'preflight': 'OK', 'tutor': 'SINGLE_EXISTING', 'study': 'DONE', 'import': 'DONE',
                                                                  'compare': 'DONE', 'model': 'DONE', 'label': 'DONE', 'check': 'OK'}
-    assert summary == {'period_code': 'DEMO-VIVO', 'model_algorithm': 'SVM', 'students_in_demo_period': 0}   # el estudiante lo registra el usuario en vivo
+    # Solo los 60 estudiantes sintéticos del generador; el de la demostración lo registra el usuario en vivo.
+    assert summary == {'period_code': 'DEMO-VIVO', 'model_algorithm': 'SVM', 'students_in_demo_period': 60}
     assert next(item for item in gateway.periods if item['id'] == 'demo-period')['code'] == 'DEMO-VIVO'
     assert gateway.generate_payload['tutor_id'] == 'tutor-1' and gateway.generate_payload['seed'] == 1729
     assert next(item for item in gateway.periods if item['id'] == 'real-period')['code'] == 'REAL-2026'   # el periodo real no se toca
