@@ -353,6 +353,32 @@ def restore_files(target,archive,volume,work):
     if result.returncode: raise RuntimeError('RESTORE_VOLUME_FAILED')
 
 
+# Confianza del modelo activo tras restaurar. Sin modelo activo no hay nada que verificar: se registra como no aplicable
+# (nunca como verificado) y se deja el total de modelos para que se vea que no se ocultó ninguno.
+TRUST_PROBE='''import json
+from sqlalchemy import func,select
+from app.core.config import Settings
+from app.core.database import Database
+from app.models.ml import ModelVersion
+from app.models.synthetic import SyntheticStudyRecord
+from app.services.synthetic_study import compatible_model,selected_artifact
+from app.ml.artifacts import ArtifactStore
+s=Settings();d=Database(s)
+with d.session_factory() as c:
+ m=c.scalar(select(ModelVersion).where(ModelVersion.is_active.is_(True)))
+ if m is None:
+  out={'applicable':False,'reason':'NO_ACTIVE_MODEL','model_versions_total':c.scalar(select(func.count()).select_from(ModelVersion)),
+   'hmac_verified':None,'model_compatible':None,'algorithm':None,'regenerated':False}
+ else:
+  st=c.get(SyntheticStudyRecord,m.study_id)
+  compatible_model(s,st,m)
+  manifest,key=selected_artifact(s,st)
+  ArtifactStore(s.ml_storage_dir).load(key)
+  out={'hmac_verified':True,'model_compatible':True,'algorithm':m.algorithm,'regenerated':False}
+print(json.dumps(out))
+'''
+
+
 def restore_check(path,output,ports):
     content,manifest=verified_content(path)
     current=code_identity()
@@ -384,23 +410,7 @@ def restore_check(path,output,ports):
         if restored!=manifest['database'] or files!=expected: raise RuntimeError('RESTORE_SNAPSHOT_MISMATCH')
         target.compose('up','-d','--wait','api','web')
         target.assert_identity()
-        trust=target.api_python("""import json
-from sqlalchemy import select
-from app.core.config import Settings
-from app.core.database import Database
-from app.models.ml import ModelVersion
-from app.models.synthetic import SyntheticStudyRecord
-from app.services.synthetic_study import compatible_model,selected_artifact
-from app.ml.artifacts import ArtifactStore
-s=Settings();d=Database(s)
-with d.session_factory() as c:
- m=c.scalar(select(ModelVersion).where(ModelVersion.is_active.is_(True)))
- st=c.get(SyntheticStudyRecord,m.study_id)
- compatible_model(s,st,m)
- manifest,key=selected_artifact(s,st)
- ArtifactStore(s.ml_storage_dir).load(key)
-print(json.dumps({'hmac_verified':True,'model_compatible':True,'algorithm':m.algorithm,'regenerated':False}))
-""")
+        trust=target.api_python(TRUST_PROBE)
         return {'status':'COMPROBADO','kind':target.kind,'target_id':target.target_id,'project':target.project,
             'database_name':target.database,'ports':target.data['ports'],'volumes':target.data['volumes'],
             'backup_id':manifest['id'],'before_login_exact_all_tables':True,'before_login_exact_all_files':True,
