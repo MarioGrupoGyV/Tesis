@@ -93,7 +93,7 @@ def test_protocol_audit_eligibility_and_blocking_on_confirm_revoke_confirm(demo)
 def test_evidence_files_contain_no_names():
     """Todo `mejoras-03b3-*` de texto (CSV, JSON, XML) está libre de nombres; los CSV además de cabeceras o celdas con aspecto de nombre."""
     root = Path(__file__).resolve().parents[2] / 'tests' / 'evidence'
-    for path in sorted(root.glob('mejoras-03b3-*')) if root.exists() else []:
+    for path in sorted([*root.glob('mejoras-03b3-*'), *root.glob('mejoras-04-*')]) if root.exists() else []:
         if path.suffix.lower() not in ('.csv', '.json', '.xml'):
             continue
         content = path.read_text(encoding='utf-8')
