@@ -153,3 +153,17 @@ def test_cohen_kappa_matches_the_textbook_values():
     assert cohen_kappa([[5, 5], [5, 5]]) == pytest.approx(0.0)
     assert cohen_kappa([[20, 5], [10, 15]]) == pytest.approx(0.4)          # po=0,7; pe=0,5 → (0,7-0,5)/(1-0,5)
     assert cohen_kappa([[0, 0], [0, 0]]) is None
+
+
+def test_comparison_does_not_depend_on_row_order_or_internal_identifiers(built, comparison):
+    """Repetir la corrida en otra instalación (otros UUID internos, otro orden de filas) da las mismas métricas con la misma semilla."""
+    mapping = {row.snapshot_id: uuid4() for row in built.observations}
+    shuffled_rows = [row.model_copy(update={'snapshot_id': mapping[row.snapshot_id], 'enrollment_id': uuid4()}) for row in built.observations]
+    random.Random(7).shuffle(shuffled_rows)
+    labels = [label.model_copy(update={'snapshot_id': mapping[label.snapshot_id]}) for label in built.labels]
+    random.Random(8).shuffle(labels)
+    other = built.model_copy(update={'observations': shuffled_rows, 'labels': labels})
+    again = compare_institutional(other, seed=1729, study_id=STUDY, leave_one_student_out=True)
+    assert again.selected_algorithm == comparison.selected_algorithm
+    for name in ALGORITHMS:
+        assert again.report['algorithms'][name] == comparison.report['algorithms'][name]

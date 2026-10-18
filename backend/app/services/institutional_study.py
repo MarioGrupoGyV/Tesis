@@ -166,7 +166,7 @@ def build_dataset(db, study, protocol):
     bound = [item['snapshot_id'] for item in study.bindings]
     if not bound:
         raise AppError(409, 'INSTITUTIONAL_IMPORT_REQUIRED', 'Importa primero el CSV canónico registrado.')
-    rows = db.execute(text('''SELECT DISTINCT ON (sn.enrollment_id,sn.cutoff_at) sn.*,e.student_id,s.is_active,s.eligible_for_processing
+    rows = db.execute(text('''SELECT DISTINCT ON (sn.enrollment_id,sn.cutoff_at) sn.*,e.student_id,s.anon_code,s.is_active,s.eligible_for_processing
         FROM risk_school.academic_snapshots sn JOIN risk_school.enrollments e ON e.id=sn.enrollment_id
         JOIN risk_school.students s ON s.id=e.student_id WHERE sn.period_id=:period AND sn.import_batch_id IS NOT NULL
         ORDER BY sn.enrollment_id,sn.cutoff_at,sn.revision DESC'''), {'period': study.period_id}).mappings().all()
@@ -186,7 +186,8 @@ def build_dataset(db, study, protocol):
               sum(v is None for v in values.values()) / len(values) > config.inference_max_missing_fraction):
             drop('INFERENCE_ABSTENTION')
         else:
-            observations.append(Observation(student_key=str(row['student_id']), snapshot_id=row['id'], enrollment_id=row['enrollment_id'],
+            # Grupo = código del estudiante (estable entre instalaciones); un UUID interno cambiaría las particiones al repetir la corrida.
+            observations.append(Observation(student_key=row['anon_code'], snapshot_id=row['id'], enrollment_id=row['enrollment_id'],
                 period_id=row['period_id'], data_origin='REAL', schema_version='academic-v1', revision=row['revision'],
                 supersedes_id=row['supersedes_id'], window_start=row['window_start'], available_at=row['available_at'],
                 cutoff_at=row['cutoff_at'], target_date=row['target_date'], created_at=row['created_at'], eligible=True, values=values,

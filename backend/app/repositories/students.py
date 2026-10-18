@@ -59,7 +59,7 @@ SORTS = {
 }
 
 
-def list_students(db, user, period_id, section_id, search, risk_level, sort, page, page_size):
+def list_students(db, user, period_id, section_id, search, risk_level, sort, page, page_size, search_names=True):
     clauses, params = ["e.period_id=:period", "e.data_origin IN ('REAL','SYNTHETIC')"], {"period": period_id}
     if user.role == "TUTOR":
         clauses.append("g.tutor_id=:user")
@@ -68,7 +68,9 @@ def list_students(db, user, period_id, section_id, search, risk_level, sort, pag
         clauses.append("e.section_id=:section")
         params['section'] = section_id
     if search:
-        clauses.append("(s.anon_code ILIKE :search ESCAPE '\\' OR s.full_name ILIKE :search ESCAPE '\\')")
+        # REAL: se busca solo por código (el nombre vive únicamente en la ficha).
+        clauses.append("(s.anon_code ILIKE :search ESCAPE '\\' OR s.full_name ILIKE :search ESCAPE '\\')" if search_names
+                       else "s.anon_code ILIKE :search ESCAPE '\\'")
         params['search'] = '%' + search.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_') + '%'
     if risk_level:
         clauses.append("pred.risk_level=:risk")

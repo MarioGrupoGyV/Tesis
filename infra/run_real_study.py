@@ -550,7 +550,7 @@ class Runner:
                                       'nia': {'value': total['nia']['mean'], 'reason': total['nia']['reason']},
                                       'opportune': {'percent': total['opportune']['percent'], 'reason': total['opportune']['reason']},
                                       # PRV no se informa: el sistema solo ve el CSV ya filtrado por el conversor; la recepción real (126 recibidas) no tiene procedencia confirmada.
-                                      'prv': {'percent': None, 'reason': 'RECEPTION_PROVENANCE_UNCONFIRMED', 'system_csv_rows': data['prv'].get('received')},
+                                      'prv': {'percent': data['prv']['percent'], 'reason': data['prv']['reason']},
                                       'out_of_fold_basis': total['metric_basis'], 'run': self.state['runs'][bimester]}
         self.state['indicators'] = per_bimester
         self.step('indicators', 'DONE', bimesters=sorted(per_bimester), sql_matches_system=all(item['agree'] for item in per_bimester.values()))

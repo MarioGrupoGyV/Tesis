@@ -11,6 +11,7 @@ const reasons: Record<string, string> = {
   NO_ELIGIBLE_STUDENTS: 'No hay estudiantes elegibles.', NO_ALERTS: 'Todavía no hay alertas.', NO_RECEIVED_RECORDS: 'No se han recibido registros.',
   PERIOD_LEVEL_ONLY: 'Solo disponible para el periodo completo y con acceso a todas las secciones.', STUDY_INTEGRITY_ERROR: 'No se pudo verificar la procedencia del estudio.',
   STUDY_STORAGE_UNAVAILABLE: 'Almacenamiento del estudio no disponible.', NO_EVALUATED_STUDENTS_WITH_REFERENCE: 'Ningún estudiante evaluado tiene riesgo de referencia.', NO_DENOMINATOR: 'Sin denominador.', NO_INTERVENTIONS_LINKED_TO_ALERT: 'Todavía no hay intervenciones realizadas ligadas a una alerta.',
+  RECEPTION_PROVENANCE_UNCONFIRMED: 'No se informa: la procedencia de la recepción real de registros no está confirmada.',
   NO_OUT_OF_SAMPLE_REPORT: 'El modelo activo no trae informe de validación cruzada: no hay métricas fuera de muestra.',
   NO_REAL_INTERVENTIONS: 'Todavía no hay intervenciones reales registradas: no se estima ni se rellena con ceros.' };
 const riskName: Record<string, string> = { LOW: 'Bajo', MEDIUM: 'Medio', HIGH: 'Alto' };

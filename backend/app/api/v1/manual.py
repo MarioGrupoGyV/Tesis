@@ -58,7 +58,8 @@ def section_patch(id:UUID,payload:schema.SectionPatch,request:Request,context:Au
 @router.get('/student-identities',response_model=list[schema.Identity],operation_id='studentIdentities')
 def identities(context:AuthenticatedSession,db:DbSession,search:str=Query(min_length=2,max_length=160)):
     service.require_admin(context.user)
-    return repository.identities(db,search)
+    return [schema.Identity.model_validate({'id':item.id,'anon_code':item.anon_code,'data_origin':item.data_origin,'is_active':item.is_active,'version':item.version,
+        'full_name':None if item.data_origin=='REAL' else item.full_name}) for item in repository.identities(db,search)]
 
 
 @router.post('/students',response_model=schema.Identity,operation_id='createStudent')

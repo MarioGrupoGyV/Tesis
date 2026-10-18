@@ -107,6 +107,8 @@ def compare_institutional(dataset: Dataset, *, seed: int, study_id, repetitions:
     if not 0 <= seed < 2**32 or not 2 <= requested_folds <= 5 or repetitions < MIN_REPETITIONS:
         raise MLDiagnostic('INVALID_EVALUATION_CONFIGURATION')
     validate_dataset(dataset)
+    # Orden canónico (estudiante, corte): la comparación no depende del orden de las filas ni de identificadores internos.
+    dataset = dataset.model_copy(update={'observations': sorted(dataset.observations, key=lambda row: (row.student_key, row.cutoff_at))})
     rows, config = dataset.observations, dataset.config
     labels = {label.snapshot_id: CLASSES.index(label.risk) for label in dataset.labels}
     y = np.array([labels[row.snapshot_id] for row in rows])

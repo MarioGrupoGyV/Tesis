@@ -113,3 +113,32 @@ def test_cli_parser_is_strict_and_does_not_echo_values(tmp_path, capsys):
     assert cli.main(['--target', str(tmp_path / 't.json'), '--operator-profile', 'x', '--csv', str(tmp_path / 'no-existe.csv')]) == 2
     output = capsys.readouterr().out
     assert 'IDENTITIES_CSV_UNAVAILABLE' in output and '--identities' in output
+
+
+def test_real_names_are_hidden_in_list_search_and_identity_lookup_but_not_in_the_record(study_env):
+    state = study_env
+    token = 'Kx' + uuid4().hex[:10]                                        # texto único: la base de pruebas conserva nombres de otras pruebas
+    period, created = students(state)
+    with state.app.state.database.session_factory() as db:
+        load_identities(db, actor(state, db), rows(created, [f'{token} Uno', f'{token} Dos', f'{token} Tres']))
+    listing = state.client.get(API + '/students', params={'period_id': period['id'], 'page_size': 100}).json()
+    assert listing['total'] == 3 and all(item['full_name'] is None for item in listing['items'])
+    assert state.client.get(API + '/students', params={'period_id': period['id'], 'search': token}).json()['total'] == 0       # no se busca por nombre
+    assert state.client.get(API + '/students', params={'period_id': period['id'], 'search': created[0]['anon_code']}).json()['total'] == 1
+    assert state.client.get(API + '/student-identities', params={'search': token}).json() == []
+    found = state.client.get(API + '/student-identities', params={'search': created[0]['anon_code']}).json()
+    assert [item['full_name'] for item in found] == [None] and token not in json_text(found)
+    detail = state.client.get(API + f"/students/{created[0]['id']}?period_id={period['id']}").json()
+    assert detail['student']['full_name'] == f'{token} Uno'                  # la ficha sí muestra el nombre
+    # SYNTHETIC conserva su comportamiento: lista y búsqueda por nombre.
+    synthetic_period, synthetic_section = real_setup(state, 'SYNTHETIC')
+    named = write(state, '/students', dict(creation_key=str(uuid4()), anon_code='S' + uuid4().hex[:6].upper(), full_name=f'{token} Sintetico',
+                                           period_id=synthetic_period['id'], section_id=synthetic_section['id'])).json()
+    shown = state.client.get(API + '/students', params={'period_id': synthetic_period['id'], 'search': token}).json()
+    assert shown['total'] == 1 and shown['items'][0]['full_name'] == f'{token} Sintetico'
+    assert [item['full_name'] for item in state.client.get(API + '/student-identities', params={'search': token}).json()] == [f'{token} Sintetico']
+
+
+def json_text(value):
+    import json
+    return json.dumps(value)

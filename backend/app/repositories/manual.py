@@ -24,8 +24,10 @@ def measurements(db, enrollment_id, page, page_size):
 
 def identities(db, search):
     escaped = search.replace('\\','\\\\').replace('%','\\%').replace('_','\\_')
-    return db.scalars(select(StudentRecord).where(StudentRecord.anon_code.ilike('%'+escaped+'%', escape='\\') |
-        StudentRecord.full_name.ilike('%'+escaped+'%', escape='\\')).order_by(StudentRecord.anon_code).limit(20)).all()
+    like = '%' + escaped + '%'
+    # REAL: solo se busca por código; el nombre vive únicamente en la ficha.
+    return db.scalars(select(StudentRecord).where(StudentRecord.anon_code.ilike(like, escape='\\') |
+        ((StudentRecord.data_origin != 'REAL') & StudentRecord.full_name.ilike(like, escape='\\'))).order_by(StudentRecord.anon_code).limit(20)).all()
 
 
 def has_enrollments(db, model, id):

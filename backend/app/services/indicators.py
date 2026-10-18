@@ -244,6 +244,9 @@ def summarize(rows, section=None, reference_reason=None, interventions=(), windo
 def prv(db, user, period, as_of, section_id):
     if user.role == 'TUTOR' or section_id is not None:
         return schemas.Prv(numerator=None, denominator=None, percent=None, reason='PERIOD_LEVEL_ONLY')
+    if period.data_origin == 'REAL':
+        # El sistema solo ve el CSV ya filtrado por el conversor; la recepción real no tiene procedencia confirmada (decisión 6).
+        return schemas.Prv(numerator=None, denominator=None, percent=None, reason='RECEPTION_PROVENANCE_UNCONFIRMED')
     batches, processed, manual = repository.batch_totals(db, period.id, as_of, period.data_origin)
     received, valid_processed = int(batches['received']), int(processed['eligible'])
     ratio = pct(valid_processed, received, 'NO_RECEIVED_RECORDS')

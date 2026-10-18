@@ -195,6 +195,7 @@ def test_full_real_cycle_with_fictitious_data(demo):
         data = response.json()
         total = data['total']
         assert data['data_origin'] == 'REAL' and data['is_simulation'] is False and data['bimester'] == bimester
+        assert data['prv']['percent'] is None and data['prv']['reason'] == 'RECEPTION_PROVENANCE_UNCONFIRMED'   # PRV real no se informa
         assert data['notice'].startswith('Datos reales locales — análisis exploratorio, no demuestra eficacia escolar')
         assert data['opportune_window_days'] == 5 and data['retrospective_alerts'] > 0
         assert total['nia']['reason'] == 'NO_REAL_INTERVENTIONS' and total['nia']['total'] is None

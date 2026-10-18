@@ -49,8 +49,10 @@ def authorize_student(db, user, student_id, period_id):
 
 def list_students(db, user, **filters):
     authorize_period(db, user, filters['period_id'], filters['section_id'])
-    rows, total = repository.list_students(db, user, **filters)
-    return s2.StudentPage(items=[s2.Student.model_validate(r) for r in rows], total=total,
+    hide_names = db.get(AcademicPeriod, filters['period_id']).data_origin == 'REAL'
+    rows, total = repository.list_students(db, user, **filters, search_names=not hide_names)
+    # REAL: el nombre solo se muestra en la ficha del estudiante, nunca en la lista.
+    return s2.StudentPage(items=[s2.Student.model_validate({**r, 'full_name': None} if hide_names else r) for r in rows], total=total,
                           page=filters['page'], page_size=filters['page_size'])
 
 
