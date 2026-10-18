@@ -87,7 +87,7 @@ def scenario(demo, monkeypatch):
                                      {'s': student['id'], 'p': state.period_id})
             alert = conn.scalar(text('SELECT id FROM risk_school.alerts WHERE enrollment_id=:e'), {'e': enrollment})
             if alert:
-                conn.execute(text('UPDATE risk_school.alerts SET opened_at=:t WHERE id=:a'), {'t': t0, 'a': alert})
+                conn.execute(text('UPDATE risk_school.alerts SET opened_at=:t,detected_at=:t WHERE id=:a'), {'t': t0, 'a': alert})
             rows = [('DONE', t0 + timedelta(days=d)) for d in done] + ([('PLANNED', None)] if planned_only else [])
             for status, performed in rows:
                 conn.execute(text('''INSERT INTO risk_school.interventions(id,enrollment_id,alert_id,data_origin,created_by,kind,

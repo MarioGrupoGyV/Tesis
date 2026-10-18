@@ -55,7 +55,7 @@ def cases(demo, monkeypatch):
                                      {'s': state.people[label]['id'], 'p': state.period_id})
             alert = conn.scalar(text('SELECT id FROM risk_school.alerts WHERE enrollment_id=:e'), {'e': enrollment})
             if alert:
-                conn.execute(text('UPDATE risk_school.alerts SET opened_at=:t WHERE id=:a'), {'t': t0, 'a': alert})
+                conn.execute(text('UPDATE risk_school.alerts SET opened_at=:t,detected_at=:t WHERE id=:a'), {'t': t0, 'a': alert})
             for status, day, linked in interventions:
                 performed = t0 + timedelta(days=day) if day is not None else None
                 conn.execute(text('''INSERT INTO risk_school.interventions(id,enrollment_id,alert_id,data_origin,created_by,kind,
