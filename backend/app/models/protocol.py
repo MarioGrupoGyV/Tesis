@@ -6,6 +6,8 @@ from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, Numeric, Sm
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import Base
+# Tablas a las que apunta por FK (periodos, usuarios, matrículas y cortes): registradas aunque el proceso no importe la aplicación completa.
+from app.models import s1, s2  # noqa: F401
 
 
 class ProcessingProtocolRecord(Base):

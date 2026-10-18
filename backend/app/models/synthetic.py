@@ -5,6 +5,9 @@ from sqlalchemy import CHAR, DateTime, ForeignKey, BigInteger, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import Base
+# Las tablas a las que este modelo apunta por FK (periodos, usuarios, protocolos) deben estar registradas aunque el proceso no importe la
+# aplicación completa: sin esto, `synthetic_cli generate` fallaba en un proceso nuevo con NoReferencedTableError.
+from app.models import protocol, s1  # noqa: F401
 
 
 class SyntheticStudyRecord(Base):
