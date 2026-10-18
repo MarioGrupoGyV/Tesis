@@ -108,11 +108,21 @@ def set_authorization(db, user, id, confirmed: bool, request_id):
     record.version += 1
     if confirmed:
         # El protocolo cubre las matrículas ya registradas del periodo: quedan elegibles (activas; nunca se fabrican
-        # consentimientos). Revocar no cambia la marca: la elegibilidad efectiva exige el protocolo confirmado.
+        # consentimientos). Revocar las retira (ver abajo) y la elegibilidad efectiva siempre exige el protocolo confirmado.
         db.flush()
         db.execute(text('''UPDATE risk_school.students s SET eligible_for_processing=true, version=version+1
             WHERE s.data_origin='REAL' AND s.is_active AND NOT s.eligible_for_processing
               AND EXISTS(SELECT 1 FROM risk_school.enrollments e WHERE e.student_id=s.id AND e.period_id=:period)'''),
+            {'period': record.period_id})
+    else:
+        # Revocar: los alumnos REAL del periodo dejan de ser elegibles (salvo los cubiertos por otro protocolo confirmado o por la ruta
+        # histórica de consentimiento+asentimiento de las fixtures aisladas). No se borra ningún dato; confirmar de nuevo los habilita.
+        db.flush()
+        db.execute(text('''UPDATE risk_school.students s SET eligible_for_processing=false, version=version+1
+            WHERE s.data_origin='REAL' AND s.eligible_for_processing AND NOT (s.consent_documented AND s.assent_documented)
+              AND EXISTS(SELECT 1 FROM risk_school.enrollments e WHERE e.student_id=s.id AND e.period_id=:period)
+              AND NOT EXISTS(SELECT 1 FROM risk_school.enrollments e2 JOIN risk_school.processing_protocols p ON p.period_id=e2.period_id
+                             WHERE e2.student_id=s.id AND p.authorization_confirmed_by_admin)'''),
             {'period': record.period_id})
     audit(db, user, record, 'PROTOCOL_AUTHORIZATION_CONFIRMED' if confirmed else 'PROTOCOL_AUTHORIZATION_REVOKED', request_id)
     db.commit()

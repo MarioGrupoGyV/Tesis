@@ -23,7 +23,7 @@ async function login(page: Page) {
 async function shot(page: Page, label: string) {
   for (const [w, h] of [[1440, 900], [768, 1024], [390, 844]]) {
     await page.setViewportSize({ width: w, height: h });
-    await page.screenshot({ path: `tests/evidence/mejoras-03b2-e2e-${label}-${w}x${h}.png`, fullPage: true });
+    await page.screenshot({ path: `tests/evidence/mejoras-03b3-e2e-${label}-${w}x${h}.png`, fullPage: true });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBeTruthy();
   }
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -76,6 +76,8 @@ test('ciclo REAL: protocolo, modelos, alertas, reportes e indicadores con rótul
   await expect(page.getByText('Todavía no hay intervenciones reales registradas').first()).toBeVisible();
   await expect(page.getByText(/alertas son simulación retrospectiva/)).toBeVisible();
   await expect(page.getByText('Exploratorio local').first()).toBeVisible();
+  await expect(page.getByText('validación cruzada (fuera de muestra)').first()).toBeVisible();
+  await expect(page.getByText(/Media de 20 repeticiones/)).toBeVisible();
   await shot(page, 'indicadores-B1');
   await page.locator('#ind-bimester').selectOption('B2');
   await expect(page.getByText('Bimestre: B2')).toBeVisible();
