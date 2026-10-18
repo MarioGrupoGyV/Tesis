@@ -62,7 +62,7 @@ Esperado: `COMPROBADO`. (Etiqueta de origen: `SYNTHETIC`, porque aún no hay dat
 
 ## 4. Decisión del tutor de las secciones 3.º A y B
 
-- **Opción A (recomendada, mínimo privilegio):** `--locked-tutor`. Crea una cuenta TUTOR de relleno que **nadie puede usar para iniciar sesión** (contraseña aleatoria desconocida); añade una quinta cuenta a las cuatro. Tu TUTOR real **no** ve datos reales.
+- **Opción A (recomendada, mínimo privilegio; decidida por el usuario el 2026-10-18):** `--locked-tutor`. Crea una cuenta TUTOR de relleno que **nadie puede usar para iniciar sesión** (contraseña aleatoria desconocida); añade una quinta cuenta a las cuatro. Tu TUTOR real **no** ve datos reales.
 - **Opción B:** un TUTOR existente. Obtiene acceso a los datos reales de esas secciones. Su identificador (solo cuentas, sin datos de estudiantes):
 
 ```powershell
