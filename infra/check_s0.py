@@ -51,9 +51,9 @@ def run():
     contract_path = ROOT / "docs/planning/Contrato_API.yaml"
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     validate(contract)
-    check(contract["info"]["version"] == "0.9.1", "OpenAPI 3.1 válido, versión 0.9.1 Bloque 2b")
+    check(contract["info"]["version"] == "0.10.0", "OpenAPI 3.1 válido, versión 0.10.0 Bloque 3B-1")
     operation_count = sum(method in ('get','post','patch','put','delete') for methods in contract['paths'].values() for method in methods)
-    check(operation_count == 50, '50 operaciones: 32 conservadas, 12 M1, 1 del Bloque 1 y 5 de indicadores')
+    check(operation_count == 54, '54 operaciones: 32 conservadas, 12 M1, 1 del Bloque 1, 5 de indicadores y 4 del protocolo REAL')
     for path, methods in contract["paths"].items():
         for method, operation in methods.items():
             if method not in ("get", "post", "patch", "put", "delete") or path == "/health/live":
@@ -70,8 +70,9 @@ def run():
         "app_users", "user_sessions", "academic_periods", "grade_sections", "students",
         "enrollments", "import_batches", "academic_snapshots", "model_versions",
         "predictions", "alerts", "interventions", "audit_events", "synthetic_studies", "followup_decisions",
+        "processing_protocols", "risk_references",
     }
-    check(set(tables) == expected_tables, "Sintaxis SQL analizada y 15 tablas de diseño")
+    check(set(tables) == expected_tables, "Sintaxis SQL analizada y 17 tablas de diseño (0007 añade processing_protocols y risk_references)")
     columns = {name: {c.colname: c for c in table.tableElts if isinstance(c, ast.ColumnDef)}
                for name, table in tables.items()}
     public = contract["components"]["schemas"]

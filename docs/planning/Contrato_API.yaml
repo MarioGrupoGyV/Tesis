@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.9.1
-  description: 'S6, M1 y Bloque 1 conservados. Bloque 2: indicadores de la tesis (PRV, CRA, PDER, NIA, intervención
-    oportuna, métricas del modelo, rendimiento) por periodo y sección; solo lectura, SYNTHETIC. REAL continúa
-    bloqueado con INSTITUTIONAL_PROCESSING_NOT_READY.'
+  version: 0.10.0
+  description: 'S6, M1 y Bloques 1–2 conservados. Bloque 3B-1: protocolo REAL (crear, confirmar y revocar la
+    autorización técnica de un ADMIN). No guarda consentimientos, documentos, autorizadores ni fechas de permiso
+    y NO habilita operaciones: REAL continúa bloqueado con INSTITUTIONAL_PROCESSING_NOT_READY.'
 servers:
 - url: /api/v1
   description: Preferir proxy de mismo origen para cookies y CSRF
@@ -23,6 +23,7 @@ tags:
 - name: retrospective
 - name: manual
 - name: indicators
+- name: protocols
 paths:
   /health/live:
     get:
@@ -3603,6 +3604,276 @@ paths:
       - sessionCookie: []
       description: Cálculo con corte as_of explícito (reproducible). TUTOR solo ve sus secciones; sin riesgo
         de referencia almacenado el indicador es null con motivo REFERENCE_NOT_AVAILABLE. Solo códigos anónimos.
+  /processing-protocols:
+    post:
+      tags:
+      - protocols
+      summary: Create
+      operationId: createProcessingProtocol
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProtocolCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Protocol'
+        '422':
+          description: Periodo no REAL, bimestres fuera del periodo o parámetros inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Solo ADMIN; CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Protocolo o periodo inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: El periodo ya tiene un protocolo con otros parámetros
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: B3B-1
+      x-roles: &id025
+      - ADMIN
+      security:
+      - sessionCookie: []
+      description: 'ADMIN con CSRF y Origin. Idempotente: repetir el mismo estado no cambia nada ni audita.
+        Auditoría con actor e instante UTC y solo identificadores. En 3B-1 confirmar el protocolo NO desbloquea
+        ninguna operación REAL.'
+    get:
+      tags:
+      - protocols
+      summary: By Period
+      operationId: processingProtocolByPeriod
+      parameters:
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Protocol'
+        '422':
+          description: Periodo no REAL, bimestres fuera del periodo o parámetros inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Solo ADMIN; CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Protocolo o periodo inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: El periodo ya tiene un protocolo con otros parámetros
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: B3B-1
+      x-roles: *id025
+      security:
+      - sessionCookie: []
+      description: 'ADMIN con CSRF y Origin. Idempotente: repetir el mismo estado no cambia nada ni audita.
+        Auditoría con actor e instante UTC y solo identificadores. En 3B-1 confirmar el protocolo NO desbloquea
+        ninguna operación REAL.'
+  /processing-protocols/{id}/confirm:
+    post:
+      tags:
+      - protocols
+      summary: Confirm
+      operationId: confirmProcessingProtocol
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Protocol'
+        '422':
+          description: Periodo no REAL, bimestres fuera del periodo o parámetros inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Solo ADMIN; CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Protocolo o periodo inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: El periodo ya tiene un protocolo con otros parámetros
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: B3B-1
+      x-roles: *id025
+      security:
+      - sessionCookie: []
+      description: 'ADMIN con CSRF y Origin. Idempotente: repetir el mismo estado no cambia nada ni audita.
+        Auditoría con actor e instante UTC y solo identificadores. En 3B-1 confirmar el protocolo NO desbloquea
+        ninguna operación REAL.'
+  /processing-protocols/{id}/revoke:
+    post:
+      tags:
+      - protocols
+      summary: Revoke
+      operationId: revokeProcessingProtocol
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Protocol'
+        '422':
+          description: Periodo no REAL, bimestres fuera del periodo o parámetros inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Solo ADMIN; CSRF u Origin no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Protocolo o periodo inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: El periodo ya tiene un protocolo con otros parámetros
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: B3B-1
+      x-roles: *id025
+      security:
+      - sessionCookie: []
+      description: 'ADMIN con CSRF y Origin. Idempotente: repetir el mismo estado no cambia nada ni audita.
+        Auditoría con actor e instante UTC y solo identificadores. En 3B-1 confirmar el protocolo NO desbloquea
+        ninguna operación REAL.'
 components:
   securitySchemes:
     sessionCookie:
@@ -3635,7 +3906,7 @@ components:
             required:
             - message
             additionalProperties: false
-        request_id: &id025
+        request_id: &id026
           type: string
           format: uuid
       required:
@@ -3658,7 +3929,7 @@ components:
     User:
       type: object
       properties:
-        id: *id025
+        id: *id026
         display_name:
           type: string
         role:
@@ -3694,7 +3965,7 @@ components:
           $ref: '#/components/schemas/User'
         csrf_token:
           type: string
-        expires_at: &id029
+        expires_at: &id030
           type: string
           format: date-time
           description: RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
@@ -3944,12 +4215,12 @@ components:
     Prediction:
       type: object
       properties:
-        id: &id026
+        id: &id027
           type: string
           format: uuid
-        enrollment_id: *id026
-        snapshot_id: *id026
-        model_id: *id026
+        enrollment_id: *id027
+        snapshot_id: *id027
+        model_id: *id027
         data_origin:
           type: string
           enum:
@@ -3961,17 +4232,17 @@ components:
           - LOW
           - MEDIUM
           - HIGH
-        cutoff_at: &id027
+        cutoff_at: &id028
           type: string
           format: date-time
           description: RFC 3339 con zona obligatoria; respuesta normalizada a UTC (Z).
         target_date:
-          type: &id028
+          type: &id029
           - string
           - 'null'
           format: date
           description: Fecha objetivo observada (CSV). Null en mediciones MANUAL.
-        predicted_at: *id027
+        predicted_at: *id028
         probability_low:
           type:
           - number
@@ -3993,7 +4264,7 @@ components:
         probabilities_calibrated:
           type: boolean
         model_horizon_date:
-          type: *id028
+          type: *id029
           format: date
           description: 'Solo MANUAL: corte (America/Lima) + horizonte del modelo; derivado, no es un dato observado.'
       required:
@@ -4176,7 +4447,7 @@ components:
     TimelineEvent:
       type: object
       properties:
-        id: *id025
+        id: *id026
         event_type:
           type: string
           enum:
@@ -4184,10 +4455,10 @@ components:
           - PREDICTION
           - ALERT
           - INTERVENTION
-        occurred_at: *id029
+        occurred_at: *id030
         summary:
           type: string
-        entity_id: *id025
+        entity_id: *id026
       required:
       - id
       - event_type
@@ -4216,9 +4487,9 @@ components:
     ImportBatch:
       type: object
       properties:
-        id: *id025
-        period_id: *id025
-        data_origin: &id030
+        id: *id026
+        period_id: *id026
+        data_origin: &id031
           type: string
           enum:
           - REAL
@@ -4268,7 +4539,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ImportError'
-        created_at: *id029
+        created_at: *id030
         committed_at:
           type:
           - string
@@ -4296,7 +4567,7 @@ components:
     ImportCommit:
       type: object
       properties:
-        batch_id: *id025
+        batch_id: *id026
         status:
           type: string
           enum:
@@ -4315,13 +4586,13 @@ components:
     Alert:
       type: object
       properties:
-        id: *id025
-        enrollment_id: *id025
-        student_id: *id025
+        id: *id026
+        enrollment_id: *id026
+        student_id: *id026
         anon_code:
           type: string
-        prediction_id: *id025
-        data_origin: *id030
+        prediction_id: *id026
+        data_origin: *id031
         severity:
           type: string
           enum:
@@ -4344,8 +4615,8 @@ components:
           - string
           - 'null'
           maxLength: 1000
-        opened_at: *id029
-        updated_at: *id029
+        opened_at: *id030
+        updated_at: *id030
         closed_at:
           type:
           - string
@@ -4373,14 +4644,14 @@ components:
     Intervention:
       type: object
       properties:
-        id: *id025
-        enrollment_id: *id025
+        id: *id026
+        enrollment_id: *id026
         alert_id:
           type:
           - string
           - 'null'
           format: uuid
-        data_origin: *id030
+        data_origin: *id031
         kind:
           type: string
           enum:
@@ -4398,7 +4669,7 @@ components:
           - PLANNED
           - DONE
           - CANCELLED
-        scheduled_at: *id029
+        scheduled_at: *id030
         performed_at:
           type:
           - string
@@ -4412,8 +4683,8 @@ components:
         version:
           type: integer
           minimum: 1
-        created_at: *id029
-        updated_at: *id029
+        created_at: *id030
+        updated_at: *id030
       required:
       - id
       - enrollment_id
@@ -7341,4 +7612,291 @@ components:
       title: OpportuneByIntervention
       description: 'Por intervención (comparable con la Tabla 6): realizadas ligadas a alerta dentro de la
         ventana ÷ realizadas ligadas.'
+    Bimester:
+      properties:
+        code:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{1,20}$
+          title: Code
+        start_date:
+          type: string
+          format: date
+          title: Start Date
+        cutoff_date:
+          type: string
+          format: date
+          title: Cutoff Date
+        cutoff_available_at:
+          type: string
+          format: date-time
+          title: Cutoff Available At
+        close_date:
+          type: string
+          format: date
+          title: Close Date
+        closing_available_at:
+          type: string
+          format: date-time
+          title: Closing Available At
+        scheduled_days:
+          type: integer
+          maximum: 366.0
+          minimum: 1.0
+          title: Scheduled Days
+      additionalProperties: false
+      type: object
+      required:
+      - code
+      - start_date
+      - cutoff_date
+      - cutoff_available_at
+      - close_date
+      - closing_available_at
+      - scheduled_days
+      title: Bimester
+    EligibilityRules:
+      properties:
+        inference_max_missing_fraction:
+          type: number
+          exclusiveMaximum: 1.0
+          minimum: 0.0
+          title: Inference Max Missing Fraction
+        required_features:
+          items:
+            type: string
+          type: array
+          maxItems: 5
+          minItems: 1
+          title: Required Features
+      additionalProperties: false
+      type: object
+      required:
+      - inference_max_missing_fraction
+      - required_features
+      title: EligibilityRules
+    OpportuneWindows:
+      properties:
+        detection_days:
+          type: integer
+          maximum: 60.0
+          minimum: 0.0
+          title: Detection Days
+        intervention_days:
+          type: integer
+          maximum: 60.0
+          minimum: 0.0
+          title: Intervention Days
+      additionalProperties: false
+      type: object
+      required:
+      - detection_days
+      - intervention_days
+      title: OpportuneWindows
+    Protocol:
+      properties:
+        school_label:
+          type: string
+          maxLength: 120
+          minLength: 1
+          title: School Label
+        cohort_label:
+          type: string
+          maxLength: 120
+          minLength: 1
+          title: Cohort Label
+        grade_scale_min:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Grade Scale Min
+        grade_scale_max:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Grade Scale Max
+        participation_min:
+          type: integer
+          maximum: 10.0
+          minimum: 0.0
+          title: Participation Min
+        participation_max:
+          type: integer
+          maximum: 10.0
+          minimum: 1.0
+          title: Participation Max
+        participation_labels:
+          anyOf:
+          - additionalProperties:
+              type: string
+              maxLength: 60
+            type: object
+          - type: 'null'
+          title: Participation Labels
+        bimesters:
+          items:
+            $ref: '#/components/schemas/Bimester'
+          type: array
+          maxItems: 8
+          minItems: 1
+          title: Bimesters
+        source_label:
+          type: string
+          maxLength: 160
+          minLength: 1
+          title: Source Label
+        quality_rules:
+          additionalProperties: true
+          type: object
+          title: Quality Rules
+        eligibility_rules:
+          $ref: '#/components/schemas/EligibilityRules'
+        risk_rule:
+          $ref: '#/components/schemas/RiskRule'
+        opportune_windows:
+          $ref: '#/components/schemas/OpportuneWindows'
+        id:
+          type: string
+          format: uuid
+          title: Id
+        period_id:
+          type: string
+          format: uuid
+          title: Period Id
+        authorization_confirmed_by_admin:
+          type: boolean
+          title: Authorization Confirmed By Admin
+        confirmed_by:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Confirmed By
+        confirmed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Confirmed At
+        version:
+          type: integer
+          title: Version
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      additionalProperties: false
+      type: object
+      required:
+      - school_label
+      - cohort_label
+      - grade_scale_min
+      - grade_scale_max
+      - participation_min
+      - participation_max
+      - bimesters
+      - source_label
+      - eligibility_rules
+      - risk_rule
+      - opportune_windows
+      - id
+      - period_id
+      - authorization_confirmed_by_admin
+      - confirmed_by
+      - confirmed_at
+      - version
+      - created_at
+      title: Protocol
+    ProtocolCreate:
+      properties:
+        school_label:
+          type: string
+          maxLength: 120
+          minLength: 1
+          title: School Label
+        cohort_label:
+          type: string
+          maxLength: 120
+          minLength: 1
+          title: Cohort Label
+        grade_scale_min:
+          anyOf:
+          - type: number
+          - type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Grade Scale Min
+        grade_scale_max:
+          anyOf:
+          - type: number
+          - type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Grade Scale Max
+        participation_min:
+          type: integer
+          maximum: 10.0
+          minimum: 0.0
+          title: Participation Min
+        participation_max:
+          type: integer
+          maximum: 10.0
+          minimum: 1.0
+          title: Participation Max
+        participation_labels:
+          anyOf:
+          - additionalProperties:
+              type: string
+              maxLength: 60
+            type: object
+          - type: 'null'
+          title: Participation Labels
+        bimesters:
+          items:
+            $ref: '#/components/schemas/Bimester'
+          type: array
+          maxItems: 8
+          minItems: 1
+          title: Bimesters
+        source_label:
+          type: string
+          maxLength: 160
+          minLength: 1
+          title: Source Label
+        quality_rules:
+          additionalProperties: true
+          type: object
+          title: Quality Rules
+        eligibility_rules:
+          $ref: '#/components/schemas/EligibilityRules'
+        risk_rule:
+          $ref: '#/components/schemas/RiskRule'
+        opportune_windows:
+          $ref: '#/components/schemas/OpportuneWindows'
+        period_id:
+          type: string
+          format: uuid
+          title: Period Id
+      additionalProperties: false
+      type: object
+      required:
+      - school_label
+      - cohort_label
+      - grade_scale_min
+      - grade_scale_max
+      - participation_min
+      - participation_max
+      - bimesters
+      - source_label
+      - eligibility_rules
+      - risk_rule
+      - opportune_windows
+      - period_id
+      title: ProtocolCreate
+    RiskRule:
+      properties:
+        version:
+          type: string
+          const: RIESGO_V1
+          title: Version
+      additionalProperties: false
+      type: object
+      required:
+      - version
+      title: RiskRule
 x-current-sprint: S2.1

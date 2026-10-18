@@ -892,6 +892,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/processing-protocols": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * By Period
+         * @description ADMIN con CSRF y Origin. Idempotente: repetir el mismo estado no cambia nada ni audita. Auditoría con actor e instante UTC y solo identificadores. En 3B-1 confirmar el protocolo NO desbloquea ninguna operación REAL.
+         */
+        get: operations["processingProtocolByPeriod"];
+        put?: never;
+        /**
+         * Create
+         * @description ADMIN con CSRF y Origin. Idempotente: repetir el mismo estado no cambia nada ni audita. Auditoría con actor e instante UTC y solo identificadores. En 3B-1 confirmar el protocolo NO desbloquea ninguna operación REAL.
+         */
+        post: operations["createProcessingProtocol"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/processing-protocols/{id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm
+         * @description ADMIN con CSRF y Origin. Idempotente: repetir el mismo estado no cambia nada ni audita. Auditoría con actor e instante UTC y solo identificadores. En 3B-1 confirmar el protocolo NO desbloquea ninguna operación REAL.
+         */
+        post: operations["confirmProcessingProtocol"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/processing-protocols/{id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revoke
+         * @description ADMIN con CSRF y Origin. Idempotente: repetir el mismo estado no cambia nada ni audita. Auditoría con actor e instante UTC y solo identificadores. En 3B-1 confirmar el protocolo NO desbloquea ninguna operación REAL.
+         */
+        post: operations["revokeProcessingProtocol"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2977,6 +3041,148 @@ export interface components {
             window_days: number;
             /** Without Alert */
             without_alert: number;
+        };
+        /** Bimester */
+        Bimester: {
+            /** Code */
+            code: string;
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+            /**
+             * Cutoff Date
+             * Format: date
+             */
+            cutoff_date: string;
+            /**
+             * Cutoff Available At
+             * Format: date-time
+             */
+            cutoff_available_at: string;
+            /**
+             * Close Date
+             * Format: date
+             */
+            close_date: string;
+            /**
+             * Closing Available At
+             * Format: date-time
+             */
+            closing_available_at: string;
+            /** Scheduled Days */
+            scheduled_days: number;
+        };
+        /** EligibilityRules */
+        EligibilityRules: {
+            /** Inference Max Missing Fraction */
+            inference_max_missing_fraction: number;
+            /** Required Features */
+            required_features: string[];
+        };
+        /** OpportuneWindows */
+        OpportuneWindows: {
+            /** Detection Days */
+            detection_days: number;
+            /** Intervention Days */
+            intervention_days: number;
+        };
+        /** Protocol */
+        Protocol: {
+            /** School Label */
+            school_label: string;
+            /** Cohort Label */
+            cohort_label: string;
+            /** Grade Scale Min */
+            grade_scale_min: string;
+            /** Grade Scale Max */
+            grade_scale_max: string;
+            /** Participation Min */
+            participation_min: number;
+            /** Participation Max */
+            participation_max: number;
+            /** Participation Labels */
+            participation_labels?: {
+                [key: string]: string;
+            } | null;
+            /** Bimesters */
+            bimesters: components["schemas"]["Bimester"][];
+            /** Source Label */
+            source_label: string;
+            /** Quality Rules */
+            quality_rules?: {
+                [key: string]: unknown;
+            };
+            eligibility_rules: components["schemas"]["EligibilityRules"];
+            risk_rule: components["schemas"]["RiskRule"];
+            opportune_windows: components["schemas"]["OpportuneWindows"];
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /** Authorization Confirmed By Admin */
+            authorization_confirmed_by_admin: boolean;
+            /** Confirmed By */
+            confirmed_by: string | null;
+            /** Confirmed At */
+            confirmed_at: string | null;
+            /** Version */
+            version: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** ProtocolCreate */
+        ProtocolCreate: {
+            /** School Label */
+            school_label: string;
+            /** Cohort Label */
+            cohort_label: string;
+            /** Grade Scale Min */
+            grade_scale_min: number | string;
+            /** Grade Scale Max */
+            grade_scale_max: number | string;
+            /** Participation Min */
+            participation_min: number;
+            /** Participation Max */
+            participation_max: number;
+            /** Participation Labels */
+            participation_labels?: {
+                [key: string]: string;
+            } | null;
+            /** Bimesters */
+            bimesters: components["schemas"]["Bimester"][];
+            /** Source Label */
+            source_label: string;
+            /** Quality Rules */
+            quality_rules?: {
+                [key: string]: unknown;
+            };
+            eligibility_rules: components["schemas"]["EligibilityRules"];
+            risk_rule: components["schemas"]["RiskRule"];
+            opportune_windows: components["schemas"]["OpportuneWindows"];
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+        };
+        /** RiskRule */
+        RiskRule: {
+            /**
+             * Version
+             * @constant
+             */
+            version: "RIESGO_V1";
         };
     };
     responses: never;
@@ -6970,6 +7176,318 @@ export interface operations {
                 };
             };
             /** @description as_of futuro o procesamiento institucional no habilitado (INSTITUTIONAL_PROCESSING_NOT_READY) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    processingProtocolByPeriod: {
+        parameters: {
+            query: {
+                period_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Protocol"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Solo ADMIN; CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Protocolo o periodo inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description El periodo ya tiene un protocolo con otros parámetros */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Periodo no REAL, bimestres fuera del periodo o parámetros inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    createProcessingProtocol: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProtocolCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Protocol"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Solo ADMIN; CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Protocolo o periodo inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description El periodo ya tiene un protocolo con otros parámetros */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Periodo no REAL, bimestres fuera del periodo o parámetros inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    confirmProcessingProtocol: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Protocol"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Solo ADMIN; CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Protocolo o periodo inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description El periodo ya tiene un protocolo con otros parámetros */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Periodo no REAL, bimestres fuera del periodo o parámetros inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    revokeProcessingProtocol: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-CSRF-Token": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Protocol"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Solo ADMIN; CSRF u Origin no autorizado */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Protocolo o periodo inexistente */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description El periodo ya tiene un protocolo con otros parámetros */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Periodo no REAL, bimestres fuera del periodo o parámetros inválidos */
             422: {
                 headers: {
                     [name: string]: unknown;
