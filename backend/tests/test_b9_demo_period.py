@@ -173,3 +173,18 @@ def test_output_has_no_student_data_and_no_password_option():
     assert 'student_code' not in text and 'full_name' not in text
     source = Path(demo.__file__).read_text(encoding='utf-8')
     assert "'--password'" not in source and 'getpass' not in source
+
+
+def test_summary_comparison_reports_identity_and_the_paths_that_differ(tmp_path, capsys):
+    import compare_real_summaries as compare
+    reference = {'counts': {'students': 60}, 'models': {'RF': {'accuracy': {'mean': 0.8625, 'sd': 0.014}}}, 'rows': [1, 2, 3]}
+    first, second, third = (tmp_path / name for name in ('a.json', 'b.json', 'c.json'))
+    first.write_text(json.dumps(reference), encoding='utf-8')
+    second.write_text(json.dumps(reference), encoding='utf-8')
+    third.write_text(json.dumps({**reference, 'counts': {'students': 61}, 'rows': [1, 2], 'extra': True}), encoding='utf-8')
+    assert compare.main([str(first), str(second)]) == 0 and capsys.readouterr().out.strip() == 'IDENTICOS'
+    assert compare.main([str(first), str(third)]) == 1
+    out = capsys.readouterr().out
+    assert '$.counts.students' in out and '$.rows[len]' in out and '$.extra' in out and 'AUSENTE' in out
+    assert compare.main([str(first), str(tmp_path / 'no-existe.json')]) == 2
+    assert compare.differences({'a': 1}, {'a': 1.0})                                      # 1 y 1.0 no son «idénticos» (el tipo también cuenta)
