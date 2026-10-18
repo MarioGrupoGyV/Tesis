@@ -110,7 +110,7 @@ def test_interventions_csv_rows_codes_only_and_permissions(cases):
     assert 'Alumno de Prueba' not in content and 'full_name' not in content
     rows = list(csv.DictReader(io.StringIO(content)))
     assert list(rows[0]) == ['origen', 'alcance', 'periodo', 'as_of_utc', 'codigo_anonimo', 'grado', 'seccion',
-                             'alerta_vinculada', 'fecha_alerta_utc', 'fecha_intervencion_utc', 'dias_desde_alerta', 'oportuna']
+                             'alerta_vinculada', 'fecha_alerta_utc', 'fecha_intervencion_utc', 'dias_desde_alerta', 'oportuna', 'metric_basis']  # 3B-3: columna de base de métricas
     assert len(rows) == 4  # una fila por intervención realizada elegible: a×2, b×1, d×1 (e y f no)
     by_code = {}
     for row in rows:

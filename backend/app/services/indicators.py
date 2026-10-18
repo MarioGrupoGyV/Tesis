@@ -29,13 +29,15 @@ OPPORTUNE_WINDOW_DAYS = 14  # la tesis: «dos semanas» desde la emisión de la 
 CLASSES = ('LOW', 'MEDIUM', 'HIGH')
 NOTICE_REAL = ('Datos reales locales — análisis exploratorio, no demuestra eficacia escolar. Las alertas marcadas como '
                'simulación retrospectiva las generó el modelo ahora sobre cortes pasados: no son alertas emitidas en su momento.')
+OOF_LABEL = 'validación cruzada (fuera de muestra)'
+IN_SAMPLE_LABEL = 'en memoria, no valida el modelo'
 SCOPE = {'SYNTHETIC': 'SYNTHETIC_STUDY', 'REAL': 'INSTITUTIONAL_STUDY'}
 NOTICE = ('Indicadores calculados sobre un estudio con datos sintéticos (simulación). No son resultados del colegio '
           'ni miden eficacia escolar.')
 CSV_HEADERS = ('origen', 'alcance', 'periodo', 'as_of_utc', 'codigo_anonimo', 'grado', 'seccion', 'elegible',
     'promedio', 'asistencia', 'riesgo_referencia', 'riesgo_predicho', 'fecha_alerta_utc', 'alerta_antes_cierre',
     'nia', 'intervencion_oportuna', 'dias_hasta_intervencion', 'motivo_exclusion', 'fecha_deteccion_utc',
-    'simulacion_retrospectiva')
+    'simulacion_retrospectiva', 'metric_basis')
 
 
 def pct(numerator, denominator, reason='NO_DENOMINATOR'):
@@ -123,6 +125,13 @@ def close_instant(period, close_at):
     return datetime.combine(period.end_date + timedelta(days=1), time.min, tzinfo=LIMA).astimezone(UTC)
 
 
+def detection_before_close(row, close_at, lead_days):
+    """PDER por corte: la PREDICCIÓN de este corte (media/alta) se emitió antes del cierre menos el margen.
+    No se hereda la alerta de otro corte: la alerta única de la matrícula solo sirve para NIA e intervención oportuna."""
+    instant = row['prediction_instant']
+    return bool(row['predicted_risk'] in ('MEDIUM', 'HIGH') and instant is not None and instant < close_at - timedelta(days=lead_days))
+
+
 def student_records(db, settings, period, allowed_ids, as_of, close_at, window=OPPORTUNE_WINDOW_DAYS, lead_days=0,
                     target_date=None):
     rows = repository.student_rows(db, period.id, as_of, allowed_ids, period.data_origin, target_date)
@@ -145,7 +154,8 @@ def student_records(db, settings, period, allowed_ids, as_of, close_at, window=O
         records.append(dict(row, eligible=eligible, reference=reference, days=days, exclusion=reason,
             # PDER: la detección (simulada en retrospectiva) llega antes del cierre; la oportunidad de intervención
             # usa el instante real de la alerta, porque las intervenciones reales ocurren después de ella.
-            before_close=(detected < close_at - timedelta(days=lead_days)) if opened else False,
+            before_close=detection_before_close(row, close_at, lead_days),
+            covered=row['predicted_risk'] == 'LOW' or row['followup_decision'] in ('CREATED', 'UPDATED'),
             retrospective=is_retrospective(detected, opened) if opened else False, detected=detected,
             opportune=(days is not None and days <= window) if opened else None))
     return records, reference_reason
@@ -161,10 +171,10 @@ def intervention_records(db, allowed_ids, period, as_of, window=OPPORTUNE_WINDOW
     return records
 
 
-def summarize(rows, section=None, reference_reason=None, interventions=(), window=OPPORTUNE_WINDOW_DAYS, no_interventions=False):
+def summarize(rows, section=None, reference_reason=None, interventions=(), window=OPPORTUNE_WINDOW_DAYS, no_interventions=False, oof=None):
     eligible = [r for r in rows if r['eligible']]
-    covered = sum(1 for r in eligible if r['predicted_risk'] is not None and
-                  (r['predicted_risk'] == 'LOW' or r['alert_id'] is not None))
+    # CRA por corte: predicción baja, o media/alta que el seguimiento dejó reflejada en una alerta (decisión CREATED/UPDATED).
+    covered = sum(1 for r in eligible if r['predicted_risk'] is not None and r['covered'])
     cra = pct(covered, len(eligible), 'NO_ELIGIBLE_STUDENTS')
     risky_reference = [r for r in eligible if r['reference'] in ('MEDIUM', 'HIGH')]
     no_reference_source = reference_reason and not any(r['reference'] for r in eligible)
@@ -212,6 +222,14 @@ def summarize(rows, section=None, reference_reason=None, interventions=(), windo
             per_class={k: schemas.ClassMetric(**v) for k, v in value['per_class'].items()},
             macro=schemas.MacroMetrics(**value['macro']), accuracy=value['accuracy'],
             not_estimable_reasons=value['not_estimable_reasons'])
+    basis, label, in_sample = ('IN_SAMPLE' if metrics else None), None, None
+    if oof is not None:
+        # REAL: la cifra principal sale del informe de validación cruzada del modelo activo (solo nivel periodo);
+        # el cálculo en memoria se conserva rotulado y nunca es la cifra principal.
+        in_sample = metrics
+        metrics, metrics_reason = oof if section is None else (None, 'PERIOD_LEVEL_ONLY')
+        basis = 'OUT_OF_FOLD' if metrics else 'IN_SAMPLE' if in_sample else None
+        label = OOF_LABEL if metrics else IN_SAMPLE_LABEL if in_sample else None
     exclusions = schemas.Exclusions(ineligible=sum(1 for r in rows if not r['eligible']),
         no_snapshot=sum(1 for r in eligible if r['snapshot_id'] is None),
         no_reference=sum(1 for r in eligible if r['snapshot_id'] is not None and r['reference'] is None),
@@ -219,6 +237,7 @@ def summarize(rows, section=None, reference_reason=None, interventions=(), windo
     return schemas.Summary(section_id=section.id if section else None, section_code=section.code if section else None,
         grade=section.grade if section else None, eligible_students=len(eligible), cra=cra, pder=pder, nia=nia,
         opportune=opportune, opportune_by_intervention=opportune_by_intervention, performance=performance, model_metrics=metrics, model_metrics_reason=metrics_reason,
+        metric_basis=basis, metric_label=label, in_sample_metrics=in_sample,
         exclusions=exclusions)
 
 
@@ -240,6 +259,28 @@ def resolve_as_of(as_of):
     if as_of > now:
         raise AppError(422, 'AS_OF_IN_FUTURE', 'as_of no puede estar en el futuro.')
     return as_of
+
+
+def out_of_fold_metrics(db, period):
+    """Métricas validadas (CV agrupada por estudiante) del informe de comparación del modelo REAL activo.
+
+    Devuelve (ModelMetrics | None, motivo). Sin modelo activo o sin informe: null con NO_OUT_OF_SAMPLE_REPORT."""
+    from app.models.ml import ModelVersion
+    study = db.scalar(select(SyntheticStudyRecord).where(SyntheticStudyRecord.period_id == period.id))
+    model = db.scalar(select(ModelVersion).where(ModelVersion.study_id == study.id, ModelVersion.is_active.is_(True),
+                                                 ModelVersion.status == 'APPROVED', ModelVersion.data_origin == 'REAL')) if study else None
+    report = ((study.comparison or {}).get('report') or {}) if study else {}
+    summary = ((report.get('algorithms') or {}).get(model.algorithm) or {}).get('repeated_cv') if model else None
+    if not summary:
+        return None, 'NO_OUT_OF_SAMPLE_REPORT'
+    per_class = {name: schemas.ClassMetric(support=item['support_per_repetition'], precision=item['precision']['mean'],
+                                           recall=item['recall']['mean'], f1=item['f1']['mean']) for name, item in summary['per_class'].items()}
+    macro = summary['macro']
+    return schemas.ModelMetrics(n=sum(item.support for item in per_class.values()), class_order=summary['class_order'],
+        confusion_matrix=summary['aggregated_confusion_matrix'], per_class=per_class,
+        macro=schemas.MacroMetrics(**{key: macro[key]['mean'] for key in ('precision', 'recall', 'f1')}),
+        accuracy=summary['accuracy']['mean'], not_estimable_reasons={},
+        repetitions=summary['repetitions'], macro_sd={key: macro[key]['sd'] for key in ('precision', 'recall', 'f1')}), None
 
 
 def bimester_of(protocol, code):
@@ -269,7 +310,8 @@ def compute(db, user, settings, period_id, section_id, as_of, close_at, bimester
     no_interventions = period.data_origin == 'REAL' and not any(
         r['nia'] for r in records) and not repository.intervention_rows(db, period.id, as_of, [s.id for s in chosen], 'REAL')
     return SimpleNamespace(period=period, allowed=allowed, chosen=chosen, as_of=as_of, close=close, records=records,
-        reference_reason=reference_reason, window=window, bimester=bimester, no_interventions=no_interventions)
+        reference_reason=reference_reason, window=window, bimester=bimester, no_interventions=no_interventions,
+        oof=out_of_fold_metrics(db, period) if period.data_origin == 'REAL' else None)
 
 
 def indicators(db, user, settings, period_id, section_id, as_of, close_at, bimester=None):
@@ -277,7 +319,7 @@ def indicators(db, user, settings, period_id, section_id, as_of, close_at, bimes
     period = run.period
     events = intervention_records(db, [s.id for s in run.chosen], period, run.as_of, run.window)
     sections = [summarize([r for r in run.records if r['section_id'] == s.id], s, run.reference_reason,
-                          [i for i in events if i['section_id'] == s.id], run.window, run.no_interventions) for s in run.chosen]
+                          [i for i in events if i['section_id'] == s.id], run.window, run.no_interventions, run.oof) for s in run.chosen]
     real = period.data_origin == 'REAL'
     return schemas.IndicatorsResponse(period_id=period.id, period_code=period.code, data_origin=period.data_origin,
         is_simulation=not real, notice=NOTICE_REAL if real else NOTICE, bimester=run.bimester,
@@ -285,7 +327,7 @@ def indicators(db, user, settings, period_id, section_id, as_of, close_at, bimes
         as_of=run.as_of, close_at=run.close, opportune_window_days=run.window,
         section_id=section_id, authorized_section_ids=[s.id for s in run.allowed],
         prv=prv(db, user, period, run.as_of, section_id),
-        total=summarize(run.records, None, run.reference_reason, events, run.window, run.no_interventions), sections=sections)
+        total=summarize(run.records, None, run.reference_reason, events, run.window, run.no_interventions, run.oof), sections=sections)
 
 
 def student_item(record):
@@ -308,6 +350,11 @@ def students(db, user, settings, period_id, section_id, as_of, close_at, page, p
         page=page, page_size=page_size)
 
 
+def metric_basis(run):
+    """Base de las métricas del periodo: validadas fuera de muestra (REAL con informe) o en memoria."""
+    return 'OUT_OF_FOLD' if run.oof is not None and run.oof[0] is not None else 'IN_SAMPLE'
+
+
 def yes_no(value):
     return '' if value is None else 'SI' if value else 'NO'
 
@@ -328,7 +375,7 @@ def export_csv(db, user, settings, request_id, period_id, section_id, as_of, clo
                 yes_no(item.alert_before_close), item.nia, yes_no(item.opportune), item.days_to_first_intervention,
                 item.exclusion_reason,
                 item.alert_detected_at.astimezone(UTC).isoformat() if item.alert_detected_at else None,
-                yes_no(item.retrospective) if item.alert_opened_at else None)
+                yes_no(item.retrospective) if item.alert_opened_at else None, metric_basis(run))
             writer.writerow([safe_csv_text(value) for value in values])
         db.add(AuditEvent(id=uuid4(), actor_id=user.id, entity_type='REPORT', entity_id=period.id,
             action='INDICATORS_EXPORT_REQUESTED', request_id=request_id, recorded_at=datetime.now(UTC),
@@ -344,7 +391,7 @@ def export_csv(db, user, settings, request_id, period_id, section_id, as_of, clo
 
 
 INTERVENTION_CSV_HEADERS = ('origen', 'alcance', 'periodo', 'as_of_utc', 'codigo_anonimo', 'grado', 'seccion',
-    'alerta_vinculada', 'fecha_alerta_utc', 'fecha_intervencion_utc', 'dias_desde_alerta', 'oportuna')
+    'alerta_vinculada', 'fecha_alerta_utc', 'fecha_intervencion_utc', 'dias_desde_alerta', 'oportuna', 'metric_basis')
 
 
 def intervention_item(record):
@@ -366,7 +413,7 @@ def export_interventions_csv(db, user, settings, request_id, period_id, section_
             values = (period.data_origin, SCOPE[period.data_origin], period.code, as_of.astimezone(UTC).isoformat(), item.anon_code,
                 item.grade, item.section_code, 'SI' if item.alert_opened_at else 'NO',
                 item.alert_opened_at.astimezone(UTC).isoformat() if item.alert_opened_at else None,
-                item.performed_at.astimezone(UTC).isoformat(), item.days_since_alert, yes_no(item.opportune))
+                item.performed_at.astimezone(UTC).isoformat(), item.days_since_alert, yes_no(item.opportune), metric_basis(run))
             writer.writerow([safe_csv_text(value) for value in values])
         db.add(AuditEvent(id=uuid4(), actor_id=user.id, entity_type='REPORT', entity_id=period.id,
             action='INDICATORS_INTERVENTIONS_EXPORT_REQUESTED', request_id=request_id, recorded_at=datetime.now(UTC),

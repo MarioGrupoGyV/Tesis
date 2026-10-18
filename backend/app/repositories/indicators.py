@@ -4,7 +4,8 @@ from sqlalchemy import text
 STUDENT_ROWS = '''
 SELECT e.id AS enrollment_id,s.anon_code,s.is_active,s.eligible_for_processing,e.section_id,
   g.code AS section_code,g.grade,sn.id AS snapshot_id,sn.entry_channel,sn.average_grade,sn.attendance_pct,
-  pr.risk_level AS predicted_risk,al.id AS alert_id,al.opened_at AS alert_opened_at,al.detected_at AS alert_detected_at,
+  pr.risk_level AS predicted_risk,pr.id AS prediction_id,COALESCE(pr.as_of_at,pr.predicted_at) AS prediction_instant,
+  fd.decision AS followup_decision,al.id AS alert_id,al.opened_at AS alert_opened_at,al.detected_at AS alert_detected_at,
   COALESCE(iv.done,0) AS nia,iv.first_done_after_alert
 FROM risk_school.enrollments e
 JOIN risk_school.students s ON s.id=e.student_id
@@ -17,6 +18,8 @@ LEFT JOIN LATERAL (
 LEFT JOIN LATERAL (
   SELECT p.* FROM risk_school.predictions p WHERE p.snapshot_id=sn.id AND COALESCE(p.as_of_at,p.predicted_at)<=:as_of
   ORDER BY p.predicted_at DESC,p.id LIMIT 1) pr ON true
+-- Qué hizo el seguimiento con ESA predicción (CREATED/UPDATED = quedó reflejada en una alerta de la matrícula).
+LEFT JOIN risk_school.followup_decisions fd ON fd.prediction_id=pr.id
 LEFT JOIN LATERAL (
   SELECT a.* FROM risk_school.alerts a WHERE a.enrollment_id=e.id AND a.detected_at<=:as_of
   ORDER BY a.detected_at,a.id LIMIT 1) al ON true

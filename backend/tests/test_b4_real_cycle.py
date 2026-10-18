@@ -4,7 +4,7 @@ Protocolo → estudio institucional → importación de cortes → cierres (RIES
 evaluación retrospectiva en el corte → alertas con detected_at → indicadores. Con no mezcla en ambos sentidos.
 """
 import random
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from uuid import UUID, uuid4
 
@@ -56,6 +56,12 @@ def fictitious_world(section_code, prefix):
                                      activities_delivered=round(24 * activities / 100),
                                      participation_level=int(clip(5 - round(4 * latent), 1, 5)), behavior_incidents=incidents)))
     return ('\n'.join(lines) + '\n').encode(), closings
+
+
+def csv_basis(state, period_id):
+    lines = call(state, 'get', f'/indicators/export.csv?period_id={period_id}&bimester=B1').text.splitlines()
+    column = lines[0].lstrip('﻿').split(',').index('metric_basis')
+    return {line.split(',')[column] for line in lines[1:]}
 
 
 def admin(state, db):
@@ -194,7 +200,35 @@ def test_full_real_cycle_with_fictitious_data(demo):
         assert total['nia']['reason'] == 'NO_REAL_INTERVENTIONS' and total['nia']['total'] is None
         assert total['opportune']['percent'] is None and total['opportune']['reason'] == 'NO_REAL_INTERVENTIONS'
         assert total['pder']['denominator'] > 0 and total['pder']['percent'] is not None   # detectadas antes del cierre del bimestre
-        assert total['model_metrics']['n'] > 0 and total['eligible_students'] == STUDENTS + 1
+        assert total['eligible_students'] == STUDENTS + 1
+        # Métricas: la cifra principal es la validación cruzada del informe de comparación, no el cálculo en memoria.
+        metrics, in_sample = total['model_metrics'], total['in_sample_metrics']
+        cv = report['algorithms'][report['selected_algorithm']]['repeated_cv']
+        assert total['metric_basis'] == 'OUT_OF_FOLD' and total['metric_label'] == 'validación cruzada (fuera de muestra)'
+        assert metrics['repetitions'] == 20 == cv['repetitions'] and metrics['confusion_matrix'] == cv['aggregated_confusion_matrix']
+        assert metrics['macro']['f1'] == pytest.approx(cv['macro']['f1']['mean']) and metrics['macro_sd']['f1'] == pytest.approx(cv['macro']['f1']['sd'])
+        assert in_sample is not None and in_sample['repetitions'] is None          # el cálculo en memoria solo queda rotulado como interno
+        assert sum(map(sum, metrics['confusion_matrix'])) == 20 * 2 * STUDENTS      # 20 repeticiones sobre las 120 observaciones
+        assert sum(map(sum, in_sample['confusion_matrix'])) <= STUDENTS + 1          # el corte del bimestre, en memoria
+        assert in_sample['confusion_matrix'] != metrics['confusion_matrix']
+        assert all(row['model_metrics'] is None and row['model_metrics_reason'] == 'PERIOD_LEVEL_ONLY' for row in data['sections'])
+    assert 'OUT_OF_FOLD' in csv_basis(state, period['id']) and 'IN_SAMPLE' not in csv_basis(state, period['id'])
+    other_period, _ = real_setup(state, 'REAL')                                    # sin estudio ni informe: null con motivo
+    with state.app.state.database.session_factory() as db:
+        from app.models.s1 import AcademicPeriod
+        from app.services import indicators as indicator_service
+        assert indicator_service.out_of_fold_metrics(db, db.get(AcademicPeriod, UUID(other_period['id']))) == (None, 'NO_OUT_OF_SAMPLE_REPORT')
+    # PDER por corte contra la base: predicción media/alta de ese corte, emitida antes del cierre menos el margen (3 días).
+    for bimester, spec in BIMESTERS.items():
+        close_instant = datetime.fromisoformat(spec['target']).replace(tzinfo=UTC) + timedelta(days=1, hours=5)
+        with state.owner.connect() as conn:
+            expected = conn.execute(text("""SELECT count(*) FILTER (WHERE pr.risk_level IN ('MEDIUM','HIGH')
+                    AND COALESCE(pr.as_of_at,pr.predicted_at) < :close - interval '3 days'), count(*)
+                FROM risk_school.risk_references rr JOIN risk_school.predictions pr ON pr.snapshot_id=rr.snapshot_id
+                WHERE rr.period_id=:p AND rr.bimester=:b AND rr.risk_level IN ('MEDIUM','HIGH')"""),
+                {'p': period['id'], 'b': bimester, 'close': close_instant}).one()
+        shown = call(state, 'get', f"/indicators?period_id={period['id']}&bimester={bimester}").json()['total']['pder']
+        assert (shown['numerator'], shown['denominator']) == tuple(expected) and shown['denominator'] <= STUDENTS
     assert call(state, 'get', f"/indicators?period_id={period['id']}&bimester=NOPE").status_code == 404
     assert call(state, 'get', f"/indicators?period_id={state.period_id}&bimester=B1").status_code == 422       # bimestre solo en REAL
     contexts = call(state, 'get', '/indicators/contexts').json()
@@ -205,7 +239,9 @@ def test_full_real_cycle_with_fictitious_data(demo):
                  call(state, 'get', f"/indicators/interventions.csv?period_id={period['id']}").text]
     for text_ in csv_texts:
         assert 'Zzxqwv' not in text_ and 'Apellidoz' not in text_ and 'Alumno' not in text_      # solo códigos, nunca nombres
-    assert csv_texts[0].splitlines()[0].endswith('fecha_deteccion_utc,simulacion_retrospectiva')
+    from test_b5_protocol_audit import name_findings
+    assert all(name_findings(item) == [] for item in csv_texts)                          # búsqueda automática: sin cabeceras ni celdas con aspecto de nombre
+    assert csv_texts[0].splitlines()[0].endswith('fecha_deteccion_utc,simulacion_retrospectiva,metric_basis')
     assert csv_texts[0].splitlines()[1].startswith('REAL,INSTITUTIONAL_STUDY,')
     # Lista y detalle de alertas / resumen funcionan para REAL con los permisos habituales.
     assert call(state, 'get', f"/alerts?period_id={period['id']}").status_code == 200

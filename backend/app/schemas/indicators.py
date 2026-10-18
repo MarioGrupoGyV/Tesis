@@ -83,6 +83,9 @@ class ModelMetrics(ContractModel):
     macro: MacroMetrics
     accuracy: float | None
     not_estimable_reasons: dict[str, str]
+    # Validación cruzada: repeticiones y desviación estándar de las métricas macro (null en el cálculo en memoria).
+    repetitions: int | None = None
+    macro_sd: dict[str, float | None] | None = None
 
 
 class Exclusions(ContractModel):
@@ -105,6 +108,10 @@ class Summary(ContractModel):
     performance: Performance
     model_metrics: ModelMetrics | None
     model_metrics_reason: str | None = None
+    # OUT_OF_FOLD: validación cruzada agrupada por estudiante (informe del modelo activo). IN_SAMPLE: en memoria, no valida el modelo.
+    metric_basis: Literal['OUT_OF_FOLD', 'IN_SAMPLE'] | None = None
+    metric_label: str | None = None
+    in_sample_metrics: ModelMetrics | None = None
     exclusions: Exclusions
 
 
