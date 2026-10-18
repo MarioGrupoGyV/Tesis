@@ -8,7 +8,7 @@ from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_serializer, model_validator
 
 CLASSES = ('LOW', 'MEDIUM', 'HIGH')
 BASE_FEATURES = ('average_grade', 'attendance_pct', 'activities_pct', 'participation_level', 'behavior_incidents')
@@ -44,6 +44,9 @@ class FeatureConfig(InternalModel):
     horizon_days: int = Field(ge=1, le=366)
     scales: dict[str, Scale]
     participation_values: list[int] = Field(min_length=2)
+    # Variables base configurables (ADR 012, decisión 4): por defecto las cinco; el protocolo REAL usa cuatro (sin participación).
+    base_features: list[Literal['average_grade', 'attendance_pct', 'activities_pct', 'participation_level', 'behavior_incidents']] = Field(
+        default_factory=lambda: list(BASE_FEATURES), min_length=1)
     extra_features: list[Literal['age_years', 'grade']] = Field(default_factory=list)
     extra_justification: str | None = None
     # No default: requiere decisión explícita; NO es elegibilidad de investigación.
@@ -52,11 +55,21 @@ class FeatureConfig(InternalModel):
 
     @property
     def features(self):
-        return (*BASE_FEATURES, *self.extra_features)
+        return (*self.base_features, *self.extra_features)
+
+    @model_serializer(mode='wrap')
+    def _omit_default_base_features(self, handler):
+        # Con las cinco variables por defecto el volcado es idéntico al anterior: los hashes de datasets y manifiestos
+        # ya registrados no cambian.
+        data = handler(self)
+        if tuple(self.base_features) == BASE_FEATURES:
+            data.pop('base_features', None)
+        return data
 
     @model_validator(mode='after')
     def consistent(self):
-        if set(self.scales) != set(self.features) or len(set(self.extra_features)) != len(self.extra_features):
+        if (len(set(self.base_features)) != len(self.base_features) or set(self.scales) != set(self.features)
+                or len(set(self.extra_features)) != len(self.extra_features)):
             raise ValueError('FEATURE_SCALES_REQUIRED')
         if self.extra_features and not (self.extra_justification or '').strip():
             raise ValueError('AGE_GRADE_JUSTIFICATION_REQUIRED')
@@ -64,9 +77,10 @@ class FeatureConfig(InternalModel):
             raise ValueError('UNKNOWN_REQUIRED_FEATURE')
         if len(set(self.participation_values)) != len(self.participation_values):
             raise ValueError('DUPLICATE_CATEGORIES')
-        scale = self.scales['participation_level']
-        if scale.decimals != 0 or any(not scale.minimum <= v <= scale.maximum for v in self.participation_values):
-            raise ValueError('INVALID_PARTICIPATION_SCALE')
+        if 'participation_level' in self.features:
+            scale = self.scales['participation_level']
+            if scale.decimals != 0 or any(not scale.minimum <= v <= scale.maximum for v in self.participation_values):
+                raise ValueError('INVALID_PARTICIPATION_SCALE')
         return self
 
 

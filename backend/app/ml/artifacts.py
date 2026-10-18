@@ -23,6 +23,10 @@ def canonical(value):
     return json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
 
 
+# El alcance del dataset institucional se llama INSTITUTIONAL; el del manifiesto, INSTITUTIONAL_STUDY.
+MANIFEST_SCOPE = {'ISOLATED_TEST': 'ISOLATED_TEST', 'SYNTHETIC_STUDY': 'SYNTHETIC_STUDY', 'INSTITUTIONAL': 'INSTITUTIONAL_STUDY'}
+
+
 class ArtifactStore:
     def __init__(self, root: Path):
         self.root = Path(root)
@@ -75,10 +79,10 @@ class ArtifactStore:
         return self._safe(self.root/key)
 
     def save(self,bundle: ModelBundle,dataset: Dataset):
-        if dataset.scope not in ('ISOLATED_TEST', 'SYNTHETIC_STUDY'):
+        if dataset.scope not in ('ISOLATED_TEST', 'SYNTHETIC_STUDY', 'INSTITUTIONAL'):
             from app.services.processing_policy import require_ml_protocol
             require_ml_protocol()
-        if (bundle.manifest['scope'] != dataset.scope or
+        if (bundle.manifest['scope'] != MANIFEST_SCOPE[dataset.scope] or
                 bundle.manifest['data_origin'] != ('SYNTHETIC' if dataset.scope == 'SYNTHETIC_STUDY' else 'REAL')):
             raise MLDiagnostic('ARTIFACT_SCOPE_ORIGIN_INCOMPATIBLE')
         if hashlib.sha256(dataset.model_dump_json().encode()).hexdigest() != bundle.manifest['dataset_hash']:
@@ -133,7 +137,7 @@ class ArtifactStore:
                     manifest['files']['pipeline.joblib'] != manifest['artifact_sha256']):
                 raise MLDiagnostic('MANIFEST_HASH_MISMATCH')
             dataset = Dataset.model_validate_json(payloads['dataset.json'])
-            if (dataset.scope != manifest['scope'] or dataset.schema_version != manifest['dataset_schema_version'] or
+            if (MANIFEST_SCOPE[dataset.scope] != manifest['scope'] or dataset.schema_version != manifest['dataset_schema_version'] or
                     dataset.config != config or len(dataset.observations) != manifest['observations']):
                 raise MLDiagnostic('ARTIFACT_DATASET_INCOMPATIBLE')
             validate_dataset(dataset)
@@ -144,6 +148,9 @@ class ArtifactStore:
                 if (sorted({groups[index] for index in split['train']}) != split['train_students'] or
                         sorted({groups[index] for index in split['validation']}) != split['validation_students']):
                     raise MLDiagnostic('ARTIFACT_GROUP_PARTITION_INCOMPATIBLE')
+            if dataset.scope == 'INSTITUTIONAL' and (manifest['institutional_evaluation']['source_dataset_hash'] != manifest['dataset_hash']
+                    or manifest['institutional_evaluation']['students'] != manifest['students']):
+                raise MLDiagnostic('ARTIFACT_INSTITUTIONAL_PROVENANCE_INCOMPATIBLE')
             if dataset.scope == 'SYNTHETIC_STUDY':
                 protocol = dataset.synthetic_protocol
                 if (protocol.get('study_id') != manifest['study_id'] or

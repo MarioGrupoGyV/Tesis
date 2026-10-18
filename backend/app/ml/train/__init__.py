@@ -46,13 +46,16 @@ def factory(algorithm: str, config: FeatureConfig, seed: int) -> Pipeline:
     if algorithm not in estimators:
         raise MLDiagnostic('UNKNOWN_ALGORITHM')
     numeric = [name for name in config.features if name != 'participation_level']
+    has_participation = 'participation_level' in config.features
     steps = [('imputer', SimpleImputer(strategy='median', keep_empty_features=True))]
     if algorithm == 'SVM':
         steps.append(('scale', StandardScaler()))
-    categories = Pipeline([('imputer',SimpleImputer(strategy='most_frequent',keep_empty_features=True)),
-        ('encode',OneHotEncoder(categories=[config.participation_values],handle_unknown='error',sparse_output=False))])
-    preprocessing = ColumnTransformer([('numeric',Pipeline(steps),numeric),
-        ('categorical',categories,['participation_level'])],remainder='drop')
+    transformers = [('numeric',Pipeline(steps),numeric)]
+    if has_participation:  # sin participación (protocolo REAL) no hay columna categórica
+        categories = Pipeline([('imputer',SimpleImputer(strategy='most_frequent',keep_empty_features=True)),
+            ('encode',OneHotEncoder(categories=[config.participation_values],handle_unknown='error',sparse_output=False))])
+        transformers.append(('categorical',categories,['participation_level']))
+    preprocessing = ColumnTransformer(transformers,remainder='drop')
     return Pipeline([('features',preprocessing),('estimator',estimators[algorithm]())])
 
 

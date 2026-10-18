@@ -28,7 +28,7 @@ class ValidationPrediction(InternalModel):
 
 
 class ArtifactManifest(InternalModel):
-    manifest_version: Literal['ml-artifact-v1', 'ml-artifact-v2']
+    manifest_version: Literal['ml-artifact-v1', 'ml-artifact-v2', 'ml-artifact-v3']
     dataset_schema_version: Literal['ml-dataset-v1', 'ml-dataset-v2']
     artifact_key: str = Field(pattern=r'^[0-9a-f]{32}$')
     artifact_sha256: str = Field(pattern=r'^[0-9a-f]{64}$')
@@ -41,7 +41,7 @@ class ArtifactManifest(InternalModel):
     horizon_days: int = Field(ge=1,le=366)
     seed: int = Field(ge=0,lt=2**32)
     versions: dict[str,str]
-    scope: Literal['ISOLATED_TEST', 'SYNTHETIC_STUDY']
+    scope: Literal['ISOLATED_TEST', 'SYNTHETIC_STUDY', 'INSTITUTIONAL_STUDY']
     data_origin: Literal['REAL', 'SYNTHETIC']
     provenance: str = Field(min_length=1)
     students: int = Field(ge=2)
@@ -58,24 +58,35 @@ class ArtifactManifest(InternalModel):
     fold_metrics: list[dict]
     validation_predictions: list[ValidationPrediction]
     study_id: UUID | None = None
-    generator_version: Literal['synthetic-generator-v1'] | None = None
+    generator_version: Literal['synthetic-generator-v1', 'institutional-loader-v1'] | None = None
     synthetic_config_hash: str | None = Field(default=None, pattern=r'^[0-9a-f]{64}$')
     synthetic_evaluation: dict | None = None
     external_metrics: dict | None = None
     fold_variation: dict | None = None
     external_predictions: list[ValidationPrediction] | None = None
+    institutional_evaluation: dict | None = None
 
     @model_validator(mode='after')
     def consistent(self):
         synthetic = self.scope == 'SYNTHETIC_STUDY'
+        institutional = self.scope == 'INSTITUTIONAL_STUDY'
         if (self.data_origin != ('SYNTHETIC' if synthetic else 'REAL') or
-                self.manifest_version != ('ml-artifact-v2' if synthetic else 'ml-artifact-v1') or
+                self.manifest_version != ('ml-artifact-v2' if synthetic else 'ml-artifact-v3' if institutional else 'ml-artifact-v1') or
                 self.dataset_schema_version != ('ml-dataset-v2' if synthetic else 'ml-dataset-v1')):
             raise ValueError('MANIFEST_SCOPE_ORIGIN_INCOMPATIBLE')
         synthetic_fields = [self.study_id, self.generator_version, self.synthetic_config_hash,
             self.synthetic_evaluation, self.external_metrics, self.fold_variation, self.external_predictions]
-        if (synthetic and any(value is None for value in synthetic_fields) or
-                not synthetic and any(value is not None for value in synthetic_fields)):
+        only_synthetic = [self.synthetic_config_hash, self.synthetic_evaluation, self.external_metrics,
+                          self.fold_variation, self.external_predictions]
+        if synthetic and any(value is None for value in synthetic_fields):
+            raise ValueError('SYNTHETIC_MANIFEST_METADATA_REQUIRED')
+        if institutional:
+            if (self.study_id is None or self.generator_version != 'institutional-loader-v1' or
+                    self.institutional_evaluation is None or any(value is not None for value in only_synthetic)):
+                raise ValueError('INSTITUTIONAL_MANIFEST_METADATA_REQUIRED')
+        elif not synthetic and (any(value is not None for value in synthetic_fields) or self.institutional_evaluation is not None):
+            raise ValueError('SYNTHETIC_MANIFEST_METADATA_REQUIRED')
+        if synthetic and self.institutional_evaluation is not None:
             raise ValueError('SYNTHETIC_MANIFEST_METADATA_REQUIRED')
         if synthetic:
             plan = self.synthetic_evaluation

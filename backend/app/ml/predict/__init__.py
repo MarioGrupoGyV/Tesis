@@ -33,7 +33,8 @@ def predict_snapshot(snapshot: Observation, model_bundle: ModelBundle | None) ->
                 model_bundle.manifest['data_origin'] != snapshot.data_origin or
                 (snapshot.data_origin == 'SYNTHETIC' and
                  (model_bundle.manifest['scope'] != 'SYNTHETIC_STUDY' or model_bundle.manifest['manifest_version'] != 'ml-artifact-v2')) or
-                (snapshot.data_origin == 'REAL' and model_bundle.manifest['scope'] != 'ISOLATED_TEST') or
+                (snapshot.data_origin == 'REAL' and (model_bundle.manifest['scope'], model_bundle.manifest['manifest_version']) not in
+                 (('ISOLATED_TEST', 'ml-artifact-v1'), ('INSTITUTIONAL_STUDY', 'ml-artifact-v3'))) or
                 model_bundle.manifest['feature_schema'] != model_bundle.config.model_dump(mode='json') or
                 model_bundle.manifest['probabilities_calibrated'] is not False):
             raise MLDiagnostic('MODEL_INCOMPATIBLE')

@@ -173,9 +173,9 @@ def test_read_scopes_and_public_model_projection(ml_db):
 def test_model_activation_constraints_preserved(ml_db):
     with ml_db.env.app.state.database.session_factory() as db:
         constraints=db.execute(text("SELECT conname FROM pg_constraint WHERE conrelid='risk_school.model_versions'::regclass")).scalars().all()
-        # S3.1 explicitly replaces the old total activation prohibition. The
-        # fixture is still REAL and may never become active in this iteration.
-        assert 'synthetic_only_active_model' in constraints
+        # S3.1 replaced the total prohibition; 0008 replaced the SYNTHETIC-only rule by one per scope
+        # (active_model_scope). This fixture is an ISOLATED_TEST REAL model without study: it can never become active.
+        assert 'active_model_scope' in constraints and 'synthetic_only_active_model' not in constraints
         assert not {'model_activation_pending','demo_only_active_model'} & set(constraints)
         with pytest.raises(IntegrityError):
             db.execute(text("UPDATE risk_school.model_versions SET status='APPROVED',is_active=true WHERE id=:id"),{'id':ml_db.model})
