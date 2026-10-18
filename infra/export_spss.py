@@ -184,9 +184,9 @@ def table_specs(sections: dict, calendar_codes: list[str], repetitions: int) -> 
                  values={'0': 'No detectado', '1': 'Detectado'}, display='F8.0'),
         variable('falsa_alarma_rf', 'Caso Bajo marcado Medio o Alto por Random Forest (clase modal); vacío si la referencia es Medio o Alto', 'nominal',
                  values={'0': 'Sin falsa alarma', '1': 'Falsa alarma'}, display='F8.0')]
-    return {METRICS_FILE: {'etiqueta': 'Métricas por repetición de la validación cruzada agrupada (estudio REAL local, exploratorio)',
+    return {METRICS_FILE: {'etiqueta': 'Métricas por repetición (CV agrupada, estudio REAL local)',
                            'variables': metrics},
-            PREDICTIONS_FILE: {'etiqueta': 'Predicciones fuera de muestra por estudiante y bimestre (estudio REAL local, exploratorio)',
+            PREDICTIONS_FILE: {'etiqueta': 'Predicciones fuera de muestra por estudiante y bimestre',
                                'variables': predictions}}
 
 
@@ -418,7 +418,7 @@ def sav_only(args) -> int:
         measures = {item['nombre']: item['medida'] for item in variables}
         formats = {item['nombre']: item['formato'] for item in variables if item['formato']}
         target = results / f'{name}.sav'
-        pyreadstat.write_sav(frame, str(target), file_label=table['etiqueta'][:64], column_labels=[item['etiqueta'] for item in variables],
+        pyreadstat.write_sav(frame, str(target), file_label=table['etiqueta'], column_labels=[item['etiqueta'] for item in variables],
                              variable_value_labels=labels, variable_measure=measures, variable_format=formats)
         again, meta = pyreadstat.read_sav(str(target))
         same = (list(again.columns) == list(frame.columns) and len(again) == len(frame) and list(meta.column_labels) == [i['etiqueta'] for i in variables]

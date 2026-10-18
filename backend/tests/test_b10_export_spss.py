@@ -189,6 +189,7 @@ def test_spss_variable_specs_cover_every_column_with_labels_value_labels_and_mea
     assert [item['nombre'] for item in specs[exporter.PREDICTIONS_FILE]['variables']] == exporter.PREDICTION_COLUMNS
     every = [item for table in specs.values() for item in table['variables']]
     assert all(item['etiqueta'] and len(item['nombre']) <= 64 and len(item['etiqueta']) <= 256 for item in every)
+    assert all(0 < len(table['etiqueta']) <= 64 for table in specs.values())                    # la etiqueta del archivo .sav admite 64 caracteres
     by_name = {item['nombre']: item for item in specs[exporter.PREDICTIONS_FILE]['variables']}
     assert by_name['riesgo_ref']['valores'] == {'1': 'Bajo', '2': 'Medio', '3': 'Alto'} and by_name['riesgo_ref']['medida'] == 'ordinal'
     assert all(by_name[name]['medida'] == 'ordinal' for name in exporter.PREDICTION_COLUMNS if name.startswith('riesgo_'))
