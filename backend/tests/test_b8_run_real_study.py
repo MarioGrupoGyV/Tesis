@@ -453,3 +453,25 @@ def test_missing_detection_in_the_api_is_recorded_as_such_not_filled(folder, tmp
     inputs = runner.Inputs(folder)
     _, summary, _, _ = execute(folder, tmp_path, gateway=FakeGateway(inputs, no_detection=True), confirm_protocol=True)
     assert summary['indicators']['B1']['validated_detection'] == {'value': None, 'reason': 'NO_OUT_OF_SAMPLE_REPORT'}
+
+
+def test_explicit_tutor_option_applies_the_active_rule_to_a_copy(folder, tmp_path, monkeypatch, capsys):
+    """`--explicit-tutor` permite ensayar en una copia el mismo procedimiento de la activa (sin elegir solo al único tutor existente)."""
+    import runtime_target
+    inputs = runner.Inputs(folder)
+    monkeypatch.setattr(runtime_target.Target, 'load', classmethod(lambda cls, path: SimpleNamespace(kind='RESTORE', project='s6-restore-0123456789ab')))
+    monkeypatch.setattr('operator_profiles.admin_account', lambda *a, **k: {'email': 'admin@example.test', 'password': 'x'})
+    base = ['--target', str(tmp_path / 'copia.json'), '--operator-profile', 'x', '--input', str(folder), '--results', str(tmp_path / 'res'), '--confirm-protocol']
+    refused = FakeGateway(inputs, tutors=('tutor-1',))
+    monkeypatch.setattr(runner, 'Live', lambda target, account: contextlib.nullcontext(refused))
+    assert runner.main(base + ['--explicit-tutor']) == 2
+    assert json.loads(capsys.readouterr().out)['code'] == 'ACTIVE_TUTOR_EXPLICIT_REQUIRED' and refused.writes == []
+    allowed = FakeGateway(inputs, tutors=('tutor-1',))
+    monkeypatch.setattr(runner, 'Live', lambda target, account: contextlib.nullcontext(allowed))
+    assert runner.main(base + ['--explicit-tutor', '--locked-tutor']) == 0
+    capsys.readouterr()
+    assert allowed.writes.count('locked-tutor') == 1 and {item['tutor_id'] for item in allowed.s['sections']} == {'locked-1'}
+    default = FakeGateway(inputs, tutors=('tutor-1',))                                       # sin la opción, una copia conserva el comportamiento habitual
+    monkeypatch.setattr(runner, 'Live', lambda target, account: contextlib.nullcontext(default))
+    assert runner.main(base) == 0
+    assert {item['tutor_id'] for item in default.s['sections']} == {'tutor-1'}

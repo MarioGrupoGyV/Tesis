@@ -709,6 +709,8 @@ def main(argv=None):
     parser.add_argument('--tutor-a'); parser.add_argument('--tutor-b')
     parser.add_argument('--locked-tutor', action='store_true', help='Si no hay tutores (en la activa: siempre, salvo --tutor-a/--tutor-b), crea una cuenta TUTOR '
                         'de relleno sin acceso (contraseña aleatoria desconocida)')
+    parser.add_argument('--explicit-tutor', action='store_true', help='Aplica en cualquier destino la regla de la activa: nunca se elige solo al único tutor existente '
+                        '(sirve para ensayar en una copia el mismo procedimiento que se usará en la activa)')
     parser.add_argument('--confirm-active', help='Solo destino ACTIVE: repite aquí el nombre del proyecto (riesgo-escolar) para autorizar la carga REAL sobre él')
     parser.add_argument('--pre-backup', type=Path, help='Solo destino ACTIVE: respaldo S6 verificado (.sebackup) de ese proyecto, en 0008 y de menos de 24 h')
     parser.add_argument('--public-summary', type=Path, help='Copia el resumen agregado (sin códigos) a este archivo')
@@ -726,7 +728,7 @@ def main(argv=None):
         account = admin_account(target, operator_profile=args.operator_profile)
         with Live(target, account) as gateway:
             summary = Runner(gateway, inputs, args.results, dry_run=args.dry_run, confirm_protocol=args.confirm_protocol,
-                             tutors=(args.tutor_a, args.tutor_b), locked_tutor=args.locked_tutor, active=active).run()
+                             tutors=(args.tutor_a, args.tutor_b), locked_tutor=args.locked_tutor, active=active or args.explicit_tutor).run()
         if summary is not None and args.public_summary and not args.dry_run:
             args.public_summary.write_text(json.dumps(summary, ensure_ascii=True, indent=2, sort_keys=True) + '\n', encoding='utf-8')
     except StopRun as stop:
