@@ -69,6 +69,14 @@ def declared_origin_is_consistent(manifest):
     return label=='SYNTHETIC' or 'REAL_INSTITUTIONAL' in (manifest.get('private_data_scopes') or [])
 
 
+def private_scopes(origins,payload_names):
+    """Alcances de los datos privados del paquete. SYNTHETIC_STUDY solo si hay datos sintéticos (o ninguno, como en los paquetes anteriores):
+    un paquete solo REAL no lo declara."""
+    return ((['SYNTHETIC_STUDY'] if 'REAL' not in origins or 'SYNTHETIC' in origins else [])
+        + (['RETROSPECTIVE_EVALUATION'] if any(name.startswith('volumes/ml_data/retrospective/') for name in payload_names) else [])
+        + (['REAL_INSTITUTIONAL'] if 'REAL' in origins else []))
+
+
 def data_origins(target):
     """Orígenes presentes en la base: valores distintos de toda columna `data_origin` del esquema de la aplicación (se descubren, no se listan)."""
     def run(sql):
@@ -304,9 +312,7 @@ def backup(target,*,allow_isolated=False):
             if before!=after or origins!=origins_after or check_files!=recorded: raise RuntimeError('BACKUP_STATE_CHANGED')
             # `origin` sale de los datos presentes: un paquete con datos REAL nunca se etiqueta SYNTHETIC.
             manifest={'version':1,'id':identifier,'origin':label,'data_origins':origins,'migration':before['alembic'][0],
-                'private_data_scopes':['SYNTHETIC_STUDY'] + (['RETROSPECTIVE_EVALUATION'] if any(
-                    k.startswith('volumes/ml_data/retrospective/') for k in payloads) else [])
-                    + (['REAL_INSTITUTIONAL'] if 'REAL' in origins else []),
+                'private_data_scopes':private_scopes(origins,payloads),
                 'created_at':datetime.now(UTC).isoformat(),'window':{**window,'end':datetime.now(UTC).isoformat()},
                 'source':{k:target.data[k] for k in ('kind','project','database','volumes','ports','images')},
                 'code':code_identity(),'database':before,'inventory':

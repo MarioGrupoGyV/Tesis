@@ -225,6 +225,13 @@ class OriginLabelTests(unittest.TestCase):
             with self.subTest(origins=origins), self.assertRaisesRegex(RuntimeError, '^BACKUP_DATA_ORIGIN_UNKNOWN$'):
                 backup.origin_label(origins)
 
+    def test_private_scopes_follow_the_data_present(self):
+        retro = ['volumes/ml_data/retrospective/x/payload.json']
+        self.assertEqual(backup.private_scopes([], []), ['SYNTHETIC_STUDY'])                                   # base sin datos: como antes
+        self.assertEqual(backup.private_scopes(['SYNTHETIC'], retro), ['SYNTHETIC_STUDY', 'RETROSPECTIVE_EVALUATION'])
+        self.assertEqual(backup.private_scopes(['REAL'], []), ['REAL_INSTITUTIONAL'])                           # solo REAL: sin SYNTHETIC_STUDY
+        self.assertEqual(backup.private_scopes(['REAL', 'SYNTHETIC'], retro), ['SYNTHETIC_STUDY', 'RETROSPECTIVE_EVALUATION', 'REAL_INSTITUTIONAL'])
+
     def test_real_and_mixed_packages_validate_only_with_evidence_and_scope(self):
         for origin, origins in (('REAL', ['REAL']), ('MIXED', ['REAL', 'SYNTHETIC'])):
             with self.subTest(origin=origin):
