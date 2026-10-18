@@ -1,10 +1,12 @@
 """CLI interna: carga `identidades.local.csv` (student_code,full_name) a la FICHA de los alumnos REAL de un destino aislado.
 
     py -3.12 infra/load_identities.py --target <destino.json> --operator-profile <perfil> --csv <identidades.local.csv>
+                                      [--confirm-active riesgo-escolar --pre-backup <respaldo .sebackup>]   (solo destino ACTIVE)
 
 Solo ADMIN (perfil Windows existente, nunca contraseña en argumentos). Todo o nada; rechaza códigos desconocidos. Los nombres viajan por la
 entrada estándar del proceso en el destino, no se imprimen y no se escriben en auditoría ni en registros (la auditoría guarda conteos).
-No actúa sobre el destino ACTIVE. Si no tienes el archivo, genéralo con el conversor: `convert_real_excel.py --identities`.
+Sobre el destino ACTIVE exige las mismas protecciones que la corrida real: `--confirm-active <proyecto>` y `--pre-backup` (respaldo S6 verificado de ese
+proyecto, en 0008 y de menos de 24 h). Si no tienes el archivo, genéralo con el conversor: `convert_real_excel.py --identities`.
 """
 import argparse
 import csv
@@ -61,9 +63,13 @@ def parse_csv(path):
     return rows
 
 
-def run(target, actor_email, csv_path):
+def run(target, actor_email, csv_path, *, confirm_active=None, pre_backup=None):
     if target.kind == 'ACTIVE':
-        raise RuntimeError('ACTIVE_TARGET_FORBIDDEN')
+        import run_real_study as real      # una sola implementación de las protecciones: confirmación con el nombre del proyecto y respaldo previo
+        try:
+            real.guard_active(target.project, confirm_active, pre_backup)
+        except real.StopRun as stop:
+            raise RuntimeError(stop.code) from None
     rows = parse_csv(csv_path)
     target.assert_identity()
     return target.api_python(CODE, {'actor_email': actor_email, 'rows': rows})
@@ -74,6 +80,8 @@ def main(argv=None):
     parser.add_argument('--target', type=Path, required=True)
     parser.add_argument('--operator-profile', required=True)
     parser.add_argument('--csv', type=Path, required=True)
+    parser.add_argument('--confirm-active', help='Solo destino ACTIVE: repite aquí el nombre del proyecto (riesgo-escolar)')
+    parser.add_argument('--pre-backup', type=Path, help='Solo destino ACTIVE: respaldo S6 verificado (.sebackup), en 0008 y de menos de 24 h')
     args = parser.parse_args(argv)
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     try:
@@ -85,7 +93,7 @@ def main(argv=None):
         from runtime_target import Target
         target = Target.load(args.target)
         account = admin_account(target, operator_profile=args.operator_profile)
-        result = run(target, account['email'], args.csv)
+        result = run(target, account['email'], args.csv, confirm_active=args.confirm_active, pre_backup=args.pre_backup)
     except (IdentitiesCsvError, RuntimeError) as error:
         print(json.dumps({'code': str(error).split(':')[0]}))
         return 2

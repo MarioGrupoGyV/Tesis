@@ -265,8 +265,11 @@ def consistent_window(target):
             target.compose('up','-d','--wait','--no-deps',*running,capture_output=True)
 
 
-def backup(target):
-    if target.kind!='ACTIVE': raise RuntimeError('BACKUP_REQUIRES_EXPLICIT_ACTIVE_SOURCE')
+def backup(target,*,allow_isolated=False):
+    # Fuente habitual: la instalación activa. Un destino aislado (INSTALL/RESTORE) solo con --isolated-source: sirve para ensayar el respaldo con
+    # datos REAL en una copia sin tocar la activa.
+    if target.kind!='ACTIVE' and not (allow_isolated and target.kind in ('INSTALL','RESTORE')):
+        raise RuntimeError('BACKUP_REQUIRES_EXPLICIT_ACTIVE_SOURCE')
     directory=location()
     identifier='s6-'+datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')+'-'+uuid4().hex[:12]
     work=private_directory(directory/(identifier+'.partial'))
@@ -417,7 +420,15 @@ print(json.dumps(out))
 '''
 
 
-def restore_check(path,output,ports,*,allow_real=False):
+def images_for_tag(images,tag):
+    """Las imágenes del paquete, salvo api y web, que pasan a las construidas con la etiqueta indicada (datos restaurados sobre el código nuevo)."""
+    if not re.fullmatch('[a-z0-9][a-z0-9._-]{0,39}',tag) or tag=='latest': raise RuntimeError('IMAGE_TAG_INVALID')
+    resolved={name:docker('image','inspect','riesgo-escolar-'+name+':'+tag,'--format','{{.Id}}',text=True).stdout.strip() for name in ('api','web')}
+    if not all(re.fullmatch('sha256:[0-9a-f]{64}',value) for value in resolved.values()): raise RuntimeError('IMAGE_TAG_NOT_FOUND')
+    return {**images,**resolved}
+
+
+def restore_check(path,output,ports,*,allow_real=False,image_tag=None):
     content,manifest=verified_content(path)
     # Copiar datos REAL a otro destino es una decisión explícita (--confirm-real-copy), no un efecto lateral de la comprobación.
     if manifest['origin']!='SYNTHETIC' and not allow_real: raise RuntimeError('RESTORE_REAL_REQUIRES_CONFIRMATION')
@@ -425,7 +436,7 @@ def restore_check(path,output,ports,*,allow_real=False):
     if manifest['code']['locks']!=current['locks']:
         raise RuntimeError('RESTORE_LOCKS_INCOMPATIBLE')
     # Restore the same application/DB images; no training, migration or signing.
-    target=create('RESTORE',output,ports,images=manifest['source']['images'])
+    target=create('RESTORE',output,ports,images=images_for_tag(manifest['source']['images'],image_tag) if image_tag else manifest['source']['images'])
     target.assert_resources(fresh=True)
     target.compose('up','-d','--wait','db')
     work=private_directory(Path(output).parent/(target.project+'-restore.partial'))
@@ -472,6 +483,8 @@ def main(argv=None):
     parser.add_argument('--backup',type=Path)
     parser.add_argument('--output',type=Path)
     parser.add_argument('--report',type=Path,required=True)
+    parser.add_argument('--isolated-source',action='store_true',help='Solo ensayo de backup: respalda un destino aislado (INSTALL/RESTORE) en lugar de la instalación activa')
+    parser.add_argument('--image-tag',help='Solo restore-check: restaura sobre las imágenes api/web construidas con esta etiqueta (riesgo-escolar-api:<etiqueta>)')
     parser.add_argument('--confirm-real-copy',action='store_true',help='Solo restore-check de un paquete REAL/MIXED: autoriza crear otra copia local con esos datos')
     parser.add_argument('--web-port',type=int,default=15274)
     parser.add_argument('--api-port',type=int,default=18101)
@@ -481,12 +494,12 @@ def main(argv=None):
     try:
         if args.command=='backup':
             if not args.target: parser.error('--target requerido')
-            report=backup(Target.load(args.target))
+            report=backup(Target.load(args.target),allow_isolated=args.isolated_source)
         else:
             if not args.backup: parser.error('--backup requerido')
             if args.command=='restore-check':
                 if not args.output: parser.error('--output descriptor privado nuevo requerido')
-                report=restore_check(args.backup,args.output,{'web':args.web_port,'api':args.api_port,'db':args.db_port},allow_real=args.confirm_real_copy)
+                report=restore_check(args.backup,args.output,{'web':args.web_port,'api':args.api_port,'db':args.db_port},allow_real=args.confirm_real_copy,image_tag=args.image_tag)
             else:
                 _,m=verified_content(args.backup)
                 report={'status':'COMPROBADO','backup_id':m['id'],'origin':m['origin'],'data_origins':m.get('data_origins',['SYNTHETIC']),'inventory_verified':True,

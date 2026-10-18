@@ -264,6 +264,51 @@ class OriginLabelTests(unittest.TestCase):
                 backup.restore_check(Path('paquete.sebackup'), Path('copia.json'), {'web': 1, 'api': 2, 'db': 3}, allow_real=True)
 
 
+class IsolatedSourceAndImageTagTests(unittest.TestCase):
+    """Bloque 6: ensayar el respaldo con datos REAL en una copia aislada y restaurar sobre las imágenes del código nuevo."""
+    images = {'api': 'sha256:' + '1' * 64, 'web': 'sha256:' + '2' * 64, 'db': 'sha256:' + '3' * 64}
+
+    def test_only_the_active_installation_is_backed_up_unless_an_isolated_source_is_requested(self):
+        for kind in ('INSTALL', 'RESTORE'):
+            with self.subTest(kind=kind, flag=False), self.assertRaisesRegex(RuntimeError, '^BACKUP_REQUIRES_EXPLICIT_ACTIVE_SOURCE$'):
+                backup.backup(SimpleNamespace(kind=kind))
+            with self.subTest(kind=kind, flag=True), patch.object(backup, 'location', side_effect=RuntimeError('PAST_SOURCE_GATE')), \
+                    self.assertRaisesRegex(RuntimeError, '^PAST_SOURCE_GATE$'):
+                backup.backup(SimpleNamespace(kind=kind), allow_isolated=True)
+        with patch.object(backup, 'location', side_effect=RuntimeError('PAST_SOURCE_GATE')), self.assertRaisesRegex(RuntimeError, '^PAST_SOURCE_GATE$'):
+            backup.backup(SimpleNamespace(kind='ACTIVE'))
+        with self.assertRaisesRegex(RuntimeError, '^BACKUP_REQUIRES_EXPLICIT_ACTIVE_SOURCE$'):
+            backup.backup(SimpleNamespace(kind='OTHER'), allow_isolated=True)
+
+    def test_image_tag_replaces_only_api_and_web_and_is_validated(self):
+        def fake_docker(*args, **kwargs):
+            return SimpleNamespace(stdout=('sha256:' + ('a' if 'api' in args[2] else 'b') * 64) + '\n')
+        with patch.object(backup, 'docker', side_effect=fake_docker):
+            self.assertEqual(backup.images_for_tag(self.images, 'b6'),
+                             {'api': 'sha256:' + 'a' * 64, 'web': 'sha256:' + 'b' * 64, 'db': self.images['db']})
+        for bad in ('latest', 'Mayusculas', '', 'x' * 41, 'a b'):
+            with self.subTest(tag=bad), self.assertRaisesRegex(RuntimeError, '^IMAGE_TAG_INVALID$'):
+                backup.images_for_tag(self.images, bad)
+        with patch.object(backup, 'docker', return_value=SimpleNamespace(stdout='no-es-un-id\n')), self.assertRaisesRegex(RuntimeError, '^IMAGE_TAG_NOT_FOUND$'):
+            backup.images_for_tag(self.images, 'b6')
+
+    def test_restore_check_creates_the_copy_with_the_tagged_images_only_when_asked(self):
+        manifest = manifest_for(package_payloads())
+        seen = []
+
+        def fake_create(kind, output, ports, *, images=None):
+            seen.append(images)
+            raise RuntimeError('STOP_AFTER_CREATE')
+        fake_docker = lambda *args, **kwargs: SimpleNamespace(stdout='sha256:' + 'c' * 64 + '\n')
+        with patch.object(backup, 'verified_content', return_value=(b'', manifest)), patch.object(backup, 'code_identity', return_value={'locks': {}}), \
+                patch.object(backup, 'create', side_effect=fake_create), patch.object(backup, 'docker', side_effect=fake_docker):
+            for tag in (None, 'b6'):
+                with self.assertRaisesRegex(RuntimeError, '^STOP_AFTER_CREATE$'):
+                    backup.restore_check(Path('p.sebackup'), Path('c.json'), {'web': 1, 'api': 2, 'db': 3}, image_tag=tag)
+        self.assertEqual(seen[0], manifest['source']['images'])
+        self.assertEqual(seen[1], {**manifest['source']['images'], 'api': 'sha256:' + 'c' * 64, 'web': 'sha256:' + 'c' * 64})
+
+
 class TargetGuardTests(unittest.TestCase):
     scope = 'UNIT_TARGET_GUARDS_NO_DOCKER'
 

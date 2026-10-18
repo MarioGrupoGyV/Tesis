@@ -142,3 +142,34 @@ def test_real_names_are_hidden_in_list_search_and_identity_lookup_but_not_in_the
 def json_text(value):
     import json
     return json.dumps(value)
+
+
+def test_identities_on_the_active_installation_need_confirmation_and_a_recent_verified_backup(tmp_path, monkeypatch, capsys):
+    """Bloque 6 (D): mismas protecciones que la corrida real sobre la activa; todo o nada y los nombres nunca se imprimen."""
+    from datetime import datetime, timedelta, timezone
+    from types import SimpleNamespace
+    import run_real_study as real
+    csv_path = tmp_path / 'identidades.local.csv'
+    csv_path.write_text('student_code,full_name\nA-1,Zzquux Plokijh Uno\n', encoding='utf-8')
+    calls = []
+    target = SimpleNamespace(kind='ACTIVE', project='riesgo-escolar', assert_identity=lambda: None,
+                             api_python=lambda code, payload: calls.append(payload) or {'updated': 1})
+    manifest = {'id': 's6-20261018T071049Z-prueba', 'migration': '0008_real_chain', 'origin': 'SYNTHETIC', 'source': {'project': 'riesgo-escolar'},
+                'created_at': (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat()}
+    for arguments, code in (({}, 'ACTIVE_CONFIRMATION_REQUIRED'), ({'confirm_active': 'otro-proyecto', 'pre_backup': tmp_path / 'r'}, 'ACTIVE_CONFIRMATION_REQUIRED'),
+                            ({'confirm_active': 'riesgo-escolar'}, 'PRE_BACKUP_REQUIRED')):
+        with pytest.raises(RuntimeError, match=f'^{code}$'):
+            cli.run(target, 'admin@example.test', csv_path, **arguments)
+    assert calls == []
+    for change, code in (({'migration': '0004_followup'}, 'PRE_BACKUP_NOT_AT_0008'), ({'source': {'project': 's6-install-0123456789ab'}}, 'PRE_BACKUP_OTHER_INSTALLATION'),
+                         ({'created_at': (datetime.now(timezone.utc) - timedelta(hours=30)).isoformat()}, 'PRE_BACKUP_TOO_OLD')):
+        monkeypatch.setattr(real, 'load_pre_backup', lambda path, change=change: {**manifest, **change})
+        with pytest.raises(RuntimeError, match=f'^{code}$'):
+            cli.run(target, 'admin@example.test', csv_path, confirm_active='riesgo-escolar', pre_backup=tmp_path / 'r')
+    assert calls == []                                                                     # nada se envió al destino mientras una protección fallaba
+    monkeypatch.setattr(real, 'load_pre_backup', lambda path: manifest)
+    assert cli.run(target, 'admin@example.test', csv_path, confirm_active='riesgo-escolar', pre_backup=tmp_path / 'r') == {'updated': 1}
+    assert [row[1:] for row in calls[0]['rows']] == [('A-1', 'Zzquux Plokijh Uno')]       # los nombres solo viajan al proceso del destino
+    assert 'Zzquux' not in capsys.readouterr().out                                        # y nunca se imprimen (la línea de la protección solo trae identificador y origen)
+    other = SimpleNamespace(kind='INSTALL', project='s6-install-0123456789ab', assert_identity=lambda: None, api_python=lambda code, payload: {'updated': 1})
+    assert cli.run(other, 'admin@example.test', csv_path) == {'updated': 1}                # un destino aislado no necesita esas protecciones
