@@ -85,6 +85,68 @@ def flat_metrics(summary: dict) -> dict:
             'limitations': ['Medias de repeticiones de validación cruzada agrupada; null = no estimable. Sin calibración.']}
 
 
+DETECTION_DEFINITION = 'OUT_OF_FOLD_MEDIUM_OR_HIGH_V1'
+DETECTION_NOTE = ('Detección = observaciones de riesgo de referencia Medio o Alto que el modelo marcó Medio o Alto cuando ese estudiante estaba en el '
+                  'pliegue de validación (nunca en entrenamiento). Un modelo que marcara a todos como Alto detectaría el 100 %: se informa también la '
+                  'falsa alarma (Bajo marcado Medio/Alto).')
+
+
+def bimester_codes(rows, bimesters) -> list[str]:
+    """Código de bimestre de cada observación: por fecha objetivo (cierre) del protocolo; sin protocolo, B1, B2… por orden de fecha."""
+    if bimesters is None:
+        ordered = sorted({row.target_date for row in rows})
+        bimesters = {day: f'B{index + 1}' for index, day in enumerate(ordered)}
+    try:
+        return [bimesters[row.target_date] for row in rows]
+    except KeyError:
+        raise MLDiagnostic('BIMESTER_NOT_MAPPED') from None
+
+
+def detection_counts(y: np.ndarray, predicted: np.ndarray, mask: np.ndarray) -> dict:
+    """Conteos de una repetición. Clases codificadas 0 = Bajo, 1 = Medio, 2 = Alto; «marcado» = predicho Medio o Alto."""
+    reference, flagged = y[mask], predicted[mask] >= 1
+    low, medium, high = reference == 0, reference == 1, reference == 2
+    return {'reference_low': int(low.sum()), 'reference_medium': int(medium.sum()), 'reference_high': int(high.sum()),
+            'low_flagged': int((low & flagged).sum()), 'medium_flagged': int((medium & flagged).sum()),
+            'high_flagged': int((high & flagged).sum()), 'high_as_low': int((high & ~flagged).sum())}
+
+
+def ratio(numerator: int, denominator: int):
+    return numerator / denominator if denominator else None
+
+
+def detection_rates(counts: dict) -> dict:
+    at_risk = counts['reference_medium'] + counts['reference_high']
+    return {'detection': ratio(counts['medium_flagged'] + counts['high_flagged'], at_risk),
+            'medium_detected': ratio(counts['medium_flagged'], counts['reference_medium']),
+            'high_detected': ratio(counts['high_flagged'], counts['reference_high']),
+            'high_as_low': ratio(counts['high_as_low'], counts['reference_high']),
+            'low_flagged': ratio(counts['low_flagged'], counts['reference_low'])}
+
+
+def detection_summary(per_repetition: list[dict]) -> dict:
+    """Media y desviación entre repeticiones de cada tasa, más los conteos sumados de todas las repeticiones (transparencia)."""
+    rates = [detection_rates(counts) for counts in per_repetition]
+    pooled = {key: sum(counts[key] for counts in per_repetition) for key in per_repetition[0]}
+    pooled['reference_at_risk'] = pooled['reference_medium'] + pooled['reference_high']
+    pooled['detected'] = pooled['medium_flagged'] + pooled['high_flagged']
+    return {'repetitions': len(per_repetition),
+            'reference_at_risk_per_repetition': per_repetition[0]['reference_medium'] + per_repetition[0]['reference_high'],
+            **{key: spread(rate[key] for rate in rates) for key in rates[0]}, 'pooled': pooled}
+
+
+def detection_report(per_repetition: list[dict], matrix: np.ndarray) -> dict:
+    """Informe de detección fuera de muestra de un algoritmo. `per_repetition[i]` = {'TOTAL': conteos, 'B1': conteos, …}."""
+    scopes = list(per_repetition[0])
+    summaries = {scope: detection_summary([item[scope] for item in per_repetition]) for scope in scopes}
+    # Control cruzado: la suma de las repeticiones debe coincidir con la matriz agregada de la validación cruzada.
+    flagged = int(matrix[1][1] + matrix[1][2] + matrix[2][1] + matrix[2][2])
+    if summaries['TOTAL']['pooled']['detected'] != flagged or summaries['TOTAL']['pooled']['reference_at_risk'] != int(matrix[1].sum() + matrix[2].sum()):
+        raise MLDiagnostic('DETECTION_MATRIX_MISMATCH')
+    return {'definition': DETECTION_DEFINITION, 'metric_basis': 'OUT_OF_FOLD', 'note': DETECTION_NOTE, 'total': summaries['TOTAL'],
+            'by_bimester': {scope: summaries[scope] for scope in scopes if scope != 'TOTAL'}}
+
+
 @dataclass(frozen=True)
 class InstitutionalComparison:
     bundles: dict
@@ -101,7 +163,7 @@ def selection_key(summaries):
 
 
 def compare_institutional(dataset: Dataset, *, seed: int, study_id, repetitions: int = DEFAULT_REPETITIONS,
-                          requested_folds: int = 5, leave_one_student_out: bool = False) -> InstitutionalComparison:
+                          requested_folds: int = 5, leave_one_student_out: bool = False, bimesters=None) -> InstitutionalComparison:
     if dataset.scope != 'INSTITUTIONAL':
         raise MLDiagnostic('INSTITUTIONAL_SCOPE_REQUIRED')
     if not 0 <= seed < 2**32 or not 2 <= requested_folds <= 5 or repetitions < MIN_REPETITIONS:
@@ -125,6 +187,9 @@ def compare_institutional(dataset: Dataset, *, seed: int, study_id, repetitions:
     notes = warnings_for(students, len(rows), support)
     pooled = {name: np.zeros((3, 3), dtype=int) for name in ALGORITHMS}
     per_repetition = {name: [] for name in ALGORITHMS}
+    codes = bimester_codes(rows, bimesters)
+    scopes = {'TOTAL': np.ones(len(y), dtype=bool), **{code: np.array([item == code for item in codes]) for code in sorted(set(codes))}}
+    detection_per_repetition = {name: [] for name in ALGORITHMS}
     first = {}
     with threadpool_limits(limits=1):
         for repetition, (splits, strategy) in enumerate(plans):
@@ -140,10 +205,13 @@ def compare_institutional(dataset: Dataset, *, seed: int, study_id, repetitions:
                     fold_scores.append(metrics(y[validation], predicted))
                 score = metrics(y, predictions)
                 per_repetition[algorithm].append(score)
+                # Solo predicciones de validación: cada observación se predice una vez por repetición, con el estudiante fuera del entrenamiento.
+                detection_per_repetition[algorithm].append({scope: detection_counts(y, predictions, mask) for scope, mask in scopes.items()})
                 pooled[algorithm] += np.array(score['confusion_matrix'])
                 if repetition == 0:
                     first[algorithm] = (predictions, fold_scores)
         summaries = {name: summarize(per_repetition[name], pooled[name]) for name in ALGORITHMS}
+        detections = {name: detection_report(detection_per_repetition[name], pooled[name]) for name in ALGORITHMS}
         sensitivity = {}
         if leave_one_student_out:
             for algorithm in ALGORITHMS:
@@ -181,7 +249,8 @@ def compare_institutional(dataset: Dataset, *, seed: int, study_id, repetitions:
                 'validation_predictions': [{'snapshot_id': str(row.snapshot_id), 'expected': CLASSES[int(expected)],
                     'predicted': CLASSES[int(predicted)]} for row, expected, predicted in zip(rows, y, predictions0)]}
             bundles[algorithm] = ModelBundle(pipeline, config, manifest)
-            reports[algorithm] = {'repeated_cv': summaries[algorithm],
+            # `detection` vive solo en el informe (no en `repeated_cv` ni en el manifiesto del artefacto): las métricas ya publicadas no cambian.
+            reports[algorithm] = {'repeated_cv': summaries[algorithm], 'detection': detections[algorithm],
                                   **({'leave_one_student_out': sensitivity[algorithm]} if sensitivity else {})}
     report = {'scope': 'INSTITUTIONAL_STUDY', 'data_origin': 'REAL', 'study_id': str(study_id), 'seed': seed,
         'students': students, 'observations': len(rows), 'support_by_class': support, 'repetitions': repetitions,

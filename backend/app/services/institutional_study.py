@@ -249,8 +249,12 @@ def compare_registered(db, user, settings, study, request_id, repetitions=None, 
         return {**study.comparison['report'], 'reused': True}
     dataset, exclusions = build_dataset(db, study, protocol)
     try:
+        # Bimestre de cada observación = el del protocolo cuyo cierre es su fecha objetivo (para la detección fuera de muestra por bimestre).
+        bimesters = {date.fromisoformat(item['close_date']) if isinstance(item['close_date'], str) else item['close_date']: item['code']
+                     for item in protocol.bimesters}
         result = compare_institutional(dataset, seed=0 if study.seed is None else int(study.seed), study_id=study.id,
-                                       repetitions=repetitions or DEFAULT_REPETITIONS, leave_one_student_out=leave_one_student_out)
+                                       repetitions=repetitions or DEFAULT_REPETITIONS, leave_one_student_out=leave_one_student_out,
+                                       bimesters=bimesters)
     except MLDiagnostic as error:
         raise AppError(422, 'INSTITUTIONAL_COMPARISON_FAILED', 'No se pudo comparar: ' + str(error) + '.') from None
     store = ArtifactStore(settings.ml_storage_dir)
