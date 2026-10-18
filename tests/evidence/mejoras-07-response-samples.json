@@ -1,0 +1,251 @@
+[
+  {
+    "schema": "ImportBatch",
+    "body": {
+      "id": "59611733-1106-45f3-bfd3-f3d470cd3342",
+      "period_id": "f7a3d91c-c356-499d-b2ca-9aef1fa242c1",
+      "data_origin": "REAL",
+      "file_name": "sintetico.csv",
+      "file_sha256": "20a58b230ec90f151cf89379491072b51c74012669e08f3ac5ee402b5cf4437f",
+      "schema_version": "academic-v1",
+      "status": "READY",
+      "total_rows": 1,
+      "valid_rows": 1,
+      "invalid_rows": 0,
+      "planned_students": 1,
+      "planned_enrollments": 1,
+      "planned_snapshots": 1,
+      "preview_version": 1,
+      "errors": [],
+      "created_at": "2026-10-18T19:14:01.253473Z",
+      "committed_at": null
+    }
+  },
+  {
+    "schema": "ImportCommit",
+    "body": {
+      "batch_id": "59611733-1106-45f3-bfd3-f3d470cd3342",
+      "status": "COMMITTED",
+      "created_snapshots": 1,
+      "reused_result": false
+    }
+  },
+  {
+    "schema": "ImportBatch",
+    "body": {
+      "id": "ed66ccba-bc48-43db-a872-036247be854f",
+      "period_id": "55771aa5-3d73-4716-8ac5-709146801f2c",
+      "data_origin": "REAL",
+      "file_name": "sintetico.csv",
+      "file_sha256": "eb070a34b9a54b5583cefd0cd09243b0542c7324ed35664b9f6f4b0eaddad110",
+      "schema_version": "academic-v1",
+      "status": "FAILED",
+      "total_rows": 1,
+      "valid_rows": 0,
+      "invalid_rows": 1,
+      "planned_students": 0,
+      "planned_enrollments": 0,
+      "planned_snapshots": 0,
+      "preview_version": 1,
+      "errors": [
+        {
+          "row": 2,
+          "column": "average_grade",
+          "code": "INVALID_VALUE",
+          "message": "Usa un n\u00famero con punto y m\u00e1ximo dos decimales entre 0 y 20, o deja vac\u00edo si falta."
+        }
+      ],
+      "created_at": "2026-10-18T19:14:01.503617Z",
+      "committed_at": null
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "IMPORT_INVALID",
+      "message": "Corrige todas las filas y revisa una nueva vista previa antes de confirmar.",
+      "details": [],
+      "request_id": "b937968c-a4f9-4c56-bba2-c3849e52225d"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "SERVICE_UNAVAILABLE",
+      "message": "El servicio no est\u00e1 disponible. Int\u00e9ntalo nuevamente.",
+      "details": [],
+      "request_id": "e453cf24-3e47-4f1d-b43c-1ffa128b5215"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "INTEGRITY_CONFLICT",
+      "message": "El estado cambi\u00f3 o no permite esta operaci\u00f3n. Revisa los datos antes de reintentar.",
+      "details": [],
+      "request_id": "ec68fbd1-aaac-468a-a2fb-0c9ad8f6b556"
+    }
+  },
+  {
+    "schema": "Error",
+    "body": {
+      "code": "INTERNAL_ERROR",
+      "message": "No se pudo completar la operaci\u00f3n.",
+      "details": [],
+      "request_id": "054b962d-1779-4784-bbc3-63eaad03b1c9"
+    }
+  },
+  {
+    "schema": "StudentPage",
+    "body": {
+      "items": [
+        {
+          "id": "48a6353f-c78d-4259-af21-f910d80e5eb5",
+          "anon_code": "S2-a64a81184bdb-A",
+          "full_name": null,
+          "is_active": true,
+          "version": 1,
+          "enrollment_version": 1,
+          "enrollment_id": "ff4ce339-605c-4d71-b6b1-ed2476669bfe",
+          "period_id": "1687a38f-6803-4b3d-9e90-45b2df1fa021",
+          "section_id": "11d0e13e-fd67-4c35-b80c-87fcda026216",
+          "section_code": "S1-495a5653",
+          "grade": 1,
+          "data_origin": "REAL",
+          "average_grade": 14.25,
+          "attendance_pct": 90.5,
+          "latest_cutoff_at": "2026-05-02T04:30:00Z",
+          "risk_level": null,
+          "evaluation_status": "NOT_EVALUATED",
+          "active_alert_id": null
+        }
+      ],
+      "total": 2,
+      "page": 1,
+      "page_size": 1
+    }
+  },
+  {
+    "schema": "StudentDetail",
+    "body": {
+      "student": {
+        "id": "48a6353f-c78d-4259-af21-f910d80e5eb5",
+        "anon_code": "S2-a64a81184bdb-A",
+        "full_name": null,
+        "is_active": true,
+        "version": 1,
+        "enrollment_version": 1,
+        "enrollment_id": "ff4ce339-605c-4d71-b6b1-ed2476669bfe",
+        "period_id": "1687a38f-6803-4b3d-9e90-45b2df1fa021",
+        "section_id": "11d0e13e-fd67-4c35-b80c-87fcda026216",
+        "section_code": "S1-495a5653",
+        "grade": 1,
+        "data_origin": "REAL",
+        "average_grade": 14.25,
+        "attendance_pct": 90.5,
+        "latest_cutoff_at": "2026-05-02T04:30:00Z",
+        "risk_level": null,
+        "evaluation_status": "NOT_EVALUATED",
+        "active_alert_id": null
+      },
+      "latest_snapshot": {
+        "id": "6c280649-5871-4f9e-8f59-a4d79e975257",
+        "enrollment_id": "ff4ce339-605c-4d71-b6b1-ed2476669bfe",
+        "period_id": "1687a38f-6803-4b3d-9e90-45b2df1fa021",
+        "data_origin": "REAL",
+        "window_start": "2026-04-01",
+        "cutoff_at": "2026-05-02T04:30:00Z",
+        "available_at": "2026-05-01T23:00:00Z",
+        "target_date": "2026-05-02",
+        "revision": 1,
+        "supersedes_id": null,
+        "average_grade": 14.25,
+        "attendance_pct": 90.5,
+        "activities_pct": null,
+        "participation_level": 2,
+        "behavior_incidents": 0,
+        "age_years": 13,
+        "missing_fraction": 0.1667,
+        "entry_channel": "CSV",
+        "purpose": "PARTIAL",
+        "created_by": null,
+        "created_at": "2026-10-18T19:14:28.138953Z",
+        "correction_reason": null,
+        "variable_available_at": {}
+      },
+      "latest_prediction": null,
+      "alerts": [],
+      "interventions": []
+    }
+  },
+  {
+    "schema": "TimelineEventPage",
+    "body": {
+      "items": [
+        {
+          "id": "6c280649-5871-4f9e-8f59-a4d79e975257",
+          "event_type": "SNAPSHOT",
+          "occurred_at": "2026-10-18T19:14:28.138953Z",
+          "summary": "Corte acad\u00e9mico \u00b7 revisi\u00f3n 1",
+          "entity_id": "6c280649-5871-4f9e-8f59-a4d79e975257"
+        }
+      ],
+      "total": 1,
+      "page": 1,
+      "page_size": 20
+    }
+  },
+  {
+    "schema": "StudentDetail",
+    "body": {
+      "student": {
+        "id": "739b597e-e18c-407e-bc22-6404cb560b73",
+        "anon_code": "S2-a752b68eb879",
+        "full_name": null,
+        "is_active": true,
+        "version": 1,
+        "enrollment_version": 1,
+        "enrollment_id": "243f0dc4-98fd-4d9e-a0cb-7fe5d563ca21",
+        "period_id": "eb56c441-1e9f-47c7-83a9-a9e650e3fcdf",
+        "section_id": "67cb7ac3-3ddd-4cde-9d0b-08ed77b4b6a8",
+        "section_code": "S1-e89af88f",
+        "grade": 1,
+        "data_origin": "REAL",
+        "average_grade": 14.25,
+        "attendance_pct": 90.5,
+        "latest_cutoff_at": "2026-05-02T04:30:00Z",
+        "risk_level": null,
+        "evaluation_status": "NOT_EVALUATED",
+        "active_alert_id": null
+      },
+      "latest_snapshot": {
+        "id": "6a1a8b5a-3174-4099-ba0e-77c064eeafba",
+        "enrollment_id": "243f0dc4-98fd-4d9e-a0cb-7fe5d563ca21",
+        "period_id": "eb56c441-1e9f-47c7-83a9-a9e650e3fcdf",
+        "data_origin": "REAL",
+        "window_start": "2026-04-01",
+        "cutoff_at": "2026-05-02T04:30:00Z",
+        "available_at": "2026-05-01T23:00:00Z",
+        "target_date": "2026-05-02",
+        "revision": 1,
+        "supersedes_id": null,
+        "average_grade": 14.25,
+        "attendance_pct": 90.5,
+        "activities_pct": null,
+        "participation_level": 2,
+        "behavior_incidents": 0,
+        "age_years": 13,
+        "missing_fraction": 0.1667,
+        "entry_channel": "CSV",
+        "purpose": "PARTIAL",
+        "created_by": null,
+        "created_at": "2026-10-18T19:14:29.254508Z",
+        "correction_reason": null,
+        "variable_available_at": {}
+      },
+      "latest_prediction": null,
+      "alerts": [],
+      "interventions": []
+    }
+  }
+]
