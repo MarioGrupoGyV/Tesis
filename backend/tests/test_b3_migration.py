@@ -63,7 +63,7 @@ def check_structure(engine):
 
 def test_clean_database_reaches_0007_with_structure_and_grants(database_urls):
     name, migrate = new_database(database_urls, 'b3_clean')
-    migrate('head')
+    migrate('0007_real_protocol')  # 0008 (3B-2) tiene sus propias pruebas en test_b4_real_chain.py
     engine = create_engine(make_url(database_urls[1]).set(database=name), hide_parameters=True)
     check_structure(engine)
     engine.dispose()
@@ -106,7 +106,7 @@ def test_upgrade_from_0006_preserves_old_columns_and_backfills_detected_at(datab
             fields = ','.join(columns[table])
             return db.scalar(text(f"SELECT md5(coalesce(string_agg(to_jsonb(x)::text,'|' ORDER BY id),'')) FROM (SELECT {fields} FROM risk_school.{table}) x"))
         before = {t: digest(t) for t in columns}
-    migrate('head')
+    migrate('0007_real_protocol')
     with engine.connect() as db:
         assert {t: digest(t) for t in columns} == before  # las columnas anteriores quedan idénticas
         assert db.scalar(text('SELECT detected_at=opened_at FROM risk_school.alerts WHERE id=:id'), {'id': ids['alert']}) is True

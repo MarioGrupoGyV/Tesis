@@ -186,7 +186,7 @@ def test_real_endpoints_stay_blocked_even_with_confirmed_protocol(demo):
     assert call(state, 'get', f'/students?period_id={pid}').status_code == 200
 
 
-def test_real_eligibility_is_prepared_but_not_active(demo):
+def test_real_eligibility_by_confirmed_protocol(demo):
     state = demo
     period, section = real_period(state)
     other_period, other_section = real_period(state)
@@ -205,11 +205,16 @@ def test_real_eligibility_is_prepared_but_not_active(demo):
     call(state, 'post', f"/processing-protocols/{protocol['id']}/revoke")
     assert sql(student['id']) == (False, False)
     call(state, 'post', f"/processing-protocols/{protocol['id']}/confirm")
-    # SIN activar: el CHECK vigente de consentimientos sigue impidiendo marcar elegible a un alumno REAL.
+    # Activo desde 0008: con protocolo confirmado que cubre su matrícula, el alumno REAL puede marcarse elegible
+    # (sin fabricar consentimientos); fuera de un periodo cubierto no.
+    with state.owner.begin() as conn:
+        conn.execute(text('UPDATE risk_school.students SET eligible_for_processing=true WHERE id=:id'), {'id': student['id']})
+        flags = conn.execute(text('SELECT eligible_for_processing,consent_documented,assent_documented FROM risk_school.students WHERE id=:id'),
+                             {'id': student['id']}).one()
+        assert tuple(flags) == (True, False, False)
     with state.owner.connect() as conn:
-        assert_sqlstate(conn, 'UPDATE risk_school.students SET eligible_for_processing=true WHERE id=:id', {'id': student['id']}, '23514')
-        assert conn.scalar(text('SELECT eligible_for_processing FROM risk_school.students WHERE id=:id'), {'id': student['id']}) is False
-    # Regla futura (3B-2), pura y sin uso en los flujos.
+        assert_sqlstate(conn, 'UPDATE risk_school.students SET eligible_for_processing=true WHERE id=:id', {'id': outsider['id']}, '23514')
+    # Regla pura equivalente.
     rule = lambda **c: real_student_processable(**{**dict(data_origin='REAL', is_active=True, eligible_flag=True,
         consent_documented=False, assent_documented=False, protocol_confirmed_for_enrollment=True), **c})
     assert rule() is True and rule(protocol_confirmed_for_enrollment=False) is False
