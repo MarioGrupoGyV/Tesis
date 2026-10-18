@@ -357,12 +357,19 @@ def main(argv=None):
     parser.add_argument('--web-port',type=int,default=15273)
     parser.add_argument('--api-port',type=int,default=18100)
     parser.add_argument('--db-port',type=int,default=55462)
+    parser.add_argument('--image-tag',help='Etiqueta de imágenes api/web ya construidas (riesgo-escolar-api:<etiqueta>); sin ella se usan las de la instalación activa')
     args=parser.parse_args(argv)
     try:
         if args.command in ('create','active'):
             if not args.output: parser.error('--output requerido fuera del checkout')
+            images=None
+            if args.image_tag:
+                if not re.fullmatch('[a-z0-9][a-z0-9._-]{0,39}',args.image_tag) or args.image_tag=='latest':
+                    raise RuntimeError('IMAGE_TAG_INVALID')
+                images={key:docker('image','inspect',name,'--format','{{.Id}}',text=True).stdout.strip()
+                    for key,name in (('api','riesgo-escolar-api:'+args.image_tag),('web','riesgo-escolar-web:'+args.image_tag),('db','postgres:17.6-bookworm'))}
             target=active(args.output) if args.command=='active' else create(args.kind,args.output,
-                {'web':args.web_port,'api':args.api_port,'db':args.db_port})
+                {'web':args.web_port,'api':args.api_port,'db':args.db_port},images=images)
         else:
             if not args.target: parser.error('--target requerido')
             target=Target.load(args.target)

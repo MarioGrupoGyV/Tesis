@@ -92,6 +92,7 @@ def test_comparison_reports_all_algorithms_with_mean_sd_and_aggregated_matrix(co
         assert np.array(summary['aggregated_confusion_matrix']).sum() == 20 * n          # 20 repeticiones × 120 observaciones
         assert summary['macro']['f1']['mean'] is not None and summary['macro']['f1']['sd'] is not None
         assert 0 <= summary['macro']['f1']['minimum'] <= summary['macro']['f1']['mean'] <= summary['macro']['f1']['maximum'] <= 1
+        assert summary['cohen_kappa']['mean'] is not None and -1 <= summary['cohen_kappa']['minimum'] <= summary['cohen_kappa']['maximum'] <= 1
         assert set(item['leave_one_student_out']['per_class']) == {'LOW', 'MEDIUM', 'HIGH'}   # sensibilidad opcional (flag)
     # La regla aplica a la media: ningún algoritmo supera al elegido en F1 macro medio.
     means = {name: item['repeated_cv']['macro']['f1']['mean'] for name, item in report['algorithms'].items()}
@@ -144,3 +145,11 @@ def test_invalid_configuration_is_rejected(built):
     other = built.model_copy(update={'scope': 'ISOLATED_TEST'})
     with pytest.raises(MLDiagnostic):
         compare_institutional(other, seed=1, study_id=STUDY)
+
+
+def test_cohen_kappa_matches_the_textbook_values():
+    from app.ml.institutional import cohen_kappa
+    assert cohen_kappa([[10, 0, 0], [0, 10, 0], [0, 0, 10]]) == pytest.approx(1.0)
+    assert cohen_kappa([[5, 5], [5, 5]]) == pytest.approx(0.0)
+    assert cohen_kappa([[20, 5], [10, 15]]) == pytest.approx(0.4)          # po=0,7; pe=0,5 → (0,7-0,5)/(1-0,5)
+    assert cohen_kappa([[0, 0], [0, 0]]) is None

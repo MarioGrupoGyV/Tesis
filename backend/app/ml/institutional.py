@@ -49,6 +49,17 @@ def spread(values):
             'minimum': float(array.min()), 'maximum': float(array.max()), 'reason': None}
 
 
+def cohen_kappa(confusion) -> float | None:
+    """Kappa de Cohen de una matriz de confusión (filas = referencia, columnas = predicho); null si no es estimable."""
+    matrix = np.asarray(confusion, dtype=float)
+    total = matrix.sum()
+    if not total:
+        return None
+    observed = np.trace(matrix) / total
+    expected = float((matrix.sum(axis=1) * matrix.sum(axis=0)).sum()) / total ** 2
+    return None if expected == 1 else float((observed - expected) / (1 - expected))
+
+
 def summarize(repetition_metrics: list[dict], matrix: np.ndarray) -> dict:
     per_class = {}
     for name in CLASSES:
@@ -59,6 +70,7 @@ def summarize(repetition_metrics: list[dict], matrix: np.ndarray) -> dict:
             'macro': {key: spread(item['macro'][key] for item in repetition_metrics) for key in ('precision', 'recall', 'f1')},
             'accuracy': spread(item['accuracy'] for item in repetition_metrics),
             'balanced_accuracy': spread(item['balanced_accuracy'] for item in repetition_metrics),
+            'cohen_kappa': spread(cohen_kappa(item['confusion_matrix']) for item in repetition_metrics),
             'per_class': per_class, 'aggregated_confusion_matrix': matrix.tolist(), 'class_order': list(CLASSES)}
 
 
