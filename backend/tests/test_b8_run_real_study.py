@@ -19,6 +19,19 @@ from test_b6_convert_excel import fictitious_sheets, write_book, NAME_WORDS  # n
 LEVELS = ('LOW', 'MEDIUM', 'HIGH')
 
 
+def fake_scope(mean, at_risk):
+    spread = lambda value: {'mean': value, 'sd': 0.02, 'minimum': value - 0.03, 'maximum': value + 0.03, 'reason': None}
+    return {'repetitions': 20, 'reference_at_risk_per_repetition': at_risk, 'detection': spread(mean), 'medium_detected': spread(mean - 0.1),
+            'high_detected': spread(min(mean + 0.05, 1.0)), 'high_as_low': spread(0.0), 'low_flagged': spread(0.1),
+            'pooled': {'reference_at_risk': 20 * at_risk, 'detected': round(mean * at_risk * 20), 'reference_low': 800, 'low_flagged': 80,
+                       'reference_medium': 640, 'medium_flagged': 500, 'reference_high': 960, 'high_flagged': 960, 'high_as_low': 0}}
+
+
+def fake_detection(base):
+    return {'definition': 'OUT_OF_FOLD_MEDIUM_OR_HIGH_V1', 'metric_basis': 'OUT_OF_FOLD', 'note': 'nota', 'total': fake_scope(base, 80),
+            'by_bimester': {'B1': fake_scope(base - 0.01, 45), 'B2': fake_scope(base + 0.01, 35)}}
+
+
 def fake_report():
     spread = lambda mean: {'mean': mean, 'sd': 0.01, 'minimum': mean - 0.02, 'maximum': mean + 0.02, 'reason': None}
     algorithms = {}
@@ -29,6 +42,7 @@ def fake_report():
             'per_class': {level: {'precision': spread(base), 'recall': spread(base), 'f1': spread(base), 'support_per_repetition': 40}
                           for level in LEVELS},
             'aggregated_confusion_matrix': [[1, 0, 0], [0, 1, 0], [0, 0, 1]]},
+            'detection': fake_detection(0.5 + base / 2 if name != 'DUMMY' else 1.0),
             'leave_one_student_out': {'accuracy': base, 'macro': {'f1': base}, 'per_class': {'HIGH': {'recall': base}}}}
     return {'selected_algorithm': 'XGBOOST', 'selection_rule': 'REPEATED_CV_MACRO_F1_THEN_BALANCED_ACCURACY_THEN_FIXED_ORDER', 'repetitions': 20,
             'requested_folds': 5, 'students': 60, 'observations': 120, 'support_by_class': {}, 'warnings': ['n = 60 estudiantes: resultados exploratorios'],
@@ -36,8 +50,8 @@ def fake_report():
 
 
 class FakeGateway:
-    def __init__(self, inputs, head='0008_real_chain', tutors=('tutor-1',), distribution=None, sql_pder=None):
-        self.inputs, self.head_value, self.tutors = inputs, head, tutors
+    def __init__(self, inputs, head='0008_real_chain', tutors=('tutor-1',), distribution=None, sql_pder=None, no_detection=False):
+        self.inputs, self.head_value, self.tutors, self.no_detection = inputs, head, tutors, no_detection
         self.distribution = distribution or inputs.expected_levels
         self.sql_pder = sql_pder
         self.writes, self.s = [], dict(period=None, sections=[], protocol=None, study=False, imported=False, refs=False, compared=False,
@@ -86,10 +100,14 @@ class FakeGateway:
         if path.startswith('/indicators?'):
             bimester = path.split('bimester=')[1]
             numerator, denominator = self.pder(bimester)
+            scope = fake_report()['algorithms']['XGBOOST']['detection']['by_bimester'][bimester]
+            shown = None if self.no_detection else {'bimester': bimester, 'repetitions': 20, 'metric_basis': 'OUT_OF_FOLD', 'pooled': scope['pooled'],
+                                                    'detection': {'mean': 100 * scope['detection']['mean'], 'sd': 100 * scope['detection']['sd']}}
             return 200, {'retrospective_alerts': 51, 'prv': {'percent': 100.0, 'received': 120, 'reason': None},
                          'total': {'eligible_students': 60, 'pder': {'numerator': numerator, 'denominator': denominator},
                                    'cra': {'numerator': 60, 'denominator': 60}, 'nia': {'mean': None, 'reason': 'NO_REAL_INTERVENTIONS'},
-                                   'opportune': {'percent': None, 'reason': 'NO_REAL_INTERVENTIONS'}, 'metric_basis': 'OUT_OF_FOLD'}}
+                                   'opportune': {'percent': None, 'reason': 'NO_REAL_INTERVENTIONS'}, 'metric_basis': 'OUT_OF_FOLD',
+                                   'validated_detection': shown, 'validated_detection_reason': 'NO_OUT_OF_SAMPLE_REPORT' if shown is None else None}}
         raise AssertionError((method, path))
 
     def pder(self, bimester):
@@ -192,6 +210,17 @@ def test_full_run_executes_every_step_and_writes_results_outside_the_input(folde
     assert summary['comparison']['models']['XGBOOST']['cohen_kappa']['mean'] is not None
     assert summary['indicators']['B1']['agree'] and summary['indicators']['B2']['agree']
     assert summary['unavailable']['NIA'] == 'NO_REAL_INTERVENTIONS' and 'no mide impacto del sistema' in summary['reading']
+    # Bloque 5.1: detección validada del modelo activo (total y por bimestre), contrastada con lo que devuelve la API (lo que ve la pantalla).
+    validated = summary['validated_detection']
+    assert validated['model'] == 'XGBOOST' and set(validated) >= {'total', 'B1', 'B2'}
+    assert validated['total']['detection']['mean'] == pytest.approx(0.85) and validated['total']['detection']['sd'] == pytest.approx(0.02)
+    assert validated['B1']['pooled']['reference_at_risk'] == 20 * 45 and validated['B2']['pooled']['reference_at_risk'] == 20 * 35
+    assert all(summary['indicators'][b]['validated_detection']['agrees_with_report'] and summary['indicators'][b]['validated_detection']['metric_basis'] == 'OUT_OF_FOLD'
+               for b in ('B1', 'B2'))
+    assert summary['comparison']['models']['DUMMY']['detection']['total']['detection']['mean'] == 1.0          # el modelo que marca a todos detecta todo
+    assert summary['comparison']['models']['DUMMY']['detection']['total']['low_flagged']['mean'] > 0
+    notes = summary['reading_notes']
+    assert 'en muestra' in notes['pder_in_sample'] and 'no pierde casos' in notes['cra'] and 'No es un resultado de desempeño' in notes['cra']
 
 
 def test_second_run_is_idempotent_and_writes_nothing(folder, tmp_path):
@@ -418,3 +447,9 @@ def test_dry_run_on_the_active_target_does_not_require_confirmation_or_backup(fo
     assert runner.main(['--target', str(tmp_path / 'activa.json'), '--operator-profile', 'x', '--input', str(folder), '--results', str(tmp_path / 'res'),
                         '--dry-run']) == 0
     assert gateway.writes == [] and 'active_guard' not in capsys.readouterr().out
+
+
+def test_missing_detection_in_the_api_is_recorded_as_such_not_filled(folder, tmp_path):
+    inputs = runner.Inputs(folder)
+    _, summary, _, _ = execute(folder, tmp_path, gateway=FakeGateway(inputs, no_detection=True), confirm_protocol=True)
+    assert summary['indicators']['B1']['validated_detection'] == {'value': None, 'reason': 'NO_OUT_OF_SAMPLE_REPORT'}

@@ -616,9 +616,20 @@ class Runner:
                                       'opportune': {'percent': total['opportune']['percent'], 'reason': total['opportune']['reason']},
                                       # PRV no se informa: el sistema solo ve el CSV ya filtrado por el conversor; la recepción real (126 recibidas) no tiene procedencia confirmada.
                                       'prv': {'percent': data['prv']['percent'], 'reason': data['prv']['reason']},
-                                      'out_of_fold_basis': total['metric_basis'], 'run': self.state['runs'][bimester]}
+                                      'out_of_fold_basis': total['metric_basis'], 'run': self.state['runs'][bimester],
+                                      'validated_detection': self.screen_detection(total.get('validated_detection'), bimester)}
         self.state['indicators'] = per_bimester
         self.step('indicators', 'DONE', bimesters=sorted(per_bimester), sql_matches_system=all(item['agree'] for item in per_bimester.values()))
+
+    def screen_detection(self, shown, bimester):
+        """La detección validada que devuelve la API (lo que ve la pantalla) frente al informe de comparación del modelo activo."""
+        if not shown:
+            return {'value': None, 'reason': 'NO_OUT_OF_SAMPLE_REPORT'}
+        table = self.state['table'].get(self.state['model']['algorithm'], {}).get('detection', {}).get(bimester)
+        agree = bool(table) and abs(shown['detection']['mean'] - 100.0 * table['detection']['mean']) < 1e-3 and shown['pooled'] == table['pooled']
+        return {'mean_percent': shown['detection']['mean'], 'sd_percent': shown['detection']['sd'], 'repetitions': shown['repetitions'],
+                'detected': shown['pooled']['detected'], 'reference_at_risk': shown['pooled']['reference_at_risk'], 'metric_basis': shown['metric_basis'],
+                'agrees_with_report': agree}
 
     def aggregate(self):
         """Resumen agregado SIN códigos de alumno ni nombres: apto para guardarse junto al repositorio."""
@@ -629,6 +640,14 @@ class Runner:
                                                                                             for b, v in self.state['distribution'].items()},
                    'comparison': {**self.state['report'], 'models': self.state['table']}, 'active_model': self.state['model'],
                    'retrospective_clocks': self.state['clocks'], 'indicators': self.state['indicators'],
+                   'validated_detection': {'model': self.state['model']['algorithm'],
+                                           **(self.state['table'].get(self.state['model']['algorithm'], {}).get('detection') or {'reason': 'NO_OUT_OF_SAMPLE_REPORT'})},
+                   'reading_notes': {
+                       'pder_in_sample': 'El PDER del sistema es en muestra: el modelo se ajustó con los mismos estudiantes que evalúa, por eso da 100 % por construcción. '
+                                         'La medida de calidad es la detección validada (fuera de muestra).',
+                       'cra': 'El CRA mide que el sistema no pierde casos de su propia salida (toda predicción Media o Alta genera alerta, 100 % por definición del flujo); '
+                              'la medida de calidad predictiva es la detección. No es un resultado de desempeño.',
+                       'detection_vs_baseline': 'La detección sola premia marcar a todos como Alto (el modelo Dummy detecta 100 %): se informa junto con la falsa alarma.'},
                    'unavailable': {'NIA': 'NO_REAL_INTERVENTIONS', 'intervencion_oportuna': 'NO_REAL_INTERVENTIONS',
                                    'backup_restore_real_data': 'NOT_IMPLEMENTED'}}
         text = json.dumps(summary, ensure_ascii=True, indent=2, sort_keys=True) + '\n'
@@ -652,6 +671,12 @@ def spread_text(item):
     return {'mean': item['mean'], 'sd': item['sd']}
 
 
+def detection_row(scope):
+    """Detección fuera de muestra de un alcance (total o un bimestre): media ± desviación entre repeticiones y conteos sumados."""
+    return {**{key: spread_text(scope[key]) for key in ('detection', 'medium_detected', 'high_detected', 'high_as_low', 'low_flagged')},
+            'repetitions': scope['repetitions'], 'reference_at_risk_per_repetition': scope['reference_at_risk_per_repetition'], 'pooled': scope['pooled']}
+
+
 def model_table(report):
     """Tabla agregada por modelo (media y desviación entre repeticiones); sin códigos de alumno."""
     table = {}
@@ -662,6 +687,10 @@ def model_table(report):
                        'recall_high': spread_text(cv['per_class']['HIGH']['recall']),
                        'balanced_accuracy': spread_text(cv['balanced_accuracy']),
                        'aggregated_confusion_matrix': cv['aggregated_confusion_matrix']}
+        if 'detection' in item:
+            block = item['detection']
+            table[name]['detection'] = {'total': detection_row(block['total']),
+                                        **{code: detection_row(scope) for code, scope in sorted(block['by_bimester'].items())}}
         if 'leave_one_student_out' in item:
             loso = item['leave_one_student_out']
             table[name]['leave_one_student_out'] = {'accuracy': loso['accuracy'], 'macro_f1': loso['macro']['f1'],
