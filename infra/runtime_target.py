@@ -17,9 +17,12 @@ ROOT = Path(__file__).resolve().parents[1]
 SECRET_FILES = ('owner-password', 'app-password', 'csrf-secret', 'app-database-url', 'owner-database-url')
 LABEL = 'seguimiento.s6.target_id'
 VOLUMES = ('db_data', 'import_data', 'ml_data')
-TABLES = ('academic_periods','academic_snapshots','alerts','app_users','audit_events','user_sessions',
-          'enrollments','followup_decisions','grade_sections','import_batches','interventions',
-          'model_versions','predictions','students','synthetic_studies')
+# Tablas de aplicación hasta la migración 0006 (instalaciones y respaldos anteriores al Bloque 3B-1).
+LEGACY_TABLES = ('academic_periods','academic_snapshots','alerts','app_users','audit_events','user_sessions',
+                 'enrollments','followup_decisions','grade_sections','import_batches','interventions',
+                 'model_versions','predictions','students','synthetic_studies')
+# Tablas vigentes: 0007_real_protocol añade el protocolo REAL y el riesgo de referencia.
+TABLES = LEGACY_TABLES + ('processing_protocols','risk_references')
 
 
 def digest(path):

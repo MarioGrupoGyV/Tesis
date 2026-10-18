@@ -46,8 +46,8 @@ def package_payloads():
 
 def manifest_for(values):
     return {'version': 1, 'id': 's6-test-' + uuid4().hex, 'origin': 'SYNTHETIC', 'migration': '0004_followup',
-        'database': {'counts': {name: 0 for name in runtime.TABLES},
-            'fingerprints': {name: hashlib.md5(b'').hexdigest() for name in runtime.TABLES},
+        'database': {'counts': {name: 0 for name in runtime.LEGACY_TABLES},
+            'fingerprints': {name: hashlib.md5(b'').hexdigest() for name in runtime.LEGACY_TABLES},
             'alembic': ['0004_followup']}, 'code': {'locks': {}}, 'source': descriptor('ACTIVE'),
         'inventory': {name: {'size': len(data), 'sha256': hashlib.sha256(data).hexdigest()} for name, data in values.items()}}
 
@@ -96,7 +96,23 @@ class ArchiveValidationTests(unittest.TestCase):
                 manifest['migration'] = head
                 manifest['database']['alembic'] = [head]
                 self.assertEqual(backup.validate_archive(zip_package(values, manifest))['migration'], head)
-        for migration, recorded in (('0007_future', ['0007_future']), ('0006_manual_evaluable', ['0005_manual_academic']),
+        with_new_tables = lambda: {name: 0 for name in runtime.TABLES}
+        values = package_payloads()
+        manifest = manifest_for(values)
+        manifest['migration'] = '0007_real_protocol'
+        manifest['database'].update(alembic=['0007_real_protocol'], counts=with_new_tables(),
+                                    fingerprints={name: hashlib.md5(b'').hexdigest() for name in runtime.TABLES})
+        self.assertEqual(backup.validate_archive(zip_package(values, manifest))['migration'], '0007_real_protocol')
+        # Cobertura exacta por cabecera: 0007 con el inventario antiguo y 0006 con el nuevo se rechazan.
+        for migration, counts in (('0007_real_protocol', {name: 0 for name in runtime.LEGACY_TABLES}),
+                                  ('0006_manual_evaluable', with_new_tables())):
+            with self.subTest(coverage=migration), self.assertRaisesRegex(RuntimeError, '^BACKUP_DATABASE_COVERAGE_INVALID$'):
+                values = package_payloads()
+                manifest = manifest_for(values)
+                manifest['migration'] = migration
+                manifest['database'].update(alembic=[migration], counts=counts)
+                backup.validate_archive(zip_package(values, manifest))
+        for migration, recorded in (('0008_future', ['0008_future']), ('0006_manual_evaluable', ['0005_manual_academic']),
                                     ('0006_manual_evaluable', ['0005_manual_academic', '0006_manual_evaluable'])):
             with self.subTest(migration=migration, recorded=recorded), self.assertRaisesRegex(RuntimeError, '^BACKUP_VERSION_INCOMPATIBLE$'):
                 values = package_payloads()

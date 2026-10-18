@@ -16,7 +16,7 @@ import tempfile
 import zipfile
 from uuid import uuid4
 
-from runtime_target import (ROOT, Target, TABLES, SECRET_FILES, code_identity, create,
+from runtime_target import (ROOT, Target, TABLES, LEGACY_TABLES, SECRET_FILES, code_identity, create,
     digest, docker, private_directory, write_new)
 from windows_dpapi import protect, unprotect
 
@@ -41,7 +41,12 @@ def safe_member(name):
 
 
 # Cabeceras Alembic admitidas en respaldo/restauración (0005 = M1, 0006 = Bloque 1).
-SUPPORTED_MIGRATIONS=('0004_followup','0005_manual_academic','0006_manual_evaluable')
+SUPPORTED_MIGRATIONS=('0004_followup','0005_manual_academic','0006_manual_evaluable','0007_real_protocol')
+
+
+def tables_for(head):
+    """Inventario de tablas según la cabecera Alembic: 0007 añadió dos; los respaldos anteriores conservan las 15."""
+    return TABLES if head=='0007_real_protocol' else LEGACY_TABLES
 
 
 def validate_archive(content):
@@ -74,7 +79,7 @@ def validate_archive(content):
             if not required<=names or set(inventory)!=names-{'manifest.json'}:
                 raise RuntimeError('BACKUP_INVENTORY_INCOMPLETE')
             database=manifest.get('database',{})
-            if not isinstance(database,dict) or not isinstance(database.get('counts'),dict) or set(database['counts'])!=set(TABLES):
+            if not isinstance(database,dict) or not isinstance(database.get('counts'),dict) or set(database['counts'])!=set(tables_for(manifest['migration'])):
                 raise RuntimeError('BACKUP_DATABASE_COVERAGE_INVALID')
             if database.get('alembic')!=[manifest['migration']]: raise RuntimeError('BACKUP_VERSION_INCOMPATIBLE')
             for item in members:
@@ -91,8 +96,16 @@ def validate_archive(content):
         raise RuntimeError('BACKUP_ARCHIVE_INVALID') from None
 
 
+def current_head(target):
+    result=subprocess.run(target.db_command('psql','-XqAt','-v','ON_ERROR_STOP=1','-U','riesgo_owner','-d',target.database,
+        '-c','SELECT version_num FROM public.alembic_version'),cwd=ROOT,capture_output=True,text=True)
+    if result.returncode or result.stdout.strip() not in SUPPORTED_MIGRATIONS: raise RuntimeError('BACKUP_SCHEMA_INCOMPATIBLE')
+    return result.stdout.strip()
+
+
 def db_snapshot(target):
-    counts=' UNION ALL '.join("SELECT '"+t+"' AS name,count(*) AS count,md5(coalesce(string_agg(row_to_json(r)::text,'' ORDER BY id),'')) AS fingerprint FROM risk_school."+t+' r' for t in TABLES)
+    TABLES_IN_USE=tables_for(current_head(target))
+    counts=' UNION ALL '.join("SELECT '"+t+"' AS name,count(*) AS count,md5(coalesce(string_agg(row_to_json(r)::text,'' ORDER BY id),'')) AS fingerprint FROM risk_school."+t+' r' for t in TABLES_IN_USE)
     schema="""SELECT 'constraint' AS kind,c.conrelid::regclass::text AS object,c.conname AS name,pg_get_constraintdef(c.oid) AS definition FROM pg_constraint c JOIN pg_namespace n ON n.oid=c.connamespace WHERE n.nspname='risk_school'
 UNION ALL SELECT 'index',schemaname||'.'||tablename,indexname,indexdef FROM pg_indexes WHERE schemaname='risk_school'
 UNION ALL SELECT 'trigger',t.tgrelid::regclass::text,t.tgname,pg_get_triggerdef(t.oid) FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='risk_school' AND NOT t.tgisinternal
@@ -106,7 +119,7 @@ UNION ALL SELECT 'grant',table_schema||'.'||table_name,grantee,privilege_type FR
         '-c',sql),cwd=ROOT,capture_output=True,text=True)
     if result.returncode: raise RuntimeError('BACKUP_DATABASE_SNAPSHOT_FAILED')
     value=json.loads(result.stdout)
-    if len(value['alembic'] or [])!=1 or value['alembic'][0] not in SUPPORTED_MIGRATIONS or set(value['counts'])!=set(TABLES) or value['tables']!=sorted(TABLES):
+    if len(value['alembic'] or [])!=1 or value['alembic'][0] not in SUPPORTED_MIGRATIONS or set(value['counts'])!=set(TABLES_IN_USE) or value['tables']!=sorted(TABLES_IN_USE):
         raise RuntimeError('BACKUP_SCHEMA_INCOMPATIBLE')
     return value
 
@@ -199,8 +212,11 @@ def consistent_window(target):
         # SHARE blocks external data writers while allowing the snapshot dump.
         connection=subprocess.Popen(target.db_command('psql','-XqAt','-v','ON_ERROR_STOP=1','-U','riesgo_owner','-d',target.database),
             cwd=ROOT,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,bufsize=1)
-        tables=','.join('risk_school.'+t for t in TABLES)+',public.alembic_version'
-        connection.stdin.write("BEGIN ISOLATION LEVEL REPEATABLE READ; SET LOCAL lock_timeout='5s'; LOCK TABLE "+tables+" IN SHARE MODE; SELECT pg_export_snapshot();\n")
+        # Bloquea todas las tablas del esquema de aplicación (15 antes de 0007, 17 después) más la tabla de Alembic.
+        lock=("DO $$ DECLARE t text; BEGIN FOR t IN SELECT format('%I.%I',schemaname,tablename) FROM pg_tables "
+              "WHERE schemaname='risk_school' ORDER BY tablename LOOP EXECUTE 'LOCK TABLE '||t||' IN SHARE MODE'; END LOOP; "
+              "LOCK TABLE public.alembic_version IN SHARE MODE; END $$;")
+        connection.stdin.write("BEGIN ISOLATION LEVEL REPEATABLE READ; SET LOCAL lock_timeout='5s'; "+lock+" SELECT pg_export_snapshot();\n")
         connection.stdin.flush()
         snapshot=connection.stdout.readline().strip()
         if not re.fullmatch('[0-9A-Fa-f-]+',snapshot): raise RuntimeError('BACKUP_SNAPSHOT_LOCK_FAILED')
