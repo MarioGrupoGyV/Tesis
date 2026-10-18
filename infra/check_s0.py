@@ -51,7 +51,7 @@ def run():
     contract_path = ROOT / "docs/planning/Contrato_API.yaml"
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     validate(contract)
-    check(contract["info"]["version"] == "0.10.0", "OpenAPI 3.1 válido, versión 0.10.0 Bloque 3B-1")
+    check(contract["info"]["version"] == "0.11.0", "OpenAPI 3.1 válido, versión 0.11.0 Bloque 3B-2")
     operation_count = sum(method in ('get','post','patch','put','delete') for methods in contract['paths'].values() for method in methods)
     check(operation_count == 54, '54 operaciones: 32 conservadas, 12 M1, 1 del Bloque 1, 5 de indicadores y 4 del protocolo REAL')
     for path, methods in contract["paths"].items():
@@ -133,7 +133,7 @@ def run():
     prediction = {key: uid for key in ("id", "enrollment_id", "snapshot_id", "model_id")}
     prediction.update(data_origin="REAL", risk_level="LOW", cutoff_at="2026-10-03T16:00:00Z",
                       target_date="2026-10-04", predicted_at="2026-10-03T16:01:00Z",
-                      probabilities_calibrated=False, probability_low=None,
+                      probabilities_calibrated=False, probability_low=None, retrospective=False,
                       probability_medium=None, probability_high=None)
     samples = [
         ("Prediction", prediction, True),

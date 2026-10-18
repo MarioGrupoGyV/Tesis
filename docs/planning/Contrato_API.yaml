@@ -1,10 +1,12 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.10.0
-  description: 'S6, M1 y Bloques 1–2 conservados. Bloque 3B-1: protocolo REAL (crear, confirmar y revocar la
-    autorización técnica de un ADMIN). No guarda consentimientos, documentos, autorizadores ni fechas de permiso
-    y NO habilita operaciones: REAL continúa bloqueado con INSTITUTIONAL_PROCESSING_NOT_READY.'
+  version: 0.11.0
+  description: 'S6, M1, Bloques 1–3B-1 conservados. Bloque 3B-2: cadena REAL local. Con un protocolo REAL confirmado
+    que cubra el periodo se habilitan importación del CSV canónico, comparación exploratoria, evaluación retrospectiva,
+    alertas, reportes e indicadores por bimestre; sin protocolo todo REAL sigue con INSTITUTIONAL_PROCESSING_NOT_READY.
+    Los datos REAL son análisis exploratorio local: no demuestran eficacia escolar. El estudio institucional,
+    su comparación y la activación del modelo se administran por CLI.'
 servers:
 - url: /api/v1
   description: Preferir proxy de mismo origen para cookies y CSRF
@@ -3242,6 +3244,16 @@ paths:
             format: date-time
           - type: 'null'
           title: Close At
+      - name: bimester
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            pattern: ^[A-Za-z0-9_-]{1,20}$
+          - type: 'null'
+          title: Bimester
+        description: Código de bimestre del protocolo REAL; solo aplica a periodos REAL.
       responses:
         '200':
           description: Successful Response
@@ -3348,6 +3360,16 @@ paths:
           minimum: 1
           default: 20
           title: Page Size
+      - name: bimester
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            pattern: ^[A-Za-z0-9_-]{1,20}$
+          - type: 'null'
+          title: Bimester
+        description: Código de bimestre del protocolo REAL; solo aplica a periodos REAL.
       responses:
         '200':
           description: Successful Response
@@ -3432,6 +3454,16 @@ paths:
             format: date-time
           - type: 'null'
           title: Close At
+      - name: bimester
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            pattern: ^[A-Za-z0-9_-]{1,20}$
+          - type: 'null'
+          title: Bimester
+        description: Código de bimestre del protocolo REAL; solo aplica a periodos REAL.
       responses:
         '200':
           description: Successful Response
@@ -4017,6 +4049,10 @@ components:
           type: integer
           title: Version
           default: 1
+        real_processing_enabled:
+          type: boolean
+          title: Real Processing Enabled
+          default: false
       additionalProperties: false
       type: object
       required:
@@ -4267,6 +4303,16 @@ components:
           type: *id029
           format: date
           description: 'Solo MANUAL: corte (America/Lima) + horizonte del modelo; derivado, no es un dato observado.'
+        as_of_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: As Of At
+        retrospective:
+          type: boolean
+          title: Retrospective
+          default: false
       required:
       - id
       - enrollment_id
@@ -4748,53 +4794,70 @@ components:
       - page_size
       additionalProperties: false
     Model:
-      additionalProperties: false
       properties:
         id:
+          type: string
           format: uuid
           title: Id
-          type: string
         name:
+          type: string
           title: Name
-          type: string
         version:
-          title: Version
           type: string
+          title: Version
         algorithm:
+          type: string
           enum:
           - DUMMY
           - RANDOM_FOREST
           - SVM
           - XGBOOST
           title: Algorithm
-          type: string
         data_origin:
+          type: string
           enum:
           - REAL
           - SYNTHETIC
           title: Data Origin
-          type: string
         feature_schema_version:
+          type: string
           title: Feature Schema Version
-          type: string
         reference_criterion_version:
-          title: Reference Criterion Version
           type: string
+          title: Reference Criterion Version
         status:
+          type: string
           enum:
           - DRAFT
           - EVALUATED
           - APPROVED
           - RETIRED
           title: Status
-          type: string
         is_active:
-          title: Is Active
           type: boolean
+          title: Is Active
         created_at:
+          type: string
           format: date-time
           title: Created At
-          type: string
+        scope:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Scope
+        approval_kind:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Approval Kind
+        warnings:
+          items:
+            type: string
+          type: array
+          title: Warnings
+          default: []
+      additionalProperties: false
+      type: object
       required:
       - id
       - name
@@ -4807,7 +4870,6 @@ components:
       - is_active
       - created_at
       title: Model
-      type: object
     ModelPage:
       additionalProperties: false
       properties:
@@ -4973,24 +5035,24 @@ components:
       title: ProcessingOperations
       type: object
     ProcessingStatus:
-      additionalProperties: false
       properties:
         scope:
+          type: string
           const: SYNTHETIC_STUDY
           title: Scope
-          type: string
         notice:
-          title: Notice
           type: string
+          title: Notice
         institutional_ready:
-          const: false
+          type: boolean
           title: Institutional Ready
-          type: boolean
         synthetic_ready:
-          title: Synthetic Ready
           type: boolean
+          title: Synthetic Ready
         operations:
           $ref: '#/components/schemas/ProcessingOperations'
+      additionalProperties: false
+      type: object
       required:
       - scope
       - notice
@@ -4998,7 +5060,6 @@ components:
       - synthetic_ready
       - operations
       title: ProcessingStatus
-      type: object
     CaseCapabilities:
       additionalProperties: false
       properties:
@@ -5133,6 +5194,16 @@ components:
           title: Latest Cutoff At
         capabilities:
           $ref: '#/components/schemas/CaseCapabilities'
+        detected_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Detected At
+        retrospective:
+          type: boolean
+          title: Retrospective
+          default: false
       required:
       - id
       - enrollment_id
@@ -5709,59 +5780,62 @@ components:
       title: RiskCounts
       type: object
     ReportSummary:
-      additionalProperties: false
       properties:
         period_id:
+          type: string
           format: uuid
           title: Period Id
-          type: string
         period_code:
-          title: Period Code
           type: string
+          title: Period Code
         section_id:
-          format: uuid
-          type:
-          - string
-          - 'null'
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
           title: Section Id
         authorized_section_ids:
           items:
-            format: uuid
             type: string
-          title: Authorized Section Ids
+            format: uuid
           type: array
+          title: Authorized Section Ids
         scope:
-          const: SYNTHETIC_STUDY
-          default: SYNTHETIC_STUDY
+          type: string
+          enum:
+          - SYNTHETIC_STUDY
+          - INSTITUTIONAL_STUDY
           title: Scope
-          type: string
+          default: SYNTHETIC_STUDY
         data_origin:
-          const: SYNTHETIC
-          default: SYNTHETIC
+          type: string
+          enum:
+          - SYNTHETIC
+          - REAL
           title: Data Origin
-          type: string
+          default: SYNTHETIC
         notice:
-          title: Notice
           type: string
+          title: Notice
         generated_at:
+          type: string
           format: date-time
           title: Generated At
-          type: string
         cutoff_min:
-          format: date-time
-          type:
-          - string
-          - 'null'
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
           title: Cutoff Min
         cutoff_max:
-          format: date-time
-          type:
-          - string
-          - 'null'
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
           title: Cutoff Max
         total:
-          title: Total
           type: integer
+          title: Total
         evaluations:
           $ref: '#/components/schemas/EvaluationCounts'
         risks:
@@ -5773,14 +5847,16 @@ components:
         items:
           items:
             $ref: '#/components/schemas/ReportRow'
-          title: Items
           type: array
+          title: Items
         page:
+          type: integer
           title: Page
-          type: integer
         page_size:
-          title: Page Size
           type: integer
+          title: Page Size
+      additionalProperties: false
+      type: object
       required:
       - period_id
       - period_code
@@ -5799,7 +5875,6 @@ components:
       - page
       - page_size
       title: ReportSummary
-      type: object
     SyncInput:
       additionalProperties: false
       properties:
@@ -7025,7 +7100,9 @@ components:
           title: Period Code
         data_origin:
           type: string
-          const: SYNTHETIC
+          enum:
+          - SYNTHETIC
+          - REAL
           title: Data Origin
         is_simulation:
           type: boolean
@@ -7033,6 +7110,15 @@ components:
         notice:
           type: string
           title: Notice
+        bimester:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bimester
+        retrospective_alerts:
+          type: integer
+          title: Retrospective Alerts
+          default: 0
         as_of:
           type: string
           format: date-time
@@ -7154,10 +7240,14 @@ components:
     Nia:
       properties:
         total:
-          type: integer
+          anyOf:
+          - type: integer
+          - type: 'null'
           title: Total
         students:
-          type: integer
+          anyOf:
+          - type: integer
+          - type: 'null'
           title: Students
         mean:
           anyOf:
@@ -7170,7 +7260,9 @@ components:
           - type: 'null'
           title: Median
         alerted_students:
-          type: integer
+          anyOf:
+          - type: integer
+          - type: 'null'
           title: Alerted Students
         mean_alerted:
           anyOf:
@@ -7389,6 +7481,16 @@ components:
             format: date-time
           - type: 'null'
           title: Alert Opened At
+        alert_detected_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Alert Detected At
+        retrospective:
+          type: boolean
+          title: Retrospective
+          default: false
         alert_before_close:
           anyOf:
           - type: boolean
@@ -7558,6 +7660,19 @@ components:
         is_locked:
           type: boolean
           title: Is Locked
+        data_origin:
+          type: string
+          enum:
+          - SYNTHETIC
+          - REAL
+          title: Data Origin
+          default: SYNTHETIC
+        bimesters:
+          items:
+            type: string
+          type: array
+          title: Bimesters
+          default: []
         sections:
           items:
             $ref: '#/components/schemas/ContextSection'
@@ -7572,7 +7687,8 @@ components:
       - is_locked
       - sections
       title: IndicatorContext
-      description: Periodo SYNTHETIC con estudio registrado y sus secciones autorizadas (incluye RESEARCHER).
+      description: Periodo con estudio registrado (SYNTHETIC; REAL solo con protocolo confirmado) y sus secciones
+        autorizadas.
     OpportuneByIntervention:
       properties:
         numerator:

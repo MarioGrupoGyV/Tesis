@@ -308,6 +308,15 @@ se paralelizan las migraciones (un solo responsable) ni 5 con 3B/4.
 **Camino mínimo para la sustentación:** 3B núcleo (protocolo, generalización del estudio, `risk_references`, compuertas) → conversor + carga de cortes y cierres → comparación/registro/activación REAL y
 evaluación al corte → indicadores desde `risk_references`. **Recortable:** (la bitácora de recepción y de reportes ya está diferida por la decisión 6), validación anidada, leave-one-out, gráficos SVG, flujo vivo de alertas con REAL, carga de nombres, respaldo REAL.
 
+### Estado de implementación 3B-2 (2026-10-17)
+
+Hecho: migración `0008_real_chain` (estudios institucionales sobre `synthetic_studies` con `kind`/`protocol_id`, un modelo activo por origen
+con alcance, triggers de procedencia y elegibilidad por protocolo); punto único `study_for_period`/`require_real_protocol`; variables base
+configurables (4 en REAL, sin participación); `compare_institutional` (CV agrupada repetida); evaluación retrospectiva con
+`as_of_at`/`detected_at`; indicadores por origen y bimestre; página *Protocolo REAL*. Desviaciones: el estudio institucional, su
+comparación y la activación se operan por CLI (`infra/study.py`), no por API; la alerta de B1 se actualiza en B2 (una alerta activa por
+matrícula), de modo que el PDER de B2 hereda la detección de B1. La carga de nombres y el conversor del Excel siguen en el Bloque 4.
+
 ## 12. Criterios de aceptación (medibles)
 
 **3B:** (1) las 338 pruebas existentes siguen pasando y se añaden las nuevas; (2) 0007 se aplica en base limpia y sobre una base 0006 conservando los resúmenes de todas las tablas previas (como

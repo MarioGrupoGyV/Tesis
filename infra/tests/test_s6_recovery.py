@@ -103,6 +103,10 @@ class ArchiveValidationTests(unittest.TestCase):
         manifest['database'].update(alembic=['0007_real_protocol'], counts=with_new_tables(),
                                     fingerprints={name: hashlib.md5(b'').hexdigest() for name in runtime.TABLES})
         self.assertEqual(backup.validate_archive(zip_package(values, manifest))['migration'], '0007_real_protocol')
+        # 0008 (cadena REAL) no añade tablas: comparte el inventario de 17.
+        manifest['migration'] = '0008_real_chain'
+        manifest['database']['alembic'] = ['0008_real_chain']
+        self.assertEqual(backup.validate_archive(zip_package(values, manifest))['migration'], '0008_real_chain')
         # Cobertura exacta por cabecera: 0007 con el inventario antiguo y 0006 con el nuevo se rechazan.
         for migration, counts in (('0007_real_protocol', {name: 0 for name in runtime.LEGACY_TABLES}),
                                   ('0006_manual_evaluable', with_new_tables())):

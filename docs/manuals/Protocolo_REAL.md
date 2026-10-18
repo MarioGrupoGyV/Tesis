@@ -1,11 +1,12 @@
-# Protocolo REAL (Bloque 3B-1)
+# Protocolo REAL (Bloques 3B-1 y 3B-2)
 
 El protocolo REAL es un **interruptor técnico** de procesamiento local de una cohorte con registros reales. No es un expediente de
 autorizaciones. Diseño: [ADR 012](../adr/012-procesamiento-real.md). Esquema: migración `0007_real_protocol`.
 
-**Estado actual (3B-1):** el protocolo se puede crear, confirmar y revocar, pero **todavía no desbloquea nada**. Toda operación REAL
-(importar, evaluar, alertas, reportes, indicadores, modelos) sigue devolviendo `INSTITUTIONAL_PROCESSING_NOT_READY`, incluso con el protocolo
-confirmado; la activación llega en 3B-2. Las pruebas lo verifican endpoint por endpoint.
+**Estado actual (3B-2):** con el protocolo **confirmado**, el periodo REAL queda habilitado para el ciclo local descrito abajo; sin
+confirmar (o tras revocar) toda operación REAL devuelve `INSTITUTIONAL_PROCESSING_NOT_READY`. Las pruebas lo verifican endpoint por
+endpoint, con datos ficticios etiquetados REAL (nunca datos del colegio). Los resultados son **análisis exploratorio local**: no
+demuestran eficacia escolar ni sustituyen una validación externa.
 
 ## Qué guarda
 
@@ -68,3 +69,37 @@ Ninguna respuesta pública cambia en 3B-1.
 
 `infra/load_closings.py` carga insumos de cierre desde un CSV de códigos a un destino **aislado** (nunca el activo). El backend calcula los cinco componentes y el nivel
 RIESGO_V1; el CSV no puede traer el nivel y cualquier columna adicional (por ejemplo, nombres) rechaza el archivo completo. Todo o nada.
+
+## Ciclo REAL local (Bloque 3B-2)
+
+Orden de trabajo de un ADMIN en un destino aislado (nunca sobre la instalación activa sin autorización expresa). Todo usa códigos; los
+nombres de menores no se importan ni salen de la ficha del estudiante.
+
+1. **Protocolo.** Registrarlo y confirmarlo (página *Protocolo REAL*, o `POST /processing-protocols` y `/confirm`). Al confirmar, los
+   estudiantes activos ya matriculados en el periodo pasan a ser elegibles (no se fabrican consentimientos); los nuevos se marcan
+   elegibles al matricularse o importarse mientras el protocolo esté confirmado.
+2. **Estudio institucional.** `py -3.12 infra/study.py register-study --target <destino.json> --operator-profile <perfil> --protocol-id <id> --csv <cortes.csv>`.
+   El CSV canónico tiene las 13 cabeceras de la plantilla (la participación se deja vacía: no es variable del corte), un corte por
+   estudiante y bimestre, y el mismo horizonte (días entre la disponibilidad del último dato y el cierre) en todos los bimestres.
+   El sistema guarda el archivo exacto en el almacenamiento privado y solo acepta ese contenido en la importación.
+3. **Importación.** `study.py import --study-id <id>` (o la pantalla *Datos* con el mismo archivo). Escalas de nota y participación
+   (1–5) salen del protocolo.
+4. **Cierres.** `py -3.12 infra/load_closings.py ...` registra los insumos de cierre; el backend calcula RIESGO_V1 (`risk_references`,
+   solo inserción). Sin cierres no hay etiquetas y la comparación responde `INSUFFICIENT_DATA_FOR_STUDY`.
+5. **Comparación exploratoria.** `study.py compare --study-id <id> [--repetitions N] [--loso]`: validación cruzada agrupada por
+   estudiante (5 pliegues, ≥ 20 repeticiones con semillas derivadas), RF/SVM/XGBoost/Dummy, media ± DE y matriz de confusión agregada;
+   selección por la regla del estudio sobre la media. Aviso de n pequeño en el informe, en *Modelos* y en el manifiesto.
+6. **Registro y activación.** `study.py register --study-id <id>` y `study.py activate --model-id <id>`. Un solo modelo activo por
+   origen; activar uno REAL nunca desactiva el SYNTHETIC. Aprobación `LOCAL_EXPLORATORY`.
+7. **Evaluación retrospectiva.** `study.py run --period-id <id> --as-of <fecha-corte>` (una corrida por corte). Las predicciones y
+   alertas conservan el instante real (`predicted_at`, `opened_at`) y guardan el simulado (`as_of_at`, `detected_at`); la API y la
+   interfaz las rotulan «simulación retrospectiva». Las mediciones manuales REAL no se evalúan.
+8. **Indicadores.** Página *Indicadores* con selector de bimestre: PDER usa la fecha simulada de detección frente al cierre; NIA e
+   intervención oportuna son `null` con motivo `NO_REAL_INTERVENTIONS` mientras no haya intervenciones reales registradas por el flujo
+   existente. Los CSV llevan solo códigos.
+
+**Revocar** el protocolo bloquea de inmediato todo lo anterior y conserva lo ya guardado (estudio, referencias, predicciones, alertas).
+
+Límites vigentes: cohorte única (60 estudiantes, dos bimestres de las mismas personas: la unidad de partición es el estudiante); una sola
+alerta activa por matrícula (la alerta de B1 se actualiza en B2); sin calibración; sin validación externa; la procedencia de los
+reportes PRV 120/126 y 113/120 no está confirmada y no se importa.

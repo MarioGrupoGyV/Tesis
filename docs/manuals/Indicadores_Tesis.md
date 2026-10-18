@@ -124,3 +124,19 @@ calculada a mano a partir de los resultados regenerados del generador.
 - Acceso de RESEARCHER: ve los indicadores y el CSV por código anónimo por autorización expresa de este bloque;
   no accede a casos ni reportes operativos.
 - No se modifican el modelo, la política de seguimiento ni la elegibilidad.
+
+## Datos reales locales (Bloque 3B-2)
+
+Con un protocolo REAL confirmado, *Indicadores* admite periodos REAL y el filtro `bimestre` (`B1`, `B2`, …; el corte elegido es el
+de ese bimestre). Rótulo obligatorio: «Datos reales locales — análisis exploratorio, no demuestra eficacia escolar».
+
+- **Riesgo de referencia:** `risk_references` (RIESGO_V1 con insumos de cierre), no etiquetas del generador sintético.
+- **PDER:** la detección se mide con `detected_at` (fecha simulada de la evaluación retrospectiva) frente al cierre del bimestre; la
+  ventana `detection_days` del protocolo reduce el margen aceptado. Las alertas generadas ahora sobre cortes pasados se cuentan y se
+  rotulan como «simulación retrospectiva».
+- **NIA e intervención oportuna:** solo con intervenciones reales (flujo existente). Sin ellas son `null` con motivo `NO_REAL_INTERVENTIONS`;
+  nunca se rellenan con ceros. Con ellas, el plazo se mide desde el instante real de la alerta (`opened_at`) y la ventana es
+  `intervention_days` del protocolo.
+- **Métricas del modelo:** evaluación retrospectiva con un modelo ajustado con los mismos estudiantes; son descriptivas, no una validación.
+- **CSV:** solo códigos anónimos; columnas adicionales `fecha_deteccion_utc` y `simulacion_retrospectiva`.
+- Los indicadores REAL no están disponibles para el rol Investigador.
