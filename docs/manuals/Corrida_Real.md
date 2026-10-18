@@ -8,15 +8,20 @@ activa ni otros destinos, salvo que el usuario lo pida expresamente (ver «Carga
 **Lectura correcta de los resultados:** simulación retrospectiva con datos reales del colegio; **no mide impacto del sistema**. Las alertas se
 generaron ahora, con un modelo ajustado con los mismos estudiantes, sobre cortes pasados.
 
+**Qué cifra usar para hablar de calidad predictiva (Bloque 5.1).** El PDER y el CRA que calcula el sistema sobre estos 60 estudiantes dan 100 %: el modelo activo se ajustó
+con ellos mismos (**en muestra**), así que describen que el sistema funciona, no qué tan bien detecta. La cifra válida es la **detección validada (fuera de muestra)**: de los estudiantes con riesgo
+de referencia Medio o Alto, qué proporción habría detectado el modelo si no lo hubiera visto (validación cruzada, 20 repeticiones, media ± desviación), junto con su falsa alarma. Está en la pantalla
+Indicadores, en el CSV (`deteccion_validada_*`) y en el resumen agregado (`validated_detection`). Definición y límites: [Indicadores_Tesis.md](Indicadores_Tesis.md).
+
 ## Pasos (PowerShell, desde la raíz del repositorio)
 
 1. **Imágenes y destino** (una vez). El destino publica la web en el **5173**: antes hay que cerrar el servidor de desarrollo de Vite (`npm run dev`), que usa ese mismo puerto; la instalación de siempre sigue en el 15173:
 
    ```powershell
-   docker build -t riesgo-escolar-api:b5 -f infra/docker/api.Dockerfile .
-   docker build -t riesgo-escolar-web:b5 -f infra/docker/web.Dockerfile .
+   docker build -t riesgo-escolar-api:b51 -f infra/docker/api.Dockerfile .
+   docker build -t riesgo-escolar-web:b51 -f infra/docker/web.Dockerfile .
    $d = "$env:LOCALAPPDATA\SeguimientoEscolar\Instalaciones\real-tesis"; New-Item -ItemType Directory -Force $d
-   backend\.venv\Scripts\python.exe infra\runtime_target.py create --output "$d\destino.json" --web-port 5173 --api-port 18320 --db-port 55680 --image-tag b5
+   backend\.venv\Scripts\python.exe infra\runtime_target.py create --output "$d\destino.json" --web-port 5173 --api-port 18320 --db-port 55680 --image-tag b51
    backend\.venv\Scripts\python.exe infra\runtime_target.py up --target "$d\destino.json"
    ```
 
@@ -94,6 +99,9 @@ y el perfil de operador del ADMIN real de esa instalación.
 | Resumen agregado sin códigos | `tests/evidence/mejoras-05-resumen-agregado.json` |
 | Capturas (Alertas con códigos enmascarados, Indicadores B1 y B2, Modelos) | `tests/evidence/mejoras-05-real-*.png` |
 | Suite del backend | `tests/evidence/mejoras-05-backend.xml` |
+| Bloque 5.1: resumen agregado (con la detección validada) | `tests/evidence/mejoras-051-resumen-agregado.json` |
+| Bloque 5.1: capturas de Indicadores REAL (B1 y B2, tres tamaños), suite y contrato | `tests/evidence/mejoras-051-real-indicadores-*.png`, `mejoras-051-backend.xml`, `mejoras-051-contracts.json`, `mejoras-051-e2e.json` |
+| Bloque 5.1: informe completo, indicadores y CSV por alumno | `%LOCALAPPDATA%\SeguimientoEscolar\ResultadosReales\2026-10-18-051\` (fuera del repo) |
 
 ## Repetir la corrida desde cero
 

@@ -371,6 +371,20 @@ y `s6-20261018T071049Z-ed8e6d82abf0`, en 0008), se verificó el primero con `res
 y el respaldo S6 etiqueta `origin`/`data_origins` (`SYNTHETIC`, `REAL` o `MIXED`) según los datos presentes, con restauración REAL a otra copia solo con `--confirm-real-copy`. Decisiones del usuario aún
 pendientes: tutor de las secciones REAL (relleno bloqueado o un TUTOR existente) y cuándo ejecutar la carga. `load_identities.py` sigue sin actuar sobre la activa.
 
+**Estado del Bloque 5.1 (2026-10-18): detección validada.** Corrección de interpretación: en la corrida real el PDER salió 45/45 (B1) y 35/35 (B2) y el CRA 60/60 porque el modelo
+activo se ajustó con los mismos 60 estudiantes que luego evalúa (**en muestra**); es 100 % por construcción y no mide calidad. Se añadió la **detección validada (fuera de muestra)**: de las
+observaciones de referencia Medio o Alto, la proporción que el modelo marcó Medio o Alto cuando ese estudiante estaba en el pliegue de validación (20 repeticiones de validación cruzada agrupada
+por estudiante, misma semilla), con media ± desviación entre repeticiones, por bimestre y total, para los cuatro modelos y el activo (`algorithms.<modelo>.detection` del informe, fuera de
+`repeated_cv` y del manifiesto del artefacto; `validated_detection` en `GET /indicators`, contrato 0.13.0; columnas `deteccion_validada_*` del CSV por estudiante; pantalla Indicadores). Se
+informa también el desglose y la **falsa alarma** (Bajo marcado Medio/Alto), imprescindible porque marcar a todos como Alto detecta el 100 % (el modelo Dummy lo hace, con 100 % de falsa alarma).
+Resultado del modelo activo (Random Forest): **total 92,9 % ± 1,4 %** (1486 de 1600 sumando las 20 repeticiones), **B1 87,3 % ± 2,4 %** (786/900), **B2 100 % ± 0,0 %** (700/700); Medio detectado
+82,2 % ± 3,4 %, Alto detectado 100 %, **Alto confundido como Bajo 0**, falsa alarma 11,2 % ± 2,9 %. Coincide con la matriz agregada ya publicada (710/90/0 · 114/455/71 · 0/55/905 → 1486/1600). Total
+de los otros modelos: SVM 94,5 % ± 1,0 %, XGBoost 92,4 % ± 1,2 %, Dummy 100 % (falsa alarma 100 %). El **CRA validado es 100 % por definición del flujo** (mide que el sistema no pierde casos de su propia
+salida; la medida de calidad predictiva es la detección) y no se presenta como desempeño. Las métricas ya publicadas **no cambiaron** (RF exactitud 0,863 ± 0,014, F1 macro 0,848, kappa 0,790),
+comprobado recomparando en el destino aislado nuevo `real-tesis-051` y reconstruyendo `real-tesis`; ambas corridas dieron resultados idénticos. Lectura con cautela: B2 sale 100 % en las 20 repeticiones y
+con los cuatro modelos; RIESGO_V1 se calcula con los insumos de cierre del mismo bimestre (nota, asistencia, actividades, participación, incidencias), cercanos a las variables del corte, así que parte
+de la separación puede ser estructural. Con n = 60 y sin validación externa no demuestra capacidad predictiva a futuro. Manual: [Indicadores_Tesis.md](../manuals/Indicadores_Tesis.md).
+
 Resueltas el 2026-10-17 (sección 2b): plazos de oportunidad (decisión 3), participación fuera de las características (4), corte = disponibilidad de la última fuente con horizonte de 17 días (4),
 un solo periodo 2026 (4), B2 «con sistema» como simulación retrospectiva (2) y nombres solo en la ficha desde archivo local (5).
 

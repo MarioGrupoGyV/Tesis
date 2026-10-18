@@ -13,3 +13,7 @@
 .indicator-matrix th, .indicator-matrix td { text-align: center; }
 @media (max-width: 480px) { .indicator-card .big { font-size: 26px; } }
 .indicator-downloads { display: flex; gap: 10px; flex-wrap: wrap; }
+/* Bloque 5.1: el desglose de la detección tiene dos columnas; no necesita el ancho mínimo global de las tablas y debe leerse completo en el celular. */
+.detection-panel .table-container table { min-width: 0; }
+.detection-panel th, .detection-panel td { overflow-wrap: anywhere; }
+.detection-panel td { white-space: nowrap; }

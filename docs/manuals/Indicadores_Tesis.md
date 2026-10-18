@@ -154,3 +154,39 @@ de ese bimestre). Rótulo obligatorio: «Datos reales locales — análisis expl
   media, DE de F1 macro y número de repeticiones; solo a nivel de periodo. Si el modelo activo no trae informe: `null` con motivo
   `NO_OUT_OF_SAMPLE_REPORT`. El cálculo en memoria (`in_sample_metrics`) se conserva solo como dato interno rotulado «en memoria, no valida el
   modelo». Los CSV traen `metric_basis` (`OUT_OF_FOLD` o `IN_SAMPLE`). SYNTHETIC conserva sus métricas, con base `IN_SAMPLE`.
+
+## Detección validada (fuera de muestra) y por qué el PDER del sistema es 100 % (Bloque 5.1)
+
+**Qué cambia en la lectura.** En la corrida real el PDER del sistema sale 100 % y el CRA 100 %. No es un resultado de desempeño: el modelo activo se
+ajustó con los mismos 60 estudiantes que luego evalúa (**en muestra**), así que reconoce a todos los que ya vio. Esas cifras se conservan porque describen
+que el sistema funciona, pero **la medida de calidad predictiva es la detección validada**.
+
+**Definición.** *Detección validada* = de las observaciones cuyo riesgo de referencia es **Medio o Alto**, la proporción que el modelo predijo **Medio o Alto**
+cuando ese estudiante estaba en el pliegue de validación de la validación cruzada agrupada por estudiante (el modelo no lo había visto: ninguna fila de
+entrenamiento entra en el cálculo, y los dos bimestres de un mismo estudiante siempre quedan juntos en entrenamiento o en validación). En cada repetición cada
+observación se valida una vez; se informa la **media y la desviación entre las 20 repeticiones** (la desviación no es un intervalo de confianza), por bimestre
+(B1, B2) y en total, para cada modelo y para el modelo activo.
+
+**Desglose** (misma validación): Medio detectado como Medio/Alto; Alto detectado como Medio/Alto; **Alto confundido como Bajo** (el caso perdido más grave); y
+la **falsa alarma**, Bajo de referencia que el modelo marcó Medio/Alto. La falsa alarma no es un adorno: un modelo que marcara a todos como Alto detectaría el
+100 % (el modelo Dummy lo hace), así que la detección sola no distingue un buen modelo de uno que alarma a todos. Los conteos sumados de las repeticiones
+coinciden con la matriz de confusión agregada del informe (control interno: si no coinciden, la comparación se detiene).
+
+**CRA validado.** El CRA mide que el sistema no pierde casos de su propia salida (toda predicción Media o Alta genera alerta con el flujo de seguimiento; Baja no la
+necesita), por lo que fuera de muestra también es 100 % por definición del flujo. **Es un control de funcionamiento; no se presenta como resultado de desempeño.**
+La medida de calidad predictiva es la detección.
+
+**Dónde se ve.**
+- *Indicadores* (periodos REAL): tarjeta «PDER del sistema · en muestra · dato de funcionamiento», nota en CRA, y el panel **Detección validada (fuera de
+  muestra)** con media ± desviación, repeticiones, conteos sumados, desglose y aviso de n pequeño. Respeta el filtro de bimestre (sin filtro = total). Solo a
+  nivel de periodo (por sección: `PERIOD_LEVEL_ONLY`). Si el modelo activo no trae el dato (informes anteriores a este bloque): `null` con motivo `NO_OUT_OF_SAMPLE_REPORT`.
+- API: `total.validated_detection` en `GET /indicators` (porcentajes; `metric_basis = OUT_OF_FOLD`), contrato 0.13.0.
+- CSV por estudiante: columnas nuevas `deteccion_validada_pct`, `deteccion_validada_sd_pct`, `deteccion_validada_repeticiones` y
+  `deteccion_validada_metric_basis` (`OUT_OF_FOLD`); es la cifra del periodo repetida en cada fila, vacía si no hay informe. El CSV por intervención no cambia.
+- Informe de comparación (`algorithms.<modelo>.detection`) y resumen agregado de la corrida real (sin códigos de alumno).
+
+**Límites.** n = 60 estudiantes (120 observaciones no independientes); la selección del algoritmo y su evaluación usan los mismos datos, así que la cifra puede ser
+optimista; no hay validación externa ni prospectiva; la desviación entre repeticiones no es un intervalo de confianza. Es análisis exploratorio local.
+Un 100 % ± 0 en un bimestre (en la corrida real, B2 con los cuatro modelos) significa que ninguna de las 20 repeticiones dejó escapar un caso de ese bimestre; no es un error,
+pero se lee con cautela: RIESGO_V1 se calcula con los insumos de cierre del mismo bimestre (nota, asistencia, actividades, participación, incidencias), cercanos a las
+variables del corte, así que parte de la separación puede ser estructural y no prueba capacidad predictiva a futuro.
