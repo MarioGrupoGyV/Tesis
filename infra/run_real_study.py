@@ -184,6 +184,27 @@ print(json.dumps(rows))
 '''
 
 
+LOCKED_TUTOR = r'''
+import json, secrets, sys
+from sqlalchemy import select
+from app.configure_context import UserInput, configure
+from app.core.config import Settings
+from app.core.database import Database
+from app.models.s1 import AppUser
+p = json.load(sys.stdin)
+db = Database(Settings())
+with db.session_factory() as s:
+    actor = s.scalar(select(AppUser).where(AppUser.email == p['actor_email'], AppUser.role == 'ADMIN', AppUser.is_active))
+    tutor = s.scalar(select(AppUser).where(AppUser.email == 'tutor-bloqueado@example.com'))
+    if tutor is None:
+        identifier = configure(s, actor, UserInput(email='tutor-bloqueado@example.com', display_name='Tutor sin acceso (relleno)',
+                                                   role='TUTOR', password=secrets.token_urlsafe(32)))
+    else:
+        identifier = tutor.id
+print(json.dumps({'id': str(identifier)}))
+'''
+
+
 class Live:
     """Acceso real al destino aislado: sesión ADMIN con el perfil Windows, órdenes internas y consultas de solo lectura."""
 
@@ -244,16 +265,26 @@ class Live:
         except RuntimeError as error:
             raise StopRun(str(error)) from None
 
+    def create_locked_tutor(self):
+        """Cuenta TUTOR de relleno con contraseña aleatoria que nadie conoce (no se guarda ni se imprime): solo permite que existan las secciones."""
+        try:
+            return self.target.api_python(LOCKED_TUTOR, {'actor_email': self.account['email']})['id']
+        except RuntimeError as error:
+            raise StopRun(str(error)) from None
+
     def head(self):
-        rows = self.target.api_python(EXEC_SQL, {'sql': 'SELECT version_num FROM public.alembic_version', 'params': {}})
-        return rows[0]['version_num']
+        """La cuenta de la aplicación no lee `alembic_version`: se reconoce 0008 por sus objetos (regla de modelo activo por origen)."""
+        rows = self.target.api_python(EXEC_SQL, {'sql': """SELECT (SELECT count(*) FROM pg_constraint WHERE conname='active_model_scope')
+            + (SELECT count(*) FROM pg_indexes WHERE indexname='ux_active_model_origin') AS n""", 'params': {}})
+        return '0008_real_chain' if int(rows[0]['n']) == 2 else 'UNKNOWN'
 
 
 # ---------------------------------------------------------------- orquestación
 class Runner:
-    def __init__(self, gateway, inputs, results, *, dry_run=False, confirm_protocol=False, tutors=(None, None), emit=print):
+    def __init__(self, gateway, inputs, results, *, dry_run=False, confirm_protocol=False, tutors=(None, None), locked_tutor=False, emit=print):
         self.g, self.inputs, self.results = gateway, inputs, Path(results)
         self.dry_run, self.confirm, self.tutors, self.emit = dry_run, confirm_protocol, tutors, emit
+        self.locked_tutor = locked_tutor
         self.steps, self.state = [], {}
 
     def step(self, name, status, **counts):
@@ -306,8 +337,11 @@ class Runner:
             ids = [item['id'] for item in tutors]
             if len(ids) == 1:
                 tutor_by_section = {code: ids[0] for code in self.inputs.sections}
+            elif len(ids) < 1 and self.locked_tutor and not self.dry_run:
+                placeholder = self.g.create_locked_tutor()
+                tutor_by_section = {code: placeholder for code in self.inputs.sections}
             elif len(ids) < 1:
-                raise StopRun('TUTOR_REQUIRED', 'Crea al menos una cuenta TUTOR (runtime_target.py configure) o indica --tutor-a/--tutor-b.')
+                raise StopRun('TUTOR_REQUIRED', 'Crea una cuenta TUTOR (runtime_target.py configure), indica --tutor-a/--tutor-b o usa --locked-tutor.')
             else:
                 raise StopRun('TUTOR_CHOICE_REQUIRED', 'Hay varios tutores: indica --tutor-a y --tutor-b.')
         if self.dry_run:
@@ -515,7 +549,8 @@ class Runner:
                                       'matrix_reference_by_predicted': matrix, 'retrospective_alerts': data['retrospective_alerts'],
                                       'nia': {'value': total['nia']['mean'], 'reason': total['nia']['reason']},
                                       'opportune': {'percent': total['opportune']['percent'], 'reason': total['opportune']['reason']},
-                                      'prv': {'percent': data['prv']['percent'], 'received': data['prv'].get('received'), 'reason': data['prv']['reason']},
+                                      # PRV no se informa: el sistema solo ve el CSV ya filtrado por el conversor; la recepción real (126 recibidas) no tiene procedencia confirmada.
+                                      'prv': {'percent': None, 'reason': 'RECEPTION_PROVENANCE_UNCONFIRMED', 'system_csv_rows': data['prv'].get('received')},
                                       'out_of_fold_basis': total['metric_basis'], 'run': self.state['runs'][bimester]}
         self.state['indicators'] = per_bimester
         self.step('indicators', 'DONE', bimesters=sorted(per_bimester), sql_matches_system=all(item['agree'] for item in per_bimester.values()))
@@ -578,6 +613,7 @@ def main(argv=None):
     parser.add_argument('--dry-run', action='store_true', help='Valida archivos y destino sin escribir nada')
     parser.add_argument('--confirm-protocol', action='store_true', help='Confirma el protocolo REAL si aún no lo está (acción de ADMIN)')
     parser.add_argument('--tutor-a'); parser.add_argument('--tutor-b')
+    parser.add_argument('--locked-tutor', action='store_true', help='Si no hay tutores, crea una cuenta TUTOR de relleno sin acceso (contraseña aleatoria desconocida)')
     parser.add_argument('--public-summary', type=Path, help='Copia el resumen agregado (sin códigos) a este archivo')
     args = parser.parse_args(argv)
     try:
@@ -592,7 +628,7 @@ def main(argv=None):
         account = admin_account(target, operator_profile=args.operator_profile)
         with Live(target, account) as gateway:
             summary = Runner(gateway, inputs, args.results, dry_run=args.dry_run, confirm_protocol=args.confirm_protocol,
-                             tutors=(args.tutor_a, args.tutor_b)).run()
+                             tutors=(args.tutor_a, args.tutor_b), locked_tutor=args.locked_tutor).run()
         if summary is not None and args.public_summary and not args.dry_run:
             args.public_summary.write_text(json.dumps(summary, ensure_ascii=True, indent=2, sort_keys=True) + '\n', encoding='utf-8')
     except StopRun as stop:

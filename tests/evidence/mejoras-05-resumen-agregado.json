@@ -1,0 +1,376 @@
+{
+  "active_model": {
+    "algorithm": "RANDOM_FOREST",
+    "approval_kind": "LOCAL_EXPLORATORY",
+    "id": "a4d9853c-f4e6-4986-a8c7-ccfe0c60b6c3",
+    "is_active": true
+  },
+  "comparison": {
+    "approval_kind": "LOCAL_EXPLORATORY",
+    "models": {
+      "DUMMY": {
+        "accuracy": {
+          "mean": 0.4000000000000001,
+          "sd": 5.695323946259567e-17
+        },
+        "aggregated_confusion_matrix": [
+          [
+            0,
+            0,
+            800
+          ],
+          [
+            0,
+            0,
+            640
+          ],
+          [
+            0,
+            0,
+            960
+          ]
+        ],
+        "balanced_accuracy": {
+          "mean": 0.33333333333333326,
+          "sd": 5.695323946259567e-17
+        },
+        "cohen_kappa": {
+          "mean": 0.0,
+          "sd": 0.0
+        },
+        "leave_one_student_out": {
+          "accuracy": 0.4,
+          "macro_f1": 0.19047619047619047,
+          "recall_high": 1.0
+        },
+        "macro_f1": {
+          "mean": 0.19047619047619052,
+          "sd": 5.695323946259567e-17
+        },
+        "recall_high": {
+          "mean": 1.0,
+          "sd": 0.0
+        }
+      },
+      "RANDOM_FOREST": {
+        "accuracy": {
+          "mean": 0.8629166666666667,
+          "sd": 0.016551134658371075
+        },
+        "aggregated_confusion_matrix": [
+          [
+            714,
+            86,
+            0
+          ],
+          [
+            112,
+            451,
+            77
+          ],
+          [
+            0,
+            54,
+            906
+          ]
+        ],
+        "balanced_accuracy": {
+          "mean": 0.8469791666666666,
+          "sd": 0.017068848456708377
+        },
+        "cohen_kappa": {
+          "mean": 0.7909887738863851,
+          "sd": 0.02493861476304986
+        },
+        "leave_one_student_out": {
+          "accuracy": 0.8583333333333333,
+          "macro_f1": 0.8414281721593717,
+          "recall_high": 0.9583333333333334
+        },
+        "macro_f1": {
+          "mean": 0.8478241018974924,
+          "sd": 0.017366725260121302
+        },
+        "recall_high": {
+          "mean": 0.9437499999999999,
+          "sd": 0.013686389277745572
+        }
+      },
+      "SVM": {
+        "accuracy": {
+          "mean": 0.8566666666666667,
+          "sd": 0.009970717360268645
+        },
+        "aggregated_confusion_matrix": [
+          [
+            710,
+            90,
+            0
+          ],
+          [
+            84,
+            448,
+            108
+          ],
+          [
+            0,
+            62,
+            898
+          ]
+        ],
+        "balanced_accuracy": {
+          "mean": 0.8409722222222221,
+          "sd": 0.010634897255551067
+        },
+        "cohen_kappa": {
+          "mean": 0.7813049239110444,
+          "sd": 0.015137866679736767
+        },
+        "leave_one_student_out": {
+          "accuracy": 0.8583333333333333,
+          "macro_f1": 0.8428559037458335,
+          "recall_high": 0.9375
+        },
+        "macro_f1": {
+          "mean": 0.842291304628722,
+          "sd": 0.010946471711431358
+        },
+        "recall_high": {
+          "mean": 0.9354166666666668,
+          "sd": 0.011510546905272572
+        }
+      },
+      "XGBOOST": {
+        "accuracy": {
+          "mean": 0.8366666666666666,
+          "sd": 0.022360679774997876
+        },
+        "aggregated_confusion_matrix": [
+          [
+            687,
+            113,
+            0
+          ],
+          [
+            122,
+            425,
+            93
+          ],
+          [
+            0,
+            64,
+            896
+          ]
+        ],
+        "balanced_accuracy": {
+          "mean": 0.8187152777777778,
+          "sd": 0.021920321101132127
+        },
+        "cohen_kappa": {
+          "mean": 0.7510658443485935,
+          "sd": 0.03340462156399271
+        },
+        "leave_one_student_out": {
+          "accuracy": 0.825,
+          "macro_f1": 0.8079610538373424,
+          "recall_high": 0.9166666666666666
+        },
+        "macro_f1": {
+          "mean": 0.819137643148815,
+          "sd": 0.02246853418713851
+        },
+        "recall_high": {
+          "mean": 0.9333333333333333,
+          "sd": 0.032132993009772404
+        }
+      }
+    },
+    "observations": 120,
+    "repetitions": 20,
+    "requested_folds": 5,
+    "seed": 0,
+    "selected_algorithm": "RANDOM_FOREST",
+    "selection_rule": "REPEATED_CV_MACRO_F1_THEN_BALANCED_ACCURACY_THEN_FIXED_ORDER",
+    "students": 60,
+    "support_by_class": {
+      "HIGH": {
+        "observations": 48,
+        "students": 27
+      },
+      "LOW": {
+        "observations": 40,
+        "students": 25
+      },
+      "MEDIUM": {
+        "observations": 32,
+        "students": 24
+      }
+    },
+    "warnings": [
+      "n = 60 estudiantes (120 observaciones no independientes: un mismo estudiante aporta varios bimestres).",
+      "Sin validaci\u00f3n externa ni prospectiva: no hay reserva independiente con estudiantes distintos.",
+      "La selecci\u00f3n del algoritmo y su evaluaci\u00f3n usan los mismos datos (posible optimismo); se reportan los cuatro algoritmos.",
+      "Clase con menos estudiantes: 24. Las m\u00e9tricas por clase con pocos casos son inestables.",
+      "La dispersi\u00f3n entre repeticiones no es un intervalo de confianza.",
+      "Probabilidades no calibradas. Resultados exploratorios sobre datos reales locales: no demuestran eficacia escolar ni validan la tesis."
+    ]
+  },
+  "counts": {
+    "eligible": 60,
+    "risk_references": 120,
+    "snapshots": 120,
+    "students": 60
+  },
+  "indicators": {
+    "B1": {
+      "agree": true,
+      "eligible": 60,
+      "matrix_reference_by_predicted": {
+        "HIGH": {
+          "HIGH": 24,
+          "LOW": 0,
+          "MEDIUM": 0,
+          "NONE": 0
+        },
+        "LOW": {
+          "HIGH": 0,
+          "LOW": 15,
+          "MEDIUM": 0,
+          "NONE": 0
+        },
+        "MEDIUM": {
+          "HIGH": 1,
+          "LOW": 0,
+          "MEDIUM": 20,
+          "NONE": 0
+        }
+      },
+      "nia": {
+        "reason": "NO_REAL_INTERVENTIONS",
+        "value": null
+      },
+      "opportune": {
+        "percent": null,
+        "reason": "NO_REAL_INTERVENTIONS"
+      },
+      "out_of_fold_basis": "OUT_OF_FOLD",
+      "prv": {
+        "percent": null,
+        "reason": "RECEPTION_PROVENANCE_UNCONFIRMED",
+        "system_csv_rows": 120
+      },
+      "retrospective_alerts": 45,
+      "run": {
+        "predictions": 60,
+        "status": "REUSED"
+      },
+      "sql": {
+        "cra": [
+          60,
+          60
+        ],
+        "pder": [
+          45,
+          45
+        ]
+      },
+      "system": {
+        "cra": [
+          60,
+          60
+        ],
+        "pder": [
+          45,
+          45
+        ]
+      }
+    },
+    "B2": {
+      "agree": true,
+      "eligible": 60,
+      "matrix_reference_by_predicted": {
+        "HIGH": {
+          "HIGH": 24,
+          "LOW": 0,
+          "MEDIUM": 0,
+          "NONE": 0
+        },
+        "LOW": {
+          "HIGH": 0,
+          "LOW": 25,
+          "MEDIUM": 0,
+          "NONE": 0
+        },
+        "MEDIUM": {
+          "HIGH": 1,
+          "LOW": 0,
+          "MEDIUM": 10,
+          "NONE": 0
+        }
+      },
+      "nia": {
+        "reason": "NO_REAL_INTERVENTIONS",
+        "value": null
+      },
+      "opportune": {
+        "percent": null,
+        "reason": "NO_REAL_INTERVENTIONS"
+      },
+      "out_of_fold_basis": "OUT_OF_FOLD",
+      "prv": {
+        "percent": null,
+        "reason": "RECEPTION_PROVENANCE_UNCONFIRMED",
+        "system_csv_rows": 120
+      },
+      "retrospective_alerts": 45,
+      "run": {
+        "predictions": 60,
+        "status": "REUSED"
+      },
+      "sql": {
+        "cra": [
+          60,
+          60
+        ],
+        "pder": [
+          35,
+          35
+        ]
+      },
+      "system": {
+        "cra": [
+          60,
+          60
+        ],
+        "pder": [
+          35,
+          35
+        ]
+      }
+    }
+  },
+  "reading": "Simulaci\u00f3n retrospectiva con datos reales del colegio; no mide impacto del sistema. An\u00e1lisis exploratorio local.",
+  "reference_distribution_low_medium_high": {
+    "B1": [
+      15,
+      21,
+      24
+    ],
+    "B2": [
+      25,
+      11,
+      24
+    ]
+  },
+  "retrospective_clocks": {
+    "alerts": 45,
+    "predictions": 120,
+    "simulated_alerts": 45,
+    "simulated_predictions": 120
+  },
+  "unavailable": {
+    "NIA": "NO_REAL_INTERVENTIONS",
+    "backup_restore_real_data": "NOT_IMPLEMENTED",
+    "intervencion_oportuna": "NO_REAL_INTERVENTIONS"
+  }
+}

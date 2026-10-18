@@ -115,6 +115,10 @@ class FakeGateway:
             return {'approval_kind': 'LOCAL_EXPLORATORY'}
         raise AssertionError(command)
 
+    def create_locked_tutor(self):
+        self.write('locked-tutor')
+        return 'locked-1'
+
     def load_closings(self, period_id, rows):
         self.write('closings'); self.s['refs'] = True
         return {'created': len(rows), 'reused': 0}
@@ -236,6 +240,9 @@ def test_preconditions_tutor_and_migration(folder, tmp_path):
     with pytest.raises(runner.StopRun) as error:
         execute(folder, tmp_path, gateway=FakeGateway(inputs, tutors=()), confirm_protocol=True)
     assert error.value.code == 'TUTOR_REQUIRED'
+    gateway = FakeGateway(inputs, tutors=())                                   # con --locked-tutor se crea el relleno sin acceso
+    execute(folder, tmp_path, gateway=gateway, confirm_protocol=True, locked_tutor=True)
+    assert gateway.writes.count('locked-tutor') == 1 and gateway.writes.count('section') == 2
     with pytest.raises(runner.StopRun) as error:
         execute(folder, tmp_path, gateway=FakeGateway(inputs, head='0007_real_protocol'), confirm_protocol=True)
     assert error.value.code == 'TARGET_NOT_AT_0008'
