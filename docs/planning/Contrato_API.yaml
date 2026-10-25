@@ -1,8 +1,9 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.13.0
-  description: 'S6, M1, Bloques 1–3B-1 conservados. Bloque 5.1: detección validada (fuera de muestra) del modelo
+  version: 0.14.0
+  description: 'S6, M1, Bloques 1–3B-1 conservados. Bloque 8: el protocolo REAL admite la regla de referencia RIESGO_V2 (cuatro
+    componentes sin participación; regla activa de los protocolos nuevos) además de RIESGO_V1, que se conserva. Bloque 5.1: detección validada (fuera de muestra) del modelo
     activo, por bimestre y total, con media y desviación entre repeticiones (`validated_detection`; `NO_OUT_OF_SAMPLE_REPORT`
     si falta). Bloque 3B-3: PDER y CRA por corte (predicción de cada bimestre), métricas REAL fuera de muestra
     (validación cruzada del informe del modelo activo; `metric_basis`). Bloque 3B-2: cadena REAL local. Con
@@ -8052,7 +8053,9 @@ components:
       properties:
         version:
           type: string
-          const: RIESGO_V1
+          enum:
+          - RIESGO_V1
+          - RIESGO_V2
           title: Version
       additionalProperties: false
       type: object

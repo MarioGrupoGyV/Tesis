@@ -19,16 +19,19 @@ from app.models.s1 import AcademicPeriod, AuditEvent
 from app.models.synthetic import SyntheticStudyRecord
 from app.services import risk_reference_store
 from app.services.processing_protocol import params_of, require_real_protocol
-from app.services.risk_reference import RULE_VERSION
+from app.services.risk_reference import ACTIVE_RULE_VERSION, RULE_VERSION_V1, RULE_VERSION_V2
 
 LIMA = ZoneInfo('America/Lima')
 KIND = 'INSTITUTIONAL_STUDY'
 GENERATOR = 'institutional-loader-v1'
 SCOPE = 'INSTITUTIONAL_STUDY'
 APPROVAL = 'LOCAL_EXPLORATORY'
-# Decisión 4 (ADR 012): la participación no existe al corte; solo se usa en RIESGO_V1 con insumos de cierre.
+# Decisión 4 (ADR 012): la participación no existe al corte. ADR 013: tampoco interviene en la referencia RIESGO_V2 (regla activa).
 FEATURES = ['average_grade', 'attendance_pct', 'activities_pct', 'behavior_incidents']
-CRITERION = 'RIESGO_V1: cinco componentes de 0 a 2 puntos con insumos de cierre (Bajo 0–1, Medio 2–4, Alto ≥ 5)'
+CRITERIA = {RULE_VERSION_V1: 'RIESGO_V1: cinco componentes de 0 a 2 puntos con insumos de cierre (Bajo 0–1, Medio 2–4, Alto ≥ 5)',
+            RULE_VERSION_V2: 'RIESGO_V2: cuatro componentes de 0 a 2 puntos con insumos de cierre, sin participación (Bajo 0–1, Medio 2–3, Alto ≥ 4)'}
+# Criterio de la regla activa (la que usan los protocolos nuevos del estudio REAL).
+CRITERION = CRITERIA[ACTIVE_RULE_VERSION]
 
 
 def require_admin(user):
@@ -54,7 +57,9 @@ def feature_config(params: dict) -> FeatureConfig:
     rules = params['eligibility_rules']
     if not set(rules['required_features']) <= set(FEATURES):
         raise AppError(422, 'PROTOCOL_REQUIRED_FEATURES_INVALID', 'Las variables requeridas deben estar entre las del corte (sin participación).')
-    return FeatureConfig(criterion_version=RULE_VERSION, criterion_definition=CRITERION, horizon_days=horizon_days(params), scales=scales,
+    # La regla de la etiqueta es la del protocolo (congelada al confirmarlo): V1 en estudios anteriores, V2 en los nuevos.
+    rule = params['risk_rule']['version']
+    return FeatureConfig(criterion_version=rule, criterion_definition=CRITERIA[rule], horizon_days=horizon_days(params), scales=scales,
         participation_values=list(range(params['participation_min'], params['participation_max'] + 1)), base_features=list(FEATURES),
         inference_max_missing_fraction=rules['inference_max_missing_fraction'], required_features=list(rules['required_features']))
 
@@ -170,7 +175,7 @@ def build_dataset(db, study, protocol):
         FROM risk_school.academic_snapshots sn JOIN risk_school.enrollments e ON e.id=sn.enrollment_id
         JOIN risk_school.students s ON s.id=e.student_id WHERE sn.period_id=:period AND sn.import_batch_id IS NOT NULL
         ORDER BY sn.enrollment_id,sn.cutoff_at,sn.revision DESC'''), {'period': study.period_id}).mappings().all()
-    references = risk_reference_store.latest_by_snapshot(db, study.period_id)
+    references = risk_reference_store.latest_by_snapshot(db, study.period_id, rule_version=config.criterion_version)
     exclusions, observations, labels = {}, [], []
 
     def drop(reason):
@@ -193,7 +198,7 @@ def build_dataset(db, study, protocol):
                 cutoff_at=row['cutoff_at'], target_date=row['target_date'], created_at=row['created_at'], eligible=True, values=values,
                 feature_available_at={name: row['available_at'] for name in config.features}, input_provenance='snapshot:' + str(row['id'])))
             observed = datetime.combine(reference.closing_date, time(0, 0), tzinfo=LIMA)
-            labels.append(Label(snapshot_id=row['id'], risk=reference.risk_level, criterion_version=RULE_VERSION,
+            labels.append(Label(snapshot_id=row['id'], risk=reference.risk_level, criterion_version=config.criterion_version,
                 outcome_definition=config.criterion_definition, provenance='risk_reference:' + str(reference.id),
                 observed_at=observed, available_at=reference.closing_available_at))
     if not observations:

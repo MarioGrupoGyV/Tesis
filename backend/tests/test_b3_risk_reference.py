@@ -163,8 +163,13 @@ def test_only_admin_and_valid_snapshot(demo):
         assert error.value.status_code == 404
         with pytest.raises(AppError) as error:
             store.record_closing(db, actor, snapshot.id, 'B1', snapshot.target_date, available(snapshot.target_date),
-                                 inputs(participation_level=9), uuid4())
+                                 inputs(behavior_incidents=-1), uuid4())
         assert error.value.code == 'INVALID_CLOSING_INPUTS'
+        # Periodo sin protocolo → regla activa RIESGO_V2: la participación no se valida ni se guarda (ADR 013).
+        record, _ = store.record_closing(db, actor, snapshot.id, 'B1', snapshot.target_date, available(snapshot.target_date),
+                                         inputs(participation_level=9), uuid4())
+        assert record.rule_version == 'RIESGO_V2' and record.participation_level is None and record.points_participation is None
+        db.rollback()
 
     with_session(state, missing)
 

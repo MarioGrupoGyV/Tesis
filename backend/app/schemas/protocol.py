@@ -41,7 +41,7 @@ class EligibilityRules(ContractModel):
 
 
 class RiskRule(ContractModel):
-    version: Literal['RIESGO_V1']
+    version: Literal['RIESGO_V1', 'RIESGO_V2']
 
 
 class OpportuneWindows(ContractModel):

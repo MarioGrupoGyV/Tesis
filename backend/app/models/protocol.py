@@ -52,12 +52,12 @@ class RiskReferenceRecord(Base):
     days_attended: Mapped[int] = mapped_column(Integer)
     activities_scheduled: Mapped[int] = mapped_column(Integer)
     activities_delivered: Mapped[int] = mapped_column(Integer)
-    participation_level: Mapped[int] = mapped_column(SmallInteger)
+    participation_level: Mapped[int | None] = mapped_column(SmallInteger)      # NULL en RIESGO_V2
     behavior_incidents: Mapped[int] = mapped_column(Integer)
     points_grade: Mapped[int] = mapped_column(SmallInteger)
     points_attendance: Mapped[int] = mapped_column(SmallInteger)
     points_activities: Mapped[int] = mapped_column(SmallInteger)
-    points_participation: Mapped[int] = mapped_column(SmallInteger)
+    points_participation: Mapped[int | None] = mapped_column(SmallInteger)     # NULL en RIESGO_V2
     points_conduct: Mapped[int] = mapped_column(SmallInteger)
     total_points: Mapped[int] = mapped_column(SmallInteger)
     risk_level: Mapped[str] = mapped_column(Text)

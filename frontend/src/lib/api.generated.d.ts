@@ -3235,9 +3235,9 @@ export interface components {
         RiskRule: {
             /**
              * Version
-             * @constant
+             * @enum {string}
              */
-            version: "RIESGO_V1";
+            version: "RIESGO_V1" | "RIESGO_V2";
         };
         /**
          * ValidatedDetection

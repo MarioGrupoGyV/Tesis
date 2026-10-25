@@ -101,7 +101,8 @@ def contexts(db, user):
 def reference_map(db, settings, period):
     """snapshot_id (BD) → riesgo de referencia, o (None, motivo) si el sistema no lo guarda."""
     if period.data_origin == 'REAL':
-        # REAL: referencias RIESGO_V1 calculadas por el backend con insumos de cierre (risk_references, insert-only).
+        # REAL: referencias de la regla del periodo (su protocolo; RIESGO_V2 en los nuevos) calculadas por el backend con insumos de
+        # cierre (risk_references, insert-only).
         found = risk_reference_store.latest_by_snapshot(db, period.id)
         return ({str(key): item.risk_level for key, item in found.items()}, None) if found else (None, 'REFERENCE_NOT_AVAILABLE')
     study = db.scalar(select(SyntheticStudyRecord).where(SyntheticStudyRecord.period_id == period.id,
