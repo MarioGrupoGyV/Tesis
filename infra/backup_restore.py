@@ -41,12 +41,13 @@ def safe_member(name):
 
 
 # Cabeceras Alembic admitidas en respaldo/restauración (0005 = M1, 0006 = Bloque 1).
-SUPPORTED_MIGRATIONS=('0004_followup','0005_manual_academic','0006_manual_evaluable','0007_real_protocol','0008_real_chain')
+SUPPORTED_MIGRATIONS=('0004_followup','0005_manual_academic','0006_manual_evaluable','0007_real_protocol','0008_real_chain',
+                    '0009_riesgo_v2')
 
 
 def tables_for(head):
-    """Inventario de tablas según la cabecera Alembic: 0007 añadió dos (0008 no añade tablas); los anteriores conservan las 15."""
-    return TABLES if head in ('0007_real_protocol','0008_real_chain') else LEGACY_TABLES
+    """Inventario de tablas según la cabecera Alembic: 0007 añadió dos (0008 y 0009 no añaden tablas); los anteriores conservan las 15."""
+    return TABLES if head in ('0007_real_protocol','0008_real_chain','0009_riesgo_v2') else LEGACY_TABLES
 
 
 def origin_label(origins):

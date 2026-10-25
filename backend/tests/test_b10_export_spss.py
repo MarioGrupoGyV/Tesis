@@ -1,4 +1,4 @@
-"""Bloque 7: colector de `compare_institutional` y exportación para SPSS. Datos ficticios; sin códigos ni nombres reales.
+"""Bloques 7 y 8: colector de `compare_institutional` y exportación para SPSS (RIESGO_V2). Datos ficticios; sin códigos ni nombres reales.
 
 Garantías: sin colector la comparación da EXACTAMENTE lo de antes (huella calculada con el código anterior al cambio); con colector da lo mismo
 aunque el colector altere lo que recibe; lo recogido reproduce `summarize` y `detection_report`; las tablas y la verificación se calculan bien; el
@@ -196,6 +196,12 @@ def test_spss_variable_specs_cover_every_column_with_labels_value_labels_and_mea
     assert by_name['seccion']['valores'] == {'1': 'A', '2': 'B'} and by_name['bimestre']['valores'] == {'1': 'Primer bimestre', '2': 'Segundo bimestre'}
     assert [by_name[name]['medida'] for name in ('codigo', 'seccion', 'bimestre')] == ['nominal'] * 3 and by_name['codigo']['tipo'] == 'string'
     assert all(item['medida'] == 'scale' for item in specs[exporter.METRICS_FILE]['variables'])
+    assert by_name['riesgo_ref']['etiqueta'] == 'Riesgo de referencia al cierre (RIESGO_V2)'
+    student = {item['nombre']: item for item in specs[exporter.STUDENT_FILE]['variables']}
+    assert list(student) == exporter.STUDENT_COLUMNS and not any('particip' in name for name in student)
+    assert student['puntos_riesgo']['etiqueta'] == 'Puntaje RIESGO_V2 al cierre (0-8)' and student['riesgo_ref']['medida'] == 'ordinal'
+    paired = [item['nombre'] for item in specs[exporter.PAIRED_FILE]['variables']]
+    assert paired == exporter.paired_columns(2) and paired[:4] == ['codigo', 'seccion', 'promedio_b1', 'promedio_b2'] and len(paired) == 2 + 6 * 2
 
 
 def test_csv_files_are_utf8_with_bom_use_empty_cells_for_missing_and_round_trip_floats_exactly(tmp_path):
@@ -215,7 +221,8 @@ def reference_from(report, built):
     labels = {label.snapshot_id: label.risk for label in built.labels}
     distribution = {code: [sum(1 for row in built.observations if row.target_date == day and labels[row.snapshot_id] == level)
                            for level in ('LOW', 'MEDIUM', 'HIGH')] for code, day in zip(('B1', 'B2'), close)}
-    return {'comparison': {'models': models, 'repetitions': 20, 'observations': len(built.observations), 'students': len({r.student_key for r in built.observations})},
+    return {'risk_rule': 'RIESGO_V2', 'comparison': {'models': models, 'repetitions': 20, 'observations': len(built.observations),
+                                                      'students': len({r.student_key for r in built.observations})},
             'reference_distribution_low_medium_high': distribution}
 
 
@@ -255,6 +262,10 @@ def test_verification_reports_the_difference_and_does_not_reproduce_when_a_publi
     reference = reference_from(plain.report, built)
     reference['reference_distribution_low_medium_high']['B1'][0] += 1
     assert exporter.verify_exports(folder, reference, plain.report, ['B1', 'B2'], ties)['reproduce_resumen_publicado'] is False
+    reference = reference_from(plain.report, built)
+    reference['risk_rule'] = 'RIESGO_V1'                                     # un resumen de la regla anterior nunca sirve de referencia
+    result = exporter.verify_exports(folder, reference, plain.report, ['B1', 'B2'], ties)
+    assert result['reproduce_resumen_publicado'] is False and result['comprobaciones']['regla_del_resumen_publicado'] is False
 
 
 # ---------------------------------------------------------------- 4. Dataset desde los archivos del conversor, sin base de datos
@@ -288,13 +299,15 @@ def test_worker_end_to_end_writes_the_files_and_keeps_students_and_names_out_of_
     models = {name: {'accuracy': zero, 'balanced_accuracy': zero, 'macro_f1': zero, 'cohen_kappa': zero, 'recall_high': zero,
                      'detection': {'total': scope, 'B1': scope, 'B2': scope}} for name in ALGORITHMS}
     reference = tmp_path / 'referencia.json'
-    reference.write_text(json.dumps({'comparison': {'models': models, 'repetitions': 20, 'observations': len(inputs.cut_rows), 'students': len(inputs.codes)},
+    reference.write_text(json.dumps({'risk_rule': 'RIESGO_V2', 'comparison': {'models': models, 'repetitions': 20, 'observations': len(inputs.cut_rows),
+                                                                              'students': len(inputs.codes)},
                                      'reference_distribution_low_medium_high': {}}), encoding='utf-8')
     results = tmp_path / 'salida'
     results.mkdir()
     args = SimpleNamespace(input=converted, results=results, reference=reference)
     assert exporter.worker(args) == 0
-    assert sorted(item.name for item in results.iterdir()) == ['Metricas_por_repeticion.csv', 'Predicciones_fuera_de_muestra.csv', 'variables.json', 'verificacion.json']
+    assert sorted(item.name for item in results.iterdir()) == ['Base_estudiante_bimestre.csv', 'Base_pareada_B1_B2.csv', 'Metricas_por_repeticion.csv',
+                                                               'Predicciones_fuera_de_muestra.csv', 'variables.json', 'verificacion.json']
     assert len(exporter.read_csv(results / 'Metricas_por_repeticion.csv')) == 20
     predictions = exporter.read_csv(results / 'Predicciones_fuera_de_muestra.csv')
     assert len(predictions) == len(inputs.cut_rows) and {row['codigo'] for row in predictions} == set(inputs.codes)
@@ -302,7 +315,17 @@ def test_worker_end_to_end_writes_the_files_and_keeps_students_and_names_out_of_
     verification = json.loads(text)
     assert not any(code in text for code in inputs.codes) and not any(word in text for word in NAME_WORDS)
     assert verification['reproduce_resumen_publicado'] is False and verification['comprobaciones']['coincide_con_informe_en_proceso'] is True
-    assert verification['parametros'] == {'semilla': 0, 'repeticiones': 20, 'pliegues': 5, 'modelos': ['RANDOM_FOREST', 'SVM', 'XGBOOST', 'DUMMY']}
+    assert {key: verification['parametros'][key] for key in ('semilla', 'repeticiones', 'pliegues', 'modelos')} == {
+        'semilla': 0, 'repeticiones': 20, 'pliegues': 5, 'modelos': ['RANDOM_FOREST', 'SVM', 'XGBOOST', 'DUMMY']}
+    assert verification['regla'] == 'RIESGO_V2' and verification['parametros']['modelo_seleccionado'] in ALGORITHMS
+    # Las dos bases nuevas: mismas filas y referencia que las predicciones, puntaje coherente y distribución V2 calculada (no copiada).
+    checks = verification['comprobaciones']
+    assert all(checks[key] for key in ('filas_base_estudiante', 'filas_base_pareada', 'puntaje_coherente_con_nivel', 'rangos_validos',
+                                       'distribucion_esperada_calculada', 'misma_referencia_que_predicciones',
+                                       'pareada_coincide_con_base_estudiante', 'sin_columna_de_participacion'))
+    assert verification['filas']['base_estudiante_bimestre'] == len(inputs.cut_rows) and verification['filas']['base_pareada'] == len(inputs.codes)
+    assert verification['distribucion_referencia_v2']['exportada'] == {code: [inputs.expected_levels[code][level] for level in runner.LEVELS]
+                                                                        for code in inputs.calendar}
     with pytest.raises(exporter.StopRun, match='RESULTS_NOT_EMPTY'):                                # el trabajador nunca sobrescribe
         exporter.worker(args)
 
@@ -378,3 +401,37 @@ def test_sav_mode_without_pyreadstat_stops_with_a_stable_code(tmp_path, capsys):
         assert exporter.main(['--sav-only', '--results', str(tmp_path)]) == 2 and 'PYREADSTAT_MISSING' in capsys.readouterr().out
     else:
         pytest.skip('pyreadstat disponible: se comprueba con el entorno de SPSS')
+
+
+# ---------------------------------------------------------------- 6. bases por estudiante (Bloque 8)
+def test_student_tables_use_v2_without_participation_and_two_decimal_percentages(converted):
+    inputs = runner.Inputs(converted)
+    sections = {row['student_code']: row['section'] for row in inputs.cut_rows}
+    rows, paired = exporter.student_tables(inputs.cut_rows, inputs.close_rows, inputs.calendar, sections)
+    assert len(rows) == len(inputs.cut_rows) and len(paired) == len(inputs.codes)
+    assert [list(row) for row in rows] == [exporter.STUDENT_COLUMNS] * len(rows)
+    assert [list(row) for row in paired] == [exporter.paired_columns(len(inputs.calendar))] * len(paired)
+    from app.services.risk_reference import ClosingInputs, compute_riesgo_v2, level_of_v2
+    closings = {(row['student_code'], row['closing_date']): row for row in inputs.close_rows}
+    numbers = {code: number for number, code in enumerate(inputs.calendar, start=1)}
+    for row in rows:
+        assert row['asistencia'].as_tuple().exponent == -2 and 0 <= row['asistencia'] <= 100 and 0 <= row['entrega'] <= 100
+        assert ('LOW', 'MEDIUM', 'HIGH').index(level_of_v2(row['puntos_riesgo'])) + 1 == row['riesgo_ref'] and 0 <= row['puntos_riesgo'] <= 8
+    # El puntaje no cambia aunque la participación sea 1 (V1 sumaría 2 puntos) o falte: V2 no la lee.
+    for code, item in inputs.calendar.items():
+        cut = next(row for row in inputs.cut_rows if row['target_date'] == item['close'].isoformat())
+        close = closings[(cut['student_code'], cut['target_date'])]
+        mine = next(row for row in rows if row['codigo'] == cut['student_code'] and row['bimestre'] == numbers[code])
+        for participation in (1, None):
+            again = compute_riesgo_v2(ClosingInputs(__import__('decimal').Decimal(close['average_grade']), int(close['days_scheduled']),
+                                                    int(close['days_attended']), int(close['activities_scheduled']),
+                                                    int(close['activities_delivered']), participation, int(close['behavior_incidents'])))
+            assert again.total_points == mine['puntos_riesgo']
+    first = paired[0]
+    mine = [row for row in rows if row['codigo'] == first['codigo']]
+    assert [first[f'riesgo_ref_b{row["bimestre"]}'] for row in mine] == [row['riesgo_ref'] for row in mine]
+
+
+def test_percent_and_two_places_round_half_up():
+    assert str(exporter.percent(2, 3)) == '66.67' and str(exporter.percent(1, 8)) == '12.50' and str(exporter.percent(45, 45)) == '100.00'
+    assert str(exporter.two_places('13.005')) == '13.01' and exporter.two_places('') is None

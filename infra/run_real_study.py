@@ -7,10 +7,10 @@ comparación de modelos, la activación, la evaluación retrospectiva y los indi
                                      [--confirm-active riesgo-escolar --pre-backup <respaldo .sebackup>]   (solo destino ACTIVE)
 
 Pasos (cada uno reconoce su estado y no duplica): periodo → secciones → protocolo (confirmar solo con --confirm-protocol) → estudio institucional →
-importación (verificación de hash) → cierres (el backend calcula RIESGO_V1) → comprobaciones → comparación → registro y activación del modelo →
+importación (verificación de hash) → cierres (el backend calcula la regla activa, RIESGO_V2) → comprobaciones → comparación → registro y activación del modelo →
 evaluación retrospectiva de cada bimestre → indicadores y verificación SQL independiente. Imprime solo conteos y códigos de estado: nunca filas,
 códigos de alumno ni nombres. Todo lo que tiene filas por alumno va a `--results` (fuera de Git).
-Destino ACTIVE (la instalación de siempre): solo con --confirm-active <proyecto> y --pre-backup (respaldo S6 verificado de ese proyecto, en 0008 y de
+Destino ACTIVE (la instalación de siempre): solo con --confirm-active <proyecto> y --pre-backup (respaldo S6 verificado de ese proyecto, en 0009 y de
 menos de 24 h); allí nunca se elige solo al único tutor existente (hay que indicar --tutor-a/--tutor-b o --locked-tutor). Con --dry-run no se exige.
 La contraseña del ADMIN sale del perfil Windows existente, jamás de argumentos.
 """
@@ -30,15 +30,20 @@ from zoneinfo import ZoneInfo
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import convert_real_excel as converter  # noqa: E402  (inside_git_tree y sha256)
 import load_closings  # noqa: E402
+from app.services.risk_reference import ACTIVE_RULE_VERSION  # noqa: E402
 
 LIMA = ZoneInfo('America/Lima')
 PERIOD_CODE = 'REAL-{year}'
 SECTION_GRADE = 3
 PARTICIPATION_LABELS = {'1': 'Nunca', '2': 'Rara vez', '3': 'A veces', '4': 'Frecuentemente', '5': 'Siempre'}
 LEVELS = ('LOW', 'MEDIUM', 'HIGH')
+# Conteos por bimestre que el conversor calcula para cada regla (resumen_conversion.json → verification).
+LEVELS_KEY = {'RIESGO_V1': 'recalculated_levels', 'RIESGO_V2': 'recalculated_levels_v2'}
+RULE_SQL = "rule_version='" + ACTIVE_RULE_VERSION + "'"     # constante del código, nunca un valor de entrada
 ES = {'LOW': 'Bajo', 'MEDIUM': 'Medio', 'HIGH': 'Alto'}
 MODEL_NAMES = {'DUMMY': 'Dummy', 'RANDOM_FOREST': 'Random Forest', 'SVM': 'SVM', 'XGBOOST': 'XGBoost'}
-PRE_BACKUP_HEAD = '0008_real_chain'
+REQUIRED_HEAD = '0009_riesgo_v2'          # RIESGO_V2 (ADR 013)
+PRE_BACKUP_HEAD = REQUIRED_HEAD
 PRE_BACKUP_MAX_AGE_HOURS = 24
 
 
@@ -79,8 +84,11 @@ class Inputs:
         self.calendar = self._calendar()
         self.year = min(item['start'] for item in self.calendar.values()).year
         self.sections = sorted({row['section'] for row in self.cut_rows})
-        self.expected_levels = {bimester: {level: counts.get(level, 0) for level in LEVELS}
-                                for bimester, counts in self.summary['verification']['recalculated_levels'].items()}
+        # Distribución esperada de la regla ACTIVA (V2): la calcula el conversor con el código del backend; nunca se copia de V1.
+        recalculated = self.summary['verification'].get(LEVELS_KEY[ACTIVE_RULE_VERSION])
+        if recalculated is None:
+            raise StopRun('CONVERSION_SUMMARY_WITHOUT_ACTIVE_RULE', 'Vuelve a convertir el Excel con la versión actual del conversor.')
+        self.expected_levels = {bimester: {level: counts.get(level, 0) for level in LEVELS} for bimester, counts in recalculated.items()}
         if self.summary.get('rejected') is None or self.summary['verification'].get('mismatches'):
             raise StopRun('CONVERSION_SUMMARY_INCOHERENT')
 
@@ -121,21 +129,21 @@ class Inputs:
                     bimesters=bimesters, source_label='Excel del colegio convertido con convert_real_excel (cortes y cierres)',
                     quality_rules={'unique_key': ['student', 'bimester'], 'converter': 'convert_real_excel'},
                     eligibility_rules=dict(inference_max_missing_fraction=0.4, required_features=['average_grade']),
-                    risk_rule=dict(version='RIESGO_V1'), opportune_windows=dict(detection_days=0, intervention_days=14))
+                    risk_rule=dict(version=ACTIVE_RULE_VERSION), opportune_windows=dict(detection_days=0, intervention_days=14))
 
 
 # ---------------------------------------------------------------- consultas SQL (solo lectura, números)
 SQL = {
     'study': 'SELECT id::text AS id, comparison IS NOT NULL AS compared FROM risk_school.synthetic_studies WHERE period_id=CAST(:p AS uuid)',
     'batches': "SELECT count(*) AS n FROM risk_school.import_batches WHERE period_id=CAST(:p AS uuid) AND status='COMMITTED'",
-    'references': 'SELECT count(DISTINCT snapshot_id) AS n FROM risk_school.risk_references WHERE period_id=CAST(:p AS uuid)',
+    'references': f'SELECT count(DISTINCT snapshot_id) AS n FROM risk_school.risk_references WHERE period_id=CAST(:p AS uuid) AND {RULE_SQL}',
     'counts': '''SELECT (SELECT count(DISTINCT e.student_id) FROM risk_school.enrollments e WHERE e.period_id=CAST(:p AS uuid)) AS students,
         (SELECT count(*) FROM risk_school.academic_snapshots WHERE period_id=CAST(:p AS uuid) AND data_origin='REAL') AS snapshots,
-        (SELECT count(DISTINCT snapshot_id) FROM risk_school.risk_references WHERE period_id=CAST(:p AS uuid)) AS risk_references,
+        (SELECT count(DISTINCT snapshot_id) FROM risk_school.risk_references WHERE period_id=CAST(:p AS uuid) AND ''' + RULE_SQL + ''') AS risk_references,
         (SELECT count(DISTINCT e.student_id) FROM risk_school.enrollments e JOIN risk_school.students s ON s.id=e.student_id
           WHERE e.period_id=CAST(:p AS uuid) AND s.is_active AND s.eligible_for_processing) AS eligible''',
     'distribution': '''SELECT rr.bimester, rr.risk_level, count(*) AS n FROM (SELECT DISTINCT ON (snapshot_id) * FROM risk_school.risk_references
-        WHERE period_id=CAST(:p AS uuid) ORDER BY snapshot_id, revision DESC) rr GROUP BY 1,2''',
+        WHERE period_id=CAST(:p AS uuid) AND ''' + RULE_SQL + ''' ORDER BY snapshot_id, revision DESC) rr GROUP BY 1,2''',
     'comparison': 'SELECT comparison->\'report\' AS report FROM risk_school.synthetic_studies WHERE period_id=CAST(:p AS uuid)',
     'models': '''SELECT m.id::text AS id, m.algorithm, m.is_active, m.manifest->>'approval_kind' AS approval_kind FROM risk_school.model_versions m
         JOIN risk_school.synthetic_studies st ON st.id=m.study_id WHERE st.period_id=CAST(:p AS uuid)''',
@@ -149,7 +157,7 @@ SQL = {
         (SELECT count(*) FROM risk_school.alerts a JOIN risk_school.enrollments e ON e.id=a.enrollment_id
           WHERE e.period_id=CAST(:p AS uuid) AND a.detected_at < a.opened_at - interval '1 day') AS simulated_alerts''',
     'pder': '''WITH ref AS (SELECT DISTINCT ON (snapshot_id) snapshot_id, enrollment_id, risk_level FROM risk_school.risk_references
-          WHERE period_id=CAST(:p AS uuid) AND bimester=:b ORDER BY snapshot_id, revision DESC),
+          WHERE period_id=CAST(:p AS uuid) AND bimester=:b AND ''' + RULE_SQL + ''' ORDER BY snapshot_id, revision DESC),
         pred AS (SELECT DISTINCT ON (snapshot_id) snapshot_id, risk_level, COALESCE(as_of_at, predicted_at) AS instant FROM risk_school.predictions
           WHERE data_origin='REAL' ORDER BY snapshot_id, predicted_at DESC)
         SELECT count(*) FILTER (WHERE ref.risk_level IN ('MEDIUM','HIGH')) AS denominator,
@@ -164,7 +172,7 @@ SQL = {
         LEFT JOIN risk_school.followup_decisions fd ON fd.prediction_id=pr.id
         WHERE e.period_id=CAST(:p AS uuid) AND s.is_active AND s.eligible_for_processing AND pr.risk_level IS NOT NULL''',
     'matrix': '''WITH ref AS (SELECT DISTINCT ON (snapshot_id) snapshot_id, risk_level FROM risk_school.risk_references
-          WHERE period_id=CAST(:p AS uuid) AND bimester=:b ORDER BY snapshot_id, revision DESC),
+          WHERE period_id=CAST(:p AS uuid) AND bimester=:b AND ''' + RULE_SQL + ''' ORDER BY snapshot_id, revision DESC),
         pred AS (SELECT DISTINCT ON (snapshot_id) snapshot_id, risk_level FROM risk_school.predictions WHERE data_origin='REAL' ORDER BY snapshot_id, predicted_at DESC)
         SELECT ref.risk_level AS reference, pred.risk_level AS predicted, count(*) AS n FROM ref LEFT JOIN pred ON pred.snapshot_id=ref.snapshot_id
         GROUP BY 1,2''',
@@ -278,19 +286,23 @@ class Live:
             raise StopRun(str(error)) from None
 
     def head(self):
-        """La cuenta de la aplicación no lee `alembic_version`: se reconoce 0008 por sus objetos (regla de modelo activo por origen)."""
+        """La cuenta de la aplicación no lee `alembic_version`: se reconoce 0008 por sus objetos (regla de modelo activo por origen) y 0009
+        por la regla de versión de `risk_references` (RIESGO_V1/RIESGO_V2)."""
         rows = self.target.api_python(EXEC_SQL, {'sql': """SELECT (SELECT count(*) FROM pg_constraint WHERE conname='active_model_scope')
-            + (SELECT count(*) FROM pg_indexes WHERE indexname='ux_active_model_origin') AS n""", 'params': {}})
-        return '0008_real_chain' if int(rows[0]['n']) == 2 else 'UNKNOWN'
+            + (SELECT count(*) FROM pg_indexes WHERE indexname='ux_active_model_origin') AS n,
+            (SELECT count(*) FROM pg_constraint WHERE conname='risk_reference_rule_version') AS v2""", 'params': {}})
+        if int(rows[0]['n']) != 2:
+            return 'UNKNOWN'
+        return '0009_riesgo_v2' if int(rows[0]['v2']) == 1 else '0008_real_chain'
 
 
 # ---------------------------------------------------------------- orquestación
 def check_pre_backup(manifest, project, now=None, max_age_hours=PRE_BACKUP_MAX_AGE_HOURS):
-    """El respaldo previo a cargar datos REAL en la instalación activa: de ese proyecto, en 0008 y reciente. Devuelve su identificador."""
+    """El respaldo previo a cargar datos REAL en la instalación activa: de ese proyecto, en 0009 y reciente. Devuelve su identificador."""
     if (manifest.get('source') or {}).get('project') != project:
         raise StopRun('PRE_BACKUP_OTHER_INSTALLATION')
     if manifest.get('migration') != PRE_BACKUP_HEAD:
-        raise StopRun('PRE_BACKUP_NOT_AT_0008')
+        raise StopRun('PRE_BACKUP_NOT_AT_0009')
     try:
         created = datetime.fromisoformat(manifest['created_at'])
     except (KeyError, TypeError, ValueError):
@@ -351,8 +363,8 @@ class Runner:
         return bool(self.locked_tutor or (len(paired) == len(self.inputs.sections) and all(paired.values())))
 
     def preflight(self):
-        if self.g.head() != '0008_real_chain':
-            raise StopRun('TARGET_NOT_AT_0008')
+        if self.g.head() != REQUIRED_HEAD:
+            raise StopRun('TARGET_NOT_AT_0009')
         if self.active and not self.dry_run and not self.tutor_decided():
             # Antes de escribir nada: en la activa no se elige solo al único tutor existente.
             raise StopRun('ACTIVE_TUTOR_EXPLICIT_REQUIRED', 'En la instalación activa indica --tutor-a y --tutor-b, o usa --locked-tutor.')
@@ -440,6 +452,9 @@ class Runner:
                 and found['participation_max'] == 5 and str(found['grade_scale_max']).startswith('20'))
         if not same:
             raise StopRun('PROTOCOL_PARAMS_DIFFER')
+        if found['risk_rule']['version'] != wanted['risk_rule']['version']:
+            # Un protocolo confirmado es inmutable: un periodo cargado con RIESGO_V1 no se convierte a V2 (ADR 013).
+            raise StopRun('PROTOCOL_RULE_DIFFERS', found['risk_rule']['version'])
         if not found['authorization_confirmed_by_admin']:
             if not self.confirm:
                 if self.dry_run:
@@ -636,7 +651,7 @@ class Runner:
         if 'indicators' not in self.state:
             return None
         summary = {'reading': 'Simulación retrospectiva con datos reales del colegio; no mide impacto del sistema. Análisis exploratorio local.',
-                   'counts': self.state['counts'], 'reference_distribution_low_medium_high': {b: [v[level] for level in LEVELS]
+                   'risk_rule': ACTIVE_RULE_VERSION, 'counts': self.state['counts'], 'reference_distribution_low_medium_high': {b: [v[level] for level in LEVELS]
                                                                                             for b, v in self.state['distribution'].items()},
                    'comparison': {**self.state['report'], 'models': self.state['table']}, 'active_model': self.state['model'],
                    'retrospective_clocks': self.state['clocks'], 'indicators': self.state['indicators'],
@@ -712,7 +727,7 @@ def main(argv=None):
     parser.add_argument('--explicit-tutor', action='store_true', help='Aplica en cualquier destino la regla de la activa: nunca se elige solo al único tutor existente '
                         '(sirve para ensayar en una copia el mismo procedimiento que se usará en la activa)')
     parser.add_argument('--confirm-active', help='Solo destino ACTIVE: repite aquí el nombre del proyecto (riesgo-escolar) para autorizar la carga REAL sobre él')
-    parser.add_argument('--pre-backup', type=Path, help='Solo destino ACTIVE: respaldo S6 verificado (.sebackup) de ese proyecto, en 0008 y de menos de 24 h')
+    parser.add_argument('--pre-backup', type=Path, help='Solo destino ACTIVE: respaldo S6 verificado (.sebackup) de ese proyecto, en 0009 y de menos de 24 h')
     parser.add_argument('--public-summary', type=Path, help='Copia el resumen agregado (sin códigos) a este archivo')
     args = parser.parse_args(argv)
     try:

@@ -14,7 +14,7 @@ import run_real_study as real  # noqa: E402
 
 
 class FakeGateway:
-    def __init__(self, tutors=('tutor-1',), head='0008_real_chain', extra_periods=()):
+    def __init__(self, tutors=('tutor-1',), head='0009_riesgo_v2', extra_periods=()):
         self.tutors, self.head_value = tutors, head
         self.writes, self.study, self.models = [], None, []
         self.periods = [{'id': 'real-period', 'code': 'REAL-2026', 'school_year': 2026, 'start_date': '2026-01-01', 'end_date': '2026-12-31',
@@ -131,7 +131,7 @@ def test_the_tutor_is_never_chosen_among_several_and_the_placeholder_is_explicit
 def test_preconditions_head_code_and_collision():
     with pytest.raises(real.StopRun) as error:
         execute(FakeGateway(head='0007_real_protocol'))
-    assert error.value.code == 'TARGET_NOT_AT_0008'
+    assert error.value.code == 'TARGET_NOT_AT_0009'
     with pytest.raises(real.StopRun) as error:
         execute(FakeGateway(), period_code='demo vivo')
     assert error.value.code == 'PERIOD_CODE_INVALID'

@@ -6,7 +6,7 @@
 Solo ADMIN (perfil Windows existente, nunca contraseña en argumentos). Todo o nada; rechaza códigos desconocidos. Los nombres viajan por la
 entrada estándar del proceso en el destino, no se imprimen y no se escriben en auditoría ni en registros (la auditoría guarda conteos).
 Sobre el destino ACTIVE exige las mismas protecciones que la corrida real: `--confirm-active <proyecto>` y `--pre-backup` (respaldo S6 verificado de ese
-proyecto, en 0008 y de menos de 24 h). Si no tienes el archivo, genéralo con el conversor: `convert_real_excel.py --identities`.
+proyecto, en 0009 y de menos de 24 h). Si no tienes el archivo, genéralo con el conversor: `convert_real_excel.py --identities`.
 """
 import argparse
 import csv
@@ -81,7 +81,7 @@ def main(argv=None):
     parser.add_argument('--operator-profile', required=True)
     parser.add_argument('--csv', type=Path, required=True)
     parser.add_argument('--confirm-active', help='Solo destino ACTIVE: repite aquí el nombre del proyecto (riesgo-escolar)')
-    parser.add_argument('--pre-backup', type=Path, help='Solo destino ACTIVE: respaldo S6 verificado (.sebackup), en 0008 y de menos de 24 h')
+    parser.add_argument('--pre-backup', type=Path, help='Solo destino ACTIVE: respaldo S6 verificado (.sebackup), en 0009 y de menos de 24 h')
     args = parser.parse_args(argv)
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     try:

@@ -19,7 +19,7 @@ import re
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from run_real_study import EXEC_SQL, Live, StopRun, key  # noqa: E402
+from run_real_study import EXEC_SQL, REQUIRED_HEAD, Live, StopRun, key  # noqa: E402
 
 DEFAULT_CODE = 'DEMO-VIVO'
 CODE_PATTERN = re.compile(r'^[A-Z0-9][A-Z0-9-]{1,38}$')
@@ -55,8 +55,8 @@ class DemoRunner:
 
     # 0
     def preflight(self):
-        if self.g.head() != '0008_real_chain':
-            raise StopRun('TARGET_NOT_AT_0008')
+        if self.g.head() != REQUIRED_HEAD:
+            raise StopRun('TARGET_NOT_AT_0009')
         if not CODE_PATTERN.fullmatch(self.code):
             raise StopRun('PERIOD_CODE_INVALID')
         self.step('preflight', 'OK', period_code=self.code)

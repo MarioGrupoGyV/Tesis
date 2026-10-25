@@ -2,7 +2,8 @@
 
 No cambia ningún resultado: repite, en memoria y sin base de datos, la comparación institucional que ya hizo la corrida real (mismo conjunto de
 datos, semilla 0, 5 pliegues, 20 repeticiones) y recoge lo que `compare_institutional` calcula por repetición. Después comprueba que lo exportado
-reproduce el resumen publicado (`tests/evidence/mejoras-051-resumen-agregado.json`) con tolerancia 1e-12.
+reproduce el resumen publicado de la corrida con la regla activa RIESGO_V2 (`tests/evidence/mejoras-08-resumen-agregado-v2.json`, ADR 013)
+con tolerancia 1e-12. Además exporta la base por estudiante y bimestre y la base pareada B1/B2 (insumos al corte y al cierre, puntaje V2).
 
     <python del backend> infra/export_spss.py --input <carpeta del conversor> --results <carpeta FUERA de Git> --image riesgo-escolar-api:<etiqueta>
                          [--evidence tests/evidence/mejoras-07-verificacion-export.json] [--spss-python <python.exe con pyreadstat>]
@@ -59,8 +60,14 @@ METRIC_LABELS = (('acc', 'Exactitud'), ('balacc', 'Exactitud balanceada'), ('f1'
 PUBLISHED = {'acc': ('accuracy',), 'balacc': ('balanced_accuracy',), 'f1': ('macro_f1',), 'kappa': ('cohen_kappa',),
              'recallhigh': ('recall_high',), 'det': ('detection', 'total', 'detection'), 'fa': ('detection', 'total', 'low_flagged')}
 METRICS_FILE, PREDICTIONS_FILE = 'Metricas_por_repeticion', 'Predicciones_fuera_de_muestra'
+STUDENT_FILE, PAIRED_FILE = 'Base_estudiante_bimestre', 'Base_pareada_B1_B2'
 VARIABLES_FILE, VERIFICATION_FILE = 'variables.json', 'verificacion.json'
 RISK_LABELS = {1: 'Bajo', 2: 'Medio', 3: 'Alto'}
+try:
+    from app.services.risk_reference import ACTIVE_RULE_VERSION
+except ImportError:                                  # entorno de pyreadstat (--sav-only): no la necesita
+    ACTIVE_RULE_VERSION = 'RIESGO_V2'
+MAX_POINTS = {'RIESGO_V1': 10, 'RIESGO_V2': 8}
 ORDINALS = {1: 'Primer', 2: 'Segundo', 3: 'Tercer', 4: 'Cuarto'}
 
 
@@ -159,6 +166,63 @@ def bimester_label(number: int) -> str:
     return f'{ORDINALS[number]} bimestre' if number in ORDINALS else f'Bimestre {number}'
 
 
+STUDENT_COLUMNS = ['codigo', 'seccion', 'bimestre', 'nota_corte', 'asist_corte', 'activ_corte', 'incid_corte', 'promedio', 'asistencia', 'entrega',
+                   'incidencias', 'puntos_riesgo', 'riesgo_ref']
+PAIRED_MEASURES = ('promedio', 'asistencia', 'entrega', 'incidencias', 'puntos_riesgo', 'riesgo_ref')
+
+
+def two_places(value):
+    from decimal import Decimal, ROUND_HALF_UP
+    return None if value in (None, '') else Decimal(str(value)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+
+def percent(numerator: int, denominator: int):
+    """100 × numerador ÷ denominador con 2 decimales (mitad hacia arriba), de 0 a 100."""
+    from decimal import Decimal, ROUND_HALF_UP
+    return (Decimal(100 * numerator) / Decimal(denominator)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+
+def student_tables(cut_rows, close_rows, calendar: dict, sections: dict, rule=None):
+    """Base por estudiante y bimestre y base pareada, desde cortes.csv y cierres.csv con la regla activa (sin participación).
+
+    `calendar` {código de bimestre: {'close': fecha de cierre, …}}. Devuelve (filas por estudiante y bimestre, filas pareadas).
+    """
+    from app.services.risk_reference import ClosingInputs, compute
+    from decimal import Decimal
+    rule = rule or ACTIVE_RULE_VERSION
+    numbers_of = {code: number for number, code in enumerate(calendar, start=1)}
+    by_close = {item['close'].isoformat(): code for code, item in calendar.items()}
+    closings = {(row['student_code'], row['closing_date']): row for row in close_rows}
+    letters, rows = section_numbers(sections), []
+    for cut in sorted(cut_rows, key=lambda row: (row['student_code'], numbers_of[by_close[row['target_date']]])):
+        close = closings.get((cut['student_code'], cut['target_date']))
+        if close is None:
+            raise StopRun('CLOSING_NOT_FOUND_FOR_CUT')
+        scheduled, attended = int(close['days_scheduled']), int(close['days_attended'])
+        planned, delivered = int(close['activities_scheduled']), int(close['activities_delivered'])
+        result = compute(rule, ClosingInputs(Decimal(close['average_grade']), scheduled, attended, planned, delivered, None,
+                                             int(close['behavior_incidents'])))
+        rows.append({'codigo': cut['student_code'], 'seccion': letters[sections[cut['student_code']]],
+                     'bimestre': numbers_of[by_close[cut['target_date']]], 'nota_corte': two_places(cut['average_grade']),
+                     'asist_corte': two_places(cut['attendance_pct']), 'activ_corte': two_places(cut['activities_pct']),
+                     'incid_corte': None if cut['behavior_incidents'] == '' else int(cut['behavior_incidents']),
+                     'promedio': two_places(close['average_grade']), 'asistencia': percent(attended, scheduled),
+                     'entrega': percent(delivered, planned), 'incidencias': int(close['behavior_incidents']),
+                     'puntos_riesgo': result.total_points, 'riesgo_ref': ('LOW', 'MEDIUM', 'HIGH').index(result.risk_level) + 1})
+    paired = {}
+    for row in rows:
+        item = paired.setdefault(row['codigo'], {'codigo': row['codigo'], 'seccion': row['seccion']})
+        item.update({f'{measure}_b{row["bimestre"]}': row[measure] for measure in PAIRED_MEASURES})
+    columns = paired_columns(len(calendar))
+    if any(set(columns) - set(item) for item in paired.values()):
+        raise StopRun('PAIRED_ROW_INCOMPLETE')
+    return rows, [{column: item[column] for column in columns} for item in paired.values()]
+
+
+def paired_columns(bimesters: int) -> list[str]:
+    return ['codigo', 'seccion'] + [f'{measure}_b{number}' for measure in PAIRED_MEASURES for number in range(1, bimesters + 1)]
+
+
 # ---------------------------------------------------------------- variables (etiquetas, valores y nivel de medida para SPSS)
 def variable(name, label, measure, kind='numeric', values=None, display=None):
     return {'nombre': name, 'etiqueta': label, 'medida': measure, 'tipo': kind, 'valores': values, 'formato': display}
@@ -176,7 +240,7 @@ def table_specs(sections: dict, calendar_codes: list[str], repetitions: int) -> 
         variable('seccion', 'Sección', 'nominal', values={str(number): letter for letter, number in section_numbers(sections).items()}, display='F8.0'),
         variable('bimestre', 'Bimestre del corte intermedio', 'nominal',
                  values={str(number): bimester_label(number) for number in range(1, len(calendar_codes) + 1)}, display='F8.0'),
-        variable('riesgo_ref', 'Riesgo de referencia al cierre (RIESGO_V1)', 'ordinal', values=risk, display='F8.0'),
+        variable('riesgo_ref', f'Riesgo de referencia al cierre ({ACTIVE_RULE_VERSION})', 'ordinal', values=risk, display='F8.0'),
         *[variable(f'riesgo_pred_{SUFFIX[model]}', f'{predicted} - {MODEL_LABELS[model]}', 'ordinal', values=risk, display='F8.0') for model in ORDER],
         variable('acuerdo_rf', f'Proporción de las {repetitions} repeticiones en que Random Forest predijo su clase modal', 'scale', display='F8.4'),
         variable('riesgo_pred_rf_rep1', 'Riesgo predicho fuera de muestra - Random Forest, repetición 1', 'ordinal', values=risk, display='F8.0'),
@@ -184,8 +248,34 @@ def table_specs(sections: dict, calendar_codes: list[str], repetitions: int) -> 
                  values={'0': 'No detectado', '1': 'Detectado'}, display='F8.0'),
         variable('falsa_alarma_rf', 'Caso Bajo marcado Medio o Alto por Random Forest (clase modal); vacío si la referencia es Medio o Alto', 'nominal',
                  values={'0': 'Sin falsa alarma', '1': 'Falsa alarma'}, display='F8.0')]
+    sections_values = {str(number): letter for letter, number in section_numbers(sections).items()}
+    bimester_values = {str(number): bimester_label(number) for number in range(1, len(calendar_codes) + 1)}
+    points = f'Puntaje {ACTIVE_RULE_VERSION} al cierre (0-{MAX_POINTS[ACTIVE_RULE_VERSION]})'
+    measures = {'promedio': ('Promedio de notas al cierre (0-20)', 'scale', None, 'F8.2'),
+                'asistencia': ('Asistencia al cierre (%)', 'scale', None, 'F8.2'),
+                'entrega': ('Entrega de actividades al cierre (%)', 'scale', None, 'F8.2'),
+                'incidencias': ('Incidencias al cierre', 'scale', None, 'F8.0'),
+                'puntos_riesgo': (points, 'scale', None, 'F8.0'),
+                'riesgo_ref': (f'Riesgo de referencia al cierre ({ACTIVE_RULE_VERSION})', 'ordinal', risk, 'F8.0')}
+    student = [
+        variable('codigo', 'Código anónimo del estudiante (Excel)', 'nominal', kind='string'),
+        variable('seccion', 'Sección', 'nominal', values=sections_values, display='F8.0'),
+        variable('bimestre', 'Bimestre', 'nominal', values=bimester_values, display='F8.0'),
+        variable('nota_corte', 'Promedio de notas parciales al corte (0-20)', 'scale', display='F8.2'),
+        variable('asist_corte', 'Asistencia al corte (%)', 'scale', display='F8.2'),
+        variable('activ_corte', 'Entrega de actividades al corte (%)', 'scale', display='F8.2'),
+        variable('incid_corte', 'Incidencias al corte', 'scale', display='F8.0'),
+        *[variable(name, label, measure, values=values, display=fmt) for name, (label, measure, values, fmt) in measures.items()]]
+    paired = [variable('codigo', 'Código anónimo del estudiante (Excel)', 'nominal', kind='string'),
+              variable('seccion', 'Sección', 'nominal', values=sections_values, display='F8.0')]
+    for name in PAIRED_MEASURES:
+        label, measure, values, fmt = measures[name]
+        paired += [variable(f'{name}_b{number}', f'{label} - {bimester_label(number)}', measure, values=values, display=fmt)
+                   for number in range(1, len(calendar_codes) + 1)]
     return {METRICS_FILE: {'etiqueta': 'Métricas por repetición (CV agrupada, estudio REAL local)',
                            'variables': metrics},
+            STUDENT_FILE: {'etiqueta': f'Base por estudiante y bimestre ({ACTIVE_RULE_VERSION}, REAL local)', 'variables': student},
+            PAIRED_FILE: {'etiqueta': f'Base pareada B1-B2 por estudiante ({ACTIVE_RULE_VERSION}, REAL local)', 'variables': paired},
             PREDICTIONS_FILE: {'etiqueta': 'Predicciones fuera de muestra por estudiante y bimestre',
                                'variables': predictions}}
 
@@ -222,7 +312,8 @@ def sha256_file(path: Path) -> str:
 def build_dataset(inputs):
     """El mismo Dataset que `institutional_study.build_dataset`, armado desde cortes.csv y cierres.csv (sin base de datos).
 
-    Mismas reglas: características del corte (sin participación), etiqueta = nivel RIESGO_V1 calculado con los insumos de cierre, grupo = código del
+    Mismas reglas: características del corte (sin participación), etiqueta = nivel de la regla del protocolo (RIESGO_V2, activa) calculado con los
+    insumos de cierre sin participación, grupo = código del
     estudiante, y las mismas exclusiones (sin referencia o con ausencias que no admite la inferencia). Los identificadores internos se derivan de los
     hashes de las entradas: no afectan a particiones ni métricas.
     """
@@ -230,7 +321,7 @@ def build_dataset(inputs):
     from app.services.csv_validation import parse_csv as parse_cortes
     from app.services.institutional_study import GENERATOR, csv_scales, feature_config
     from app.services.processing_protocol import params_of
-    from app.services.risk_reference import RULE_VERSION, ClosingInputs, compute_riesgo_v1
+    from app.services.risk_reference import ClosingInputs, compute
     from decimal import Decimal
     params = params_of(SimpleNamespace(**inputs.protocol(PLACEHOLDER_PERIOD)))
     config = feature_config(params)
@@ -246,7 +337,7 @@ def build_dataset(inputs):
             raise StopRun('CLOSING_WITHOUT_TIMEZONE')
         closings[(row['student_code'], date.fromisoformat(row['closing_date']))] = (
             ClosingInputs(Decimal(row['average_grade']), int(row['days_scheduled']), int(row['days_attended']), int(row['activities_scheduled']),
-                          int(row['activities_delivered']), int(row['participation_level']), int(row['behavior_incidents'])),
+                          int(row['activities_delivered']), None, int(row['behavior_incidents'])),          # V2: la participación no se lee
             date.fromisoformat(row['closing_date']), available)
     exclusions, observations, labels = {}, [], []
 
@@ -269,7 +360,7 @@ def build_dataset(inputs):
                 supersedes_id=None, window_start=row['window_start'], available_at=row['available_at'], cutoff_at=row['cutoff_at'],
                 target_date=row['target_date'], created_at=row['cutoff_at'], eligible=True, values=values,
                 feature_available_at={name: row['available_at'] for name in config.features}, input_provenance='snapshot:' + str(snapshot)))
-            labels.append(Label(snapshot_id=snapshot, risk=compute_riesgo_v1(closing_inputs).risk_level, criterion_version=RULE_VERSION,
+            labels.append(Label(snapshot_id=snapshot, risk=compute(config.criterion_version, closing_inputs).risk_level, criterion_version=config.criterion_version,
                 outcome_definition=config.criterion_definition, provenance=f'risk_reference:{snapshot}',
                 observed_at=datetime.combine(closing_date, time(0, 0), tzinfo=LIMA), available_at=available))
     if not observations:
@@ -328,11 +419,14 @@ def verify_exports(results: Path, reference: dict, report: dict, calendar_codes:
             matrix[int(row['riesgo_ref']) - 1][int(row['riesgo_pred_rf']) - 1] += 1
         rf_modal[scope] = {'filas': len(rows), 'en_riesgo': len(at_risk), 'detectados': detected,
                            'deteccion': detected / len(at_risk) if at_risk else None, 'referencia_bajo': len(low), 'falsas_alarmas': flagged,
-                           'falsa_alarma': flagged / len(low) if low else None, 'kappa_referencia_vs_modal': cohen_kappa(matrix)}
+                           'falsa_alarma': flagged / len(low) if low else None, 'kappa_referencia_vs_modal': cohen_kappa(matrix),
+                           'matriz_referencia_por_clase_modal': {'filas_referencia_columnas_predicho': ['Bajo', 'Medio', 'Alto'],
+                                                                 'conteos': matrix.tolist()}}
     published_rf = {scope: {'deteccion_media': models['RANDOM_FOREST']['detection'][key]['detection']['mean'],
                             'falsa_alarma_media': models['RANDOM_FOREST']['detection'][key]['low_flagged']['mean']}
                     for scope, key in [('TOTAL', 'total'), *[(code, code) for code in calendar_codes]]}
-    checks = {'metricas_dentro_de_tolerancia': not differences,
+    checks = {'regla_del_resumen_publicado': reference.get('risk_rule') == ACTIVE_RULE_VERSION,
+              'metricas_dentro_de_tolerancia': not differences,
               'filas_metricas': len(metric_rows) == reference['comparison']['repetitions'],
               'filas_predicciones': len(prediction_rows) == reference['comparison']['observations'],
               'estudiantes': len({row['codigo'] for row in prediction_rows}) == reference['comparison']['students'],
@@ -345,6 +439,32 @@ def verify_exports(results: Path, reference: dict, report: dict, calendar_codes:
             'empates_clase_modal_por_modelo': ties,
             'rf_clase_modal': rf_modal, 'rf_promedio_por_repeticion_publicado': published_rf,
             'comprobaciones': checks, 'diferencias': differences, 'reproduce_resumen_publicado': all(checks.values())}
+
+
+def verify_student_tables(results: Path, expected_levels: dict, calendar_codes: list[str]) -> dict:
+    """Vuelve a leer las dos bases y comprueba filas, estudiantes, coherencia puntaje → nivel V2 y distribución esperada (calculada)."""
+    from app.services.risk_reference import level_of_v2
+    student, paired = read_csv(results / f'{STUDENT_FILE}.csv'), read_csv(results / f'{PAIRED_FILE}.csv')
+    predictions = read_csv(results / f'{PREDICTIONS_FILE}.csv')
+    levels = ('LOW', 'MEDIUM', 'HIGH')
+    distribution = {code: [sum(1 for row in student if row['bimestre'] == str(number) and row['riesgo_ref'] == str(level)) for level in (1, 2, 3)]
+                    for number, code in enumerate(calendar_codes, start=1)}
+    expected = {code: [expected_levels[code][level] for level in levels] for code in calendar_codes}
+    coherent = all(levels.index(level_of_v2(int(row['puntos_riesgo']))) + 1 == int(row['riesgo_ref']) for row in student)
+    in_range = all(0 <= int(row['puntos_riesgo']) <= MAX_POINTS[ACTIVE_RULE_VERSION] for row in student) and all(
+        0 <= float(row[name]) <= 100 for row in student for name in ('asistencia', 'entrega'))
+    same_as_predictions = [(row['codigo'], row['bimestre'], row['riesgo_ref']) for row in student] == [
+        (row['codigo'], row['bimestre'], row['riesgo_ref']) for row in predictions]
+    paired_match = all(
+        all(item[f'{name}_b{row["bimestre"]}'] == row[name] for name in PAIRED_MEASURES)
+        for item in paired for row in student if row['codigo'] == item['codigo'])
+    checks = {'filas_base_estudiante': len(student) == len(predictions), 'filas_base_pareada': len(paired) == len({r['codigo'] for r in student}),
+              'puntaje_coherente_con_nivel': coherent, 'rangos_validos': in_range, 'distribucion_esperada_calculada': distribution == expected,
+              'misma_referencia_que_predicciones': same_as_predictions, 'pareada_coincide_con_base_estudiante': paired_match,
+              'sin_columna_de_participacion': not any('particip' in name for name in [*student[0], *paired[0]])}
+    return {'filas': {'base_estudiante_bimestre': len(student), 'base_pareada': len(paired)},
+            'distribucion_referencia_v2': {'exportada': distribution, 'esperada_conversor': expected},
+            'comprobaciones': checks}
 
 
 def in_process_spread(algorithm_report: dict, metric: str) -> dict:
@@ -387,16 +507,26 @@ def worker(args) -> int:
     prediction_rows, ties, repetitions = predictions_table(collector.records, sections, bimesters)
     write_csv(results / f'{METRICS_FILE}.csv', metric_columns(), metric_rows)
     write_csv(results / f'{PREDICTIONS_FILE}.csv', PREDICTION_COLUMNS, prediction_rows)
+    student_rows, paired_rows = student_tables(inputs.cut_rows, inputs.close_rows, inputs.calendar, sections)
+    write_csv(results / f'{STUDENT_FILE}.csv', STUDENT_COLUMNS, student_rows)
+    write_csv(results / f'{PAIRED_FILE}.csv', paired_columns(len(calendar_codes)), paired_rows)
     specs = table_specs(sections, calendar_codes, repetitions)
     (results / VARIABLES_FILE).write_text(json.dumps(specs, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     verification = verify_exports(results, reference, result.report, calendar_codes, ties)
-    verification = {'bloque': 7, 'alcance': 'Solo agregados: sin códigos de estudiantes ni nombres.',
-                    'parametros': {'semilla': SEED, 'repeticiones': REPETITIONS, 'pliegues': FOLDS, 'modelos': list(ORDER)},
+    tables = verify_student_tables(results, inputs.expected_levels, calendar_codes)
+    verification['comprobaciones'].update(tables['comprobaciones'])
+    verification['filas'].update(tables['filas'])
+    verification['distribucion_referencia_v2'] = tables['distribucion_referencia_v2']
+    verification['reproduce_resumen_publicado'] = all(verification['comprobaciones'].values())
+    verification = {'bloque': 8, 'regla': ACTIVE_RULE_VERSION, 'alcance': 'Solo agregados: sin códigos de estudiantes ni nombres.',
+                    'parametros': {'semilla': SEED, 'repeticiones': REPETITIONS, 'pliegues': FOLDS, 'modelos': list(ORDER),
+                                   'criterio_de_seleccion': result.report['selection_rule'], 'modelo_seleccionado': result.selected_algorithm},
                     'entradas': {'cortes_sha256': hashlib.sha256(inputs.cortes).hexdigest(), 'cierres_sha256': hashlib.sha256(inputs.cierres).hexdigest(),
                                  'filas_cortes': len(inputs.cut_rows), 'filas_cierres': len(inputs.close_rows)},
                     'exclusiones': exclusions, 'entorno': {'versiones': versions()}, **verification}
     (results / VERIFICATION_FILE).write_text(json.dumps(verification, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    print(f'exportado: {len(metric_rows)} filas de métricas, {len(prediction_rows)} filas de predicciones')
+    print(f'exportado: {len(metric_rows)} filas de métricas, {len(prediction_rows)} de predicciones, {len(student_rows)} por estudiante y bimestre, '
+          f'{len(paired_rows)} pareadas')
     print(f'reproduce_resumen_publicado: {verification["reproduce_resumen_publicado"]} (máxima diferencia {verification["maxima_diferencia_absoluta"]:.3e})')
     return 0
 
@@ -497,7 +627,7 @@ def main(argv=None) -> int:
     parser.add_argument('--input', type=Path)
     parser.add_argument('--results', type=Path, required=True)
     parser.add_argument('--image', help='imagen de la API con la que corrió el estudio, p. ej. riesgo-escolar-api:b62')
-    parser.add_argument('--reference', type=Path, default=ROOT / 'tests' / 'evidence' / 'mejoras-051-resumen-agregado.json')
+    parser.add_argument('--reference', type=Path, default=ROOT / 'tests' / 'evidence' / 'mejoras-08-resumen-agregado-v2.json')
     parser.add_argument('--evidence', type=Path, help='archivo de verificación (solo agregados) que se escribe si reproduce el resumen publicado')
     parser.add_argument('--spss-python', help='python.exe de un entorno aparte con pyreadstat y pandas, para crear los .sav')
     parser.add_argument('--worker', action='store_true')

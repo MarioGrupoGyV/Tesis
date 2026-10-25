@@ -50,7 +50,7 @@ def fake_report():
 
 
 class FakeGateway:
-    def __init__(self, inputs, head='0008_real_chain', tutors=('tutor-1',), distribution=None, sql_pder=None, no_detection=False):
+    def __init__(self, inputs, head='0009_riesgo_v2', tutors=('tutor-1',), distribution=None, sql_pder=None, no_detection=False):
         self.inputs, self.head_value, self.tutors, self.no_detection = inputs, head, tutors, no_detection
         self.distribution = distribution or inputs.expected_levels
         self.sql_pder = sql_pder
@@ -278,7 +278,7 @@ def test_preconditions_tutor_and_migration(folder, tmp_path):
     assert gateway.writes.count('locked-tutor') == 1 and gateway.writes.count('section') == 2
     with pytest.raises(runner.StopRun) as error:
         execute(folder, tmp_path, gateway=FakeGateway(inputs, head='0007_real_protocol'), confirm_protocol=True)
-    assert error.value.code == 'TARGET_NOT_AT_0008'
+    assert error.value.code == 'TARGET_NOT_AT_0009'
     with pytest.raises(runner.StopRun) as error:
         execute(folder, tmp_path, gateway=FakeGateway(inputs, tutors=('a', 'b')), confirm_protocol=True)
     assert error.value.code == 'TUTOR_CHOICE_REQUIRED'
@@ -336,7 +336,7 @@ def test_protocol_is_derived_from_the_files_and_the_cli_has_no_password_option(f
 
 # ---------------------------------------------------------------- instalación activa (carga REAL con confirmación explícita y respaldo previo)
 def pre_backup_manifest(**changes):
-    manifest = {'id': 's6-20261018T071049Z-prueba', 'migration': '0008_real_chain', 'origin': 'SYNTHETIC', 'source': {'project': 'riesgo-escolar'},
+    manifest = {'id': 's6-20261018T071049Z-prueba', 'migration': '0009_riesgo_v2', 'origin': 'SYNTHETIC', 'source': {'project': 'riesgo-escolar'},
                 'created_at': (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat()}
     return {**manifest, **changes}
 
@@ -385,11 +385,11 @@ def test_dry_run_with_locked_tutor_and_no_tutors_is_pending_not_an_error(folder,
     assert gateway.writes == [] and sections['status'] == 'PENDING' and sections['tutor'] == 'LOCKED_PLACEHOLDER'
 
 
-def test_pre_backup_must_be_this_installation_at_0008_and_recent():
+def test_pre_backup_must_be_this_installation_at_0009_and_recent():
     now = datetime.now(timezone.utc)
     assert runner.check_pre_backup(pre_backup_manifest(), 'riesgo-escolar') == 's6-20261018T071049Z-prueba'
     cases = (({'source': {'project': 's6-install-0fe58a34e54f'}}, 'PRE_BACKUP_OTHER_INSTALLATION'),
-             ({'migration': '0004_followup'}, 'PRE_BACKUP_NOT_AT_0008'),
+             ({'migration': '0004_followup'}, 'PRE_BACKUP_NOT_AT_0009'),
              ({'created_at': (now - timedelta(hours=25)).isoformat()}, 'PRE_BACKUP_TOO_OLD'),
              ({'created_at': (now + timedelta(hours=2)).isoformat()}, 'PRE_BACKUP_TOO_OLD'),
              ({'created_at': now.replace(tzinfo=None).isoformat()}, 'PRE_BACKUP_DATE_INVALID'),
@@ -415,7 +415,7 @@ def test_active_confirmation_and_pre_backup_are_required_before_touching_credent
     assert json.loads(capsys.readouterr().out)['code'] == 'PRE_BACKUP_REQUIRED'
     monkeypatch.setattr(runner, 'load_pre_backup', lambda path: pre_backup_manifest(migration='0004_followup'))
     assert runner.main(base + ['--confirm-active', 'riesgo-escolar', '--pre-backup', str(tmp_path / 'r.sebackup')]) == 2
-    assert json.loads(capsys.readouterr().out)['code'] == 'PRE_BACKUP_NOT_AT_0008' and not (tmp_path / 'res').exists()
+    assert json.loads(capsys.readouterr().out)['code'] == 'PRE_BACKUP_NOT_AT_0009' and not (tmp_path / 'res').exists()
 
 
 def test_active_run_goes_ahead_with_confirmation_and_backup_and_reports_the_backup_without_paths(folder, tmp_path, monkeypatch, capsys):

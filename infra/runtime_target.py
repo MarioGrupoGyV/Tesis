@@ -307,8 +307,11 @@ def active(output):
     return target
 
 
-def migrate(target):
-    if target.kind!='INSTALL': raise RuntimeError('MIGRATION_ONLY_NEW_INSTALLATION')
+def migrate(target,restore_copy=False):
+    # Instalación nueva, o una copia restaurada desechable con autorización explícita (ensayo de una migración, p. ej. 0009);
+    # nunca la activa, que se migra con su procedimiento.
+    if target.kind=='ACTIVE' or (target.kind=='RESTORE' and not restore_copy) or target.kind not in ('INSTALL','RESTORE'):
+        raise RuntimeError('MIGRATION_ONLY_NEW_INSTALLATION')
     target.assert_resources()
     config=target.configuration()
     config['services']['api']['environment']['MIGRATION_DATABASE_URL_FILE']='/run/secrets/owner_database_url'
@@ -357,6 +360,7 @@ def main(argv=None):
     parser.add_argument('--web-port',type=int,default=15273)
     parser.add_argument('--api-port',type=int,default=18100)
     parser.add_argument('--db-port',type=int,default=55462)
+    parser.add_argument('--restore-copy',action='store_true',help='Solo migrate: autoriza migrar una copia RESTORE desechable (ensayo); nunca la activa')
     parser.add_argument('--image-tag',help='Etiqueta de imágenes api/web ya construidas (riesgo-escolar-api:<etiqueta>); sin ella se usan las de la instalación activa')
     args=parser.parse_args(argv)
     try:
@@ -377,7 +381,7 @@ def main(argv=None):
                 target.compose('up','-d','--wait','db')
                 if target.kind=='INSTALL': migrate(target)
                 target.compose('up','-d','--wait','api','web')
-            elif args.command=='migrate': migrate(target)
+            elif args.command=='migrate': migrate(target,restore_copy=args.restore_copy)
             elif args.command=='stop': target.compose('stop')
             elif args.command=='cleanup': cleanup(target)
             elif args.command in ('bootstrap-admin','configure'):

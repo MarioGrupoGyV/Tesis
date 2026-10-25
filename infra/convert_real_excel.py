@@ -30,7 +30,7 @@ sys.path.insert(0, str(ROOT / 'backend'))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from app.services.csv_validation import HEADERS as CORTES_HEADERS, parse_csv as parse_cortes  # noqa: E402
-from app.services.risk_reference import ClosingInputs, InvalidClosingInputs, compute_riesgo_v1, mean_grade, validated  # noqa: E402
+from app.services.risk_reference import ClosingInputs, InvalidClosingInputs, compute_riesgo_v1, compute_riesgo_v2, mean_grade, validated  # noqa: E402
 import load_closings  # noqa: E402
 
 LIMA = ZoneInfo('America/Lima')
@@ -396,13 +396,21 @@ def prepare(row, key, cohort, course, incident_days):
 
 
 def verify(result):
-    """Verificación local: RIESGO_V1 recalculado con el código del backend frente al riesgo del Excel (solo conteos y códigos)."""
+    """Verificación local: RIESGO_V1 recalculado con el código del backend frente al riesgo del Excel (solo conteos y códigos).
+
+    La comparación con el Excel sigue siendo con V1 (prueba que la conversión es fiel al archivo original). Además informa los conteos de
+    RIESGO_V2 (regla activa, ADR 013) por bimestre y cuántos registros cambian de nivel; solo conteos, sin códigos.
+    """
     computed, mismatches, levels, incident_gap = {}, [], {}, []
+    levels_v2, changed_v2 = {}, 0
     for record in result.records:
         inputs = ClosingInputs(Decimal(record['close_grade']), record['days_scheduled'], record['days_attended'], record['activities_scheduled'],
                                record['activities_delivered'], record['participation'], record['close_incidents'])
         level = compute_riesgo_v1(inputs).risk_level
+        level_v2 = compute_riesgo_v2(inputs).risk_level
         levels.setdefault(record['bimester'], Counter())[level] += 1
+        levels_v2.setdefault(record['bimester'], Counter())[level_v2] += 1
+        changed_v2 += level != level_v2
         computed[(record['code'], record['bimester'])] = level
         if record['sheet_level'] is not None and record['sheet_level'] != level:
             mismatches.append(f"{record['code']}:{record['bimester']}")
@@ -413,6 +421,9 @@ def verify(result):
             'matches': len(with_reference) - len(mismatches), 'mismatches': mismatches[:60],
             'recalculated_levels': {bimester: {name: counter.get(name, 0) for name in ('LOW', 'MEDIUM', 'HIGH')}
                                     for bimester, counter in sorted(levels.items())},
+            'recalculated_levels_v2': {bimester: {name: counter.get(name, 0) for name in ('LOW', 'MEDIUM', 'HIGH')}
+                                       for bimester, counter in sorted(levels_v2.items())},
+            'level_changes_v1_to_v2': changed_v2,
             'incident_count_differs_from_sheet': incident_gap[:60]}
 
 

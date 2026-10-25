@@ -1,4 +1,5 @@
-"""CLI interna: carga insumos de cierre (RIESGO_V1) desde un CSV de códigos a un destino aislado.
+"""CLI interna: carga insumos de cierre desde un CSV de códigos a un destino aislado; el backend aplica la regla del periodo
+(RIESGO_V2 en los protocolos nuevos, ADR 013: la participación puede venir vacía y no se usa).
 
 Solo códigos y números: el CSV con cualquier otra columna (p. ej. nombres) se rechaza completo. El backend calcula
 componentes y nivel; el CSV no puede traer el riesgo. Todo o nada. No actúa sobre el destino ACTIVE.
@@ -54,6 +55,9 @@ def parse_csv(path: Path) -> list[dict]:
                     raise ValueError
                 Decimal(item['average_grade'])
                 for key in INTEGERS:
+                    if key == 'participation_level' and item[key] == '':
+                        item[key] = None            # RIESGO_V2 no la usa; V1 la rechaza en el backend si falta
+                        continue
                     if not re.fullmatch(r'[0-9]{1,6}', item[key]):
                         raise ValueError
                     item[key] = int(item[key])
