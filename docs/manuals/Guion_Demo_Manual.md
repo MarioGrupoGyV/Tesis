@@ -34,8 +34,41 @@ Se piden **cuatro datos** de la **revisión de mitad de bimestre** (la participa
 
 Fecha y hora de la revisión de mitad de bimestre: 15/04/2025 18:00; «disponible desde» 15/04/2025 17:00; inicio de la ventana 16/03/2025 (el periodo de demostración es 2025).
 El caso Medio está **dentro de su clase**: en una rejilla de prueba sus 81 vecinos inmediatos (±0,5 en notas, ±2,5 en asistencia y tareas, ±1 incidencia) también salen Medio,
-no hay ningún Bajo a dos pasos y RIESGO_V2 también lo llama Medio (2 puntos). **Aviso honesto:** el SVM predice Medio en una franja estrecha; perfiles «intermedios» como
-12,5 / 82 / 66 / 3 salen Alto. No improvises valores para el Medio. En el ensayo usa otros códigos (`ENSAYO-…`): un código repetido devuelve «alumno existente».
+no hay ningún Bajo a dos pasos y RIESGO_V2 también lo llama Medio (2 puntos). Ojo: un perfil que «parece intermedio» como 12,5 / 82 / 66 / 3 sale Alto, y RIESGO_V2 también
+lo llama Alto (5 puntos: suma un punto en cada componente y dos por incidencias). Para valores nuevos, ver la sección del jurado más abajo. En el ensayo usa otros códigos (`ENSAYO-…`): un código repetido devuelve «alumno existente».
+
+## Si el jurado pide probar otros valores
+
+Casos comprobados el 2026-10-25 en `demo-vivo` (evaluación real con el SVM del estudio; códigos `JURADO-…` en `DEMO-VIVO`). En los 12, el nivel mostrado y el guardado
+coinciden, y Medio y Alto abrieron alerta. «Estabilidad»: cuántos de los 81 perfiles vecinos (±0,5 en notas, ±2,5 en asistencia y tareas, ±1 incidencia) obtienen el mismo nivel del SVM.
+
+| # | Notas | Asistencia % | Tareas % | Incidencias | SVM | RIESGO_V2 (puntos) | Estabilidad | Nota |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 19 | 100 | 100 | 0 | Bajo | Bajo (0) | 81/81 | muy bajo riesgo |
+| 2 | 16 | 93 | 88 | 0 | Bajo | Bajo (0) | 80/81 | |
+| 3 | 15.5 | 92 | 85 | 0 | Bajo | Bajo (0) | 67/81 | **cerca del límite** Bajo/Medio |
+| 4 | 15 | 90 | 80 | 0 | Medio | Bajo (0) | 69/81 | **difieren**; cerca del límite |
+| 5 | 14 | 90 | 80 | 0 | Medio | Bajo (0) | 81/81 | **difieren** |
+| 6 | 15 | 85 | 75 | 0 | Medio | Medio (2) | 81/81 | |
+| 7 | 14.5 | 85 | 70 | 0 | Medio | Medio (2) | 81/81 | el Medio del guion |
+| 8 | 13.5 | 88 | 80 | 0 | Medio | Medio (2) | 81/81 | |
+| 9 | 14 | 85 | 75 | 1 | Medio | Medio (3) | 53/81 | **cerca del límite** Medio/Alto |
+| 10 | 13.5 | 85 | 70 | 1 | Alto | Alto (4) | 42/81 | **cerca del límite** Medio/Alto |
+| 11 | 12 | 80 | 65 | 2 | Alto | Alto (4) | 81/81 | |
+| 12 | 7 | 50 | 40 | 6 | Alto | Alto (8) | 81/81 | muy alto riesgo |
+
+Cómo explicarlo si sale un nivel «inesperado»:
+- **El riesgo medio es la clase más difícil de separar.** Está entre las otras dos y depende de pequeñas diferencias en varios indicadores a la vez. Un punto de nota o una incidencia
+  más pueden pasar un caso de Medio a Alto (casos 9 y 10). Por eso es la clase con más errores en la validación.
+- **El modelo y la regla pueden discrepar.** RIESGO_V2 se calcula con los datos del **fin del bimestre**. El SVM predice desde la **revisión de mitad de bimestre**, lo
+  que aprendió de los estudiantes reales. En los casos 4 y 5 el modelo es más cauto que la regla: los marca Medio aunque la regla diría Bajo.
+- **Con estudiantes reales el Medio no es raro.**
+  - De los 120 registros reales, el modelo final predijo Medio en **26** (14 en B1 y 12 en B2) y la validación (clase modal fuera de muestra) en **25**. La referencia RIESGO_V2
+    tiene **26** Medio.
+  - En **15** registros coinciden validación y referencia. En una rejilla uniforme de valores, el Medio solo cubre ≈ 3 %, porque la rejilla incluye muchas combinaciones que
+    casi no se dan, como notas muy bajas con asistencia perfecta. Los estudiantes reales se concentran donde el Medio sí aparece.
+- **Lo que nunca se hace:** cambiar o reentrenar el modelo en la sala, o elegir los valores después de ver el resultado. Si el jurado propone otros valores, se escriben y se
+  muestra lo que el modelo responde, recordando que es análisis exploratorio local.
 
 ## Parte A: resultados reales (3–4 min, en `riesgo-escolar`, puerto 15173)
 

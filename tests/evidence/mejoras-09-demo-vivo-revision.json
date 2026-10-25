@@ -92,5 +92,23 @@
       "nombre_antiguo_corte_visible": false,
       "nombres_nuevos": []
     }
-  ]
+  ],
+  "descargables": {
+    "plantilla": {
+      "estado": 200,
+      "participacion": false
+    },
+    "/reports/export.csv": {
+      "estado": 200,
+      "participacion": false
+    },
+    "/indicators/export.csv": {
+      "estado": 200,
+      "participacion": false
+    },
+    "/indicators/interventions.csv": {
+      "estado": 200,
+      "participacion": false
+    }
+  }
 }

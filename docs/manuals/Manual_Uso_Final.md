@@ -79,7 +79,7 @@ contiene estudiantes ni sustituye ese archivo.
 ### 1. Preparar
 
 En **Datos**, selecciona el periodo sintético abierto y **Seleccionar CSV**. UTF-8,
-máximo 5 MiB/10000 filas y 13 cabeceras previstas. Mantén faltantes vacíos, sin
+máximo 5 MiB/10000 filas y las 12 cabeceras de la plantilla (un archivo antiguo de 13, con participación, se acepta y la participación se ignora en periodos reales). Mantén faltantes vacíos, sin
 rellenarlos con ceros, etiquetas o riesgo. Pulsa **Revisar archivo** una vez.
 
 ### 2. Revisar

@@ -164,7 +164,7 @@ $proyecto = (Get-Content "$s6\demo-vivo.json" -Raw | ConvertFrom-Json).project
 model DONE · label DONE (DEMO-VIVO) · real_model_copy DONE (SVM, la misma huella) · check OK (… copia de demostración)`. La copia se niega si la huella no es la del SVM REAL
 activo (`DEMO_COPY_HASH_MISMATCH`), si el periodo no es `DEMO-VIVO` (`DEMO_COPY_PERIOD_INVALID`), si ya existe (`DEMO_COPY_EXISTS`) o si la instalación tiene el interruptor apagado
 (`DEMO_COPY_DISABLED`, lo que ocurre en la activa). El modelo sintético del periodo queda retirado y no se lista. Ejecutado el 2026-10-25: descriptor
-`S6\demo-vivo-v9t-<fecha>.json`, imágenes `b9t`, huella `45fb6c6b…38261` en las dos instalaciones. Ensayo con códigos `ENSAYO-B9-…` (Alto, Medio y Bajo; ver el guion).
+`S6\demo-vivo-v9u-<fecha>.json`, imágenes `b9u`, huella `45fb6c6b…38261` en las dos instalaciones. Ensayo con códigos `ENSAYO-B9-…` (Alto, Medio y Bajo; ver el guion).
 
 ## 10. Nombres en la ficha: paso opcional y separado (≈ 2 min)
 

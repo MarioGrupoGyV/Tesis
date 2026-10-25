@@ -16,6 +16,7 @@ const masked = process.env.SCREENS_MASK === '1';
 test.skip(!base || !email || !password || !periodCode, 'Requiere SCREENS_*');
 test.use({ baseURL: base, viewport: { width: 1440, height: 900 } });
 
+let downloadsSeen: Record<string, unknown> = {};
 const results: { pantalla: string; participacion_visible: boolean; nombre_antiguo_corte_visible: boolean; nombres_nuevos: string[] }[] = [];
 
 async function settled(page: Page) {
@@ -77,9 +78,28 @@ test('pantallas sin participación y con los nombres nuevos', async ({ page }) =
   await page.goto('/indicadores'); await review(page, 'indicadores');
   await page.goto('/reportes'); await selectPeriod(page); await review(page, 'reportes', ['Última revisión de mitad de bimestre']);
   await page.goto('/datos'); await review(page, 'datos');
+  // Descargables: plantilla de Datos y CSV de reportes, indicadores e intervenciones del periodo, sin participación.
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Descargar cabeceras CSV', exact: true }).click();
+  const template = await (await download).path();
+  const { readFileSync } = await import('node:fs');
+  const header = readFileSync(template!, 'utf-8').replace(/^﻿/, '').split(/\r?\n/)[0].split(',');
+  expect(header.length, 'plantilla de 12 columnas').toBe(12);
+  expect(header.join(','), 'plantilla sin participación').not.toMatch(/particip/i);
+  const periods = await (await page.request.get('/api/v1/periods')).json();
+  const period = (Array.isArray(periods) ? periods : periods.items).find((item: { code: string }) => item.code === periodCode);
+  const downloads: Record<string, { estado: number; participacion: boolean }> = { plantilla: { estado: 200, participacion: false } };
+  for (const path of ['/reports/export.csv', '/indicators/export.csv', '/indicators/interventions.csv']) {
+    const response = await page.request.get(`/api/v1${path}?period_id=${period.id}`);
+    const body = await response.text();
+    downloads[path] = { estado: response.status(), participacion: /particip/i.test(body) };
+    expect(response.ok(), path).toBeTruthy();
+    expect(/particip/i.test(body), `participación en ${path}`).toBe(false);
+  }
+  downloadsSeen = downloads;
   await page.goto('/protocolo'); await review(page, 'protocolo');
   await page.goto('/modelos'); await review(page, 'modelos');
   const modelLink = page.locator('table tbody a').first();
   if (await modelLink.count()) { await modelLink.click(); await review(page, 'modelo-detalle'); }
-  writeFileSync(`tests/evidence/${prefix}-revision.json`, JSON.stringify({ periodo: periodCode, enmascarado: masked, pantallas: results }, null, 2) + '\n');
+  writeFileSync(`tests/evidence/${prefix}-revision.json`, JSON.stringify({ periodo: periodCode, enmascarado: masked, pantallas: results, descargables: downloadsSeen }, null, 2) + '\n');
 });

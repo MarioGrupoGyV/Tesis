@@ -12,7 +12,7 @@ Preparación previa: [Procedimiento_Preparar_Activa.md](Procedimiento_Preparar_A
 ```powershell
 Set-Location C:\Users\mario\OneDrive\Escritorio\tesis-riesgo-escolar
 $py = 'backend\.venv\Scripts\python.exe'; $s6 = "$env:LOCALAPPDATA\SeguimientoEscolar\S6"
-$demo = Get-ChildItem "$s6\demo-vivo-v9t-*.json" | Where-Object { $_.Name -notlike '*-restore.json' } | Select-Object -First 1 -ExpandProperty FullName
+$demo = Get-ChildItem "$s6\demo-vivo-v9u-*.json" | Where-Object { $_.Name -notlike '*-restore.json' } | Select-Object -First 1 -ExpandProperty FullName
 & $py infra\runtime_target.py up --target $demo
 docker ps --format "{{.Names}} | {{.Status}}"
 ```

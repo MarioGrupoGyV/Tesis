@@ -15,6 +15,8 @@ MAX_BYTES = 5 * 1024 * 1024
 MAX_ROWS = 10000
 FEATURES = ("average_grade", "attendance_pct", "activities_pct", "participation_level", "behavior_incidents", "age_years")
 HEADERS = ("student_code", "grade", "section", "cutoff_at", "target_date", "available_at", "window_start", *FEATURES)
+# Plantilla vigente (Bloque 9): sin participación. La de 13 columnas se sigue aceptando; en periodos REAL la participación se ignora.
+TEMPLATE_HEADERS = tuple(header for header in HEADERS if header != "participation_level")
 LIMA = ZoneInfo("America/Lima")
 
 
@@ -87,18 +89,23 @@ def parse_csv(content: bytes, period, scales=None) -> ParsedCSV:
     reader = csv.reader(io.StringIO(decoded, newline=""), strict=True)
     try:
         header = next(reader, [])
-        if tuple(header) != HEADERS:
-            raise file_error("CSV_HEADERS", "Usa una sola vez las 13 cabeceras y su orden en la plantilla; no añadas etiquetas ni columnas.")
+        if tuple(header) not in (HEADERS, TEMPLATE_HEADERS):
+            raise file_error("CSV_HEADERS", "Usa una sola vez las 12 cabeceras y su orden en la plantilla; no añadas etiquetas ni columnas.")
+        columns = tuple(header)
+        # Sin registro original de participación (ADR 013): en un periodo REAL nunca se lee ni se guarda, venga o no la columna.
+        ignore_participation = getattr(period, "data_origin", None) == "REAL" or "participation_level" not in columns
         rows, errors, seen, sections, total = [], [], {}, {}, 0
         for line in reader:
             total += 1
             source = reader.line_num
             if total > MAX_ROWS:
                 raise file_error("CSV_TOO_MANY_ROWS", "Divide el archivo en lotes de máximo 10000 filas.", source)
-            if len(line) != len(HEADERS) or any("\n" in v or "\r" in v for v in line):
-                errors.append(issue(source, "file", "Usa exactamente 13 columnas sin saltos de línea dentro de una celda.", "CSV_COLUMNS"))
+            if len(line) != len(columns) or any("\n" in v or "\r" in v for v in line):
+                errors.append(issue(source, "file", f"Usa exactamente {len(columns)} columnas sin saltos de línea dentro de una celda.", "CSV_COLUMNS"))
                 continue
-            raw = dict(zip(HEADERS, (v.strip() for v in line), strict=True))
+            raw = dict(zip(columns, (v.strip() for v in line), strict=True))
+            if ignore_participation:
+                raw["participation_level"] = ""
             row = {"source_row_number": source}
             for key in HEADERS:
                 value = raw[key]

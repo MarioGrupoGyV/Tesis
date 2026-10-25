@@ -133,14 +133,15 @@ def test_valid_preview_commit_and_private_storage(env):
         snapshot = conn.execute(text('SELECT * FROM risk_school.academic_snapshots WHERE import_batch_id=:id'), {'id': batch['id']}).mappings().one()
         assert snapshot['cutoff_at'] == datetime(2026, 5, 2, 4, 30, tzinfo=UTC)
         assert str(snapshot['target_date']) == '2026-05-02'  # Día Lima, aunque UTC ya sea 2.
-        assert snapshot['activities_pct'] is None and float(snapshot['missing_fraction']) == 0.1667
+        # Bloque 9: en un periodo REAL la participación del archivo se ignora (no se guarda) y cuenta como dato faltante.
+        assert snapshot['activities_pct'] is None and snapshot['participation_level'] is None and float(snapshot['missing_fraction']) == 0.3333
         assert snapshot['revision'] == 1 and snapshot['supersedes_id'] is None
         assert conn.scalar(text("SELECT count(*) FROM risk_school.audit_events WHERE entity_id=:id AND action='IMPORT_COMMITTED'"), {'id': batch['id']}) == 1
 
 
 @pytest.mark.parametrize('field,value', [
     ('average_grade', '20.001'), ('average_grade', 'NaN'), ('attendance_pct', '1e2'), ('attendance_pct', '100.01'),
-    ('activities_pct', '-1'), ('participation_level', '4'), ('behavior_incidents', '2147483648'), ('age_years', '4'),
+    ('activities_pct', '-1'), ('behavior_incidents', '2147483648'), ('age_years', '4'),
     ('age_years', '13.0'), ('grade', '6'), ('section', 'AJENA'), ('student_code', 'xx'),
     ('cutoff_at', '2026-05-01T10:00:00'), ('available_at', '2026-05-02T04:30:01Z'),
     ('window_start', '2025-12-31'), ('window_start', '2026-05-02'), ('target_date', '2026-05-01'),
@@ -504,3 +505,10 @@ def test_concurrent_commits_lock_and_revalidate(env, monkeypatch, same_batch):
     finally:
         release.set()
         for client in clients: client.close()
+
+
+def test_real_period_ignores_participation_even_out_of_scale(env):
+    """Bloque 9: la participación (sin registro original) ni se valida ni se guarda en un periodo REAL."""
+    response = preview(env, [row(env, participation_level='4')])
+    assert response.status_code == 201, response.text
+    assert response.json()['status'] == 'READY' and response.json()['invalid_rows'] == 0

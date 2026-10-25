@@ -7,7 +7,7 @@ import { EmptyState, ErrorState, LoadingState, PageHeader } from '../../componen
 import './imports.css';
 
 const HEADERS = ['student_code', 'grade', 'section', 'cutoff_at', 'target_date', 'available_at',
-  'window_start', 'average_grade', 'attendance_pct', 'activities_pct', 'participation_level',
+  'window_start', 'average_grade', 'attendance_pct', 'activities_pct',
   'behavior_incidents', 'age_years'] as const;
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
@@ -277,7 +277,7 @@ export function ImportsPage({ user, period, status, statusLoading, statusError, 
           aria-describedby={`import-file-help${fileError ? ' import-file-error' : ''}`} aria-invalid={!!fileError}
           onChange={(event) => selectFile(event.target.files?.[0] ?? null)} />
         <button type="button" className="button secondary" disabled={!!blocked || busy} aria-describedby="import-file-help" onClick={() => inputRef.current?.click()}>Seleccionar CSV</button>
-        <p id="import-file-help" className="import-help">UTF-8 · máximo 5 MiB · hasta 10 000 registros · 13 columnas en el orden de la plantilla.</p>
+        <p id="import-file-help" className="import-help">UTF-8 · máximo 5 MiB · hasta 10 000 registros · 12 columnas en el orden de la plantilla.</p>
         {fileError && <p id="import-file-error" className="notice error" role="alert">{fileError}</p>}
         {file && <p className="import-selected-file">Archivo seleccionado: <strong>{file.name}</strong> · {(file.size / 1024).toFixed(1)} KiB</p>}
         <div className="import-actions"><button className="button primary" type="submit" disabled={!!blocked || !file || busy}>
@@ -288,7 +288,7 @@ export function ImportsPage({ user, period, status, statusLoading, statusError, 
         <p>En <code>synthetic-study-v1</code>: promedio 0–20; asistencia y actividades 0–100, hasta dos decimales; incidencias enteras 0–12. Son supuestos de simulación.</p>
         <p>El calendario simulado es 2025. Las fechas de ventana y objetivo usan AAAA-MM-DD; revisión de mitad de bimestre y disponibilidad llevan zona horaria. Los días académicos se comparan en America/Lima y los instantes se guardan en UTC. El horizonte es de 14 días.</p>
         <p>Conserva los valores faltantes vacíos; el servidor calcula su proporción. No añadas etiquetas, resultados futuros ni columnas. En esta versión no edites el CSV registrado: pide al administrador que revise su procedencia.</p>
-        <p><code>{HEADERS.filter(header => header !== 'participation_level').join(', ')}</code></p><p className="muted">La plantilla descargable conserva una columna técnica adicional que se deja vacía.</p>
+        <p><code>{HEADERS.join(', ')}</code></p>
       </details>
     </section>
     {(requestError != null || stale || uncertain) && <div ref={resultRef} tabIndex={-1} className="import-request-error">

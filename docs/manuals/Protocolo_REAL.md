@@ -94,7 +94,7 @@ nombres de menores no se importan ni salen de la ficha del estudiante.
    estudiantes activos ya matriculados en el periodo pasan a ser elegibles (no se fabrican consentimientos); los nuevos se marcan
    elegibles al matricularse o importarse mientras el protocolo esté confirmado.
 2. **Estudio institucional.** `py -3.12 infra/study.py register-study --target <destino.json> --operator-profile <perfil> --protocol-id <id> --csv <cortes.csv>`.
-   El CSV canónico tiene las 13 cabeceras de la plantilla (la participación se deja vacía: no es variable del corte), un corte por
+   El CSV canónico tiene las 12 cabeceras de la plantilla (o las 13 del formato anterior: en periodos REAL la participación se ignora y no se guarda), un corte por
    estudiante y bimestre, y el mismo horizonte (días entre la disponibilidad del último dato y el cierre) en todos los bimestres.
    El sistema guarda el archivo exacto en el almacenamiento privado y solo acepta ese contenido en la importación.
 3. **Importación.** `study.py import --study-id <id>` (o la pantalla *Datos* con el mismo archivo). Escalas de nota y participación
