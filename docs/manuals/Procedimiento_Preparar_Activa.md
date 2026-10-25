@@ -166,6 +166,14 @@ activo (`DEMO_COPY_HASH_MISMATCH`), si el periodo no es `DEMO-VIVO` (`DEMO_COPY_
 (`DEMO_COPY_DISABLED`, lo que ocurre en la activa). El modelo sintético del periodo queda retirado y no se lista. Ejecutado el 2026-10-25: descriptor
 `S6\demo-vivo-v9u-<fecha>.json`, imágenes `b9u`, huella `45fb6c6b…38261` en las dos instalaciones. Ensayo con códigos `ENSAYO-B9-…` (Alto, Medio y Bajo; ver el guion).
 
+**Copias eliminadas el 2026-10-25** (con autorización del usuario; tenían datos reales de menores). Con `runtime_target.py cleanup` se borraron contenedores, volúmenes y
+redes; después, sus descriptores, archivos compose, secretos de infraestructura (`.local\s6-runtime\<copia>`) y perfiles de operador:
+- las cuatro demo-vivo sustituidas: `s6-restore-689e654e004e` (b9), `s6-restore-132b796a170c` (b9r), `s6-restore-2e799c7e5c3c` (b9s) y `s6-restore-d33cd4b3fc59` (b9t);
+- la copia del ensayo del Bloque 8, `s6-restore-e6f7bd1b80de`.
+
+Comprobado con `docker ps -a` y `docker volume ls`: no queda nada de ellas. Se conservan los respaldos, la principal, la demo-vivo final (`s6-restore-84f47c48a59b`, b9u) y
+`real-tesis`.
+
 ## 10. Nombres en la ficha: paso opcional y separado (≈ 2 min)
 
 Solo si quieres ver nombres en la **ficha** del estudiante (listas, alertas, indicadores y reportes nunca los muestran). Necesita un respaldo nuevo (< 24 h) y tu archivo real de identidades fuera del repositorio:

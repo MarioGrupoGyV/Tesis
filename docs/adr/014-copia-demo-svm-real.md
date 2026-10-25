@@ -79,3 +79,5 @@ evaluación, `DEMO_REAL_MODEL_COPY_EVALUATED`. La evaluación por lote de un per
   - Núcleo de inferencia: sin `demo_copy` la regla de origen no cambia.
 - Ensayo en `demo-vivo` (2026-10-25): Alto 7/50/40/6, Medio 14,5/85/70/0 y Bajo 18/98/95/0. En los tres coinciden el nivel mostrado, el guardado y la alerta, y REAL-2026 conserva
   60 matrículas, 120 cortes, 120 referencias, 120 predicciones y 40 alertas. El SVM predice Medio en una franja estrecha; el caso Medio se eligió dentro de su clase.
+- Instalación final de la demostración: `s6-restore-84f47c48a59b` (puerto 15174, imágenes b9u). Las copias intermedias del Bloque 9 y la del ensayo del Bloque 8 se
+  eliminaron, con sus volúmenes, el 2026-10-25 (ver `Procedimiento_Preparar_Activa.md`, sección 9).
