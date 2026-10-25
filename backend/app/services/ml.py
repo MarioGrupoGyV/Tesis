@@ -31,7 +31,8 @@ def public_model(db,row):
         warnings = list(((study.comparison or {}).get('report') or {}).get('warnings') or []) if study else []
     return schemas.Model.model_validate({**{k:getattr(row,k) for k in ('id','name','version','algorithm','data_origin',
         'feature_schema_version','reference_criterion_version','status','is_active','created_at')},
-        'scope':manifest.get('scope'),'approval_kind':manifest.get('approval_kind'),'warnings':warnings})
+        'scope':manifest.get('scope'),'approval_kind':manifest.get('approval_kind'),'warnings':warnings,
+        'display_label':(manifest.get('demo_copy') or {}).get('display_label')})
 
 
 def list_models(db,user,page,page_size):
@@ -68,7 +69,7 @@ def persist_evaluated(db, *, snapshot_id, model_id, result, actor_id, request_id
     snapshot = db.get(SnapshotRecord,snapshot_id)
     model = db.get(ModelVersion,model_id)
     if snapshot is None or model is None:
-        raise AppError(404,'PREDICTION_RESOURCE_NOT_FOUND','No están disponibles el corte y modelo.')
+        raise AppError(404,'PREDICTION_RESOURCE_NOT_FOUND','No están disponibles la revisión de mitad de bimestre y el modelo.')
     period = db.scalar(select(AcademicPeriod).where(AcademicPeriod.id==snapshot.period_id).with_for_update(read=True)
                        .execution_options(populate_existing=True))
     if period.is_locked:
@@ -79,9 +80,9 @@ def persist_evaluated(db, *, snapshot_id, model_id, result, actor_id, request_id
             eligible_flag=student.eligible_for_processing,consent_documented=student.consent_documented,
             assent_documented=student.assent_documented,
             protocol_confirmed_for_enrollment=protocol_confirms_period(db,snapshot.period_id)):
-        raise AppError(422,'NOT_ELIGIBLE','El corte no es elegible para inferencia.')
+        raise AppError(422,'NOT_ELIGIBLE','La revisión de mitad de bimestre no es elegible para inferencia.')
     if snapshot.data_origin != model.data_origin or snapshot.data_origin not in ('REAL','SYNTHETIC'):
-        raise AppError(422,'ORIGIN_NOT_SUPPORTED','Corte y modelo deben conservar el mismo origen.')
+        raise AppError(422,'ORIGIN_NOT_SUPPORTED','La revisión de mitad de bimestre y el modelo deben conservar el mismo origen.')
     # La persistencia aislada prueba integridad con modelos inactivos. La selección
     # operativa exige protocolo + modelo aprobado/activo en run_period, sin bypass.
     manual = snapshot.entry_channel == 'MANUAL' and snapshot.schema_version == 'manual-v1'
@@ -180,6 +181,13 @@ def load_active_model(db,period,settings,as_of):
         raise AppError(409,'MODEL_NOT_AVAILABLE','Modelo no disponible.')
     from app.ml.artifacts import ArtifactStore
     from app.ml.features import MLDiagnostic
+    from app.services import demo_copy
+    if demo_copy.enabled(settings) and demo_copy.is_copy(model):
+        # ADR 014 (solo con DEMO_REAL_MODEL_COPY): el artefacto es el del SVM REAL activo, verificado por su camino normal.
+        try:
+            return study,model,demo_copy.verified_copy(db,settings,study,model)
+        except AppError:
+            raise AppError(409,'MODEL_NOT_AVAILABLE','Modelo no disponible o incompatible.') from None
     scope,approval = APPROVAL_BY_ORIGIN[period.data_origin]
     try:
         compatible_model(settings,study,model)
@@ -275,7 +283,10 @@ def evaluate_student(db,user,student_id,period_id,settings,request_id):
             raise AppError(422,'MEASUREMENT_OUT_OF_MODEL_SCALE',
                 'La medición tiene valores fuera de la escala del modelo activo: '+'; '.join(outside)+
                 '. Corrige la medición (se crea una revisión) y evalúa de nuevo. No se asignó riesgo.')
-        result = predict_snapshot(observation,bundle)
+        from app.services import demo_copy
+        copy = demo_copy.enabled(settings) and demo_copy.is_copy(model)
+        # Camino normal idéntico al anterior; solo la copia de demostración verificada pasa el argumento nuevo (ADR 014).
+        result = predict_snapshot(observation,bundle,demo_copy=True) if copy else predict_snapshot(observation,bundle)
         base = dict(snapshot_id=row['id'])
         if result.status == 'INELIGIBLE':
             out = schemas.StudentEvaluation(status='NOT_ELIGIBLE',reason='El estudiante no está activo o no es elegible para la simulación.',**base)
@@ -302,6 +313,10 @@ def evaluate_student(db,user,student_id,period_id,settings,request_id):
             action='STUDENT_EVALUATION_REQUESTED',request_id=request_id,
             payload={'snapshot_id':str(row['id']),'status':out.status,'model_id':str(model.id),
                      'prediction_id':str(out.prediction_id) if out.prediction_id else None}))
+        if copy:
+            demo_copy.audit(db,user.id,model.id,'DEMO_REAL_MODEL_COPY_EVALUATED',request_id,period_id=str(period.id),
+                snapshot_id=str(row['id']),status=out.status,risk_level=out.risk_level,artifact_sha256=model.artifact_sha256,
+                prediction_id=str(out.prediction_id) if out.prediction_id else None)
         db.commit()
         return out
     except IntegrityError:

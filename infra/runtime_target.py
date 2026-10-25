@@ -231,7 +231,7 @@ class Target:
         return ['docker','exec','-i',service['Id'],*map(str,args)]
 
 
-def create(kind,output,ports,*,images=None):
+def create(kind,output,ports,*,images=None,demo_real_model_copy=False):
     output=Path(output).absolute()
     if output.exists(): raise RuntimeError('TARGET_DESCRIPTOR_EXISTS')
     directory=private_directory(output.parent)
@@ -268,7 +268,9 @@ def create(kind,output,ports,*,images=None):
         'api':{'image':images['api'],'labels':labels,'environment':{'DATABASE_URL_FILE':'/run/secrets/app_database_url',
             'CSRF_SECRET_FILE':'/run/secrets/csrf_secret','APP_ENV':'development',
             'ALLOWED_ORIGINS':web_url+','+web_url.replace('localhost','127.0.0.1'),'SESSION_COOKIE_SECURE':'false',
-            'TZ':'UTC','DISPLAY_TIMEZONE':'America/Lima','IMPORT_STORAGE_DIR':'/var/lib/riesgo/imports','ML_STORAGE_DIR':'/var/lib/riesgo/ml'},
+            'TZ':'UTC','DISPLAY_TIMEZONE':'America/Lima','IMPORT_STORAGE_DIR':'/var/lib/riesgo/imports','ML_STORAGE_DIR':'/var/lib/riesgo/ml',
+            # ADR 014: solo una copia aislada creada para la demostración lo enciende; la instalación principal nunca.
+            **({'DEMO_REAL_MODEL_COPY':'true'} if demo_real_model_copy else {})},
             'secrets':['app_database_url','csrf_secret'],'volumes':['import_data:/var/lib/riesgo/imports','ml_data:/var/lib/riesgo/ml'],
             'depends_on':{'db':{'condition':'service_healthy'}},'ports':[f'127.0.0.1:{ports["api"]}:8000'],
             'healthcheck':{'test':['CMD','python','-c',"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/ready',timeout=2)"],
@@ -284,7 +286,8 @@ def create(kind,output,ports,*,images=None):
     data={'version':1,'target_id':sid,'kind':kind,'project':project,'database':database,
         'ports':ports,'web_url':web_url,'api_url':'http://localhost:'+str(ports['api']),
         'volumes':{v:project+'_'+v for v in VOLUMES},'images':images,'compose_file':str(compose_file),
-        'compose_sha256':digest(compose_file),'secrets_dir':str(secret_dir),'created_at':datetime.now(UTC).isoformat()}
+        'compose_sha256':digest(compose_file),'secrets_dir':str(secret_dir),'created_at':datetime.now(UTC).isoformat(),
+        'demo_real_model_copy':bool(demo_real_model_copy)}
     target=Target(data,output)
     target.assert_resources(fresh=True)
     write_new(output,json.dumps(data,indent=2).encode())

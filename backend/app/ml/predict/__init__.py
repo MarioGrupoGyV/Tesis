@@ -23,17 +23,26 @@ def class_mapping(classes):
     return {int(value):CLASSES[int(value)] for value in values}
 
 
-def predict_snapshot(snapshot: Observation, model_bundle: ModelBundle | None) -> PredictionResult:
+def predict_snapshot(snapshot: Observation, model_bundle: ModelBundle | None, *, demo_copy: bool = False) -> PredictionResult:
+    """`demo_copy` (ADR 014) solo lo pasa la evaluación de DEMO-VIVO con la copia verificada del SVM REAL activo y el interruptor
+    encendido: admite ese artefacto REAL institucional sobre un corte de demostración. Por defecto la regla de origen no cambia."""
     if model_bundle is None:
         return PredictionResult('MODEL_NOT_AVAILABLE','Modelo no disponible')
     if not snapshot.eligible:
         return PredictionResult('INELIGIBLE','NOT_ELIGIBLE')
     try:
+        # Origen que el artefacto debe declarar: el del corte; con la copia de demostración, el REAL del artefacto institucional.
+        origin = snapshot.data_origin
+        if demo_copy:
+            if (snapshot.data_origin != 'SYNTHETIC' or model_bundle.manifest['data_origin'] != 'REAL'
+                    or (model_bundle.manifest['scope'], model_bundle.manifest['manifest_version']) != ('INSTITUTIONAL_STUDY', 'ml-artifact-v3')):
+                raise MLDiagnostic('MODEL_INCOMPATIBLE')
+            origin = 'REAL'
         if (model_bundle.manifest['versions'] != versions() or
-                model_bundle.manifest['data_origin'] != snapshot.data_origin or
-                (snapshot.data_origin == 'SYNTHETIC' and
+                model_bundle.manifest['data_origin'] != origin or
+                (origin == 'SYNTHETIC' and
                  (model_bundle.manifest['scope'] != 'SYNTHETIC_STUDY' or model_bundle.manifest['manifest_version'] != 'ml-artifact-v2')) or
-                (snapshot.data_origin == 'REAL' and (model_bundle.manifest['scope'], model_bundle.manifest['manifest_version']) not in
+                (origin == 'REAL' and (model_bundle.manifest['scope'], model_bundle.manifest['manifest_version']) not in
                  (('ISOLATED_TEST', 'ml-artifact-v1'), ('INSTITUTIONAL_STUDY', 'ml-artifact-v3'))) or
                 model_bundle.manifest['feature_schema'] != model_bundle.config.model_dump(mode='json') or
                 model_bundle.manifest['probabilities_calibrated'] is not False):

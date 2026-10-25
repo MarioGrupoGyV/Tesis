@@ -29,6 +29,8 @@ SQL = {
         WHERE data_origin='SYNTHETIC' AND kind='SYNTHETIC_STUDY' ORDER BY created_at LIMIT 1''',
     'models': '''SELECT id::text AS id, algorithm, is_active FROM risk_school.model_versions WHERE study_id=CAST(:s AS uuid) AND data_origin='SYNTHETIC' ''',
     'students': '''SELECT count(DISTINCT e.student_id) AS n FROM risk_school.enrollments e WHERE e.period_id=CAST(:p AS uuid)''',
+    'copy': '''SELECT id::text AS id, is_active, artifact_sha256 FROM risk_school.model_versions
+        WHERE study_id=CAST(:s AS uuid) AND name='SVM del estudio real (copia de demostración)' ''',
 }
 
 
@@ -44,8 +46,9 @@ class DemoLive(Live):
 
 class DemoRunner:
     def __init__(self, gateway, *, period_code=DEFAULT_CODE, seed=1729, students=None, repetitions=None, tutor_id=None, locked_tutor=False,
-                 dry_run=False, emit=print):
+                 dry_run=False, emit=print, real_model_sha256=None):
         self.g, self.code, self.seed, self.students, self.repetitions = gateway, period_code, seed, students, repetitions
+        self.real_model_sha256 = real_model_sha256
         self.tutor_id, self.locked_tutor, self.dry_run, self.emit = tutor_id, locked_tutor, dry_run, emit
         self.steps, self.state = [], {}
 
@@ -179,20 +182,40 @@ class DemoRunner:
         self.state['period'] = renamed
         self.step('label', 'DONE', period_code=self.code)
 
+    # 7b (ADR 014): copia del SVM REAL activo para DEMO-VIVO, solo si se pide con la huella esperada
+    def real_copy(self):
+        if not self.real_model_sha256:
+            return None
+        study, period = self.state.get('study'), self.state.get('period')
+        if not study or not period:
+            return self.step('real_model_copy', 'PENDING')
+        found = self.g.sql('copy', s=study['id'])
+        if found:
+            if found[0]['artifact_sha256'] != self.real_model_sha256:
+                raise StopRun('DEMO_COPY_HASH_MISMATCH')
+            self.state['model'] = {'algorithm': 'SVM', 'is_active': found[0]['is_active'], 'copy': True}
+            return self.step('real_model_copy', 'REUSED', artifact_sha256=found[0]['artifact_sha256'], is_active=found[0]['is_active'])
+        if self.dry_run:
+            return self.step('real_model_copy', 'PENDING')
+        result = self.g.internal('register-demo-copy', {'period_id': period['id'], 'expected_sha256': self.real_model_sha256})
+        self.state['model'] = {'algorithm': result['algorithm'], 'is_active': result['is_active'], 'copy': True}
+        self.step('real_model_copy', 'DONE', algorithm=result['algorithm'], artifact_sha256=result['artifact_sha256'])
+
     # 8
     def check(self):
         study, model = self.state.get('study'), self.state.get('model')
         if not (study and model and self.state.get('period')):
             return self.step('check', 'PENDING')
         students = int(self.g.sql('students', p=study['period_id'])[0]['n'])
-        self.step('check', 'OK', students_in_demo_period=students, model_algorithm=model['algorithm'], origin='SYNTHETIC')
-        return {'period_code': self.code, 'model_algorithm': model['algorithm'], 'students_in_demo_period': students}
+        extra = {'model_label': 'SVM del estudio real (copia de demostración)'} if model.get('copy') else {}
+        self.step('check', 'OK', students_in_demo_period=students, model_algorithm=model['algorithm'], origin='SYNTHETIC', **extra)
+        return {'period_code': self.code, 'model_algorithm': model['algorithm'], 'students_in_demo_period': students, **extra}
 
     def run(self):
         self.preflight()
         self.study()
         self.tutor()
-        for step in (self.generate, self.importing, self.comparing, self.model, self.labeling):
+        for step in (self.generate, self.importing, self.comparing, self.model, self.labeling, self.real_copy):
             step()
         return self.check()
 
@@ -209,6 +232,7 @@ def main(argv=None):
     parser.add_argument('--tutor-id')
     parser.add_argument('--locked-tutor', action='store_true', help='Usa (o crea) la cuenta TUTOR de relleno sin acceso como tutor de la sección')
     parser.add_argument('--dry-run', action='store_true', help='Reconoce el estado de cada paso sin escribir nada')
+    parser.add_argument('--real-model-copy', metavar='SHA256', help='ADR 014: huella del SVM REAL activo; registra su copia de demostración en DEMO-VIVO')
     args = parser.parse_args(argv)
     try:
         from operator_profiles import admin_account
@@ -221,7 +245,8 @@ def main(argv=None):
         account = admin_account(target, operator_profile=args.operator_profile)
         with DemoLive(target, account) as gateway:
             DemoRunner(gateway, period_code=args.period_code, seed=args.seed, students=args.students, repetitions=args.repetitions,
-                       tutor_id=args.tutor_id, locked_tutor=args.locked_tutor, dry_run=args.dry_run).run()
+                       tutor_id=args.tutor_id, locked_tutor=args.locked_tutor, dry_run=args.dry_run,
+                       real_model_sha256=args.real_model_copy).run()
     except StopRun as stop:
         print(json.dumps({'code': stop.code, **({'detail': stop.detail} if stop.detail else {})}, ensure_ascii=True, default=str))
         return stop.exit_code

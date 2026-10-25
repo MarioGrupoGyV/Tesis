@@ -6,8 +6,10 @@ from app.models.s2 import EnrollmentRecord
 
 
 def models(db,page,page_size):
-    total = db.scalar(select(func.count()).select_from(ModelVersion).where(ModelVersion.data_origin.in_(('REAL','SYNTHETIC'))))
-    rows = db.scalars(select(ModelVersion).where(ModelVersion.data_origin.in_(('REAL','SYNTHETIC')))
+    # Un modelo RETIRADO (p. ej. el sintético de DEMO-VIVO sustituido por la copia del SVM real, ADR 014) no se lista.
+    listed = (ModelVersion.data_origin.in_(('REAL','SYNTHETIC')), ModelVersion.status!='RETIRED')
+    total = db.scalar(select(func.count()).select_from(ModelVersion).where(*listed))
+    rows = db.scalars(select(ModelVersion).where(*listed)
         .order_by(ModelVersion.created_at.desc(),ModelVersion.id).limit(page_size).offset((page-1)*page_size)).all()
     return rows,total
 

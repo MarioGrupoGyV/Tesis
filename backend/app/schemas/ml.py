@@ -21,6 +21,8 @@ class Model(ContractModel):
     scope: str | None = None
     approval_kind: str | None = None
     warnings: list[str] = []
+    # ADR 014: «SVM del estudio real» en la copia de demostración de DEMO-VIVO; null en cualquier otro modelo.
+    display_label: str | None = None
 
 
 class ModelPage(ContractModel):

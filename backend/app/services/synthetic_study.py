@@ -219,6 +219,10 @@ def selected_artifact(settings,study):
 
 
 def compatible_model(settings,study,model):
+    from app.services import demo_copy
+    if demo_copy.enabled(settings) and demo_copy.is_copy(model):
+        # ADR 014 (solo con DEMO_REAL_MODEL_COPY): copia del SVM REAL activo para DEMO-VIVO; apagado, este camino no existe.
+        return demo_copy.verified_copy(demo_copy.session_of(study),settings,study,model).manifest
     if is_institutional(study):
         from app.services.institutional_study import compatible_model as institutional
         return institutional(settings,study,model)

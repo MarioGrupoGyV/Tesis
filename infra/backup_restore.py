@@ -439,7 +439,7 @@ def images_for_tag(images,tag):
     return {**images,**resolved}
 
 
-def restore_check(path,output,ports,*,allow_real=False,image_tag=None):
+def restore_check(path,output,ports,*,allow_real=False,image_tag=None,demo_real_model_copy=False):
     content,manifest=verified_content(path)
     # Copiar datos REAL a otro destino es una decisión explícita (--confirm-real-copy), no un efecto lateral de la comprobación.
     if manifest['origin']!='SYNTHETIC' and not allow_real: raise RuntimeError('RESTORE_REAL_REQUIRES_CONFIRMATION')
@@ -447,7 +447,8 @@ def restore_check(path,output,ports,*,allow_real=False,image_tag=None):
     if manifest['code']['locks']!=current['locks']:
         raise RuntimeError('RESTORE_LOCKS_INCOMPATIBLE')
     # Restore the same application/DB images; no training, migration or signing.
-    target=create('RESTORE',output,ports,images=images_for_tag(manifest['source']['images'],image_tag) if image_tag else manifest['source']['images'])
+    target=create('RESTORE',output,ports,images=images_for_tag(manifest['source']['images'],image_tag) if image_tag else manifest['source']['images'],
+        demo_real_model_copy=demo_real_model_copy)
     target.assert_resources(fresh=True)
     target.compose('up','-d','--wait','db')
     work=private_directory(Path(output).parent/(target.project+'-restore.partial'))
@@ -496,6 +497,7 @@ def main(argv=None):
     parser.add_argument('--report',type=Path,required=True)
     parser.add_argument('--isolated-source',action='store_true',help='Solo ensayo de backup: respalda un destino aislado (INSTALL/RESTORE) en lugar de la instalación activa')
     parser.add_argument('--image-tag',help='Solo restore-check: restaura sobre las imágenes api/web construidas con esta etiqueta (riesgo-escolar-api:<etiqueta>)')
+    parser.add_argument('--demo-real-model-copy',action='store_true',help='Solo restore-check: la copia (demo-vivo) enciende DEMO_REAL_MODEL_COPY (ADR 014)')
     parser.add_argument('--confirm-real-copy',action='store_true',help='Solo restore-check de un paquete REAL/MIXED: autoriza crear otra copia local con esos datos')
     parser.add_argument('--web-port',type=int,default=15274)
     parser.add_argument('--api-port',type=int,default=18101)
@@ -510,7 +512,8 @@ def main(argv=None):
             if not args.backup: parser.error('--backup requerido')
             if args.command=='restore-check':
                 if not args.output: parser.error('--output descriptor privado nuevo requerido')
-                report=restore_check(args.backup,args.output,{'web':args.web_port,'api':args.api_port,'db':args.db_port},allow_real=args.confirm_real_copy,image_tag=args.image_tag)
+                report=restore_check(args.backup,args.output,{'web':args.web_port,'api':args.api_port,'db':args.db_port},allow_real=args.confirm_real_copy,image_tag=args.image_tag,
+                    demo_real_model_copy=args.demo_real_model_copy)
             else:
                 _,m=verified_content(args.backup)
                 report={'status':'COMPROBADO','backup_id':m['id'],'origin':m['origin'],'data_origins':m.get('data_origins',['SYNTHETIC']),'inventory_verified':True,

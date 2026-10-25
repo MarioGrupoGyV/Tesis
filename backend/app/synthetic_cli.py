@@ -18,7 +18,7 @@ from app.ml.features import MLDiagnostic
 
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('command',choices=['generate','compare','register','activate','export-csv','status','register-study'])
+    parser.add_argument('command',choices=['generate','compare','register','activate','export-csv','status','register-study','register-demo-copy'])
     args=parser.parse_args()
     settings=Settings()
     database=Database(settings)
@@ -49,6 +49,12 @@ def main():
                 result={'study_id':str(record.id),'period_id':str(record.period_id),'data_origin':'REAL',
                     'scope':'INSTITUTIONAL_STUDY','csv_sha256':record.csv_sha256,'rows':record.manifest['rows'],
                     'students':record.manifest['students'],'horizon_days':record.manifest['horizon_days'],'reused':reused}
+            elif args.command=='register-demo-copy':
+                # ADR 014: solo con DEMO_REAL_MODEL_COPY encendido (demo-vivo); la huella esperada la da el operador.
+                from app.services import demo_copy
+                record=demo_copy.register(db,actor,settings,UUID(payload['period_id']),str(payload['expected_sha256']),request_id)
+                result={'model_id':str(record.id),'algorithm':record.algorithm,'data_origin':record.data_origin,'is_active':record.is_active,
+                    'artifact_sha256':record.artifact_sha256,'source_model_id':record.manifest['demo_copy']['source_model_id']}
             elif args.command=='status':
                 from app.services.processing_policy import processing_status
                 result=processing_status(db,actor,settings).model_dump(mode='json',by_alias=True)

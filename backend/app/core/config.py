@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     login_max_keys: int = Field(default=10000, ge=10, le=100000)
     import_storage_dir: Path | None = None
     ml_storage_dir: Path | None = None
+    # ADR 014: solo la instalación hermana de demostración (demo-vivo) lo enciende. Apagado, nada cambia.
+    demo_real_model_copy: bool = False
 
     @model_validator(mode="after")
     def validate_configuration(self) -> "Settings":
