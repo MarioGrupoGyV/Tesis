@@ -1,7 +1,8 @@
 # Protocolo REAL (Bloques 3B-1 y 3B-2)
 
 El protocolo REAL es un **interruptor técnico** de procesamiento local de una cohorte con registros reales. No es un expediente de
-autorizaciones. Diseño: [ADR 012](../adr/012-procesamiento-real.md). Esquema: migración `0007_real_protocol`.
+autorizaciones. Diseño: [ADR 012](../adr/012-procesamiento-real.md) y, para la regla de referencia, [ADR 013](../adr/013-riesgo-v2-sin-participacion.md).
+Esquema: migración `0007_real_protocol`; `0009_riesgo_v2` admite la regla RIESGO_V2.
 
 **Estado actual (3B-2):** con el protocolo **confirmado**, el periodo REAL queda habilitado para el ciclo local descrito abajo; sin
 confirmar (o tras revocar) toda operación REAL devuelve `INSTITUTIONAL_PROCESSING_NOT_READY`. Las pruebas lo verifican endpoint por
@@ -20,7 +21,7 @@ Una fila por periodo REAL (`processing_protocols`):
 | Bimestres | por cada uno: código, inicio, fecha de corte de datos, disponibilidad del corte, cierre, disponibilidad del cierre y días programados |
 | Fuente | descripción de la base de origen |
 | Reglas de calidad y de elegibilidad/faltantes | rangos y claves; fracción máxima de faltantes y variables requeridas |
-| Regla de riesgo | versión `RIESGO_V1` (umbrales fijos de la regla) |
+| Regla de riesgo | versión `RIESGO_V2` en los protocolos nuevos (regla activa, sin participación) o `RIESGO_V1` en los anteriores; queda congelada al confirmar |
 | Plazos de oportunidad | días de detección e intervención |
 | `authorization_confirmed_by_admin` | booleano (por defecto `false`) con `confirmed_by` y `confirmed_at` coherentes |
 
@@ -67,8 +68,22 @@ Ninguna respuesta pública cambia en 3B-1.
 
 ## Carga de cierres (uso interno)
 
-`infra/load_closings.py` carga insumos de cierre desde un CSV de códigos a un destino **aislado** (nunca el activo). El backend calcula los cinco componentes y el nivel
-RIESGO_V1; el CSV no puede traer el nivel y cualquier columna adicional (por ejemplo, nombres) rechaza el archivo completo. Todo o nada.
+`infra/load_closings.py` carga insumos de cierre desde un CSV de códigos a un destino **aislado** (nunca el activo). El backend calcula los componentes y el nivel con la
+regla **del protocolo del periodo** (sin protocolo, la regla activa RIESGO_V2); el CSV no puede traer el nivel y cualquier columna adicional (por ejemplo, nombres) rechaza el
+archivo completo. Todo o nada. Con RIESGO_V2 la columna de participación puede venir vacía y, si trae un valor, se ignora.
+
+## Regla de referencia (ADR 013)
+
+| | RIESGO_V1 (se conserva) | RIESGO_V2 (activa) |
+|---|---|---|
+| Componentes (0–2 puntos cada uno) | promedio, asistencia, actividades, participación, incidencias | promedio, asistencia, actividades, incidencias |
+| Total | 0–10 | 0–8 |
+| Nivel | Bajo 0–1, Medio 2–4, Alto ≥ 5 | Bajo 0–1, Medio 2–3, Alto ≥ 4 |
+
+Mismos umbrales y aritmética entera en los componentes comunes: promedio redondeado a 2 decimales (mitad hacia arriba) < 11 → 2, < 14 → 1; asistencia `100·asistidos`
+frente a `80·programados` / `90·programados`; actividades frente a 60 % / 80 %; incidencias ≥ 3 → 2, 1–2 → 1. V2 se adoptó porque la institución confirmó que **no existe un
+registro original de la participación en aula**; el corte de Alto conserva el 50 % del máximo (5 de 10 en V1, 4 de 8 en V2) y se fijó **antes** de reentrenar. Las filas V1
+existentes no se tocan: V2 se agrega como filas nuevas de `risk_references` (`rule_version = RIESGO_V2`, `revision = 1`), con participación y su puntaje en NULL.
 
 ## Ciclo REAL local (Bloque 3B-2)
 
@@ -84,7 +99,7 @@ nombres de menores no se importan ni salen de la ficha del estudiante.
    El sistema guarda el archivo exacto en el almacenamiento privado y solo acepta ese contenido en la importación.
 3. **Importación.** `study.py import --study-id <id>` (o la pantalla *Datos* con el mismo archivo). Escalas de nota y participación
    (1–5) salen del protocolo.
-4. **Cierres.** `py -3.12 infra/load_closings.py ...` registra los insumos de cierre; el backend calcula RIESGO_V1 (`risk_references`,
+4. **Cierres.** `py -3.12 infra/load_closings.py ...` registra los insumos de cierre; el backend calcula la regla del protocolo, RIESGO_V2 en los nuevos (`risk_references`,
    solo inserción). Sin cierres no hay etiquetas y la comparación responde `INSUFFICIENT_DATA_FOR_STUDY`.
 5. **Comparación exploratoria.** `study.py compare --study-id <id> [--repetitions N] [--loso]`: validación cruzada agrupada por
    estudiante (5 pliegues, ≥ 20 repeticiones con semillas derivadas), RF/SVM/XGBoost/Dummy, media ± DE y matriz de confusión agregada;

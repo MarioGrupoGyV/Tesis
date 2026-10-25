@@ -7,17 +7,24 @@ Resultado: `riesgo-escolar` (15173) con **solo datos reales** (60 estudiantes, B
 **Reglas.** Nunca `docker compose down -v` ni borrar volúmenes. Nunca restaurar sobre la activa. Las contraseñas se escriben solo en el terminal cuando se piden. Nada de lo que imprime cada
 paso lleva códigos ni nombres de estudiantes. Si un paso falla, **no sigas**: anota el código que imprime (por ejemplo `PRE_BACKUP_TOO_OLD`) y consulta la tabla del final.
 
+
+> **Actualización Bloque 8 (2026-10-24, [ADR 013](../adr/013-riesgo-v2-sin-participacion.md)).** Este procedimiento ya se ejecutó en `riesgo-escolar` con la regla
+> **RIESGO_V2**: imágenes `b8`, migración a `0009_riesgo_v2`, respaldo previo en 0009, ensayo idéntico en una copia aislada y corrida con `--locked-tutor`. Resultado:
+> 60 estudiantes, 120 cortes, 120 referencias V2, modelo activo **SVM/REAL**, 40 alertas, distribución B1 19/18/23 y B2 27/8/25, resumen
+> `tests/evidence/mejoras-08-resumen-agregado-v2.json`. Si hubiera que repetirlo en otra instalación: entrada `ConversionExcelReal\salida-v2` (conversión con conteos V2),
+> migración 0009 (`docker compose -f compose.yaml -f infra/compose.migrate.yaml run --rm --no-deps api python -m alembic -c /app/alembic.ini upgrade head`), respaldo en 0009 y
+> comparación contra `mejoras-08-resumen-agregado-v2.json`. Las cifras V1 de los pasos de abajo (15/21/24, Random Forest, 45 alertas, 87,3 %) son históricas.
 ## 0. Variables (en cada ventana de PowerShell)
 
 ```powershell
 Set-Location C:\Users\mario\OneDrive\Escritorio\tesis-riesgo-escolar
 $py = 'backend\.venv\Scripts\python.exe'
 $base = "$env:LOCALAPPDATA\SeguimientoEscolar"; $s6 = "$base\S6"; $backups = "$base\Backups"
-$entrada = "$base\ConversionExcelReal\salida"          # cortes.csv, cierres.csv y resumen_conversion.json
+$entrada = "$base\ConversionExcelReal\salida-v2"       # cortes.csv, cierres.csv y resumen_conversion.json con conteos RIESGO_V2
 $fecha = Get-Date -Format yyyyMMdd-HHmmss
 ```
 
-Estado de partida esperado (solo lectura): `docker compose ps` con `api`, `web` y `db` *healthy*; la base en `0008_real_chain`, 0 periodos, 4 cuentas.
+Estado de partida esperado (solo lectura): `docker compose ps` con `api`, `web` y `db` *healthy*; la base en `0009_riesgo_v2` (antes de cargar), 0 periodos, 4 cuentas.
 
 ## 1. Imágenes con el código final (≈ 1–3 min; la base no se detiene)
 
@@ -45,7 +52,7 @@ El segundo pide en el terminal el correo y la contraseña de **tu ADMIN de siemp
 
 ## 3. Respaldo verificado previo (≈ 1–2 min; la web y la API se pausan ~30 s)
 
-El respaldo debe tener **menos de 24 h** y estar en 0008; la corrida real lo exige.
+El respaldo debe tener **menos de 24 h** y estar en 0009; la corrida real lo exige.
 
 ```powershell
 & $py infra\backup_restore.py backup --target "$s6\active-$fecha.json" --report "$s6\antes-de-cargar-$fecha-respaldo.json"
@@ -87,7 +94,7 @@ Esperado: `preflight OK` (hashes de los CSV verificados, 120 filas, 60 estudiant
       --confirm-protocol --locked-tutor --confirm-active riesgo-escolar --pre-backup $respaldo --public-summary "$resultados\resumen_agregado_activa.json"
 ```
 
-(Opción B: sustituye `--locked-tutor` por `--tutor-a <id> --tutor-b <id>`.) La orden se niega si falta `--confirm-active riesgo-escolar` o `--pre-backup`, si el respaldo no es de esta instalación, no está en 0008 o tiene
+(Opción B: sustituye `--locked-tutor` por `--tutor-a <id> --tutor-b <id>`.) La orden se niega si falta `--confirm-active riesgo-escolar` o `--pre-backup`, si el respaldo no es de esta instalación, no está en 0009 o tiene
 más de 24 h. Es reanudable e idempotente: si se corta, repite **la misma orden** (necesitará un respaldo de menos de 24 h; si pasó el plazo, repite el paso 3). Esperado, doce líneas:
 
 `preflight OK · period DONE · sections DONE (created 2) · protocol DONE (confirmed) · study DONE (120 filas, 60 estudiantes) · import DONE (120) · closings DONE (120) · checks OK (B1 15/21/24, B2 25/11/24) · comparison DONE (RANDOM_FOREST, 20 repeticiones) · model DONE (LOCAL_EXPLORATORY) · evaluation DONE (alertas 45, simuladas 45) · indicators DONE (sql_matches_system true)`
@@ -97,7 +104,7 @@ más de 24 h. Es reanudable e idempotente: si se corta, repite **la misma orden*
 Resultado idéntico al de referencia (`real-tesis`): el resumen agregado debe coincidir exactamente.
 
 ```powershell
-& $py infra\compare_real_summaries.py tests\evidence\mejoras-051-resumen-agregado.json "$resultados\resumen_agregado_activa.json"
+& $py infra\compare_real_summaries.py tests\evidence\mejoras-08-resumen-agregado-v2.json "$resultados\resumen_agregado_activa.json"
 ```
 
 Esperado: `IDENTICOS` (salida 0). Si imprime `DIFIEREN`, no la uses: copia la lista de rutas. Conteos directos en la base:
@@ -182,10 +189,10 @@ Todo o nada; la auditoría guarda solo conteos. Ensayado con nombres inventados:
 |---|---|---|
 | `ACTIVE_CONFIRMATION_REQUIRED` | Falta o no coincide `--confirm-active riesgo-escolar` | Repetir con el nombre exacto |
 | `PRE_BACKUP_REQUIRED` / `PRE_BACKUP_TOO_OLD` | Falta el respaldo o tiene más de 24 h | Repetir el paso 3 y usar el nuevo |
-| `PRE_BACKUP_NOT_AT_0008` / `PRE_BACKUP_OTHER_INSTALLATION` | Respaldo de otra versión o instalación | Respaldar la activa actual |
+| `PRE_BACKUP_NOT_AT_0009` / `PRE_BACKUP_OTHER_INSTALLATION` | Respaldo de otra versión o instalación | Respaldar la activa actual |
 | `ACTIVE_TUTOR_EXPLICIT_REQUIRED` | No se decidió el tutor | `--locked-tutor` o `--tutor-a/--tutor-b` |
 | `INPUT_HASH_MISMATCH` | Los CSV no son los registrados | No usar esos archivos; regenerar con el conversor |
-| `TARGET_NOT_AT_0008` | La base no está en 0008 | Detenerse; no hay nada que escribir |
+| `TARGET_NOT_AT_0009` | La base no está en 0009 | Detenerse; no hay nada que escribir |
 | `TARGET_RUNTIME_IMAGE_CHANGED` | El descriptor es anterior a la reconstrucción de imágenes | Repetir `runtime_target.py active --output <nuevo>` |
 | `BACKUP_WRITER_IN_PROGRESS` | Hay una orden de estudio o migración en marcha | Esperar a que termine |
 | `DEMO_ONLY_ISOLATED_TARGET` | Se apuntó el periodo de demostración a la activa | Es la protección; usar el destino `demo-vivo` |

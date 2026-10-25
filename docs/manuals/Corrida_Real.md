@@ -5,6 +5,11 @@ sistema la comparación de modelos, la activación del modelo, la evaluación **
 activa ni otros destinos, salvo que el usuario lo pida expresamente (ver «Cargar en la instalación de siempre»). Todo lo que tiene filas por alumno vive fuera del repositorio; al repo solo entra el resumen agregado
 (`tests/evidence/mejoras-05-resumen-agregado.json`: conteos y métricas globales, sin códigos ni nombres).
 
+**Bloque 8 (ADR 013): regla RIESGO_V2.** Desde la migración `0009_riesgo_v2` la corrida crea el protocolo con la regla activa **RIESGO_V2** (sin participación) y
+verifica la distribución V2 que calcula el conversor (`verification.recalculated_levels_v2` de `resumen_conversion.json`; hay que **volver a convertir** el Excel con el
+conversor actual, en una carpeta nueva: los dos CSV salen idénticos byte a byte y el resumen añade los conteos V2). Un periodo ya cargado con un protocolo RIESGO_V1 se detiene
+con `PROTOCOL_RULE_DIFFERS` (un protocolo confirmado es inmutable). Resumen agregado de referencia de V2: `tests/evidence/mejoras-08-resumen-agregado-v2.json`.
+
 **Lectura correcta de los resultados:** simulación retrospectiva con datos reales del colegio; **no mide impacto del sistema**. Las alertas se
 generaron ahora, con un modelo ajustado con los mismos estudiantes, sobre cortes pasados.
 
@@ -39,17 +44,17 @@ Indicadores, en el CSV (`deteccion_validada_*`) y en el resumen agregado (`valid
 
    ```powershell
    $r = "$env:LOCALAPPDATA\SeguimientoEscolar\ResultadosReales\$(Get-Date -Format yyyy-MM-dd)"
-   $e = "$env:LOCALAPPDATA\SeguimientoEscolar\ConversionExcelReal\salida"
+   $e = "$env:LOCALAPPDATA\SeguimientoEscolar\ConversionExcelReal\salida-v2"     # conversión con los conteos RIESGO_V2
    backend\.venv\Scripts\python.exe infra\run_real_study.py --target "$d\destino.json" --operator-profile real-tesis --input $e --results $r --dry-run
    backend\.venv\Scripts\python.exe infra\run_real_study.py --target "$d\destino.json" --operator-profile real-tesis --input $e --results $r --confirm-protocol --locked-tutor --public-summary tests\evidence\mejoras-05-resumen-agregado.json
    ```
 
-   - `--dry-run` valida archivos (SHA-256 contra `resumen_conversion.json`), destino en 0008 y estado de cada paso **sin escribir nada**.
+   - `--dry-run` valida archivos (SHA-256 contra `resumen_conversion.json`), destino en 0009 y estado de cada paso **sin escribir nada**.
    - El protocolo REAL solo se confirma con `--confirm-protocol` (acción del ADMIN, con auditoría de actor y fecha UTC).
    - `--locked-tutor` crea, si no hay tutores, una cuenta TUTOR de relleno con contraseña aleatoria que nadie conoce (solo para que existan las secciones 3.º A y B).
    - `--results` y `--input` se rechazan si están dentro de Git.
 
-   Pasos: periodo `REAL-2026` y secciones → protocolo → estudio institucional (hash de `cortes.csv`) → importación → cierres (RIESGO_V1 lo calcula el
+   Pasos: periodo `REAL-2026` y secciones → protocolo → estudio institucional (hash de `cortes.csv`) → importación → cierres (RIESGO_V2 lo calcula el
    backend) → comprobación 120 cortes / 60 estudiantes / 120 referencias y distribución de riesgo (se detiene si difiere de `resumen_conversion.json`) →
    comparación → registro y activación del modelo → evaluación retrospectiva de B1 y B2 (`as_of` = disponibilidad del corte) → indicadores y verificación
    SQL independiente de PDER y CRA. Cada paso imprime solo conteos y códigos de estado.
@@ -67,10 +72,10 @@ Indicadores, en el CSV (`deteccion_validada_*`) y en el resumen agregado (`valid
 ## Cargar en la instalación de siempre (riesgo-escolar)
 
 Es una decisión aparte del usuario: pone datos de menores en la base de la instalación activa. `run_real_study.py` rechaza ese destino salvo que se
-cumplan las dos protecciones siguientes (con `--dry-run` no se exigen). Requisitos previos: la instalación ya migrada a 0008 (`infra/manage.py migrate`)
+cumplan las dos protecciones siguientes (con `--dry-run` no se exigen). Requisitos previos: la instalación ya migrada a 0009 (ver [Procedimiento_Preparar_Activa.md](Procedimiento_Preparar_Activa.md))
 y el perfil de operador del ADMIN real de esa instalación.
 
-1. **Descriptor y respaldo previo** (el respaldo debe ser de `riesgo-escolar`, estar en 0008 y tener menos de 24 h):
+1. **Descriptor y respaldo previo** (el respaldo debe ser de `riesgo-escolar`, estar en 0009 y tener menos de 24 h):
 
    ```powershell
    $s6 = "$env:LOCALAPPDATA\SeguimientoEscolar\S6"; $run = Get-Date -Format yyyyMMdd-HHmmss

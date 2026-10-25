@@ -711,3 +711,25 @@ del diario y ejecuciones. El campo histórico `origin=SYNTHETIC` describe la DB;
 retrospectiva autorizada. La recuperación debe ser en un destino nuevo y conservar
 los bytes/firma sin regeneración ni entrenamiento. El Excel con nombres permanece
 en su ubicación original y no se copia al volumen ni al repositorio.
+
+## Ampliación 0007–0009: riesgo de referencia RIESGO_V1 y RIESGO_V2
+
+El catálogo S6 de arriba describe la revisión 0004. La migración `0007_real_protocol` añadió `processing_protocols` y `risk_references`
+(ADR 012), y `0009_riesgo_v2` (Bloque 8, [ADR 013](../adr/013-riesgo-v2-sin-participacion.md)) solo amplía sus reglas; no añade tablas ni toca filas.
+
+`risk_references` (solo inserción; `UPDATE`/`DELETE` bloqueados por `risk_references_immutable`; `riesgo_app` tiene `SELECT, INSERT`):
+
+| Columna | Tipo | Null | Regla |
+| --- | --- | --- | --- |
+| `rule_version` | `text` | No | `risk_reference_rule_version`: `IN ('RIESGO_V1','RIESGO_V2')` |
+| `participation_level` | `smallint` | **Sí** (desde 0009) | V1: obligatoria, 1–5. V2: NULL (`risk_reference_participation_by_rule`) |
+| `points_participation` | `smallint` | **Sí** (desde 0009) | V1: obligatoria y deducida de la participación. V2: NULL |
+| `points_grade`, `points_attendance`, `points_activities`, `points_conduct` | `smallint` | No | Deducidos de su insumo con los umbrales comunes de V1 y V2 |
+| `total_points` | `smallint` | No | `risk_reference_total_by_rule`: V1 = suma de 5 componentes (0–10); V2 = suma de 4 (0–8) |
+| `risk_level` | `text` | No | `risk_reference_level_by_rule`: V1 Alto ≥ 5, Medio ≥ 2; V2 Alto ≥ 4, Medio ≥ 2; si no, Bajo |
+| `revision`, `supersedes_id` | | | `UNIQUE (snapshot_id, rule_version, revision)`: V1 y V2 del mismo corte coexisten como filas distintas |
+
+El resto de columnas (insumos de cierre, fechas de cierre y disponibilidad, enlaces al corte y a la matrícula, `computed_by`, `computed_at`) y el trigger
+`risk_reference_guard` no cambian. En `processing_protocols`, `protocol_risk_rule_version` admite `risk_rule.version` `RIESGO_V1` o `RIESGO_V2`; un protocolo
+confirmado sigue siendo inmutable, así que la regla de un periodo es la de su protocolo. Las filas V1 existentes conservan exactamente sus valores
+(`backend/tests/test_b11_riesgo_v2.py` lo comprueba sobre una base limpia migrada 0008 → 0009).

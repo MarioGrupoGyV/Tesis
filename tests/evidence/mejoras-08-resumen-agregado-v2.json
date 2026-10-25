@@ -1,0 +1,946 @@
+{
+  "active_model": {
+    "algorithm": "SVM",
+    "approval_kind": "LOCAL_EXPLORATORY"
+  },
+  "comparison": {
+    "approval_kind": "LOCAL_EXPLORATORY",
+    "models": {
+      "DUMMY": {
+        "accuracy": {
+          "mean": 0.38875000000000004,
+          "sd": 0.014120150670965255
+        },
+        "aggregated_confusion_matrix": [
+          [
+            75,
+            0,
+            845
+          ],
+          [
+            57,
+            0,
+            463
+          ],
+          [
+            102,
+            0,
+            858
+          ]
+        ],
+        "balanced_accuracy": {
+          "mean": 0.3250905797101449,
+          "sd": 0.010501408857393328
+        },
+        "cohen_kappa": {
+          "mean": -0.015939954672781136,
+          "sd": 0.020316762898012656
+        },
+        "detection": {
+          "B1": {
+            "detection": {
+              "mean": 0.8987804878048781,
+              "sd": 0.12393129357848977
+            },
+            "high_as_low": {
+              "mean": 0.10434782608695652,
+              "sd": 0.1288229934654851
+            },
+            "high_detected": {
+              "mean": 0.8956521739130434,
+              "sd": 0.1288229934654851
+            },
+            "low_flagged": {
+              "mean": 0.9105263157894736,
+              "sd": 0.1107963986755405
+            },
+            "medium_detected": {
+              "mean": 0.9027777777777779,
+              "sd": 0.11939173323522981
+            },
+            "pooled": {
+              "detected": 737,
+              "high_as_low": 48,
+              "high_flagged": 412,
+              "low_flagged": 346,
+              "medium_flagged": 325,
+              "reference_at_risk": 820,
+              "reference_high": 460,
+              "reference_low": 380,
+              "reference_medium": 360
+            },
+            "reference_at_risk_per_repetition": 41,
+            "repetitions": 20
+          },
+          "B2": {
+            "detection": {
+              "mean": 0.8848484848484848,
+              "sd": 0.13959489017271173
+            },
+            "high_as_low": {
+              "mean": 0.10800000000000001,
+              "sd": 0.13304530292941177
+            },
+            "high_detected": {
+              "mean": 0.8920000000000001,
+              "sd": 0.13304530292941175
+            },
+            "low_flagged": {
+              "mean": 0.924074074074074,
+              "sd": 0.09648728997417878
+            },
+            "medium_detected": {
+              "mean": 0.8625,
+              "sd": 0.17158318528831493
+            },
+            "pooled": {
+              "detected": 584,
+              "high_as_low": 54,
+              "high_flagged": 446,
+              "low_flagged": 499,
+              "medium_flagged": 138,
+              "reference_at_risk": 660,
+              "reference_high": 500,
+              "reference_low": 540,
+              "reference_medium": 160
+            },
+            "reference_at_risk_per_repetition": 33,
+            "repetitions": 20
+          },
+          "total": {
+            "detection": {
+              "mean": 0.8925675675675675,
+              "sd": 0.1307595299363623
+            },
+            "high_as_low": {
+              "mean": 0.10625,
+              "sd": 0.13052483463364492
+            },
+            "high_detected": {
+              "mean": 0.89375,
+              "sd": 0.13052483463364495
+            },
+            "low_flagged": {
+              "mean": 0.9184782608695652,
+              "sd": 0.10193506334227283
+            },
+            "medium_detected": {
+              "mean": 0.8903846153846156,
+              "sd": 0.13222280960421506
+            },
+            "pooled": {
+              "detected": 1321,
+              "high_as_low": 102,
+              "high_flagged": 858,
+              "low_flagged": 845,
+              "medium_flagged": 463,
+              "reference_at_risk": 1480,
+              "reference_high": 960,
+              "reference_low": 920,
+              "reference_medium": 520
+            },
+            "reference_at_risk_per_repetition": 74,
+            "repetitions": 20
+          }
+        },
+        "leave_one_student_out": {
+          "accuracy": 0.05,
+          "macro_f1": 0.031746031746031744,
+          "recall_high": 0.125
+        },
+        "macro_f1": {
+          "mean": 0.21604709972516284,
+          "sd": 0.029748772855734098
+        },
+        "recall_high": {
+          "mean": 0.89375,
+          "sd": 0.13052483463364495
+        }
+      },
+      "RANDOM_FOREST": {
+        "accuracy": {
+          "mean": 0.8129166666666666,
+          "sd": 0.014678573715309989
+        },
+        "aggregated_confusion_matrix": [
+          [
+            788,
+            132,
+            0
+          ],
+          [
+            127,
+            296,
+            97
+          ],
+          [
+            0,
+            93,
+            867
+          ]
+        ],
+        "balanced_accuracy": {
+          "mean": 0.776292502787068,
+          "sd": 0.016273379681735665
+        },
+        "cohen_kappa": {
+          "mean": 0.7105006526348948,
+          "sd": 0.022215032594988558
+        },
+        "detection": {
+          "B1": {
+            "detection": {
+              "mean": 0.8463414634146342,
+              "sd": 0.02252147602138144
+            },
+            "high_as_low": {
+              "mean": 0.0,
+              "sd": 0.0
+            },
+            "high_detected": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "low_flagged": {
+              "mean": 0.13947368421052633,
+              "sd": 0.05733804375034765
+            },
+            "medium_detected": {
+              "mean": 0.6499999999999999,
+              "sd": 0.051298917604257685
+            },
+            "pooled": {
+              "detected": 694,
+              "high_as_low": 0,
+              "high_flagged": 460,
+              "low_flagged": 53,
+              "medium_flagged": 234,
+              "reference_at_risk": 820,
+              "reference_high": 460,
+              "reference_low": 380,
+              "reference_medium": 360
+            },
+            "reference_at_risk_per_repetition": 41,
+            "repetitions": 20
+          },
+          "B2": {
+            "detection": {
+              "mean": 0.9984848484848484,
+              "sd": 0.006775963568181175
+            },
+            "high_as_low": {
+              "mean": 0.0,
+              "sd": 0.0
+            },
+            "high_detected": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "low_flagged": {
+              "mean": 0.1462962962962963,
+              "sd": 0.022400196993677755
+            },
+            "medium_detected": {
+              "mean": 0.99375,
+              "sd": 0.027950849718747367
+            },
+            "pooled": {
+              "detected": 659,
+              "high_as_low": 0,
+              "high_flagged": 500,
+              "low_flagged": 79,
+              "medium_flagged": 159,
+              "reference_at_risk": 660,
+              "reference_high": 500,
+              "reference_low": 540,
+              "reference_medium": 160
+            },
+            "reference_at_risk_per_repetition": 33,
+            "repetitions": 20
+          },
+          "total": {
+            "detection": {
+              "mean": 0.9141891891891893,
+              "sd": 0.012612189249820691
+            },
+            "high_as_low": {
+              "mean": 0.0,
+              "sd": 0.0
+            },
+            "high_detected": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "low_flagged": {
+              "mean": 0.14347826086956522,
+              "sd": 0.029420834690389332
+            },
+            "medium_detected": {
+              "mean": 0.7557692307692309,
+              "sd": 0.035896230941797315
+            },
+            "pooled": {
+              "detected": 1353,
+              "high_as_low": 0,
+              "high_flagged": 960,
+              "low_flagged": 132,
+              "medium_flagged": 393,
+              "reference_at_risk": 1480,
+              "reference_high": 960,
+              "reference_low": 920,
+              "reference_medium": 520
+            },
+            "reference_at_risk_per_repetition": 74,
+            "repetitions": 20
+          }
+        },
+        "leave_one_student_out": {
+          "accuracy": 0.8166666666666667,
+          "macro_f1": 0.775810516202934,
+          "recall_high": 0.9166666666666666
+        },
+        "macro_f1": {
+          "mean": 0.7760788300996697,
+          "sd": 0.01635487074596592
+        },
+        "recall_high": {
+          "mean": 0.903125,
+          "sd": 0.028895196539233562
+        }
+      },
+      "SVM": {
+        "accuracy": {
+          "mean": 0.8262499999999999,
+          "sd": 0.0143766684767796
+        },
+        "aggregated_confusion_matrix": [
+          [
+            783,
+            137,
+            0
+          ],
+          [
+            113,
+            311,
+            96
+          ],
+          [
+            0,
+            71,
+            889
+          ]
+        ],
+        "balanced_accuracy": {
+          "mean": 0.7917351820884428,
+          "sd": 0.016753474730932454
+        },
+        "cohen_kappa": {
+          "mean": 0.7309974170655813,
+          "sd": 0.02199752615773616
+        },
+        "detection": {
+          "B1": {
+            "detection": {
+              "mean": 0.8621951219512196,
+              "sd": 0.016361473006096038
+            },
+            "high_as_low": {
+              "mean": 0.0,
+              "sd": 0.0
+            },
+            "high_detected": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "low_flagged": {
+              "mean": 0.11842105263157894,
+              "sd": 0.023382192543122064
+            },
+            "medium_detected": {
+              "mean": 0.686111111111111,
+              "sd": 0.03726779962499649
+            },
+            "pooled": {
+              "detected": 707,
+              "high_as_low": 0,
+              "high_flagged": 460,
+              "low_flagged": 45,
+              "medium_flagged": 247,
+              "reference_at_risk": 820,
+              "reference_high": 460,
+              "reference_low": 380,
+              "reference_medium": 360
+            },
+            "reference_at_risk_per_repetition": 41,
+            "repetitions": 20
+          },
+          "B2": {
+            "detection": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "high_as_low": {
+              "mean": 0.0,
+              "sd": 0.0
+            },
+            "high_detected": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "low_flagged": {
+              "mean": 0.17037037037037034,
+              "sd": 0.01861572925740869
+            },
+            "medium_detected": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "pooled": {
+              "detected": 660,
+              "high_as_low": 0,
+              "high_flagged": 500,
+              "low_flagged": 92,
+              "medium_flagged": 160,
+              "reference_at_risk": 660,
+              "reference_high": 500,
+              "reference_low": 540,
+              "reference_medium": 160
+            },
+            "reference_at_risk_per_repetition": 33,
+            "repetitions": 20
+          },
+          "total": {
+            "detection": {
+              "mean": 0.9236486486486486,
+              "sd": 0.009065140449323477
+            },
+            "high_as_low": {
+              "mean": 0.0,
+              "sd": 0.0
+            },
+            "high_detected": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "low_flagged": {
+              "mean": 0.1489130434782609,
+              "sd": 0.012763977143747825
+            },
+            "medium_detected": {
+              "mean": 0.7826923076923078,
+              "sd": 0.02580078435576681
+            },
+            "pooled": {
+              "detected": 1367,
+              "high_as_low": 0,
+              "high_flagged": 960,
+              "low_flagged": 137,
+              "medium_flagged": 407,
+              "reference_at_risk": 1480,
+              "reference_high": 960,
+              "reference_low": 920,
+              "reference_medium": 520
+            },
+            "reference_at_risk_per_repetition": 74,
+            "repetitions": 20
+          }
+        },
+        "leave_one_student_out": {
+          "accuracy": 0.825,
+          "macro_f1": 0.7879151660664266,
+          "recall_high": 0.9375
+        },
+        "macro_f1": {
+          "mean": 0.7915771504318188,
+          "sd": 0.01657843705395337
+        },
+        "recall_high": {
+          "mean": 0.9260416666666667,
+          "sd": 0.029052879546467014
+        }
+      },
+      "XGBOOST": {
+        "accuracy": {
+          "mean": 0.8095833333333333,
+          "sd": 0.01991851088870328
+        },
+        "aggregated_confusion_matrix": [
+          [
+            793,
+            125,
+            2
+          ],
+          [
+            126,
+            288,
+            106
+          ],
+          [
+            0,
+            98,
+            862
+          ]
+        ],
+        "balanced_accuracy": {
+          "mean": 0.7712397807506504,
+          "sd": 0.024995273469033262
+        },
+        "cohen_kappa": {
+          "mean": 0.704955905327753,
+          "sd": 0.030994904789670236
+        },
+        "detection": {
+          "B1": {
+            "detection": {
+              "mean": 0.8634146341463416,
+              "sd": 0.035741224247075445
+            },
+            "high_as_low": {
+              "mean": 0.0,
+              "sd": 0.0
+            },
+            "high_detected": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "low_flagged": {
+              "mean": 0.1236842105263158,
+              "sd": 0.06888824091318586
+            },
+            "medium_detected": {
+              "mean": 0.6888888888888889,
+              "sd": 0.08141056634056071
+            },
+            "pooled": {
+              "detected": 708,
+              "high_as_low": 0,
+              "high_flagged": 460,
+              "low_flagged": 47,
+              "medium_flagged": 248,
+              "reference_at_risk": 820,
+              "reference_high": 460,
+              "reference_low": 380,
+              "reference_medium": 360
+            },
+            "reference_at_risk_per_repetition": 41,
+            "repetitions": 20
+          },
+          "B2": {
+            "detection": {
+              "mean": 0.9787878787878788,
+              "sd": 0.014247343817625055
+            },
+            "high_as_low": {
+              "mean": 0.0,
+              "sd": 0.0
+            },
+            "high_detected": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "low_flagged": {
+              "mean": 0.14814814814814808,
+              "sd": 0.029434052379223193
+            },
+            "medium_detected": {
+              "mean": 0.9125,
+              "sd": 0.05877029324770341
+            },
+            "pooled": {
+              "detected": 646,
+              "high_as_low": 0,
+              "high_flagged": 500,
+              "low_flagged": 80,
+              "medium_flagged": 146,
+              "reference_at_risk": 660,
+              "reference_high": 500,
+              "reference_low": 540,
+              "reference_medium": 160
+            },
+            "reference_at_risk_per_repetition": 33,
+            "repetitions": 20
+          },
+          "total": {
+            "detection": {
+              "mean": 0.9148648648648647,
+              "sd": 0.021965613537493222
+            },
+            "high_as_low": {
+              "mean": 0.0,
+              "sd": 0.0
+            },
+            "high_detected": {
+              "mean": 1.0,
+              "sd": 0.0
+            },
+            "low_flagged": {
+              "mean": 0.13804347826086957,
+              "sd": 0.032532328578600014
+            },
+            "medium_detected": {
+              "mean": 0.7576923076923078,
+              "sd": 0.06251751545286531
+            },
+            "pooled": {
+              "detected": 1354,
+              "high_as_low": 0,
+              "high_flagged": 960,
+              "low_flagged": 127,
+              "medium_flagged": 394,
+              "reference_at_risk": 1480,
+              "reference_high": 960,
+              "reference_low": 920,
+              "reference_medium": 520
+            },
+            "reference_at_risk_per_repetition": 74,
+            "repetitions": 20
+          }
+        },
+        "leave_one_student_out": {
+          "accuracy": 0.8166666666666667,
+          "macro_f1": 0.776106122750619,
+          "recall_high": 0.8958333333333334
+        },
+        "macro_f1": {
+          "mean": 0.7710841120583393,
+          "sd": 0.024773455801927472
+        },
+        "recall_high": {
+          "mean": 0.8979166666666666,
+          "sd": 0.018998114711020652
+        }
+      }
+    },
+    "observations": 120,
+    "repetitions": 20,
+    "requested_folds": 5,
+    "seed": 0,
+    "selected_algorithm": "SVM",
+    "selection_rule": "REPEATED_CV_MACRO_F1_THEN_BALANCED_ACCURACY_THEN_FIXED_ORDER",
+    "students": 60,
+    "support_by_class": {
+      "HIGH": {
+        "observations": 48,
+        "students": 27
+      },
+      "LOW": {
+        "observations": 46,
+        "students": 27
+      },
+      "MEDIUM": {
+        "observations": 26,
+        "students": 20
+      }
+    },
+    "warnings": [
+      "n = 60 estudiantes (120 observaciones no independientes: un mismo estudiante aporta varios bimestres).",
+      "Sin validaci\u00f3n externa ni prospectiva: no hay reserva independiente con estudiantes distintos.",
+      "La selecci\u00f3n del algoritmo y su evaluaci\u00f3n usan los mismos datos (posible optimismo); se reportan los cuatro algoritmos.",
+      "Clase con menos estudiantes: 20. Las m\u00e9tricas por clase con pocos casos son inestables.",
+      "La dispersi\u00f3n entre repeticiones no es un intervalo de confianza.",
+      "Probabilidades no calibradas. Resultados exploratorios sobre datos reales locales: no demuestran eficacia escolar ni validan la tesis."
+    ]
+  },
+  "counts": {
+    "eligible": 60,
+    "risk_references": 120,
+    "snapshots": 120,
+    "students": 60
+  },
+  "indicators": {
+    "B1": {
+      "agree": true,
+      "eligible": 60,
+      "matrix_reference_by_predicted": {
+        "HIGH": {
+          "HIGH": 23,
+          "LOW": 0,
+          "MEDIUM": 0,
+          "NONE": 0
+        },
+        "LOW": {
+          "HIGH": 0,
+          "LOW": 17,
+          "MEDIUM": 2,
+          "NONE": 0
+        },
+        "MEDIUM": {
+          "HIGH": 1,
+          "LOW": 5,
+          "MEDIUM": 12,
+          "NONE": 0
+        }
+      },
+      "nia": {
+        "reason": "NO_REAL_INTERVENTIONS",
+        "value": null
+      },
+      "opportune": {
+        "percent": null,
+        "reason": "NO_REAL_INTERVENTIONS"
+      },
+      "out_of_fold_basis": "OUT_OF_FOLD",
+      "prv": {
+        "percent": null,
+        "reason": "RECEPTION_PROVENANCE_UNCONFIRMED"
+      },
+      "retrospective_alerts": 40,
+      "run": {
+        "abstentions": 0,
+        "alerts_created": 38,
+        "alerts_updated": 0,
+        "created": 60,
+        "no_alert": 22,
+        "retained_low": 0,
+        "reused": 0,
+        "selected": 60,
+        "status": "DONE"
+      },
+      "sql": {
+        "cra": [
+          60,
+          60
+        ],
+        "pder": [
+          36,
+          41
+        ]
+      },
+      "system": {
+        "cra": [
+          60,
+          60
+        ],
+        "pder": [
+          36,
+          41
+        ]
+      },
+      "validated_detection": {
+        "agrees_with_report": true,
+        "detected": 707,
+        "mean_percent": 86.2195,
+        "metric_basis": "OUT_OF_FOLD",
+        "reference_at_risk": 820,
+        "repetitions": 20,
+        "sd_percent": 1.6361
+      }
+    },
+    "B2": {
+      "agree": true,
+      "eligible": 60,
+      "matrix_reference_by_predicted": {
+        "HIGH": {
+          "HIGH": 23,
+          "LOW": 0,
+          "MEDIUM": 2,
+          "NONE": 0
+        },
+        "LOW": {
+          "HIGH": 0,
+          "LOW": 23,
+          "MEDIUM": 4,
+          "NONE": 0
+        },
+        "MEDIUM": {
+          "HIGH": 2,
+          "LOW": 0,
+          "MEDIUM": 6,
+          "NONE": 0
+        }
+      },
+      "nia": {
+        "reason": "NO_REAL_INTERVENTIONS",
+        "value": null
+      },
+      "opportune": {
+        "percent": null,
+        "reason": "NO_REAL_INTERVENTIONS"
+      },
+      "out_of_fold_basis": "OUT_OF_FOLD",
+      "prv": {
+        "percent": null,
+        "reason": "RECEPTION_PROVENANCE_UNCONFIRMED"
+      },
+      "retrospective_alerts": 40,
+      "run": {
+        "abstentions": 0,
+        "alerts_created": 2,
+        "alerts_updated": 35,
+        "created": 60,
+        "no_alert": 20,
+        "retained_low": 3,
+        "reused": 0,
+        "selected": 60,
+        "status": "DONE"
+      },
+      "sql": {
+        "cra": [
+          60,
+          60
+        ],
+        "pder": [
+          33,
+          33
+        ]
+      },
+      "system": {
+        "cra": [
+          60,
+          60
+        ],
+        "pder": [
+          33,
+          33
+        ]
+      },
+      "validated_detection": {
+        "agrees_with_report": true,
+        "detected": 660,
+        "mean_percent": 100.0,
+        "metric_basis": "OUT_OF_FOLD",
+        "reference_at_risk": 660,
+        "repetitions": 20,
+        "sd_percent": 0.0
+      }
+    }
+  },
+  "reading": "Simulaci\u00f3n retrospectiva con datos reales del colegio; no mide impacto del sistema. An\u00e1lisis exploratorio local.",
+  "reading_notes": {
+    "cra": "El CRA mide que el sistema no pierde casos de su propia salida (toda predicci\u00f3n Media o Alta genera alerta, 100 % por definici\u00f3n del flujo); la medida de calidad predictiva es la detecci\u00f3n. No es un resultado de desempe\u00f1o.",
+    "detection_vs_baseline": "La detecci\u00f3n sola premia marcar a todos como Alto (el modelo Dummy detecta 100 %): se informa junto con la falsa alarma.",
+    "pder_in_sample": "El PDER del sistema es en muestra: el modelo se ajust\u00f3 con los mismos estudiantes que eval\u00faa, por eso da 100 % por construcci\u00f3n. La medida de calidad es la detecci\u00f3n validada (fuera de muestra)."
+  },
+  "reference_distribution_low_medium_high": {
+    "B1": [
+      19,
+      18,
+      23
+    ],
+    "B2": [
+      27,
+      8,
+      25
+    ]
+  },
+  "retrospective_clocks": {
+    "alerts": 40,
+    "predictions": 120,
+    "simulated_alerts": 40,
+    "simulated_predictions": 120
+  },
+  "risk_rule": "RIESGO_V2",
+  "unavailable": {
+    "NIA": "NO_REAL_INTERVENTIONS",
+    "backup_restore_real_data": "NOT_IMPLEMENTED",
+    "intervencion_oportuna": "NO_REAL_INTERVENTIONS"
+  },
+  "validated_detection": {
+    "B1": {
+      "detection": {
+        "mean": 0.8621951219512196,
+        "sd": 0.016361473006096038
+      },
+      "high_as_low": {
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      "high_detected": {
+        "mean": 1.0,
+        "sd": 0.0
+      },
+      "low_flagged": {
+        "mean": 0.11842105263157894,
+        "sd": 0.023382192543122064
+      },
+      "medium_detected": {
+        "mean": 0.686111111111111,
+        "sd": 0.03726779962499649
+      },
+      "pooled": {
+        "detected": 707,
+        "high_as_low": 0,
+        "high_flagged": 460,
+        "low_flagged": 45,
+        "medium_flagged": 247,
+        "reference_at_risk": 820,
+        "reference_high": 460,
+        "reference_low": 380,
+        "reference_medium": 360
+      },
+      "reference_at_risk_per_repetition": 41,
+      "repetitions": 20
+    },
+    "B2": {
+      "detection": {
+        "mean": 1.0,
+        "sd": 0.0
+      },
+      "high_as_low": {
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      "high_detected": {
+        "mean": 1.0,
+        "sd": 0.0
+      },
+      "low_flagged": {
+        "mean": 0.17037037037037034,
+        "sd": 0.01861572925740869
+      },
+      "medium_detected": {
+        "mean": 1.0,
+        "sd": 0.0
+      },
+      "pooled": {
+        "detected": 660,
+        "high_as_low": 0,
+        "high_flagged": 500,
+        "low_flagged": 92,
+        "medium_flagged": 160,
+        "reference_at_risk": 660,
+        "reference_high": 500,
+        "reference_low": 540,
+        "reference_medium": 160
+      },
+      "reference_at_risk_per_repetition": 33,
+      "repetitions": 20
+    },
+    "model": "SVM",
+    "total": {
+      "detection": {
+        "mean": 0.9236486486486486,
+        "sd": 0.009065140449323477
+      },
+      "high_as_low": {
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      "high_detected": {
+        "mean": 1.0,
+        "sd": 0.0
+      },
+      "low_flagged": {
+        "mean": 0.1489130434782609,
+        "sd": 0.012763977143747825
+      },
+      "medium_detected": {
+        "mean": 0.7826923076923078,
+        "sd": 0.02580078435576681
+      },
+      "pooled": {
+        "detected": 1367,
+        "high_as_low": 0,
+        "high_flagged": 960,
+        "low_flagged": 137,
+        "medium_flagged": 407,
+        "reference_at_risk": 1480,
+        "reference_high": 960,
+        "reference_low": 920,
+        "reference_medium": 520
+      },
+      "reference_at_risk_per_repetition": 74,
+      "repetitions": 20
+    }
+  }
+}

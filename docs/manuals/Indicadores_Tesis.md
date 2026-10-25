@@ -130,7 +130,8 @@ calculada a mano a partir de los resultados regenerados del generador.
 Con un protocolo REAL confirmado, *Indicadores* admite periodos REAL y el filtro `bimestre` (`B1`, `B2`, …; el corte elegido es el
 de ese bimestre). Rótulo obligatorio: «Datos reales locales — análisis exploratorio, no demuestra eficacia escolar».
 
-- **Riesgo de referencia:** `risk_references` (RIESGO_V1 con insumos de cierre), no etiquetas del generador sintético.
+- **Riesgo de referencia:** `risk_references` con la regla del protocolo del periodo (RIESGO_V2, sin participación, en los protocolos nuevos; RIESGO_V1 en los
+  anteriores) calculada con insumos de cierre, no etiquetas del generador sintético. Ver [ADR 013](../adr/013-riesgo-v2-sin-participacion.md).
 - **PDER:** la detección se mide con `detected_at` (fecha simulada de la evaluación retrospectiva) frente al cierre del bimestre; la
   ventana `detection_days` del protocolo reduce el margen aceptado. Las alertas generadas ahora sobre cortes pasados se cuentan y se
   rotulan como «simulación retrospectiva».
@@ -188,7 +189,8 @@ La medida de calidad predictiva es la detección.
 **Límites.** n = 60 estudiantes (120 observaciones no independientes); la selección del algoritmo y su evaluación usan los mismos datos, así que la cifra puede ser
 optimista; no hay validación externa ni prospectiva; la desviación entre repeticiones no es un intervalo de confianza. Es análisis exploratorio local.
 Un 100 % ± 0 en un bimestre (en la corrida real, B2 con los cuatro modelos) significa que ninguna de las 20 repeticiones dejó escapar un caso de ese bimestre; no es un error,
-pero se lee con cautela: RIESGO_V1 se calcula con los insumos de cierre del mismo bimestre (nota, asistencia, actividades, participación, incidencias), cercanos a las
+pero se lee con cautela: la referencia (RIESGO_V2 desde el Bloque 8; antes RIESGO_V1) se calcula con los insumos de cierre del mismo bimestre (nota, asistencia, actividades,
+incidencias; V1 sumaba además la participación), cercanos a las
 variables del corte, así que parte de la separación puede ser estructural y no prueba capacidad predictiva a futuro.
 
 ## Exportación para SPSS (Bloque 7)
