@@ -51,7 +51,7 @@ def run():
     contract_path = ROOT / "docs/planning/Contrato_API.yaml"
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     validate(contract)
-    check(contract["info"]["version"] == "0.14.0", "OpenAPI 3.1 válido, versión 0.14.0 Bloque 8")
+    check(contract["info"]["version"] == "0.15.0", "OpenAPI 3.1 válido, versión 0.15.0 Bloque 9")
     operation_count = sum(method in ('get','post','patch','put','delete') for methods in contract['paths'].values() for method in methods)
     check(operation_count == 54, '54 operaciones: 32 conservadas, 12 M1, 1 del Bloque 1, 5 de indicadores y 4 del protocolo REAL')
     for path, methods in contract["paths"].items():
@@ -147,10 +147,16 @@ def run():
     response_samples = ROOT / "tests/evidence/s5-response-samples.json"
     real_response_count = 0
     if response_samples.exists():
+        def without_retired(value):
+            # Bloque 9 (contrato 0.15.0) retiró `participation_level` de las mediciones; las muestras S5 históricas se conservan
+            # intactas y se validan sin ese único campo retirado.
+            if isinstance(value, dict):
+                return {key: without_retired(item) for key, item in value.items() if key != 'participation_level'}
+            return [without_retired(item) for item in value] if isinstance(value, list) else value
         for sample in json.loads(response_samples.read_text(encoding="utf-8")):
             schema = {"$ref": f"#/components/schemas/{sample['schema']}", "components": contract["components"]}
             validator = Draft202012Validator(schema, format_checker=FormatChecker())
-            validator.validate(sample['body'])
+            validator.validate(without_retired(sample['body']))
             real_response_count += 1
             check(True, f"Respuesta real contra contrato: {sample['schema']}")
     lock = load_json("package-lock.json")["packages"]

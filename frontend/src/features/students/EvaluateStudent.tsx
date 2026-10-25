@@ -22,10 +22,10 @@ export function EvaluateStudent({ student, period, hasSnapshot, onNavigate }: Pr
   if (period.data_origin !== 'SYNTHETIC') return null;
   const predict = status.data?.operations.predict;
   const blocked = !hasSnapshot ? 'Registra primero una medición para poder evaluar.' : student.is_active === false ? 'El estudiante está inactivo.' : period.is_locked ? 'El periodo está bloqueado.'
-    : predict && !predict.available ? 'No hay un modelo activo del estudio sintético. Actívalo desde Modelos.' : null;
+    : predict && !predict.available ? 'No hay un modelo activo para este periodo. Actívalo desde Modelos.' : null;
   const data = evaluate.data;
   return <section className="panel student-detail-panel" aria-labelledby="student-evaluate-title"><h2 id="student-evaluate-title">Evaluar riesgo de este estudiante</h2>
-    <p className="muted">Simulación con datos sintéticos y el modelo técnico activo. El resultado no es una decisión pedagógica ni valida el desempeño en el colegio; una persona decide el seguimiento.</p>
+    <p className="muted">{activeModel?.display_label ? `Estudiante de demostración evaluado con el ${activeModel.display_label} (el mismo modelo de los resultados del estudio).` : 'Simulación con datos sintéticos y el modelo técnico activo.'} El resultado no es una decisión pedagógica ni valida el desempeño en el colegio; una persona decide el seguimiento.</p>
     {status.isPending && <LoadingState label="Comprobando modelo disponible…" />}
     {status.isError && <ErrorState error={status.error} onRetry={() => void status.refetch()} />}
     {blocked && !status.isPending && <p className="notice" role="status">{blocked}</p>}
@@ -33,12 +33,12 @@ export function EvaluateStudent({ student, period, hasSnapshot, onNavigate }: Pr
     <div ref={result} tabIndex={-1} aria-live="polite">
       {evaluate.isError && (evaluate.error instanceof ApiError ? <p className="field-error" role="alert">{evaluate.error.message}</p> : <ErrorState error={evaluate.error} onRetry={() => evaluate.mutate()} />)}
       {data && <div className="notice" role="status">
-        {data.status === 'EVALUATED' && <><p><strong>Evaluación registrada.</strong> <RiskBadge risk={data.risk_level ?? null} /></p>{activeModel && <p>Modelo que hizo la evaluación: <strong>{algorithmName[activeModel.algorithm] ?? activeModel.algorithm}</strong> ({approvalName[activeModel.approval_kind ?? ''] ?? 'modelo activo'}).</p>}<p>{actionText[data.case_action]}</p>
+        {data.status === 'EVALUATED' && <><p><strong>Evaluación registrada.</strong> <RiskBadge risk={data.risk_level ?? null} /></p>{activeModel && (activeModel.display_label ? <p>Modelo: <strong>{activeModel.display_label}</strong></p> : <p>Modelo que hizo la evaluación: <strong>{algorithmName[activeModel.algorithm] ?? activeModel.algorithm}</strong> ({approvalName[activeModel.approval_kind ?? ''] ?? 'modelo activo'}).</p>)}<p>{actionText[data.case_action]}</p>
           {data.alert_id && <p><a className="followup-link" href={`/alertas/${data.alert_id}?period_id=${encodeURIComponent(period.id)}`} onClick={event => { if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); onNavigate(`/alertas/${encodeURIComponent(data.alert_id!)}?period_id=${encodeURIComponent(period.id)}`); } }}>Abrir el caso de seguimiento →</a></p>}</>}
         {data.status === 'INSUFFICIENT_DATA' && <p><strong>Datos insuficientes.</strong> {data.reason} No se asigna riesgo bajo por defecto.</p>}
         {data.status === 'NOT_ELIGIBLE' && <p><strong>No elegible para la simulación.</strong> {data.reason}</p>}
       </div>}
     </div>
-    <p className="muted student-list-note">La fecha de horizonte que se muestra en la evaluación es la del modelo (corte + días del horizonte); no es una fecha objetivo observada.</p>
+    <p className="muted student-list-note">La fecha de horizonte que se muestra en la evaluación es la del modelo (revisión de mitad de bimestre + días del horizonte); no es una fecha objetivo observada.</p>
   </section>;
 }

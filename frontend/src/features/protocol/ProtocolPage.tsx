@@ -32,9 +32,9 @@ export function ProtocolPage({ user, periods, periodId }: Props) {
         <dl className="model-detail-values">
           <div><dt>Cohorte</dt><dd>{data.cohort_label}</dd></div>
           <div><dt>Escala de notas</dt><dd>{data.grade_scale_min}–{data.grade_scale_max}</dd></div>
-          <div><dt>Escala de participación</dt><dd>{data.participation_min}–{data.participation_max}</dd></div>
-          <div><dt>Bimestres</dt><dd>{data.bimesters.map(item => `${item.code} (cierre ${dateLabel(item.close_date)})`).join(' · ')}</dd></div>
-          <div><dt>Ventanas de oportunidad</dt><dd>Detección ≥ {data.opportune_windows.detection_days} días antes del cierre · intervención ≤ {data.opportune_windows.intervention_days} días</dd></div>
+          
+          <div><dt>Bimestres</dt><dd>{data.bimesters.map(item => `${item.code} (fin del bimestre ${dateLabel(item.close_date)})`).join(' · ')}</dd></div>
+          <div><dt>Ventanas de oportunidad</dt><dd>Detección ≥ {data.opportune_windows.detection_days} días antes del fin del bimestre · intervención ≤ {data.opportune_windows.intervention_days} días</dd></div>
           <div><dt>Versión</dt><dd>{data.version}</dd></div>
           <div><dt>Confirmado</dt><dd>{data.confirmed_at ? timestampLabel(data.confirmed_at) : 'No confirmado'}</dd></div>
         </dl>

@@ -36,7 +36,7 @@ function AlertListing({ user, period, sectionId, processing, onNavigate }: Props
   function clear() { setDraft(initial); setFilters(initial); setPage(1); }
   function open(event: MouseEvent<HTMLAnchorElement>, path: string) { if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); onNavigate(path); } }
   return <div className="followup-feature"><PageHeader title="Alertas" eyebrow="SEGUIMIENTO DEL ESTUDIO" description={`Periodo ${period.code}. Revisa los casos de las secciones autorizadas. La severidad explica qué motivó el caso; su evaluación actual puede haber cambiado.`} action={user.role === 'ADMIN' ? <button className="button primary" type="button" disabled={!canSync || sync.pending} onClick={() => { setResult(null); void sync.submit(signal => api.syncAlerts(period.id, signal), setResult); }}>{sync.pending ? 'Actualizando alertas…' : 'Actualizar alertas'}</button> : undefined} />
-    {period.data_origin === 'REAL' && <p className="notice" role="status">{REAL_NOTICE} Las alertas generadas sobre cortes pasados se rotulan como simulación retrospectiva.</p>}
+    {period.data_origin === 'REAL' && <p className="notice" role="status">{REAL_NOTICE} Las alertas generadas sobre revisiones de mitad de bimestre pasadas se rotulan como simulación retrospectiva.</p>}
     {user.role === 'ADMIN' && blocked && <p className="notice" role="status">{blocked}</p>}
     {Boolean(sync.error) && <><ErrorState error={sync.error} />{sync.uncertain && <p className="notice">No recibimos la confirmación. Consulta la lista antes de repetir la sincronización; las decisiones ya registradas se reutilizan.</p>}</>}
     {result && <FollowupCounts result={result} />}

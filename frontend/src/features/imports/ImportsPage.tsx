@@ -282,13 +282,13 @@ export function ImportsPage({ user, period, status, statusLoading, statusError, 
         {file && <p className="import-selected-file">Archivo seleccionado: <strong>{file.name}</strong> · {(file.size / 1024).toFixed(1)} KiB</p>}
         <div className="import-actions"><button className="button primary" type="submit" disabled={!!blocked || !file || busy}>
           {previewMutation.isPending ? 'Revisando archivo…' : stale ? 'Revisar archivo de nuevo' : 'Revisar archivo'}</button>
-          <p className="muted">La vista previa no crea estudiantes, matrículas ni cortes.</p></div>
+          <p className="muted">La vista previa no crea estudiantes, matrículas ni revisiones de mitad de bimestre.</p></div>
       </form>
       <details className="import-format"><summary>Formato y escalas del protocolo sintético</summary>
-        <p>En <code>synthetic-study-v1</code>: promedio 0–20; asistencia y actividades 0–100, hasta dos decimales; participación 1, 2 o 3; incidencias enteras 0–12. Son supuestos de simulación.</p>
-        <p>El calendario simulado es 2025. Las fechas de ventana y objetivo usan AAAA-MM-DD; corte y disponibilidad llevan zona horaria. Los días académicos se comparan en America/Lima y los instantes se guardan en UTC. El horizonte es de 14 días.</p>
+        <p>En <code>synthetic-study-v1</code>: promedio 0–20; asistencia y actividades 0–100, hasta dos decimales; incidencias enteras 0–12. Son supuestos de simulación.</p>
+        <p>El calendario simulado es 2025. Las fechas de ventana y objetivo usan AAAA-MM-DD; revisión de mitad de bimestre y disponibilidad llevan zona horaria. Los días académicos se comparan en America/Lima y los instantes se guardan en UTC. El horizonte es de 14 días.</p>
         <p>Conserva los valores faltantes vacíos; el servidor calcula su proporción. No añadas etiquetas, resultados futuros ni columnas. En esta versión no edites el CSV registrado: pide al administrador que revise su procedencia.</p>
-        <p><code>{HEADERS.join(', ')}</code></p>
+        <p><code>{HEADERS.filter(header => header !== 'participation_level').join(', ')}</code></p><p className="muted">La plantilla descargable conserva una columna técnica adicional que se deja vacía.</p>
       </details>
     </section>
     {(requestError != null || stale || uncertain) && <div ref={resultRef} tabIndex={-1} className="import-request-error">
@@ -316,13 +316,13 @@ export function ImportsPage({ user, period, status, statusLoading, statusError, 
       {batch.errors.length > 0 && <p className="notice">No se puede confirmar un lote con errores. Solicita un CSV registrado que cumpla las correcciones y vuelve a revisarlo.</p>}
       {batch.status === 'COMMITTED' ? <div className="import-reused" role="status">
         <h3>{freshCommit ? 'Importación confirmada' : 'Se reutilizó la importación existente'}</h3>
-        <p>{freshCommit ? `La confirmación registró ${result!.created_snapshots} cortes. Puedes consultar los registros del periodo.` : 'Este archivo ya fue confirmado en este periodo. La consulta no creó nuevos registros ni requiere otra confirmación.'}</p>
+        <p>{freshCommit ? `La confirmación registró ${result!.created_snapshots} revisiones de mitad de bimestre. Puedes consultar los registros del periodo.` : 'Este archivo ya fue confirmado en este periodo. La consulta no creó nuevos registros ni requiere otra confirmación.'}</p>
         {batch.committed_at && <p>Confirmado el {timestampLabel(batch.committed_at)}.</p>}
         <button type="button" className="button primary" onClick={() => onViewStudents(batch.period_id)}>Ver estudiantes del periodo</button>
       </div> : batch.status === 'READY' && batch.errors.length === 0 && batch.invalid_rows === 0 ? <>
         <p className="import-plan-title">Creación prevista al confirmar</p>
         <dl className="import-counts import-planned"><div><dt>Estudiantes previstos</dt><dd>{batch.planned_students}</dd></div>
-          <div><dt>Matrículas previstas</dt><dd>{batch.planned_enrollments}</dd></div><div><dt>Cortes previstos</dt><dd>{batch.planned_snapshots}</dd></div></dl>
+          <div><dt>Matrículas previstas</dt><dd>{batch.planned_enrollments}</dd></div><div><dt>Revisiones de mitad de bimestre previstos</dt><dd>{batch.planned_snapshots}</dd></div></dl>
         <p className="import-help">Estas cantidades son un plan, aún no son registros confirmados.</p>
       </> : null}
     </section>}
@@ -337,6 +337,6 @@ export function ImportsPage({ user, period, status, statusLoading, statusError, 
       </form>}
     </section>}
     {result && <section className="import-reused" role="status"><h2>{result.reused_result ? 'Resultado reutilizado' : 'Importación confirmada'}</h2>
-      <p>{result.reused_result ? 'No se crearon registros duplicados. Cortes del resultado guardado:' : 'Cortes registrados en esta confirmación:'} {result.created_snapshots}.</p></section>}
+      <p>{result.reused_result ? 'No se crearon registros duplicados. Revisiones de mitad de bimestre del resultado guardado:' : 'Revisiones de mitad de bimestre registradas en esta confirmación:'} {result.created_snapshots}.</p></section>}
   </div>;
 }

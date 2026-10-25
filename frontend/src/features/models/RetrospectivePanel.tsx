@@ -46,7 +46,7 @@ export function RetrospectivePanel({ user }: { user: User }) {
   }
   return <section className="panel retrospective-panel" aria-labelledby="retrospective-title">
     <h2 id="retrospective-title">Evaluación retrospectiva B1 → B2</h2>
-    <p>Modelo SVM del paquete autorizado. Entrenamiento declarado: B1, corte 21 de abril de 2026. Evaluación: B2, corte 30 de junio de 2026; mismos 60 estudiantes. Cada ejecución conserva su fecha real.</p>
+    <p>Modelo SVM del paquete autorizado. Entrenamiento declarado: B1, revisión de mitad de bimestre del 21 de abril de 2026. Evaluación: B2, revisión de mitad de bimestre del 30 de junio de 2026; mismos 60 estudiantes. Cada ejecución conserva su fecha real.</p>
     <div className="notice"><strong>Alcance retrospectivo</strong><p>Las propuestas de alerta se evalúan aquí. La autorización local fue declarada por el usuario; la autenticidad institucional requiere sustento documental. Los resultados no demuestran ejecución histórica ni efecto escolar.</p></div>
     {history.isPending ? <LoadingState label="Consultando evaluaciones retrospectivas…" /> : history.isError ? <ErrorState error={history.error} onRetry={() => void history.refetch()} /> : !history.data.available ?
       <p role="status">Paquete retrospectivo aún no registrado mediante el procedimiento administrativo local.</p> : <>
@@ -69,7 +69,7 @@ export function RetrospectivePanel({ user }: { user: User }) {
           {downloadError !== null && <ErrorState error={downloadError} onRetry={() => void download()} />}
           <div className="table-container" tabIndex={0} role="region" aria-label="Predicciones retrospectivas"><table><caption>60 predicciones de B2; filas anonimizadas para este reporte</caption><thead><tr><th>Fila</th><th>Riesgo predicho</th><th>Referencia</th><th>Acierto</th><th>Propuesta</th></tr></thead><tbody>{detail.data.predictions.map(row => <tr key={row.row_number}><td>{row.row_number}</td><td><span className={`badge risk-${row.risk_level.toLowerCase()}`}>{riskLabels[row.risk_level]}</span></td><td>{riskLabels[row.reference_risk]}</td><td>{row.correct ? 'Sí' : 'No'}</td><td>{row.alert_proposed ? 'Propuesta pendiente de revisión humana' : 'Sin propuesta'}</td></tr>)}</tbody></table></div>
         </div>)}
-        <h3>Comprobar una entrada parcial</h3><p>Ensayo sin crear un caso. Introduce el promedio parcial y las dos proporciones; se usa el escalador incluido. Indica una fecha en la que los tres valores ya estaban disponibles, como máximo el corte B2 a las 00:00 en Lima.</p>
+        <h3>Comprobar una entrada parcial</h3><p>Ensayo sin crear un caso. Introduce el promedio parcial y las dos proporciones; se usa el escalador incluido. Indica una fecha en la que los tres valores ya estaban disponibles, como máximo la revisión de mitad de bimestre B2 a las 00:00 en Lima.</p>
         <form onSubmit={predict} onChange={() => { setPartialResult(null); partial.reset(); }}>
         <fieldset className="retrospective-form" disabled={partial.isPending}>
           <label>Promedio parcial (0 a 20)<input name="grade" type="number" min="0" max="20" step="any" required /></label>

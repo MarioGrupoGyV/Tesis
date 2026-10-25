@@ -28,7 +28,7 @@ LIMA = ZoneInfo('America/Lima')
 OPPORTUNE_WINDOW_DAYS = 14  # la tesis: «dos semanas» desde la emisión de la alerta
 CLASSES = ('LOW', 'MEDIUM', 'HIGH')
 NOTICE_REAL = ('Datos reales locales — análisis exploratorio, no demuestra eficacia escolar. Las alertas marcadas como '
-               'simulación retrospectiva las generó el modelo ahora sobre cortes pasados: no son alertas emitidas en su momento.')
+               'simulación retrospectiva las generó el modelo ahora sobre revisiones de mitad de bimestre pasadas: no son alertas emitidas en su momento.')
 OOF_LABEL = 'validación cruzada (fuera de muestra)'
 IN_SAMPLE_LABEL = 'en memoria, no valida el modelo'
 SCOPE = {'SYNTHETIC': 'SYNTHETIC_STUDY', 'REAL': 'INSTITUTIONAL_STUDY'}

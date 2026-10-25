@@ -1110,8 +1110,6 @@ export interface components {
             attendance_pct: number | null;
             /** Activities Pct */
             activities_pct: number | null;
-            /** Participation Level */
-            participation_level: number | null;
             /** Behavior Incidents */
             behavior_incidents: number | null;
             /** Age Years */
@@ -1457,6 +1455,8 @@ export interface components {
              * @default []
              */
             warnings: string[];
+            /** Display Label */
+            display_label?: string | null;
         };
         /** ModelPage */
         ModelPage: {

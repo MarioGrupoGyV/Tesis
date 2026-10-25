@@ -110,7 +110,7 @@ def followup(db, enrollment_id):
 
 TIMELINE = """
 SELECT id,'SNAPSHOT' AS event_type,created_at AS occurred_at,
- 'Corte académico · revisión ' || revision AS summary,id AS entity_id FROM risk_school.academic_snapshots WHERE enrollment_id=:id
+ 'Revisión de mitad de bimestre · versión ' || revision AS summary,id AS entity_id FROM risk_school.academic_snapshots WHERE enrollment_id=:id
 UNION ALL
 SELECT id,'PREDICTION',predicted_at,'Evaluación registrada',id FROM risk_school.predictions WHERE enrollment_id=:id
 UNION ALL

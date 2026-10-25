@@ -3,7 +3,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Annotated, Literal
 from uuid import UUID
-from pydantic import Field, PlainSerializer, StrictInt
+from pydantic import Field, PlainSerializer, StrictInt, field_validator, model_validator
 from app.schemas.s1 import ContractModel
 
 Number = Annotated[Decimal, PlainSerializer(float, return_type=float, when_used="json")]
@@ -63,7 +63,6 @@ class Snapshot(ContractModel):
     average_grade: Number | None
     attendance_pct: Number | None
     activities_pct: Number | None
-    participation_level: int | None
     behavior_incidents: int | None
     age_years: int | None
     missing_fraction: Number
@@ -73,6 +72,21 @@ class Snapshot(ContractModel):
     created_at: datetime | None = None
     correction_reason: str | None = None
     variable_available_at: dict[str, datetime] = Field(default_factory=dict)
+
+    @model_validator(mode='before')
+    @classmethod
+    def _without_participation(cls, value):
+        # Bloque 9 (ADR 013/014): la participación no tiene registro original; la base la conserva, pero ninguna respuesta la expone.
+        if isinstance(value, dict):
+            value = {key: item for key, item in value.items() if key != 'participation_level'}
+            if isinstance(value.get('variable_available_at'), dict):
+                value['variable_available_at'] = {k: v for k, v in value['variable_available_at'].items() if k != 'participation_level'}
+        return value
+
+    @field_validator('variable_available_at', mode='after')
+    @classmethod
+    def _availability_without_participation(cls, value):
+        return {key: item for key, item in value.items() if key != 'participation_level'}
 
 
 class Prediction(ContractModel):
