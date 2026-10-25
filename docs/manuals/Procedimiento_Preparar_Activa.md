@@ -11,7 +11,7 @@ paso lleva códigos ni nombres de estudiantes. Si un paso falla, **no sigas**: a
 > **Actualización Bloque 8 (2026-10-24, [ADR 013](../adr/013-riesgo-v2-sin-participacion.md)).** Este procedimiento ya se ejecutó en `riesgo-escolar` con la regla
 > **RIESGO_V2**: imágenes `b8`, migración a `0009_riesgo_v2`, respaldo previo en 0009, ensayo idéntico en una copia aislada y corrida con `--locked-tutor`. Resultado:
 > 60 estudiantes, 120 cortes, 120 referencias V2, modelo activo **SVM/REAL**, 40 alertas, distribución B1 19/18/23 y B2 27/8/25, resumen
-> `tests/evidence/mejoras-08-resumen-agregado-v2.json`. Si hubiera que repetirlo en otra instalación: entrada `ConversionExcelReal\salida-v2` (conversión con conteos V2),
+> `tests/evidence/mejoras-08-resumen-agregado-v2.json`. Detección validada del SVM activo: 86,2 % ± 1,6 (B1) y 100 % ± 0 (B2). Si hubiera que repetirlo en otra instalación: entrada `ConversionExcelReal\salida-v2` (conversión con conteos V2),
 > migración 0009 (`docker compose -f compose.yaml -f infra/compose.migrate.yaml run --rm --no-deps api python -m alembic -c /app/alembic.ini upgrade head`), respaldo en 0009 y
 > comparación contra `mejoras-08-resumen-agregado-v2.json`. Las cifras V1 de los pasos de abajo (15/21/24, Random Forest, 45 alertas, 87,3 %) son históricas.
 ## 0. Variables (en cada ventana de PowerShell)
@@ -146,31 +146,25 @@ en puertos libres; **detenla al terminar, no la dejes encendida**):
 
 Sin `--confirm-real-copy` la herramienta se niega: copiar datos reales a otro destino es una decisión explícita. Nunca se restaura sobre la activa.
 
-## 9. Instalación hermana de demostración `demo-vivo` (≈ 20 min)
+## 9. Instalación hermana de demostración `demo-vivo` (≈ 15 min; Bloque 9, ADR 014)
 
-Mismo código y mismos datos reales, más el periodo `DEMO-VIVO` (estudio sintético rotulado; los 60 estudiantes sintéticos del generador vienen con él). La activa **no** se toca.
-
-```powershell
-$d = "$base\Instalaciones\demo-vivo"; New-Item -ItemType Directory -Force $d | Out-Null
-& $py infra\runtime_target.py create --output "$d\destino.json" --web-port 15174 --api-port 18001 --db-port 55433
-& $py infra\runtime_target.py up --target "$d\destino.json"
-& $py infra\runtime_target.py bootstrap-admin --target "$d\destino.json"
-& $py infra\operator_profiles.py register-profile --target "$d\destino.json" --name demo-vivo
-```
-
-(`bootstrap-admin` y `register-profile` piden el correo y la contraseña del ADMIN de la demostración **en el terminal**; anótalos aparte: serán los de la sustentación.) Luego la corrida real (sin protecciones de la activa, es un destino aislado) y el periodo de demostración:
+Copia restaurada del **respaldo con datos reales V2** de la activa, con las imágenes finales, más el periodo `DEMO-VIVO`, que evalúa **la copia del SVM REAL activo** (misma
+huella). La activa **no** se toca y en ella la copia está **apagada** (`DEMO_REAL_MODEL_COPY` solo existe en la configuración de `demo-vivo`).
 
 ```powershell
-$proyecto = (Get-Content "$d\destino.json" -Raw | ConvertFrom-Json).project
-& $py infra\run_real_study.py --target "$d\destino.json" --operator-profile demo-vivo --input $entrada --results "$base\ResultadosReales\demo-vivo" --confirm-protocol --locked-tutor --public-summary "$base\ResultadosReales\demo-vivo\resumen_agregado.json"
-& $py infra\compare_real_summaries.py tests\evidence\mejoras-051-resumen-agregado.json "$base\ResultadosReales\demo-vivo\resumen_agregado.json"
-& $py infra\prepare_demo_period.py --target "$d\destino.json" --operator-profile demo-vivo --confirm-demo-target $proyecto --locked-tutor --dry-run
-& $py infra\prepare_demo_period.py --target "$d\destino.json" --operator-profile demo-vivo --confirm-demo-target $proyecto --locked-tutor
+$respaldoReal = "$backups\s6-20261025T035700Z-2ce439b28970.sebackup"      # respaldo posterior a la carga V2
+& $py infraackup_restore.py restore-check --backup $respaldoReal --output "$s6\demo-vivo.json" --image-tag <etiqueta> --confirm-real-copy --demo-real-model-copy --web-port 15174 --api-port 18174 --db-port 55474 --report "$s6\demo-vivo-restore.json"
+& $py infra\operator_profiles.py register-profile --target "$s6\demo-vivo.json" --name demo-vivo
+$sha = "select artifact_sha256 from risk_school.model_versions where is_active and data_origin='REAL';" | docker exec -i riesgo-escolar-db-1 psql -U riesgo_owner -d riesgo_escolar -At
+$proyecto = (Get-Content "$s6\demo-vivo.json" -Raw | ConvertFrom-Json).project
+& $py infra\prepare_demo_period.py --target "$s6\demo-vivo.json" --operator-profile demo-vivo --confirm-demo-target $proyecto --locked-tutor --real-model-copy $sha
 ```
 
-Esperado: `IDENTICOS`; el periodo de demostración imprime `study DONE · import DONE (360) · compare DONE (SVM) · model DONE (TECHNICAL_SIMULATION) · label DONE (DEMO-VIVO) · check OK (60 estudiantes sintéticos, SVM, SYNTHETIC)`.
-El script se niega sobre la activa (`DEMO_ONLY_ISOLATED_TARGET`) y sin `--confirm-demo-target`. En <http://localhost:15174>: periodo **`DEMO-VIVO · 2025`** con el rótulo «Registro de demostración, no es dato del colegio».
-Después haz el **ensayo general** con otros códigos (`ENSAYO-ALTO`, `ENSAYO-BAJO`); el guion usa `DEMO-ALTO`/`DEMO-BAJO`. Opcional: respaldo de `demo-vivo` (`backup --isolated-source`, etiqueta MIXED) como punto de partida del día.
+`register-profile` pide en el terminal el correo y la contraseña de tu ADMIN (la copia restaurada tiene las mismas cuentas). Esperado: `study DONE · import DONE (360) · compare DONE ·
+model DONE · label DONE (DEMO-VIVO) · real_model_copy DONE (SVM, la misma huella) · check OK (… copia de demostración)`. La copia se niega si la huella no es la del SVM REAL
+activo (`DEMO_COPY_HASH_MISMATCH`), si el periodo no es `DEMO-VIVO` (`DEMO_COPY_PERIOD_INVALID`), si ya existe (`DEMO_COPY_EXISTS`) o si la instalación tiene el interruptor apagado
+(`DEMO_COPY_DISABLED`, lo que ocurre en la activa). El modelo sintético del periodo queda retirado y no se lista. Ejecutado el 2026-10-25: descriptor
+`S6\demo-vivo-v9t-<fecha>.json`, imágenes `b9t`, huella `45fb6c6b…38261` en las dos instalaciones. Ensayo con códigos `ENSAYO-B9-…` (Alto, Medio y Bajo; ver el guion).
 
 ## 10. Nombres en la ficha: paso opcional y separado (≈ 2 min)
 

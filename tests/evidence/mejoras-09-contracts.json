@@ -1,0 +1,22 @@
+{
+  "status": "COMPROBADO",
+  "scope": "Contratos documentales e infraestructura S5; sin pruebas funcionales",
+  "checks": 339,
+  "sql_statements": 156,
+  "tables": 17,
+  "mapped_field_types": 119,
+  "api_paths": 46,
+  "api_operations": 54,
+  "contract_samples": 3,
+  "real_contract_responses": 66,
+  "hashes": {
+    "docs\\planning\\Contrato_API.yaml": "be65e82fa97b5c4b01b7432d2b82db676f9235f0621d827b93132d89debe762c",
+    "docs\\planning\\Esquema.sql": "9e927ac5c561f0c146eb12e2e763e31fdfb59039dc5b0884e403ac37c70ebb3f",
+    "package-lock.json": "9b0880027ad75b06c5d8a56fa77cf1d23bf0196bb5cb6012a1d4a33e20990bb7"
+  },
+  "limitations": [
+    "No ejecuta DDL/PLpgSQL",
+    "No prueba permisos en servidor",
+    "No build, migración, ML, UI ni persistencia"
+  ]
+}

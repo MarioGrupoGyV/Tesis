@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 
 /**
- * Demostración en vivo (Bloque 1, actualizada en el Bloque 6): medición manual → evaluación → alerta → intervención → reporte en el periodo
+ * Demostración en vivo (Bloque 1, actualizada en los Bloques 6 y 9 — evalúa la copia del SVM del estudio real, ADR 014): medición manual → evaluación → alerta → intervención → reporte en el periodo
  * SYNTHETIC rotulado «Demostración en vivo» (DEMO-VIVO) de una instalación hermana que ADEMÁS tiene la corrida real (REAL-2026).
  * Requiere un destino AISLADO ya preparado (`prepare_demo_period.py`): estudio sintético importado y modelo activo.
  * Variables: DEMO_BASE (URL), DEMO_ADMIN_EMAIL, DEMO_ADMIN_PASSWORD, DEMO_PERIOD_CODE. Opcionales: DEMO_REAL_PERIOD_CODE (por ejemplo REAL-2026: comprueba
@@ -60,15 +60,16 @@ async function register(page: Page, code: string, values: Record<string, string>
   await section.selectOption({ index: 1 });
   await page.getByRole('button', { name: 'Guardar estudiante y matrícula' }).click();
   await expect(page.getByRole('heading', { name: 'Alumno ficticio ' + code, exact: true })).toBeVisible();
-  lap('registrar estudiante ' + (code.endsWith('A') ? '1 (riesgo alto)' : '2 (riesgo bajo)'));
+  lap('registrar estudiante ' + code.slice(-1));
   await page.getByRole('button', { name: 'Nueva medición', exact: true }).click();
-  await page.getByLabel('Fecha y hora de corte · Lima', { exact: true }).fill('2025-04-15T18:00');
+  await page.getByLabel('Fecha y hora de la revisión de mitad de bimestre · Lima', { exact: true }).fill('2025-04-15T18:00');
   await page.getByLabel('Todo lo informado estaba disponible desde · Lima', { exact: true }).fill('2025-04-15T17:00');
   await page.getByLabel('Inicio de la ventana observada').fill('2025-03-16');
   for (const [label, value] of Object.entries(values)) await page.getByLabel(label, { exact: true }).fill(value);
   await page.getByRole('button', { name: 'Guardar medición', exact: true }).click();
   await expect(page.getByText(/Medición guardada en el servidor/)).toBeVisible();
-  lap('registrar medición ' + (code.endsWith('A') ? '1' : '2'));
+  await expect(page.getByText(/particip/i)).toHaveCount(0);                              // la participación no aparece
+  lap('registrar medición ' + code.slice(-1));
 }
 
 /** Números de REAL-2026 por API (solo agregados, sin códigos ni nombres): deben ser idénticos antes y después de la demostración. */
@@ -88,13 +89,18 @@ async function realNumbers(page: Page) {
   return out;
 }
 
-const HIGH = { 'Promedio · 0–20': '7', 'Asistencia · 0–100 %': '50', 'Entrega de actividades · 0–100 %': '40', 'Participación · 1–3 en la simulación': '1', 'Incidencias · entero ≥ 0': '8' };
-const LOW = { 'Promedio · 0–20': '18', 'Asistencia · 0–100 %': '98', 'Entrega de actividades · 0–100 %': '95', 'Participación · 1–3 en la simulación': '3', 'Incidencias · entero ≥ 0': '0' };
+// Casos verificados con el SVM del estudio real (Bloque 9): el Medio está dentro de su clase (vecinos también Medio, ningún Bajo cerca).
+const fields = (grade: string, attendance: string, tasks: string, incidents: string) => ({ 'Notas obtenidas hasta la fecha · promedio 0–20': grade,
+  'Asistencia hasta la fecha (%)': attendance, 'Tareas entregadas hasta la fecha (%)': tasks, 'Incidencias hasta la fecha · entero ≥ 0': incidents });
+const HIGH = fields('7', '50', '40', '6');
+const MEDIUM = fields('14.5', '85', '70', '0');
+const LOW = fields('18', '98', '95', '0');
 
 test('B1: crear alumno, medir, evaluar, abrir alerta, planificar actividad y ver reporte', async ({ page }) => {
   test.setTimeout(300000);
   const high = 'D' + randomUUID().slice(0, 6).toUpperCase() + 'A';
   const low = 'D' + randomUUID().slice(0, 6).toUpperCase() + 'B';
+  const medium = 'D' + randomUUID().slice(0, 6).toUpperCase() + 'M';
   await login(page);
   lap('iniciar sesión');
   const before = realCode ? await realNumbers(page) : null;
@@ -113,9 +119,11 @@ test('B1: crear alumno, medir, evaluar, abrir alerta, planificar actividad y ver
   await register(page, high, HIGH);
   await page.getByRole('button', { name: 'Evaluar riesgo de este estudiante', exact: true }).click();
   await expect(page.getByText('Evaluación registrada.', { exact: true })).toBeVisible();
-  await expect(page.getByText(/Modelo que hizo la evaluación:/)).toBeVisible();          // la evaluación dice qué modelo la hizo
+  await expect(page.getByText('Modelo: SVM del estudio real')).toBeVisible();             // un solo modelo: la copia del SVM real
+  await expect(page.locator('.notice', { hasText: 'Evaluación registrada.' }).getByText('Alto')).toBeVisible();
   lap('evaluar riesgo (estudiante 1)');
   await expect(page.getByText('Horizonte del modelo')).toBeVisible();                    // la ficha ya refleja la evaluación nueva
+  await expect(page.locator('section', { has: page.locator('#student-evaluation-title') }).getByText('Alto')).toBeVisible();
   await shot(page, 'evaluacion-alto');
   const caseLink = page.getByRole('link', { name: /Abrir el caso de seguimiento/ });
   await expect(caseLink).toBeVisible();
@@ -131,11 +139,22 @@ test('B1: crear alumno, medir, evaluar, abrir alerta, planificar actividad y ver
   lap('abrir el caso y planificar la actividad');
   await shot(page, 'caso-actividad');
 
+  await register(page, medium, MEDIUM);
+  await page.getByRole('button', { name: 'Evaluar riesgo de este estudiante', exact: true }).click();
+  await expect(page.getByText('Evaluación registrada.', { exact: true })).toBeVisible();
+  await expect(page.locator('.notice', { hasText: 'Evaluación registrada.' }).getByText('Medio')).toBeVisible();
+  await expect(page.getByText('Se abrió un caso de seguimiento nuevo.')).toBeVisible();
+  await expect(page.locator('section', { has: page.locator('#student-evaluation-title') }).getByText('Medio')).toBeVisible();   // la ficha ya refleja la evaluación
+  lap('evaluar riesgo (estudiante 3, medio)');
+  await shot(page, 'evaluacion-medio');
+
   await register(page, low, LOW);
   await page.getByRole('button', { name: 'Evaluar riesgo de este estudiante', exact: true }).click();
   await expect(page.getByText('Evaluación registrada.', { exact: true })).toBeVisible();
   await expect(page.getByText('Riesgo bajo: no se abre un caso.')).toBeVisible();
+  await expect(page.locator('section', { has: page.locator('#student-evaluation-title') }).getByText('Bajo')).toBeVisible();
   lap('evaluar riesgo (estudiante 2, bajo)');
+  await shot(page, 'evaluacion-bajo');
 
   await page.goto('/reportes');
   await selectPeriod(page);

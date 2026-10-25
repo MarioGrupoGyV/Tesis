@@ -1,0 +1,96 @@
+{
+  "periodo": "DEMO-VIVO",
+  "enmascarado": false,
+  "pantallas": [
+    {
+      "pantalla": "inicio",
+      "participacion_visible": false,
+      "nombre_antiguo_corte_visible": false,
+      "nombres_nuevos": []
+    },
+    {
+      "pantalla": "estudiantes",
+      "participacion_visible": false,
+      "nombre_antiguo_corte_visible": false,
+      "nombres_nuevos": [
+        "Última revisión de mitad de bimestre"
+      ]
+    },
+    {
+      "pantalla": "ficha",
+      "participacion_visible": false,
+      "nombre_antiguo_corte_visible": false,
+      "nombres_nuevos": [
+        "Última revisión de mitad de bimestre",
+        "Notas obtenidas hasta la fecha",
+        "Asistencia hasta la fecha (%)",
+        "Tareas entregadas hasta la fecha (%)",
+        "Incidencias hasta la fecha"
+      ]
+    },
+    {
+      "pantalla": "formulario-medicion",
+      "participacion_visible": false,
+      "nombre_antiguo_corte_visible": false,
+      "nombres_nuevos": [
+        "Fecha y hora de la revisión de mitad de bimestre · Lima",
+        "Notas obtenidas hasta la fecha · promedio 0–20",
+        "Asistencia hasta la fecha (%)",
+        "Tareas entregadas hasta la fecha (%)",
+        "Incidencias hasta la fecha · entero ≥ 0"
+      ]
+    },
+    {
+      "pantalla": "alertas",
+      "participacion_visible": false,
+      "nombre_antiguo_corte_visible": false,
+      "nombres_nuevos": []
+    },
+    {
+      "pantalla": "alerta-detalle",
+      "participacion_visible": false,
+      "nombre_antiguo_corte_visible": false,
+      "nombres_nuevos": [
+        "Revisión de mitad de bimestre que motivó el caso"
+      ]
+    },
+    {
+      "pantalla": "indicadores",
+      "participacion_visible": false,
+      "nombre_antiguo_corte_visible": false,
+      "nombres_nuevos": []
+    },
+    {
+      "pantalla": "reportes",
+      "participacion_visible": false,
+      "nombre_antiguo_corte_visible": false,
+      "nombres_nuevos": [
+        "Última revisión de mitad de bimestre"
+      ]
+    },
+    {
+      "pantalla": "datos",
+      "participacion_visible": false,
+      "nombre_antiguo_corte_visible": false,
+      "nombres_nuevos": []
+    },
+    {
+      "pantalla": "protocolo",
+      "participacion_visible": false,
+      "nombre_antiguo_corte_visible": false,
+      "nombres_nuevos": []
+    },
+    {
+      "pantalla": "modelos",
+      "participacion_visible": false,
+      "nombre_antiguo_corte_visible": false,
+      "nombres_nuevos": []
+    },
+    {
+      "pantalla": "modelo-detalle",
+      "participacion_visible": false,
+      "nombre_antiguo_corte_visible": false,
+      "nombres_nuevos": []
+    }
+  ]
+}
