@@ -176,7 +176,9 @@ Comprobado con `docker ps -a` y `docker volume ls`: no queda nada de ellas. Se c
 
 **Bloque 10 (2026-11-08, ADR 015).** La principal pasó a `b10`/`b10a` con `REAL-2026` cerrado y `demo-vivo` se recreó desde el respaldo con el cierre:
 `s6-restore-a8b11e5e230d` (`b10a`, descriptor `S6\demo-vivo-v10a-<fecha>.json`, perfil `demo-vivo-v10a`). Las copias `s6-restore-84f47c48a59b` (b9u) y
-`s6-restore-9eb9098a40fd` (b10, intermedia) quedaron detenidas, con sus volúmenes, a la espera de autorización para eliminarlas.
+`s6-restore-9eb9098a40fd` (b10, intermedia) se **eliminaron el 2026-11-08** con autorización del usuario: `cleanup` (contenedores, volúmenes y redes)
+y después sus descriptores, archivos compose, secretos de infraestructura y perfiles de operador (`demo-vivo-v9u`, `demo-vivo-v10`). Comprobado con `docker ps -a` y
+`docker volume ls`: no queda nada de ellas. Se conservan los respaldos, la principal, la demo-vivo `s6-restore-a8b11e5e230d` y `real-tesis`.
 
 ## 10. Nombres en la ficha: paso opcional y separado (≈ 2 min)
 

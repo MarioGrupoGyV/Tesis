@@ -80,5 +80,5 @@ evaluación, `DEMO_REAL_MODEL_COPY_EVALUATED`. La evaluación por lote de un per
 - Ensayo en `demo-vivo` (2026-10-25): Alto 7/50/40/6, Medio 14,5/85/70/0 y Bajo 18/98/95/0. En los tres coinciden el nivel mostrado, el guardado y la alerta, y REAL-2026 conserva
   60 matrículas, 120 cortes, 120 referencias, 120 predicciones y 40 alertas. El SVM predice Medio en una franja estrecha; el caso Medio se eligió dentro de su clase.
 - Instalación final de la demostración desde el 2026-11-08 (Bloque 10, [ADR 015](015-conjunto-real-cerrado.md)): `s6-restore-a8b11e5e230d` (puerto 15174, imágenes b10a), restaurada
-  de un respaldo con `REAL-2026` cerrado. Antes: `s6-restore-84f47c48a59b` (b9u). Las copias intermedias del Bloque 9 y la del ensayo del Bloque 8 se
+  de un respaldo con `REAL-2026` cerrado. La anterior, `s6-restore-84f47c48a59b` (b9u), y la intermedia `s6-restore-9eb9098a40fd` se eliminaron ese día. Las copias intermedias del Bloque 9 y la del ensayo del Bloque 8 se
   eliminaron, con sus volúmenes, el 2026-10-25 (ver `Procedimiento_Preparar_Activa.md`, sección 9).
