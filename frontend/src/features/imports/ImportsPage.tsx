@@ -112,7 +112,7 @@ export function ImportsPage({ user, period, status, statusLoading, statusError, 
       : (statusError || !status) && period?.data_origin !== 'REAL' ? 'No se pudo comprobar la disponibilidad. Vuelve a intentarlo antes de importar.'
         : period && !periodOperation(period, status, 'import', user).available ? reasonLabel(periodOperation(period, status, 'import', user).reason)
           : !period ? 'Selecciona un periodo autorizado para preparar el archivo.'
-            : !processingOpen(period) ? 'Este periodo corresponde a datos reales. Su procesamiento permanece bloqueado hasta confirmar el protocolo REAL.'
+            : !processingOpen(period) ? 'Este periodo corresponde a datos reales. Su procesamiento permanece bloqueado hasta confirmar la autorización de datos reales.'
               : period.is_locked ? 'El periodo está bloqueado y no admite nuevas importaciones.' : '';
   const canCommit = !blocked && !busy && !stale && !uncertain && !detail.isFetching && !detail.error
     && batch?.status === 'READY' && batch.invalid_rows === 0 && batch.errors.length === 0 && confirmed;

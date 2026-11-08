@@ -14,7 +14,7 @@ const initial: Filters = { search: '', risk: '', evaluation: '', status: '', pag
 export function ReportsPage(props: Props) {
   if (props.user.role === 'RESEARCHER') return <EmptyState title="Consulta no disponible para tu rol"><p>Los reportes y exportaciones están reservados al personal autorizado.</p></EmptyState>;
   if (!props.period) return <><PageHeader title="Reportes" /><EmptyState title="Selecciona un periodo"><p>El resumen corresponde al estado actual del contexto autorizado.</p></EmptyState></>;
-  if (!processingOpen(props.period)) return <><PageHeader title="Reportes" /><EmptyState title="Reporte institucional bloqueado"><p>{props.period.data_origin === 'REAL' ? 'El administrador debe confirmar el protocolo REAL del periodo para habilitar los reportes con datos reales locales.' : 'En esta etapa solo se consulta el estudio sintético registrado.'}</p></EmptyState></>;
+  if (!processingOpen(props.period)) return <><PageHeader title="Reportes" /><EmptyState title="Reporte institucional bloqueado"><p>{props.period.data_origin === 'REAL' ? 'El administrador debe confirmar la autorización de datos reales del periodo para habilitar los reportes con datos reales locales.' : 'En esta etapa solo se consulta el estudio sintético registrado.'}</p></EmptyState></>;
   return <ReportListing key={`${props.user.id}:${props.user.role}:${props.period.id}:${props.sectionId}`} {...props} period={props.period} />;
 }
 

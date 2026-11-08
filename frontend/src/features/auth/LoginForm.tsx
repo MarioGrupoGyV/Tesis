@@ -33,7 +33,7 @@ export function LoginForm({ onLogin, notice }: { onLogin: (user: User) => void; 
         <p className="intro-copy">Accede con tu cuenta para consultar el periodo y las secciones asignadas a tu perfil.</p>
         <div className="intro-note">
           <span className="note-icon" aria-hidden="true">◎</span>
-          <div><strong>Acceso autorizado</strong><p>El procesamiento institucional requiere un protocolo autorizado. Las decisiones pedagógicas corresponden a las personas.</p></div>
+          <div><strong>Acceso autorizado</strong><p>El procesamiento institucional requiere una autorización de datos. Las decisiones pedagógicas corresponden a las personas.</p></div>
         </div>
       </section>
       <section className="panel login-card" aria-labelledby="login-title">

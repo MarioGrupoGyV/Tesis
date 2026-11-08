@@ -16,7 +16,7 @@ const initial: Filters = { search: '', status: '', severity: '', sort: 'updated_
 export function AlertsPage(props: Props) {
   if (props.user.role === 'RESEARCHER') return <EmptyState title="Consulta no disponible para tu rol"><p>El seguimiento está reservado al personal autorizado.</p></EmptyState>;
   if (!props.period) return <><PageHeader title="Alertas" /><EmptyState title="Selecciona un periodo"><p>Consulta los casos dentro de un contexto autorizado.</p></EmptyState></>;
-  if (!processingOpen(props.period)) return <><PageHeader title="Alertas" /><EmptyState title="Seguimiento institucional bloqueado"><p>{props.period.data_origin === 'REAL' ? 'El administrador debe confirmar el protocolo REAL del periodo para habilitar el seguimiento con datos reales locales.' : 'En esta etapa solo se consulta el estudio sintético registrado.'}</p></EmptyState></>;
+  if (!processingOpen(props.period)) return <><PageHeader title="Alertas" /><EmptyState title="Seguimiento institucional bloqueado"><p>{props.period.data_origin === 'REAL' ? 'El administrador debe confirmar la autorización de datos reales del periodo para habilitar el seguimiento con datos reales locales.' : 'En esta etapa solo se consulta el estudio sintético registrado.'}</p></EmptyState></>;
   return <AlertListing key={`${props.user.id}:${props.user.role}:${props.period.id}:${props.sectionId}`} {...props} period={props.period} />;
 }
 

@@ -40,7 +40,7 @@ test('ciclo REAL: protocolo, modelos, alertas, reportes e indicadores con rótul
 
   // Protocolo REAL: estado confirmado.
   await page.goto('/protocolo');
-  await expect(page.getByRole('heading', { name: 'Protocolo de datos reales' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Autorización de datos reales' })).toBeVisible();
   await expect(page.getByText('● Confirmado: procesamiento habilitado')).toBeVisible();
   await shot(page, 'protocolo-confirmado');
 
@@ -85,7 +85,7 @@ test('ciclo REAL: protocolo, modelos, alertas, reportes e indicadores con rótul
 
   // Revocar: todo REAL se bloquea de inmediato; confirmar restablece.
   await page.goto('/protocolo');
-  await page.getByRole('button', { name: 'Revocar protocolo' }).click();
+  await page.getByRole('button', { name: 'Revocar autorización' }).click();
   await page.getByRole('button', { name: 'Sí, revocar' }).click();
   await expect(page.getByText('○ Sin confirmar: procesamiento bloqueado')).toBeVisible();
   await shot(page, 'protocolo-revocado');
@@ -94,7 +94,7 @@ test('ciclo REAL: protocolo, modelos, alertas, reportes e indicadores con rótul
   await expect(page.getByText('Seguimiento institucional bloqueado')).toBeVisible();
   await shot(page, 'alertas-bloqueadas');
   await page.goto('/protocolo');
-  await page.getByRole('button', { name: 'Confirmar protocolo' }).click();
+  await page.getByRole('button', { name: 'Confirmar autorización' }).click();
   await page.getByRole('button', { name: 'Sí, confirmar' }).click();
   await expect(page.getByText('● Confirmado: procesamiento habilitado')).toBeVisible();
 });

@@ -22,12 +22,12 @@ export function ProtocolPage({ user, periods, periodId }: Props) {
   });
   const missing = protocol.error instanceof ApiError && protocol.error.status === 404;
   const data = protocol.data;
-  return <div className="models-feature"><PageHeader title="Protocolo de datos reales" eyebrow="ADMINISTRACIÓN" description="Interruptor técnico que habilita el procesamiento local de un periodo con datos reales. No guarda consentimientos, documentos, autorizadores ni fechas de permiso." />
+  return <div className="models-feature"><PageHeader title="Autorización de datos reales" eyebrow="ADMINISTRACIÓN" description="Interruptor técnico que habilita el procesamiento local de un periodo con datos reales. No guarda consentimientos, documentos, autorizadores ni fechas de permiso." />
     <p className="notice" role="status">Solo se usan códigos; los nombres no salen de la ficha del estudiante.</p>
-    {real.length === 0 ? <EmptyState title="No hay periodos reales"><p>Crea un periodo con origen real desde Estudiantes para registrar su protocolo.</p></EmptyState> : <>
+    {real.length === 0 ? <EmptyState title="No hay periodos reales"><p>Crea un periodo con origen real desde Estudiantes para registrar su autorización.</p></EmptyState> : <>
       <div className="context-field"><label htmlFor="protocol-period">Periodo real</label><select id="protocol-period" value={chosen} onChange={event => { setChosen(event.target.value); setConfirming(null); change.reset(); }}>{real.map(item => <option key={item.id} value={item.id}>{item.code} · {item.school_year}</option>)}</select></div>
-      {protocol.isPending && chosen ? <LoadingState label="Consultando el protocolo…" /> : missing ? <EmptyState title="Este periodo aún no tiene protocolo"><p>El protocolo se registra con los parámetros del procedimiento descrito en el manual «Protocolo REAL». Mientras no exista y esté confirmado, todo el procesamiento de este periodo permanece bloqueado.</p></EmptyState> : protocol.isError ? <ErrorState error={protocol.error} onRetry={() => void protocol.refetch()} /> : data && <section className="panel model-detail-panel" aria-labelledby="protocol-title">
-        <div className="model-panel-heading"><h2 id="protocol-title">Estado del protocolo</h2><span className={`badge ${data.authorization_confirmed_by_admin ? 'model-active' : 'model-inactive'}`}>{data.authorization_confirmed_by_admin ? '● Confirmado: procesamiento habilitado' : '○ Sin confirmar: procesamiento bloqueado'}</span></div>
+      {protocol.isPending && chosen ? <LoadingState label="Consultando la autorización…" /> : missing ? <EmptyState title="Este periodo aún no tiene autorización"><p>La autorización se registra con los parámetros del procedimiento descrito en el manual. Mientras no exista y esté confirmada, todo el procesamiento de este periodo permanece bloqueado.</p></EmptyState> : protocol.isError ? <ErrorState error={protocol.error} onRetry={() => void protocol.refetch()} /> : data && <section className="panel model-detail-panel" aria-labelledby="protocol-title">
+        <div className="model-panel-heading"><h2 id="protocol-title">Estado de la autorización</h2><span className={`badge ${data.authorization_confirmed_by_admin ? 'model-active' : 'model-inactive'}`}>{data.authorization_confirmed_by_admin ? '● Confirmado: procesamiento habilitado' : '○ Sin confirmar: procesamiento bloqueado'}</span></div>
         <dl className="model-detail-values">
           <div><dt>Cohorte</dt><dd>{data.cohort_label}</dd></div>
           <div><dt>Escala de notas</dt><dd>{data.grade_scale_min}–{data.grade_scale_max}</dd></div>
@@ -39,10 +39,10 @@ export function ProtocolPage({ user, periods, periodId }: Props) {
         </dl>
         <p className="muted model-detail-note">Confirmar habilita, para este periodo, la importación del CSV canónico, la comparación exploratoria de modelos, la evaluación retrospectiva, las alertas y los indicadores. Revocar vuelve a bloquear todo de inmediato y conserva lo ya guardado.</p>
         {change.isError && <ErrorState error={change.error} />}
-        {confirming ? <div className="notice" role="alertdialog" aria-label="Confirmar cambio de protocolo"><p>{confirming === 'confirm' ? '¿Confirmas que este periodo puede procesarse localmente con datos reales? Se rotula como análisis exploratorio.' : '¿Revocas el protocolo? Todo el procesamiento REAL de este periodo quedará bloqueado.'}</p>
+        {confirming ? <div className="notice" role="alertdialog" aria-label="Confirmar cambio de autorización"><p>{confirming === 'confirm' ? '¿Confirmas que este periodo puede procesarse localmente con datos reales? Se rotula como análisis exploratorio.' : '¿Revocas la autorización? Todo el procesamiento REAL de este periodo quedará bloqueado.'}</p>
           <button className="button primary" type="button" disabled={change.isPending} onClick={() => change.mutate(confirming)}>{change.isPending ? 'Guardando…' : confirming === 'confirm' ? 'Sí, confirmar' : 'Sí, revocar'}</button>{' '}
           <button className="button secondary" type="button" disabled={change.isPending} onClick={() => setConfirming(null)}>Cancelar</button></div>
-          : data.authorization_confirmed_by_admin ? <button className="button secondary" type="button" onClick={() => setConfirming('revoke')}>Revocar protocolo</button> : <button className="button primary" type="button" onClick={() => setConfirming('confirm')}>Confirmar protocolo</button>}
+          : data.authorization_confirmed_by_admin ? <button className="button secondary" type="button" onClick={() => setConfirming('revoke')}>Revocar autorización</button> : <button className="button primary" type="button" onClick={() => setConfirming('confirm')}>Confirmar autorización</button>}
       </section>}
     </>}
   </div>;
