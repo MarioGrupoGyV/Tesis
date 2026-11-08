@@ -1,6 +1,6 @@
-"""Bloque 9 (ADR 014): copia de demostración del SVM REAL activo en DEMO-VIVO y retiro de la participación de las respuestas.
+"""Bloque 9 (ADR 014): copia de demostración del SVM REAL activo en PRUEBAS y retiro de la participación de las respuestas.
 
-Datos ficticios. Una sola instalación de prueba con un ciclo REAL completo (modelo REAL activo) y el periodo sintético renombrado DEMO-VIVO.
+Datos ficticios. Una sola instalación de prueba con un ciclo REAL completo (modelo REAL activo) y el periodo sintético renombrado PRUEBAS.
 """
 from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
@@ -115,8 +115,8 @@ def test_demo_copy_of_the_real_svm_is_narrow_switchable_and_leaves_real_untouche
         demo_period = db.get(AcademicPeriod, state.period_id)
         assert load_active_model(db, demo_period, state.settings, datetime.now(UTC))[1].id == synthetic_model
 
-    with state.owner.connect() as conn:                                  # el periodo de demostración se llama DEMO-VIVO
-        conn.execute(text("UPDATE risk_school.academic_periods SET code='DEMO-VIVO' WHERE id=:p"), {'p': state.period_id})
+    with state.owner.connect() as conn:                                  # el periodo de demostración se llama PRUEBAS
+        conn.execute(text("UPDATE risk_school.academic_periods SET code='PRUEBAS' WHERE id=:p"), {'p': state.period_id})
         conn.commit()
 
     # --- Interruptor ENCENDIDO: rechazos.

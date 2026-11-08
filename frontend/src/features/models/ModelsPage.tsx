@@ -10,7 +10,7 @@ import './features.css';
 export type ModelsProps = { user: User; period: Period | null; processing: ProcessingStatus | null; onNavigate: (path: string) => void };
 export const algorithmNames: Record<Model['algorithm'], string> = { DUMMY: 'Baseline Dummy', RANDOM_FOREST: 'Random Forest', SVM: 'SVM', XGBOOST: 'XGBoost' };
 export function modelStatusLabel(model: Model): string {
-  return model.status === 'DRAFT' ? 'Borrador' : model.status === 'EVALUATED' ? 'Evaluado' : model.status === 'RETIRED' ? 'Retirado' : model.display_label ? 'Copia de demostración (periodo DEMO-VIVO)' : model.data_origin === 'SYNTHETIC' ? 'Aprobado para simulación' : model.approval_kind === 'LOCAL_EXPLORATORY' ? 'Exploratorio local (sin validación externa)' : 'Aprobado';
+  return model.status === 'DRAFT' ? 'Borrador' : model.status === 'EVALUATED' ? 'Evaluado' : model.status === 'RETIRED' ? 'Retirado' : model.display_label ? 'Copia de demostración (periodo PRUEBAS)' : model.data_origin === 'SYNTHETIC' ? 'Aprobado para simulación' : model.approval_kind === 'LOCAL_EXPLORATORY' ? 'Exploratorio local (sin validación externa)' : 'Aprobado';
 }
 
 export function ModelsPage(props: ModelsProps) {

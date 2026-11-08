@@ -1,13 +1,14 @@
 """Periodo «Demostración en vivo»: estudio SINTÉTICO rotulado en una instalación AISLADA de demostración (instalación hermana).
 
     py -3.12 infra/prepare_demo_period.py --target <destino.json> --operator-profile <perfil> --confirm-demo-target <proyecto>
-                                          [--period-code DEMO-VIVO] [--seed 1729] [--students N] [--repetitions N]
+                                          [--period-code PRUEBAS] [--seed 1729] [--students N] [--repetitions N]
                                           [--tutor-id <uuid> | --locked-tutor] [--dry-run]
 
 Genera el estudio sintético, importa su CSV exacto, compara, registra y activa el modelo sintético y renombra el periodo (solo su código visible).
 Es idempotente: cada paso reconoce su estado y no se repite. El periodo trae los estudiantes SINTÉTICOS del generador (los necesita el modelo);
 no crea ningún otro: el estudiante de la demostración lo registra el usuario en vivo.
-Nunca actúa sobre el destino ACTIVE (la instalación de siempre solo tiene datos reales) y exige repetir el nombre del proyecto del destino
+No actúa sobre el destino ACTIVE salvo con `--allow-active` (ADR 016: grupo PRUEBAS junto al conjunto real cerrado), que además exige
+`--real-model-copy`. Siempre exige repetir el nombre del proyecto del destino
 (`--confirm-demo-target`) para escribir; con `--dry-run` no escribe nada. Imprime solo estados y conteos: nunca filas ni códigos de alumno.
 La contraseña del ADMIN sale del perfil Windows existente, jamás de argumentos.
 """
@@ -21,7 +22,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from run_real_study import EXEC_SQL, REQUIRED_HEAD, Live, StopRun, key  # noqa: E402
 
-DEFAULT_CODE = 'DEMO-VIVO'
+DEFAULT_CODE = 'PRUEBAS'
 CODE_PATTERN = re.compile(r'^[A-Z0-9][A-Z0-9-]{1,38}$')
 SQL = {
     'study': '''SELECT id::text AS id, period_id::text AS period_id, jsonb_array_length(COALESCE(bindings, '[]'::jsonb)) AS bound,
@@ -182,7 +183,7 @@ class DemoRunner:
         self.state['period'] = renamed
         self.step('label', 'DONE', period_code=self.code)
 
-    # 7b (ADR 014): copia del SVM REAL activo para DEMO-VIVO, solo si se pide con la huella esperada
+    # 7b (ADR 014): copia del SVM REAL activo para PRUEBAS, solo si se pide con la huella esperada
     def real_copy(self):
         if not self.real_model_sha256:
             return None
@@ -232,14 +233,18 @@ def main(argv=None):
     parser.add_argument('--tutor-id')
     parser.add_argument('--locked-tutor', action='store_true', help='Usa (o crea) la cuenta TUTOR de relleno sin acceso como tutor de la sección')
     parser.add_argument('--dry-run', action='store_true', help='Reconoce el estado de cada paso sin escribir nada')
-    parser.add_argument('--real-model-copy', metavar='SHA256', help='ADR 014: huella del SVM REAL activo; registra su copia de demostración en DEMO-VIVO')
+    parser.add_argument('--real-model-copy', metavar='SHA256', help='ADR 014: huella del SVM REAL activo; registra su copia de demostración en PRUEBAS')
+    parser.add_argument('--allow-active', action='store_true', help='ADR 016: autoriza la instalación activa (exige --real-model-copy y el nombre del proyecto)')
     args = parser.parse_args(argv)
     try:
         from operator_profiles import admin_account
         from runtime_target import Target
         target = Target.load(args.target)
-        if target.kind not in ('INSTALL', 'RESTORE') or target.project == 'riesgo-escolar':
+        active = target.kind not in ('INSTALL', 'RESTORE') or target.project == 'riesgo-escolar'
+        if active and not args.allow_active:
             raise StopRun('DEMO_ONLY_ISOLATED_TARGET')
+        if active and not args.real_model_copy:
+            raise StopRun('DEMO_ACTIVE_REQUIRES_REAL_MODEL_COPY')
         if not args.dry_run and args.confirm_demo_target != target.project:
             raise StopRun('DEMO_TARGET_CONFIRMATION_REQUIRED', f'Repite con --confirm-demo-target {target.project}.', exit_code=3)
         account = admin_account(target, operator_profile=args.operator_profile)

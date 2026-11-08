@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 
 /**
  * Demostración en vivo (Bloque 1, actualizada en los Bloques 6 y 9 — evalúa la copia del SVM del estudio real, ADR 014): medición manual → evaluación → alerta → intervención → reporte en el periodo
- * SYNTHETIC rotulado «Demostración en vivo» (DEMO-VIVO) de una instalación hermana que ADEMÁS tiene la corrida real (REAL-2026).
+ * SYNTHETIC rotulado «Demostración en vivo» (PRUEBAS) de una instalación hermana que ADEMÁS tiene la corrida real (REAL-2026).
  * Requiere un destino AISLADO ya preparado (`prepare_demo_period.py`): estudio sintético importado y modelo activo.
  * Variables: DEMO_BASE (URL), DEMO_ADMIN_EMAIL, DEMO_ADMIN_PASSWORD, DEMO_PERIOD_CODE. Opcionales: DEMO_REAL_PERIOD_CODE (por ejemplo REAL-2026: comprueba
  * que sus números no cambian por lo registrado en la demostración) y DEMO_SHOT_PREFIX (por defecto mejoras-01-e2e). No se ejecuta contra la activa.

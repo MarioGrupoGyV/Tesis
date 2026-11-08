@@ -1,9 +1,9 @@
-"""ADR 014: copia de demostración del SVM REAL activo para el periodo DEMO-VIVO de la instalación hermana.
+"""ADR 014: copia de demostración del SVM REAL activo para el periodo PRUEBAS de la instalación hermana.
 
 Excepción estrecha, solo con `DEMO_REAL_MODEL_COPY=true` (la instalación principal la deja apagada). La copia es un segundo registro
 (`model_versions`, origen SYNTHETIC porque el periodo es de demostración) que apunta al **mismo artefacto** del SVM REAL activo: mismos
 bytes, misma huella y su procedencia real intacta (no se reentrena, no se copia ni se reescribe ningún archivo ni registro de
-entrenamiento). Solo evalúa el periodo cuyo código es DEMO-VIVO; hay una por periodo; deja auditoría al registrarse y al evaluar.
+entrenamiento). Solo evalúa el periodo cuyo código es PRUEBAS; hay una por periodo; deja auditoría al registrarse y al evaluar.
 Apagado el interruptor, la copia nunca se reconoce y todas las comprobaciones se comportan como antes.
 """
 from datetime import UTC, datetime
@@ -17,11 +17,11 @@ from app.models.ml import ModelVersion
 from app.models.s1 import AcademicPeriod, AuditEvent
 from app.models.synthetic import SyntheticStudyRecord
 
-DEMO_PERIOD_CODE = 'DEMO-VIVO'
+DEMO_PERIOD_CODE = 'PRUEBAS'
 COPY_KIND = 'DEMO_COPY_OF_ACTIVE_REAL_MODEL'
 COPY_NAME = 'SVM del estudio real (copia de demostración)'
 DISPLAY_LABEL = 'SVM del estudio real'
-NOTE = ('Mismo artefacto, byte a byte, que el modelo REAL activo; usado solo para la demostración en vivo del periodo DEMO-VIVO. '
+NOTE = ('Mismo artefacto, byte a byte, que el modelo REAL activo; usado solo para la demostración en vivo del periodo PRUEBAS. '
         'El origen SYNTHETIC del registro se debe a que el periodo es de demostración; la procedencia del artefacto sigue siendo REAL (ADR 014).')
 
 
@@ -58,7 +58,7 @@ def active_real(db, settings):
 def demo_period_of(db, study):
     period = db.get(AcademicPeriod, study.period_id)
     if period is None or period.data_origin != 'SYNTHETIC' or period.code != DEMO_PERIOD_CODE or study.data_origin != 'SYNTHETIC':
-        raise AppError(422, 'DEMO_COPY_PERIOD_INVALID', 'La copia de demostración solo se usa en el periodo DEMO-VIVO.')
+        raise AppError(422, 'DEMO_COPY_PERIOD_INVALID', 'La copia de demostración solo se usa en el periodo PRUEBAS.')
     return period
 
 
@@ -79,7 +79,7 @@ def verified_copy(db, settings, study, model):
 
 
 def register(db, user, settings, period_id, expected_sha256, request_id):
-    """Registra y activa la copia en DEMO-VIVO (desactiva y retira el modelo sintético de ese periodo). Una sola por periodo."""
+    """Registra y activa la copia en PRUEBAS (desactiva y retira el modelo sintético de ese periodo). Una sola por periodo."""
     from app.services.processing_policy import require_study, study_for_period
     from app.services.synthetic_study import require_admin, validate_registered
     require_admin(user)
@@ -89,12 +89,12 @@ def register(db, user, settings, period_id, expected_sha256, request_id):
     if period is None:
         raise AppError(404, 'PERIOD_NOT_FOUND', 'El periodo no está disponible.')
     if period.data_origin != 'SYNTHETIC' or period.code != DEMO_PERIOD_CODE:
-        raise AppError(422, 'DEMO_COPY_PERIOD_INVALID', 'La copia de demostración solo se usa en el periodo DEMO-VIVO.')
+        raise AppError(422, 'DEMO_COPY_PERIOD_INVALID', 'La copia de demostración solo se usa en el periodo PRUEBAS.')
     study, _ = study_for_period(db, period)
     require_study(study, period)
     validate_registered(db, settings, study)
     if db.scalar(select(ModelVersion.id).where(ModelVersion.study_id == study.id, ModelVersion.name == COPY_NAME)) is not None:
-        raise AppError(409, 'DEMO_COPY_EXISTS', 'El periodo DEMO-VIVO ya tiene su copia de demostración.')
+        raise AppError(409, 'DEMO_COPY_EXISTS', 'El periodo PRUEBAS ya tiene su copia de demostración.')
     real, bundle = active_real(db, settings)
     if expected_sha256 != real.artifact_sha256 or bundle.manifest['artifact_sha256'] != expected_sha256:
         raise AppError(409, 'DEMO_COPY_HASH_MISMATCH', 'La huella indicada no es la del modelo REAL activo.')

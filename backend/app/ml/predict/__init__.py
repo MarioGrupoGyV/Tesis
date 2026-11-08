@@ -24,7 +24,7 @@ def class_mapping(classes):
 
 
 def predict_snapshot(snapshot: Observation, model_bundle: ModelBundle | None, *, demo_copy: bool = False) -> PredictionResult:
-    """`demo_copy` (ADR 014) solo lo pasa la evaluación de DEMO-VIVO con la copia verificada del SVM REAL activo y el interruptor
+    """`demo_copy` (ADR 014) solo lo pasa la evaluación de PRUEBAS con la copia verificada del SVM REAL activo y el interruptor
     encendido: admite ese artefacto REAL institucional sobre un corte de demostración. Por defecto la regla de origen no cambia."""
     if model_bundle is None:
         return PredictionResult('MODEL_NOT_AVAILABLE','Modelo no disponible')

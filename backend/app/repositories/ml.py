@@ -6,7 +6,7 @@ from app.models.s2 import EnrollmentRecord
 
 
 def models(db,page,page_size):
-    # Un modelo RETIRADO (p. ej. el sintético de DEMO-VIVO sustituido por la copia del SVM real, ADR 014) no se lista.
+    # Un modelo RETIRADO (p. ej. el sintético de PRUEBAS sustituido por la copia del SVM real, ADR 014) no se lista.
     listed = (ModelVersion.data_origin.in_(('REAL','SYNTHETIC')), ModelVersion.status!='RETIRED')
     total = db.scalar(select(func.count()).select_from(ModelVersion).where(*listed))
     rows = db.scalars(select(ModelVersion).where(*listed)

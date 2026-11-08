@@ -54,7 +54,7 @@ function StudentRecord({ user, period, studentId, onNavigate }: Props & { period
 }
 
 function PredictionFields({ prediction, user }: { prediction: Prediction; user: User }) {
-  // ADR 014: en DEMO-VIVO la evaluación la hace la copia del SVM REAL; el servidor la rotula «SVM del estudio real».
+  // ADR 014: en PRUEBAS la evaluación la hace la copia del SVM REAL; el servidor la rotula «SVM del estudio real».
   const models = useQuery({ queryKey: ['models', 'label', prediction.model_id], queryFn: ({ signal }) => api.models({ page: 1, page_size: 50 }, signal),
     retry: false, enabled: user.role === 'ADMIN' });
   const label = models.data?.items.find(item => item.id === prediction.model_id)?.display_label;

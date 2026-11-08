@@ -36,6 +36,8 @@ services:
       DISPLAY_TIMEZONE: America/Lima
       IMPORT_STORAGE_DIR: /var/lib/riesgo/imports
       ML_STORAGE_DIR: /var/lib/riesgo/ml
+      # ADR 016: apagado salvo que el .env local de la instalación lo encienda (grupo PRUEBAS junto al conjunto real cerrado).
+      DEMO_REAL_MODEL_COPY: "${DEMO_REAL_MODEL_COPY:-false}"
     secrets: [app_database_url, csrf_secret]
     volumes:
       - import_data:/var/lib/riesgo/imports

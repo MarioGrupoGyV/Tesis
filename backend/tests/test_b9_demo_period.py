@@ -93,8 +93,8 @@ def test_full_run_creates_the_labelled_demo_period_in_order_and_no_students():
     assert {item['step']: item['status'] for item in lines} == {'preflight': 'OK', 'tutor': 'SINGLE_EXISTING', 'study': 'DONE', 'import': 'DONE',
                                                                  'compare': 'DONE', 'model': 'DONE', 'label': 'DONE', 'check': 'OK'}
     # Solo los 60 estudiantes sintéticos del generador; el de la demostración lo registra el usuario en vivo.
-    assert summary == {'period_code': 'DEMO-VIVO', 'model_algorithm': 'SVM', 'students_in_demo_period': 60}
-    assert next(item for item in gateway.periods if item['id'] == 'demo-period')['code'] == 'DEMO-VIVO'
+    assert summary == {'period_code': 'PRUEBAS', 'model_algorithm': 'SVM', 'students_in_demo_period': 60}
+    assert next(item for item in gateway.periods if item['id'] == 'demo-period')['code'] == 'PRUEBAS'
     assert gateway.generate_payload['tutor_id'] == 'tutor-1' and gateway.generate_payload['seed'] == 1729
     assert next(item for item in gateway.periods if item['id'] == 'real-period')['code'] == 'REAL-2026'   # el periodo real no se toca
 
@@ -135,7 +135,7 @@ def test_preconditions_head_code_and_collision():
     with pytest.raises(real.StopRun) as error:
         execute(FakeGateway(), period_code='demo vivo')
     assert error.value.code == 'PERIOD_CODE_INVALID'
-    clash = FakeGateway(extra_periods=({'id': 'other', 'code': 'DEMO-VIVO', 'school_year': 2024, 'start_date': '2024-01-01',
+    clash = FakeGateway(extra_periods=({'id': 'other', 'code': 'PRUEBAS', 'school_year': 2024, 'start_date': '2024-01-01',
                                         'end_date': '2024-12-31', 'data_origin': 'SYNTHETIC', 'is_locked': False, 'version': 1},))
     with pytest.raises(real.StopRun) as error:
         execute(clash)
@@ -157,6 +157,10 @@ def test_the_active_installation_is_never_a_target_and_writing_needs_the_project
     assert json.loads(capsys.readouterr().out)['code'] == 'DEMO_ONLY_ISOLATED_TARGET' and gateway.writes == []
     assert demo.main(arguments + ['--dry-run']) == 2                                          # ni siquiera en simulacro
     assert json.loads(capsys.readouterr().out)['code'] == 'DEMO_ONLY_ISOLATED_TARGET'
+    assert demo.main(arguments + ['--allow-active', '--confirm-demo-target', 'riesgo-escolar']) == 2    # ADR 016: la activa exige la copia del SVM
+    assert json.loads(capsys.readouterr().out)['code'] == 'DEMO_ACTIVE_REQUIRES_REAL_MODEL_COPY' and gateway.writes == []
+    assert demo.main(arguments + ['--allow-active', '--real-model-copy', '0' * 64]) == 3                   # y repetir el nombre del proyecto
+    assert json.loads(capsys.readouterr().out)['code'] == 'DEMO_TARGET_CONFIRMATION_REQUIRED' and gateway.writes == []
     patch_main(monkeypatch, gateway)
     assert demo.main(arguments) == 3                                                         # sin confirmar el proyecto no escribe
     assert json.loads(capsys.readouterr().out)['code'] == 'DEMO_TARGET_CONFIRMATION_REQUIRED' and gateway.writes == []
@@ -165,7 +169,7 @@ def test_the_active_installation_is_never_a_target_and_writing_needs_the_project
     assert demo.main(arguments + ['--dry-run']) == 0 and gateway.writes == []                # el simulacro no pide confirmación
     capsys.readouterr()
     assert demo.main(arguments + ['--confirm-demo-target', 's6-install-0123456789ab']) == 0
-    assert 'internal:generate' in gateway.writes and 'DEMO-VIVO' in capsys.readouterr().out
+    assert 'internal:generate' in gateway.writes and 'PRUEBAS' in capsys.readouterr().out
 
 
 def test_output_has_no_student_data_and_no_password_option():
