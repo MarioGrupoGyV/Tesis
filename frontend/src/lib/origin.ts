@@ -1,6 +1,5 @@
 import type { Period, ProcessingStatus, User } from './api';
 
-export const REAL_NOTICE = 'Datos reales locales — análisis exploratorio, no demuestra eficacia escolar.';
 export const RETROSPECTIVE_LABEL = 'simulación retrospectiva';
 /** Rótulo visible de todo periodo SYNTHETIC (la demostración en vivo): lo que se registre ahí no es un dato del colegio. */
 export const DEMO_LABEL = 'Registro de demostración, no es dato del colegio';

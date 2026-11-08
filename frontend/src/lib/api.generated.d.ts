@@ -956,6 +956,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/real-set": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Real Set
+         * @description Conjunto real de solo lectura: por estudiante y bimestre, la revisión de mitad de bimestre que usó la referencia RIESGO_V2, el nivel del modelo REAL activo y el de referencia; is_locked indica si el periodo está cerrado. TUTOR solo ve sus secciones. Solo códigos; nunca nombres. No escribe ni evalúa.
+         */
+        get: operations["realSet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3301,6 +3321,96 @@ export interface components {
             high_flagged: number;
             /** High As Low */
             high_as_low: number;
+        };
+        /** RealSetCut */
+        RealSetCut: {
+            /** Bimester */
+            bimester: string;
+            /** Cutoff At */
+            cutoff_at: string | null;
+            /** Average Grade */
+            average_grade: number | null;
+            /** Attendance Pct */
+            attendance_pct: number | null;
+            /** Activities Pct */
+            activities_pct: number | null;
+            /** Behavior Incidents */
+            behavior_incidents: number | null;
+            /** Predicted Risk */
+            predicted_risk: ("LOW" | "MEDIUM" | "HIGH") | null;
+            /** Reference Risk */
+            reference_risk: ("LOW" | "MEDIUM" | "HIGH") | null;
+            /** Reference Points */
+            reference_points: number | null;
+        };
+        /** RealSetLevels */
+        RealSetLevels: {
+            /** Bimester */
+            bimester: string;
+            /** Cuts */
+            cuts: number;
+            /** Predicted Low */
+            predicted_low: number;
+            /** Predicted Medium */
+            predicted_medium: number;
+            /** Predicted High */
+            predicted_high: number;
+            /** Predicted Missing */
+            predicted_missing: number;
+            /** Reference Low */
+            reference_low: number;
+            /** Reference Medium */
+            reference_medium: number;
+            /** Reference High */
+            reference_high: number;
+        };
+        /** RealSetPage */
+        RealSetPage: {
+            /**
+             * Period Id
+             * Format: uuid
+             */
+            period_id: string;
+            /** Period Code */
+            period_code: string;
+            /** Is Locked */
+            is_locked: boolean;
+            /** Model Algorithm */
+            model_algorithm: string | null;
+            /** Bimesters */
+            bimesters: string[];
+            /** Summary */
+            summary: components["schemas"]["RealSetLevels"][];
+            /** Students */
+            students: number;
+            /** Alerts */
+            alerts: number;
+            /** Items */
+            items: components["schemas"]["RealSetStudent"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** RealSetStudent */
+        RealSetStudent: {
+            /**
+             * Student Id
+             * Format: uuid
+             */
+            student_id: string;
+            /** Anon Code */
+            anon_code: string;
+            /** Grade */
+            grade: number;
+            /** Section Code */
+            section_code: string;
+            /** Alert Status */
+            alert_status: ("OPEN" | "IN_REVIEW" | "RESOLVED" | "DISMISSED") | null;
+            /** Cuts */
+            cuts: components["schemas"]["RealSetCut"][];
         };
     };
     responses: never;
@@ -7612,6 +7722,76 @@ export interface operations {
                 };
             };
             /** @description Periodo no REAL, bimestres fuera del periodo o parámetros inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Servicio no disponible */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    realSet: {
+        parameters: {
+            query: {
+                period_id: string;
+                section_id?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RealSetPage"];
+                };
+            };
+            /** @description Sesión requerida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Rol sin acceso */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Periodo no REAL, ajeno o inexistente; sección ajena */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Origen no admitido */
             422: {
                 headers: {
                     [name: string]: unknown;

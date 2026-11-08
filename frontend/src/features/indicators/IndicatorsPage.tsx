@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api, type IndicatorRatio, type IndicatorSummary, type IndicatorsResponse, type User, type ValidatedDetection } from '../../lib/api';
 import { EmptyState, ErrorState, LoadingState, PageHeader } from '../../components/ui';
-import { numberLabel, timestampLabel } from '../../lib/format';
-import { RETROSPECTIVE_LABEL } from '../../lib/origin';
+import { numberLabel } from '../../lib/format';
 import './features.css';
 
 const reasons: Record<string, string> = {
@@ -73,8 +72,6 @@ function Results({ data }: { data: IndicatorsResponse }) {
   const real = data.data_origin === 'REAL';
   const tag = real ? 'Exploratorio local' : 'Simulación';
   return <>
-    <p className="notice" role="status">{data.notice} Calculado al: {timestampLabel(data.as_of)}. Fin del bimestre considerado: {timestampLabel(data.close_at)}. Ventana de intervención oportuna: {data.opportune_window_days} días.{data.bimester ? ` Bimestre: ${data.bimester}.` : ''}</p>
-    {real && data.retrospective_alerts > 0 && <p className="notice" role="status">{data.retrospective_alerts} alertas son {RETROSPECTIVE_LABEL}: el modelo las generó ahora sobre revisiones de mitad de bimestre pasadas, no se emitieron en su momento. La detección se mide en la fecha simulada; la intervención oportuna usa el instante real de la alerta.</p>}
     <section className="indicator-cards" aria-label="Indicadores principales">
       <Card title="PRV · registros válidos procesados" tag={tag} value={percent(prv.percent)} detail={prv.received == null ? ratioDetail(prv) : `${numberLabel(prv.numerator)} de ${numberLabel(prv.received)} recibidos`} reason={prv.reason} formula="Válidos procesados ÷ registros recibidos × 100 (lotes CSV; los omitidos por inelegibilidad se informan aparte)." />
       <Card title="CRA · cobertura de reportes y alertas" tag={tag} value={percent(t.cra.percent)} detail={ratioDetail(t.cra)} reason={t.cra.reason} formula={`Elegibles evaluados con reporte (y alerta si el riesgo es medio o alto) ÷ elegibles × 100.${real ? ' Mide que el sistema no pierde casos de su propia salida (todo riesgo medio o alto genera alerta); la medida de calidad predictiva es la detección validada, más abajo.' : ''}`} />
@@ -94,7 +91,7 @@ function Results({ data }: { data: IndicatorsResponse }) {
     <section className="panel" aria-labelledby="ind-performance-title"><h2 id="ind-performance-title">Rendimiento (última revisión de mitad de bimestre de cada estudiante elegible)</h2>
       <div className="table-container" tabIndex={0} role="region" aria-label="Estadísticos descriptivos"><table><caption>Estadísticos descriptivos</caption><thead><tr><th scope="col">Variable</th><th scope="col">n</th><th scope="col">Media</th><th scope="col">DE</th><th scope="col">Mediana</th><th scope="col">Mín.</th><th scope="col">Máx.</th></tr></thead>
         <tbody>{([['Promedio', t.performance.average_grade], ['Asistencia %', t.performance.attendance_pct]] as const).map(([name, d]) => <tr key={name}><th scope="row">{name}</th><td>{d.n}</td><td>{numberLabel(d.mean)}</td><td>{numberLabel(d.sd)}</td><td>{numberLabel(d.median)}</td><td>{numberLabel(d.minimum)}</td><td>{numberLabel(d.maximum)}</td></tr>)}</tbody></table></div></section>
-    <p className="muted report-note">Excluidos: {numberLabel(t.exclusions.ineligible)} no elegibles; {numberLabel(t.exclusions.no_snapshot)} sin medición; {numberLabel(t.exclusions.no_reference)} sin riesgo de referencia{t.exclusions.reference_reason ? ` (${reasons[t.exclusions.reference_reason] ?? t.exclusions.reference_reason})` : ''}. Un estudiante sin riesgo de referencia no entra al denominador de PDER ni a las métricas. {real ? 'Datos reales locales: análisis exploratorio que no demuestra eficacia escolar.' : 'Los indicadores de este periodo son una simulación y no corresponden a resultados del colegio.'}</p>
+    <p className="muted report-note">Excluidos: {numberLabel(t.exclusions.ineligible)} no elegibles; {numberLabel(t.exclusions.no_snapshot)} sin medición; {numberLabel(t.exclusions.no_reference)} sin riesgo de referencia{t.exclusions.reference_reason ? ` (${reasons[t.exclusions.reference_reason] ?? t.exclusions.reference_reason})` : ''}. Un estudiante sin riesgo de referencia no entra al denominador de PDER ni a las métricas. {real ? '' : 'Los indicadores de este periodo son una simulación y no corresponden a resultados del colegio.'}</p>
   </>;
 }
 

@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError, OperationalError, InterfaceError, TimeoutError
 from starlette.exceptions import HTTPException
 
-from app.api.v1 import auth, catalogs, health, imports, students, ml, processing, followup, reports, retrospective, manual, indicators, protocols
+from app.api.v1 import auth, catalogs, health, imports, students, ml, processing, followup, reports, retrospective, manual, indicators, protocols, real_set
 from app.core.upload_limit import ImportBodyLimit
 from app.core.config import Settings, get_settings
 from app.core.database import Database
@@ -29,7 +29,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     application = FastAPI(
         title="Seguimiento Escolar",
-        version="0.15.0",
+        version="0.16.0",
         lifespan=lifespan,
         docs_url=None,
         redoc_url=None,
@@ -99,6 +99,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(reports.router, prefix="/api/v1")
     application.include_router(indicators.router, prefix="/api/v1")
     application.include_router(protocols.router, prefix="/api/v1")
+    application.include_router(real_set.router, prefix="/api/v1")
     return application
 
 

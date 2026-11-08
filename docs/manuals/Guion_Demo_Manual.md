@@ -82,6 +82,7 @@ repeticiones** (detección validada del panel), no la clase modal.
 | 1:15 | misma pantalla, tarjeta **PDER del sistema · en muestra** | 100 % | «Este 100 % es de funcionamiento: el modelo final se ajustó con esos mismos 60 estudiantes. La medida de calidad es la de arriba.» |
 | 2:00 | **Modelos** | SVM, «exploratorio local, sin validación externa» | «Cuatro algoritmos comparados con la misma regla fija (F1 macro medio); con RIESGO_V2 queda primero SVM.» |
 | 3:00 | **Alertas** | 40 casos marcados «simulación retrospectiva» | Ver «Las 40 alertas» abajo. |
+| 3:30 | **Estudio real** (menú principal) | «Conjunto cerrado»; 60 estudiantes; por bimestre: promedio, asistencia, actividades, incidencias, nivel del modelo y de referencia | «Este es el conjunto real, separado de la demostración y cerrado: el servidor rechaza cualquier cambio.» No abrir fichas. |
 
 ### Las 40 alertas (para responder si preguntan)
 
@@ -101,7 +102,7 @@ caso. Con las predicciones de **validación** (fuera de muestra) el SVM marca Me
 | 4:00 | **Abrir el caso de seguimiento → Planificar actividad** (Tutoría, objetivo breve, 05/05/2025 14:00). | «Una actividad planificada no cuenta como realizada; las decisiones son humanas.» |
 | 5:30 | Repetir con `DEMO-MEDIO` y con `DEMO-BAJO`. | «Medio también abre caso; Bajo no. Sin datos suficientes, el sistema no rellena riesgo bajo.» |
 | 7:00 | **Reportes** (mismo periodo). | Los tres alumnos; casos activos en `DEMO-ALTO` y `DEMO-MEDIO`; **Descargar CSV**: «sin notas ni nombres». |
-| 8:30 | (Opcional) **Indicadores → `REAL-2026`**. | «Los números reales no cambiaron con la demostración.» |
+| 8:30 | (Opcional) **Estudio real** o **Indicadores → `REAL-2026`**. | «Los 60 reales siguen igual y cerrados; los estudiantes de demostración no aparecen ahí.» |
 | 9:00 | Cierre | «Mismo modelo del estudio, estudiante de demostración en un periodo aparte que no entra en ningún indicador.» |
 
 Tiempos medidos del recorrido automático (sin hablar, 2026-10-25): registrar estudiante ≈ 1 s; medición < 1 s; evaluar ≈ 1–1,5 s; abrir el caso y planificar ≈ 1 s; reporte ≈ 1 s;

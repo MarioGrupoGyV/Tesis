@@ -1,0 +1,21 @@
+.realset-period { display: grid; gap: 6px; max-width: 280px; margin-bottom: 16px; }
+.realset-lock strong { margin-right: 4px; }
+.realset-confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 10px; }
+.realset-confirm p { flex-basis: 100%; }
+.realset-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 16px 0; }
+.realset-summary .panel { margin: 0; }
+.realset-summary p + p { margin-top: 8px; }
+.realset-figure { display: block; font-size: 32px; line-height: 1.1; margin: 6px 0; }
+.realset-row-label { display: inline-block; min-width: 92px; font-weight: 600; }
+.realset-counts { display: inline-flex; flex-wrap: wrap; gap: 4px 12px; }
+.risk-text.risk-low { color: #2f6a3f; }
+.risk-text.risk-medium { color: #8a5a00; }
+.risk-text.risk-high { color: #a3332b; }
+.realset-filter { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; }
+.realset-filter > div { display: grid; gap: 6px; min-width: 200px; flex: 0 1 280px; }
+.realset-legend { margin: 12px 0; }
+.realset-table table { min-width: 1280px; }
+.realset-table caption { text-align: left; color: #647568; font-size: 12px; padding-bottom: 15px; }
+.realset-table th, .realset-table td { white-space: nowrap; }
+.realset-table .realset-group { border-left: 2px solid #d7e2cb; }
+.realset-table th[scope="colgroup"] { text-align: center; }

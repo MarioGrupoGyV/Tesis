@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError, type Period, type User } from '../../lib/api';
 import { EmptyState, ErrorState, LoadingState, PageHeader } from '../../components/ui';
 import { dateLabel, timestampLabel } from '../../lib/format';
-import { REAL_NOTICE } from '../../lib/origin';
 
 type Props = { user: User; periods: Period[]; periodId: string };
 
@@ -24,7 +23,7 @@ export function ProtocolPage({ user, periods, periodId }: Props) {
   const missing = protocol.error instanceof ApiError && protocol.error.status === 404;
   const data = protocol.data;
   return <div className="models-feature"><PageHeader title="Protocolo de datos reales" eyebrow="ADMINISTRACIÓN" description="Interruptor técnico que habilita el procesamiento local de un periodo con datos reales. No guarda consentimientos, documentos, autorizadores ni fechas de permiso." />
-    <p className="notice" role="status">{REAL_NOTICE} Solo se usan códigos; los nombres no salen de la ficha del estudiante.</p>
+    <p className="notice" role="status">Solo se usan códigos; los nombres no salen de la ficha del estudiante.</p>
     {real.length === 0 ? <EmptyState title="No hay periodos reales"><p>Crea un periodo con origen real desde Estudiantes para registrar su protocolo.</p></EmptyState> : <>
       <div className="context-field"><label htmlFor="protocol-period">Periodo real</label><select id="protocol-period" value={chosen} onChange={event => { setChosen(event.target.value); setConfirming(null); change.reset(); }}>{real.map(item => <option key={item.id} value={item.id}>{item.code} · {item.school_year}</option>)}</select></div>
       {protocol.isPending && chosen ? <LoadingState label="Consultando el protocolo…" /> : missing ? <EmptyState title="Este periodo aún no tiene protocolo"><p>El protocolo se registra con los parámetros del procedimiento descrito en el manual «Protocolo REAL». Mientras no exista y esté confirmado, todo el procesamiento de este periodo permanece bloqueado.</p></EmptyState> : protocol.isError ? <ErrorState error={protocol.error} onRetry={() => void protocol.refetch()} /> : data && <section className="panel model-detail-panel" aria-labelledby="protocol-title">

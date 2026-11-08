@@ -37,6 +37,7 @@ function StudentListing({ user, period, sectionId, onNavigate }: Props & { perio
   }
   return <div className="students-feature">
     <PageHeader title="Estudiantes" eyebrow="REGISTROS DEL PERIODO" description={`Periodo ${period.code} · ${sectionId ? 'Sección seleccionada' : 'Secciones autorizadas'}. Los valores sin información se muestran como “Sin dato”.`} />
+    {period.data_origin === 'REAL' && <p className="notice" role="status">Este periodo es el conjunto real del estudio{period.is_locked ? ' y está cerrado' : ''}. Para verlo completo, con sus resultados por bimestre, abre <a href="/estudio-real" onClick={event => navigate(event, '/estudio-real?period_id=' + encodeURIComponent(period.id))}>Estudio real</a>.</p>}
     <section className="panel student-filters" aria-label="Filtros de estudiantes">
       <form onSubmit={apply}>
         <div className="student-filter-grid">
@@ -58,7 +59,6 @@ function StudentListing({ user, period, sectionId, onNavigate }: Props & { perio
           </table>
         </div>
         <Pagination page={students.data.page} pageSize={students.data.page_size} total={students.data.total} onPageChange={setPage} />
-        <p className="muted student-list-note">El riesgo es una estimación del modelo. Un registro sin evaluación conserva ese estado hasta obtener un resultado válido.</p>
       </section>}
   </div>;
 }

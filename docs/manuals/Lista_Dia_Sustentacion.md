@@ -12,16 +12,17 @@ Preparación previa: [Procedimiento_Preparar_Activa.md](Procedimiento_Preparar_A
 ```powershell
 Set-Location C:\Users\mario\OneDrive\Escritorio\tesis-riesgo-escolar
 $py = 'backend\.venv\Scripts\python.exe'; $s6 = "$env:LOCALAPPDATA\SeguimientoEscolar\S6"
-$demo = Get-ChildItem "$s6\demo-vivo-v9u-*.json" | Where-Object { $_.Name -notlike '*-restore.json' } | Select-Object -First 1 -ExpandProperty FullName
+$demo = Get-ChildItem "$s6\demo-vivo-v10a-*.json" | Where-Object { $_.Name -notlike '*-restore.json' } | Select-Object -First 1 -ExpandProperty FullName
 & $py infra\runtime_target.py up --target $demo
 docker ps --format "{{.Names}} | {{.Status}}"
 ```
 
 - [ ] Abrir <http://localhost:15174>, iniciar sesión (ADMIN de la demostración) y recorrer **toda la parte B con códigos de ensayo** (`ENSAYO-ALTO`, `ENSAYO-MEDIO`, `ENSAYO-BAJO`), cronometrando. Resultado esperado: Alto y Medio con caso, Bajo sin caso,
   y «Modelo: SVM del estudio real» junto al resultado. En **Modelos** debe estar activa «SVM del estudio real (copia de demostración)».
+- [ ] En las dos instalaciones, **Estudio real** debe decir «Conjunto cerrado» y «60 de 60 estudiantes» (ADR 015). Si dijera «Conjunto abierto», ciérralo con **Cerrar conjunto**.
 - [ ] Abrir <http://localhost:15173> y comprobar **Indicadores → REAL-2026 → B1/B2**: detección validada 86,2 % ± 1,6 (B1) y 100 % ± 0 (B2) del SVM; PDER «en muestra» 100 %; 40 alertas.
 - [ ] Hacer un **respaldo del día** de cada instalación (`backup_restore.py backup`; para `demo-vivo`, con `--isolated-source`) y verificarlo (`verify`). Anotar los nombres de los paquetes.
-- [ ] Revisar que las **capturas del plan B** abren (`tests\evidence\mejoras-09-e2e-*`, `mejoras-09-demo-vivo-*` y `mejoras-09-principal-*`).
+- [ ] Revisar que las **capturas del plan B** abren (`tests\evidence\mejoras-09-e2e-*`, `mejoras-09-demo-vivo-*`, `mejoras-09-principal-*` y `mejoras-10-*`).
 - [ ] Equipo: batería al 100 % y cargador, modo «no suspender», notificaciones silenciadas, zoom del navegador al 100 %, una sola sesión del navegador por sistema, proyector probado.
 
 ## El día, 30 minutos antes

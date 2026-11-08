@@ -1,18 +1,20 @@
 openapi: 3.1.0
 info:
   title: Contrato de Seguimiento Escolar
-  version: 0.15.0
-  description: 'S6, M1, Bloques 1–3B-1 conservados. Bloque 9: las mediciones ya no exponen la participación (sin registro
-    original) y `Model.display_label` rotula la copia de demostración del SVM real en DEMO-VIVO (ADR 014). Bloque 8: el protocolo REAL admite la regla de referencia RIESGO_V2 (cuatro
-    componentes sin participación; regla activa de los protocolos nuevos) además de RIESGO_V1, que se conserva. Bloque 5.1: detección validada (fuera de muestra) del modelo
-    activo, por bimestre y total, con media y desviación entre repeticiones (`validated_detection`; `NO_OUT_OF_SAMPLE_REPORT`
-    si falta). Bloque 3B-3: PDER y CRA por corte (predicción de cada bimestre), métricas REAL fuera de muestra
-    (validación cruzada del informe del modelo activo; `metric_basis`). Bloque 3B-2: cadena REAL local. Con
-    un protocolo REAL confirmado que cubra el periodo se habilitan importación del CSV canónico, comparación
-    exploratoria, evaluación retrospectiva, alertas, reportes e indicadores por bimestre; sin protocolo todo
-    REAL sigue con INSTITUTIONAL_PROCESSING_NOT_READY. Los datos REAL son análisis exploratorio local: no demuestran
-    eficacia escolar. El estudio institucional, su comparación y la activación del modelo se administran por
-    CLI.'
+  version: 0.16.0
+  description: 'S6, M1, Bloques 1–3B-1 conservados. Bloque 10: `GET /real-set` consulta de solo lectura del
+    conjunto real (ADR 015), con el estado de cierre del periodo. Bloque 9: las mediciones ya no exponen la
+    participación (sin registro original) y `Model.display_label` rotula la copia de demostración del SVM real
+    en DEMO-VIVO (ADR 014). Bloque 8: el protocolo REAL admite la regla de referencia RIESGO_V2 (cuatro componentes
+    sin participación; regla activa de los protocolos nuevos) además de RIESGO_V1, que se conserva. Bloque
+    5.1: detección validada (fuera de muestra) del modelo activo, por bimestre y total, con media y desviación
+    entre repeticiones (`validated_detection`; `NO_OUT_OF_SAMPLE_REPORT` si falta). Bloque 3B-3: PDER y CRA
+    por corte (predicción de cada bimestre), métricas REAL fuera de muestra (validación cruzada del informe
+    del modelo activo; `metric_basis`). Bloque 3B-2: cadena REAL local. Con un protocolo REAL confirmado que
+    cubra el periodo se habilitan importación del CSV canónico, comparación exploratoria, evaluación retrospectiva,
+    alertas, reportes e indicadores por bimestre; sin protocolo todo REAL sigue con INSTITUTIONAL_PROCESSING_NOT_READY.
+    Los datos REAL son análisis exploratorio local: no demuestran eficacia escolar. El estudio institucional,
+    su comparación y la activación del modelo se administran por CLI.'
 servers:
 - url: /api/v1
   description: Preferir proxy de mismo origen para cookies y CSRF
@@ -32,6 +34,7 @@ tags:
 - name: manual
 - name: indicators
 - name: protocols
+- name: real-set
 paths:
   /health/live:
     get:
@@ -3912,6 +3915,95 @@ paths:
       description: 'ADMIN con CSRF y Origin. Idempotente: repetir el mismo estado no cambia nada ni audita.
         Auditoría con actor e instante UTC y solo identificadores. En 3B-1 confirmar el protocolo NO desbloquea
         ninguna operación REAL.'
+  /real-set:
+    get:
+      tags:
+      - real-set
+      summary: Real Set
+      operationId: realSet
+      parameters:
+      - name: period_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Period Id
+      - name: section_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Section Id
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 10000
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 100
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RealSetPage'
+        '422':
+          description: Origen no admitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sesión requerida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rol sin acceso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Periodo no REAL, ajeno o inexistente; sección ajena
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Servicio no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-stage: B10
+      x-roles:
+      - ADMIN
+      - TUTOR
+      - DIRECTOR
+      security:
+      - sessionCookie: []
+      description: 'Conjunto real de solo lectura: por estudiante y bimestre, la revisión de mitad de bimestre
+        que usó la referencia RIESGO_V2, el nivel del modelo REAL activo y el de referencia; is_locked indica
+        si el periodo está cerrado. TUTOR solo ve sus secciones. Solo códigos; nunca nombres. No escribe ni
+        evalúa.'
 components:
   securitySchemes:
     sessionCookie:
@@ -8179,4 +8271,216 @@ components:
       - high_as_low
       title: DetectionCounts
       description: Conteos sumados de todas las repeticiones (cada observación se valida una vez por repetición).
+    RealSetCut:
+      properties:
+        bimester:
+          type: string
+          title: Bimester
+        cutoff_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Cutoff At
+        average_grade:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Average Grade
+        attendance_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Attendance Pct
+        activities_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Activities Pct
+        behavior_incidents:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Behavior Incidents
+        predicted_risk:
+          anyOf:
+          - type: string
+            enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+          - type: 'null'
+          title: Predicted Risk
+        reference_risk:
+          anyOf:
+          - type: string
+            enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+          - type: 'null'
+          title: Reference Risk
+        reference_points:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Reference Points
+      additionalProperties: false
+      type: object
+      required:
+      - bimester
+      - cutoff_at
+      - average_grade
+      - attendance_pct
+      - activities_pct
+      - behavior_incidents
+      - predicted_risk
+      - reference_risk
+      - reference_points
+      title: RealSetCut
+    RealSetLevels:
+      properties:
+        bimester:
+          type: string
+          title: Bimester
+        cuts:
+          type: integer
+          title: Cuts
+        predicted_low:
+          type: integer
+          title: Predicted Low
+        predicted_medium:
+          type: integer
+          title: Predicted Medium
+        predicted_high:
+          type: integer
+          title: Predicted High
+        predicted_missing:
+          type: integer
+          title: Predicted Missing
+        reference_low:
+          type: integer
+          title: Reference Low
+        reference_medium:
+          type: integer
+          title: Reference Medium
+        reference_high:
+          type: integer
+          title: Reference High
+      additionalProperties: false
+      type: object
+      required:
+      - bimester
+      - cuts
+      - predicted_low
+      - predicted_medium
+      - predicted_high
+      - predicted_missing
+      - reference_low
+      - reference_medium
+      - reference_high
+      title: RealSetLevels
+    RealSetPage:
+      properties:
+        period_id:
+          type: string
+          format: uuid
+          title: Period Id
+        period_code:
+          type: string
+          title: Period Code
+        is_locked:
+          type: boolean
+          title: Is Locked
+        model_algorithm:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Model Algorithm
+        bimesters:
+          items:
+            type: string
+          type: array
+          title: Bimesters
+        summary:
+          items:
+            $ref: '#/components/schemas/RealSetLevels'
+          type: array
+          title: Summary
+        students:
+          type: integer
+          title: Students
+        alerts:
+          type: integer
+          title: Alerts
+        items:
+          items:
+            $ref: '#/components/schemas/RealSetStudent'
+          type: array
+          title: Items
+        total:
+          type: integer
+          title: Total
+        page:
+          type: integer
+          title: Page
+        page_size:
+          type: integer
+          title: Page Size
+      additionalProperties: false
+      type: object
+      required:
+      - period_id
+      - period_code
+      - is_locked
+      - model_algorithm
+      - bimesters
+      - summary
+      - students
+      - alerts
+      - items
+      - total
+      - page
+      - page_size
+      title: RealSetPage
+    RealSetStudent:
+      properties:
+        student_id:
+          type: string
+          format: uuid
+          title: Student Id
+        anon_code:
+          type: string
+          title: Anon Code
+        grade:
+          type: integer
+          title: Grade
+        section_code:
+          type: string
+          title: Section Code
+        alert_status:
+          anyOf:
+          - type: string
+            enum:
+            - OPEN
+            - IN_REVIEW
+            - RESOLVED
+            - DISMISSED
+          - type: 'null'
+          title: Alert Status
+        cuts:
+          items:
+            $ref: '#/components/schemas/RealSetCut'
+          type: array
+          title: Cuts
+      additionalProperties: false
+      type: object
+      required:
+      - student_id
+      - anon_code
+      - grade
+      - section_code
+      - alert_status
+      - cuts
+      title: RealSetStudent
 x-current-sprint: S2.1

@@ -57,14 +57,14 @@ test('ciclo REAL: protocolo, modelos, alertas, reportes e indicadores con rótul
   // Alertas: etiqueta REAL y simulación retrospectiva.
   await page.goto('/alertas');
   await selectPeriod(page);
-  await expect(page.getByText('Datos reales locales — análisis exploratorio, no demuestra eficacia escolar.').first()).toBeVisible();
+  await expect(page.getByText(/no demuestra eficacia escolar/)).toHaveCount(0);   // Bloque 10: aviso retirado a pedido del usuario
   await expect(page.getByText('simulación retrospectiva').first()).toBeVisible();
   await shot(page, 'alertas');
 
   // Reportes: etiqueta REAL.
   await page.goto('/reportes');
   await selectPeriod(page);
-  await expect(page.getByText('Datos reales locales — análisis exploratorio, no demuestra eficacia escolar.').first()).toBeVisible();
+  await expect(page.getByText(/no demuestra eficacia escolar/)).toHaveCount(0);   // Bloque 10: aviso retirado a pedido del usuario
   await shot(page, 'reportes');
 
   // Indicadores por bimestre: NIA y oportuna nulos con motivo; PDER calculado.
@@ -72,9 +72,9 @@ test('ciclo REAL: protocolo, modelos, alertas, reportes e indicadores con rótul
   const indicatorOption = page.locator('#ind-period option', { hasText: periodCode! });
   await page.locator('#ind-period').selectOption({ value: (await indicatorOption.getAttribute('value'))! });
   await page.locator('#ind-bimester').selectOption('B1');
-  await expect(page.getByText('Datos reales locales — análisis exploratorio, no demuestra eficacia escolar', { exact: false }).first()).toBeVisible();
+  await expect(page.getByText(/no demuestra eficacia escolar|Calculado al/)).toHaveCount(0);
   await expect(page.getByText('Todavía no hay intervenciones reales registradas').first()).toBeVisible();
-  await expect(page.getByText(/alertas son simulación retrospectiva/)).toBeVisible();
+  await expect(page.getByText(/alertas son simulación retrospectiva/)).toHaveCount(0);
   await expect(page.getByText('Exploratorio local').first()).toBeVisible();
   await expect(page.getByText('validación cruzada (fuera de muestra)').first()).toBeVisible();
   await expect(page.getByText(/Media de 20 repeticiones/)).toBeVisible();
@@ -105,6 +105,6 @@ test('persistencia tras reiniciar: el estado REAL se conserva', async ({ page })
   const option = page.locator('#ind-period option', { hasText: periodCode! });
   await page.locator('#ind-period').selectOption({ value: (await option.getAttribute('value'))! });
   await page.locator('#ind-bimester').selectOption('B1');
-  await expect(page.getByText(/alertas son simulación retrospectiva/)).toBeVisible();
+  await expect(page.getByText('Exploratorio local').first()).toBeVisible();
   await shot(page, 'persistencia');
 });

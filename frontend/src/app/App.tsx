@@ -17,6 +17,7 @@ import { EmptyState, ErrorState, LoadingState, PageHeader } from '../components/
 import { api, ApiError, clearSessionMemory, errorMessage, SESSION_EXPIRED_EVENT, type User } from '../lib/api';
 import { navigate, useLocation } from '../lib/navigation';
 import { DEMO_LABEL } from '../lib/origin';
+import { RealSetPage } from '../features/realset/RealSetPage';
 
 export function App() {
   const cache = useQueryClient();
@@ -122,6 +123,9 @@ function AuthenticatedApp({ user, onLogout, onExpired, sessionError }: { user: U
   else if ((pathname === '/alertas' || pathname === '/reportes') && period && sections.isError) page = <ErrorState error={sections.error} onRetry={() => void sections.refetch()} />;
   else if (pathname === '/alertas') page = <AlertsPage key={periodId + validSection} user={user} period={period} sectionId={validSection} processing={processing} onNavigate={go} />;
   else if (alertMatch) page = <AlertDetailPage key={periodId + alertMatch[1]} user={user} period={period} processing={processing} alertId={alertMatch[1]} onNavigate={go} />;
+  else if (pathname === '/estudio-real' && periods.isPending) page = <LoadingState label="Cargando periodos autorizados…" />;
+  else if (pathname === '/estudio-real' && periods.isError) page = <ErrorState error={periods.error} onRetry={() => void periods.refetch()} />;
+  else if (pathname === '/estudio-real') page = <RealSetPage key={user.id} user={user} periods={periods.data ?? []} initialPeriodId={periodId} onNavigate={go} />;
   else if (pathname === '/indicadores') page = <IndicatorsPage key={user.id} user={user} initialPeriodId={periodId} />;
   else if (pathname === '/reportes') page = <ReportsPage key={periodId + validSection} user={user} period={period} sectionId={validSection} processing={processing} onNavigate={go} />;
   else page = <><PageHeader title="Página no encontrada" /><EmptyState title="Esta dirección no está disponible"><button className="button secondary" type="button" onClick={() => go('/')}>Volver a Inicio</button></EmptyState></>;
