@@ -185,6 +185,16 @@ descriptores, archivo compose, secretos de infraestructura y el perfil `demo-viv
 detuvo antes de escribir: la principal conserva `REAL-2026` cerrado (60 matrículas, 120 revisiones, 120 referencias, 120 predicciones, 40 alertas) y la copia
 del SVM apagada. Respaldo previo a ese intento: `s6-20261108T083334Z-a90bc85653e5` (COMPROBADO).
 
+**Grupo `PRUEBAS` en la principal (2026-11-08, ADR 016).** El periodo de demostración pasó a llamarse `PRUEBAS` y se creó en la principal:
+
+```powershell
+# .env de la raíz: DEMO_REAL_MODEL_COPY=true ; luego: docker compose up -d --no-deps --wait api
+& $py infrauntime_target.py active --output "$s6ctive-$fecha.json"
+& $py infra\prepare_demo_period.py --target "$s6ctive-$fecha.json" --operator-profile <perfil> --allow-active --confirm-demo-target riesgo-escolar --locked-tutor --real-model-copy $sha
+```
+
+Resultado: `PRUEBAS` con 60 sintéticos de base y la copia del SVM (misma huella); `REAL-2026` idéntico y cerrado. Detalle en el ADR 016.
+
 ## 10. Nombres en la ficha: paso opcional y separado (≈ 2 min)
 
 Solo si quieres ver nombres en la **ficha** del estudiante (listas, alertas, indicadores y reportes nunca los muestran). Necesita un respaldo nuevo (< 24 h) y tu archivo real de identidades fuera del repositorio:

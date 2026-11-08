@@ -1,25 +1,24 @@
 # Guion de la sustentación: resultados reales y registro en vivo
 
-> **2026-11-08: `demo-vivo` (15174) se eliminó a pedido del usuario.** Solo queda la instalación de siempre (15173) con `REAL-2026` cerrado y la sección
-> «Estudio real» ([ADR 015](../adr/015-conjunto-real-cerrado.md)). La parte B (registro en vivo) no está disponible mientras no se prepare un grupo de demostración.
+> **Desde el 2026-11-08 todo se hace en la instalación de siempre (15173)** ([ADR 016](../adr/016-grupo-pruebas-en-la-principal.md)): `REAL-2026` cerrado con los
+> 60 reales y el grupo de demostración `PRUEBAS` (antes `PRUEBAS`, en la instalación hermana `demo-vivo`, que ya no existe). Los valores de abajo se comprobaron en
+> `demo-vivo` con el mismo SVM y la misma huella.
 
 Actualizado en el Bloque 9 (2026-10-25): regla de referencia **RIESGO_V2** (sin participación, [ADR 013](../adr/013-riesgo-v2-sin-participacion.md)), modelo **SVM** y
 demostración en vivo con **el mismo SVM del estudio real** ([ADR 014](../adr/014-copia-demo-svm-real.md)).
 
-Duración: **parte A (resultados reales) 3–4 min** y **parte B (registro en vivo) 8–10 min**. La parte B se hace en la **instalación hermana de demostración**
-(`demo-vivo`, puerto 15174), que tiene los mismos datos reales que la instalación de siempre (`riesgo-escolar`, puerto 15173) **más** un periodo aparte y rotulado,
-`DEMO-VIVO`. Procedimiento: [Procedimiento_Preparar_Activa.md](Procedimiento_Preparar_Activa.md); lista del día: [Lista_Dia_Sustentacion.md](Lista_Dia_Sustentacion.md).
+Duración: **parte A (resultados reales) 3–4 min** y **parte B (registro en vivo) 8–10 min**. Las dos partes se hacen en la instalación de siempre (`riesgo-escolar`, puerto 15173): la A con `REAL-2026`, la B en el periodo aparte y rotulado `PRUEBAS`. Procedimiento: [Procedimiento_Preparar_Activa.md](Procedimiento_Preparar_Activa.md); lista del día: [Lista_Dia_Sustentacion.md](Lista_Dia_Sustentacion.md).
 
 ## Qué es real y qué no (decirlo al principio de la parte B)
 
 | | Datos | Modelo | Dónde se ve |
 |---|---|---|---|
 | Resultados del colegio | 60 estudiantes reales, B1 y B2 (periodo `REAL-2026`) | SVM, exploratorio local | Indicadores, Modelos, Alertas (simulación retrospectiva) |
-| Registro en vivo | Estudiante **inventado**, escrito en la sala, en el periodo `DEMO-VIVO` | **El mismo SVM del estudio real** (misma huella) | Estudiantes, Alertas, Reportes del periodo `DEMO-VIVO` |
+| Registro en vivo | Estudiante **inventado**, escrito en la sala, en el periodo `PRUEBAS` | **El mismo SVM del estudio real** (misma huella) | Estudiantes, Alertas, Reportes del periodo `PRUEBAS` |
 
-**Un solo modelo.** En `demo-vivo` el periodo `DEMO-VIVO` lo evalúa una copia del SVM real: el mismo archivo del modelo (huella
+**Un solo modelo.** El periodo `PRUEBAS` lo evalúa una copia del SVM real: el mismo archivo del modelo (huella
 `45fb6c6b…38261`, idéntica en las dos instalaciones), no un modelo reentrenado ni sintético. En pantalla se lee **«Modelo: SVM del estudio real»**. El estudiante
-inventado y su evaluación quedan **solo** en `DEMO-VIVO`: no cambian los 60 estudiantes, los 120 registros ni ninguna cifra de `REAL-2026` (comprobado automáticamente).
+inventado y su evaluación quedan **solo** en `PRUEBAS`: no cambian los 60 estudiantes, los 120 registros ni ninguna cifra de `REAL-2026` (comprobado automáticamente).
 
 ## Cuenta
 
@@ -42,7 +41,7 @@ lo llama Alto (5 puntos: suma un punto en cada componente y dos por incidencias)
 
 ## Si el jurado pide probar otros valores
 
-Casos comprobados el 2026-10-25 en `demo-vivo` (evaluación real con el SVM del estudio; códigos `JURADO-…` en `DEMO-VIVO`). En los 12, el nivel mostrado y el guardado
+Casos comprobados el 2026-10-25 en `demo-vivo` (evaluación real con el SVM del estudio; códigos `JURADO-…` en `PRUEBAS`). En los 12, el nivel mostrado y el guardado
 coinciden, y Medio y Alto abrieron alerta. «Estabilidad»: cuántos de los 81 perfiles vecinos (±0,5 en notas, ±2,5 en asistencia y tareas, ±1 incidencia) obtienen el mismo nivel del SVM.
 
 | # | Notas | Asistencia % | Tareas % | Incidencias | SVM | RIESGO_V2 (puntos) | Estabilidad | Nota |
@@ -94,11 +93,11 @@ a **38 registros en B1** y **37 en B2**. El sistema mantiene **una sola alerta a
 ellas y se abrieron **2** nuevas (estudiantes marcados solo en B2): **38 + 2 = 40**. Los 3 estudiantes marcados solo en B1 siguen con su alerta abierta: una evaluación Baja no cierra un
 caso. Con las predicciones de **validación** (fuera de muestra) el SVM marca Medio o Alto a 37 en B1 y 38 en B2; por eso no coinciden exactamente con 38 y 37.
 
-## Parte B: registro en vivo (8–10 min, en `demo-vivo`, puerto 15174)
+## Parte B: registro en vivo (8–10 min, en `riesgo-escolar`, puerto 15173, periodo `PRUEBAS`)
 
 | Min | Acción (paso 1 SIEMPRE: elegir el periodo) | Qué decir y mostrar |
 |---|---|---|
-| 0:00 | Iniciar sesión como ADMIN. **Estudiantes → Periodo de consulta → `DEMO-VIVO · 2025`.** | Señalar el rótulo «Registro de demostración, no es dato del colegio». «Nada de lo que escriba aquí entra en los resultados reales.» |
+| 0:00 | Iniciar sesión como ADMIN. **Estudiantes → Periodo de consulta → `PRUEBAS · 2025`.** | Señalar el rótulo «Registro de demostración, no es dato del colegio». «Nada de lo que escriba aquí entra en los resultados reales.» |
 | 0:45 | **Nuevo estudiante**: código `DEMO-ALTO`, nombre inventado, la primera sección. **Guardar estudiante y matrícula.** | «El alumno y su matrícula se crean juntos y quedan auditados.» |
 | 1:45 | **Nueva medición** con los cuatro datos de `DEMO-ALTO`. **Guardar medición.** | «Son los datos de la revisión de mitad de bimestre. Guardar no evalúa ni inventa una fecha objetivo.» |
 | 3:00 | **Evaluar riesgo de este estudiante.** | Mostrar «Alto» y **«Modelo: SVM del estudio real»**. «Es el mismo modelo de los resultados; el nivel no es una probabilidad calibrada.» |
@@ -119,11 +118,11 @@ Para la parte A, `mejoras-09-principal-*` (datos reales tapados en las capturas)
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| El periodo `DEMO-VIVO` no aparece | Se abrió `riesgo-escolar` | Cambiar a 15174. |
+| El periodo `PRUEBAS` no aparece | El periodo de consulta es otro | Estudiantes → Periodo de consulta → `PRUEBAS · 2025`. |
 | «No hay un modelo activo para este periodo» | Periodo equivocado | Revisar el periodo; en **Modelos** debe figurar activa «SVM del estudio real (copia de demostración)». Si no, plan B. |
-| «Modelo no disponible» al evaluar | La instalación no tiene encendida la copia de demostración | Usar 15174 (en 15173 está apagada a propósito). Plan B. |
+| «Modelo no disponible» al evaluar | La copia de demostración está apagada | `.env` con `DEMO_REAL_MODEL_COPY=true` y `docker compose up -d --no-deps --wait api`. Plan B. |
 | «Alumno existente» | Código ya usado | Usar otro código. |
-| Error 5xx | Servicio caído | `runtime_target.py up --target <demo-vivo.json>`; nunca `down -v`. |
+| Error 5xx | Servicio caído | `docker compose restart api web`; nunca `down -v`. |
 | Riesgo distinto al esperado | Valor tecleado distinto | Revisar los cuatro datos; no se promete exactitud. |
 
 ## Preguntas probables y respuestas honestas
