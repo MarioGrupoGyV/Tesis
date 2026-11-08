@@ -180,6 +180,11 @@ Comprobado con `docker ps -a` y `docker volume ls`: no queda nada de ellas. Se c
 y después sus descriptores, archivos compose, secretos de infraestructura y perfiles de operador (`demo-vivo-v9u`, `demo-vivo-v10`). Comprobado con `docker ps -a` y
 `docker volume ls`: no queda nada de ellas. Se conservan los respaldos, la principal, la demo-vivo `s6-restore-a8b11e5e230d` y `real-tesis`.
 
+**Demo-vivo eliminada (2026-11-08, a pedido del usuario).** `s6-restore-a8b11e5e230d` se borró con `cleanup` (contenedores, volúmenes y red), junto con sus
+descriptores, archivo compose, secretos de infraestructura y el perfil `demo-vivo-v10a`. Un intento de preparar el grupo de demostración en la principal se
+detuvo antes de escribir: la principal conserva `REAL-2026` cerrado (60 matrículas, 120 revisiones, 120 referencias, 120 predicciones, 40 alertas) y la copia
+del SVM apagada. Respaldo previo a ese intento: `s6-20261108T083334Z-a90bc85653e5` (COMPROBADO).
+
 ## 10. Nombres en la ficha: paso opcional y separado (≈ 2 min)
 
 Solo si quieres ver nombres en la **ficha** del estudiante (listas, alertas, indicadores y reportes nunca los muestran). Necesita un respaldo nuevo (< 24 h) y tu archivo real de identidades fuera del repositorio:

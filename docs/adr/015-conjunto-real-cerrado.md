@@ -41,4 +41,5 @@ avisos de pantalla.
   respaldo con el cierre `s6-20261108T080502Z-198c447fd148` (COMPROBADO). Interruptor de la copia de demostración apagado.
 - `demo-vivo` recreada desde ese respaldo: `s6-restore-a8b11e5e230d` (15174, `b10a`, descriptor `S6\demo-vivo-v10a-<fecha>.json`, perfil `demo-vivo-v10a`), con la
   copia del SVM (misma huella `45fb6c6b…38261`) y `REAL-2026` cerrado. `DEMO-VIVO` sin estudiantes de ensayo.
+- 2026-11-08, después: `demo-vivo` se eliminó a pedido del usuario; queda solo la principal con `REAL-2026` cerrado y la copia del SVM apagada.
 - En ambas: «Estudio real» con 60 estudiantes, 40 con caso; el modelo marca Medio/Alto a 38 en B1 y 37 en B2. Suite del servidor: 564 aprobadas, 11 omitidas, 0 fallidas.

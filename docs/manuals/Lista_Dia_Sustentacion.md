@@ -1,5 +1,8 @@
 # Lista para el ensayo general y el día de la sustentación
 
+> **2026-11-08: `demo-vivo` (15174) se eliminó a pedido del usuario.** Solo queda la instalación de siempre (15173) con `REAL-2026` cerrado y la sección
+> «Estudio real» ([ADR 015](../adr/015-conjunto-real-cerrado.md)). La parte B (registro en vivo) no está disponible mientras no se prepare un grupo de demostración.
+
 Sistemas: `riesgo-escolar` (<http://localhost:15173>, la instalación de siempre, **solo datos reales**) y `demo-vivo` (<http://localhost:15174>, mismos datos reales **más** el periodo `DEMO-VIVO` para el registro en vivo).
 `real-tesis` (<http://localhost:5173>) es la copia de referencia de la corrida real: úsala solo para comparar, no para presentar. Guion: [Guion_Demo_Manual.md](Guion_Demo_Manual.md).
 Preparación previa: [Procedimiento_Preparar_Activa.md](Procedimiento_Preparar_Activa.md). **No hace falta internet** para nada de esto.

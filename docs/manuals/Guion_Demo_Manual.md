@@ -1,5 +1,8 @@
 # Guion de la sustentación: resultados reales y registro en vivo
 
+> **2026-11-08: `demo-vivo` (15174) se eliminó a pedido del usuario.** Solo queda la instalación de siempre (15173) con `REAL-2026` cerrado y la sección
+> «Estudio real» ([ADR 015](../adr/015-conjunto-real-cerrado.md)). La parte B (registro en vivo) no está disponible mientras no se prepare un grupo de demostración.
+
 Actualizado en el Bloque 9 (2026-10-25): regla de referencia **RIESGO_V2** (sin participación, [ADR 013](../adr/013-riesgo-v2-sin-participacion.md)), modelo **SVM** y
 demostración en vivo con **el mismo SVM del estudio real** ([ADR 014](../adr/014-copia-demo-svm-real.md)).
 
