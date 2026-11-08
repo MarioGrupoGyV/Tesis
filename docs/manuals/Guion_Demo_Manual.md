@@ -98,7 +98,7 @@ caso. Con las predicciones de **validación** (fuera de muestra) el SVM marca Me
 | Min | Acción (paso 1 SIEMPRE: elegir el periodo) | Qué decir y mostrar |
 |---|---|---|
 | 0:00 | Iniciar sesión como ADMIN. **Estudiantes → Periodo de consulta → `PRUEBAS · 2025`.** | Señalar el rótulo «Registro de demostración, no es dato del colegio». «Nada de lo que escriba aquí entra en los resultados reales.» |
-| 0:45 | **Nuevo estudiante**: código `DEMO-ALTO`, nombre inventado, la primera sección. **Guardar estudiante y matrícula.** | «El alumno y su matrícula se crean juntos y quedan auditados.» |
+| 0:45 | **Nuevo estudiante**: código `DEMO-ALTO`, nombre inventado, sección **`TUTORIA-A`** (la del Tutor local; cualquier otra de `PRUEBAS` también sirve). **Guardar estudiante y matrícula.** | «El alumno y su matrícula se crean juntos y quedan auditados.» |
 | 1:45 | **Nueva medición** con los cuatro datos de `DEMO-ALTO`. **Guardar medición.** | «Son los datos de la revisión de mitad de bimestre. Guardar no evalúa ni inventa una fecha objetivo.» |
 | 3:00 | **Evaluar riesgo de este estudiante.** | Mostrar «Alto» y **«Modelo: SVM del estudio real»**. «Es el mismo modelo de los resultados; el nivel no es una probabilidad calibrada.» |
 | 4:00 | **Abrir el caso de seguimiento → Planificar actividad** (Tutoría, objetivo breve, 05/05/2025 14:00). | «Una actividad planificada no cuenta como realizada; las decisiones son humanas.» |

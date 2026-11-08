@@ -3,7 +3,9 @@
 Sistema único desde el 2026-11-08 ([ADR 016](../adr/016-grupo-pruebas-en-la-principal.md)): `riesgo-escolar`, <http://localhost:15173>, con dos conjuntos separados:
 - **`REAL-2026`**: los 60 estudiantes reales, **cerrado** (nadie lo puede modificar). Se ve en **Estudio real**, Indicadores y Modelos ([ADR 015](../adr/015-conjunto-real-cerrado.md)).
 - **`PRUEBAS`**: grupo de demostración (rótulo «Registro de demostración, no es dato del colegio»), con 60 estudiantes sintéticos de base (`SYN-…`). Ahí se registra
-  el estudiante nuevo en vivo y lo evalúa la copia del SVM del estudio real.
+  el estudiante nuevo en vivo y lo evalúa la copia del SVM del estudio real. Sección **`TUTORIA-A`** (1.º): su responsable es el **Tutor local**
+  (`tutor@example.com`); el tutor solo ve `PRUEBAS` y los estudiantes de esa sección, nunca `REAL-2026`. Para mostrar el rol de tutor, registra al estudiante
+  nuevo en `TUTORIA-A` y entra después con la cuenta TUTOR (contraseña: `py -3.12 infra/windows_credentials.py TUTOR`).
 
 `real-tesis` (<http://localhost:5173>) es la copia de referencia de la corrida real: úsala solo para comparar, no para presentar. Guion: [Guion_Demo_Manual.md](Guion_Demo_Manual.md).
 Preparación previa: [Procedimiento_Preparar_Activa.md](Procedimiento_Preparar_Activa.md). **No hace falta internet** para nada de esto.

@@ -31,6 +31,10 @@ regla de modelo, y dejaría un estudiante inventado etiquetado REAL.
   No se creó ningún estudiante de ensayo.
 - Suite del servidor con el cambio de nombre: 564 aprobadas, 11 omitidas, 0 fallidas.
 
+- Sección `TUTORIA-A` (1.º, 2025, SYNTHETIC) creada en `PRUEBAS` con el **Tutor local** como responsable, para mostrar el rol de tutor. El tutor solo ve `PRUEBAS`
+  y esa sección (0 estudiantes al crearla); `REAL-2026` idéntico. No se pudo reasignar una sección del estudio base: al editar, el servidor normaliza el código a
+  mayúsculas y lo compara con el guardado (`SYN-e3a2d28b-A`), y lo trata como cambio estructural (`ACADEMIC_CONFLICT`). Defecto pendiente.
+
 ## Consecuencias
 
 - La principal ya no tiene «solo datos reales»: tiene además un grupo SYNTHETIC rotulado. Los respaldos se etiquetan MIXED.
